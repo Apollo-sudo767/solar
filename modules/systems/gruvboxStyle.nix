@@ -1,9 +1,3 @@
-I'll simplify that styling module for you by removing the specific enum options for the Gruvbox flavors. We can pivot to a more streamlined approach where you just define the core style, or even just hard-code your preferred "Medium" look while keeping the gruvboxStyle name as a simple toggle or string.
-
-Here is the cleaned-up, minimal version of modules/systems/styling.nix:
-modules/systems/styling.nix
-Nix
-
 { config, lib, pkgs, inputs, ... }:
 
 let

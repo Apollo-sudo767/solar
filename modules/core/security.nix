@@ -1,18 +1,21 @@
-{ config, pkgs, ... }: {
-  config = lib.mkIf config.myFeatures.core.security.enable {
-    # Install the plugin so the system can talk to the key
-    environment.systemPackages = [ pkgs.age-plugin-yubikey ];
+{ config, lib, pkgs, ... }:
 
+let
+  cfg = config.myFeatures.core.security;
+in
+{
+  options.myFeatures.core.security.enable = lib.mkEnableOption "SSH Host-key Security";
+
+  config = lib.mkIf cfg.enable {
     sops = {
-      # This tells sops-nix to use the YubiKey plugin for decryption
-      age.sshKeyPaths = [ ]; # We aren't using SSH keys anymore
-      age.keyFile = "/var/lib/sops-nix/key.txt"; # Optional backup
+      # This is the path to the private SSH key already on your SSD
+      age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       
-      # Use the plugin specifically
-      gnupg.sshKeyPaths = [ ]; 
+      # Point to your actual secrets file in the repo
+      defaultSopsFile = ../../secrets/secrets.yaml;
+      
+      # Optional: prevents sops from looking for a YubiKey/GPG
+      gnupg.sshKeyPaths = [ ];
     };
-    
-    # Ensure pcscd is running (required for YubiKey/Smartcards)
-    services.pcscd.enable = true;
   };
 }

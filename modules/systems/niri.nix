@@ -18,6 +18,7 @@ in
       swaybg
       hypridle
       swaylock
+      networkmanagerapplet
     ];
   };
 }

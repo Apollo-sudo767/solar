@@ -1,5 +1,13 @@
-{ ... }: {
-  flake.nixosModules.myFeatures.wifi = { ... }: {
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.myFeatures.hardware.wifi;
+in
+{
+  options.myFeatures.hardware.wifi = {
+    enable = lib.mkEnableOption "Enables Wifi Services";
+  };
+
+  config = lib.mkIf cfg.enable = {  
     networking.networkmanager.enable = true;
   };
 }

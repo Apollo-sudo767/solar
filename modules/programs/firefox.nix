@@ -1,5 +1,13 @@
-{ ... }: {
-  flake.nixosModules.myFeatures.firefox = { pkgs, ... }: {
+{ config, lib, ...  }:
+let
+  cfg = config.myFeatures.programs.firefox;
+in
+{
+  options.myFeatures.programs.firefox = {
+    enable = lib.mkEnableOption "Enables Firefox"
+  };
+
+  config = lib.mkIf cfg.enable {
     programs.firefox.enable = true;
 
     home-manager.users.apollo = {

@@ -1,7 +1,15 @@
-{ ... }: {
-  flake.nixosModules.myFeatures.flatpak = { ... }: {
-    services.flatpak.enable = true;
-    # Ensures XDG portals work for file picking/screensharing
-    xdg.portal.enable = true; 
+{ config, lib, ... }:
+
+let
+  cfg = config.myFeatures.programs.flatpak;
+in
+{
+  options.myFeatures.programs.flatpak = {
+    enable = lib.mkEnableOption "Flatpak Support";
+  };
+
+  config = lib.mkIf cfg.enable {
+    services.flatpak.enable = true; [cite: 31]
+    xdg.portal.enable = true; # Required for Flatpak integration [cite: 32]
   };
 }

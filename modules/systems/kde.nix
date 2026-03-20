@@ -1,22 +1,27 @@
-{ pkgs, ... }: {
-  flake.nixosModules.myFeatures.plasma = { ... }: {
-    # Enable the X11 windowing system (base for Plasma)
-    services.xserver.enable = true;
+{ config, lib, pkgs, ... }:
 
-    # Enable the KDE Plasma 6 Desktop Environment
-    services.desktopManager.plasma6.enable = true;
+let
+  cfg = config.myFeatures.systems.kde;
+in
+{
+  options.myFeatures.systems.kde = {
+    enable = lib.mkEnableOption "KDE Plasma 6 Desktop";
+  };
 
-    # Essential KDE Utilities & Applets
+  config = lib.mkIf cfg.enable {
+    services.xserver.enable = true; 
+    services.desktopManager.plasma6.enable = true; 
+
     environment.systemPackages = with pkgs; [
-      kdePackages.krunner       # The "Alt+Space" Launcher
-      kdePackages.plasma-nm     # Network Manager applet
-      kdePackages.plasma-pa     # PulseAudio/Pipewire volume control
-      kdePackages.dolphin       # File Manager
-      kdePackages.spectacle     # Screenshot tool
-      kdePackages.ark           # Archive manager
-    ];
+      kdePackages.krunner
+      kdePackages.plasma-nm
+      kdePackages.plasma-pa
+      kdePackages.dolphin
+      kdePackages.spectacle
+      kdePackages.ark
+    ]; 
 
-    # Ensure Plasma uses the correct portal
-    xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+    # Ensure Plasma uses its specific portal
+    xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ]; 
   };
 }

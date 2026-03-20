@@ -1,5 +1,15 @@
-{ ... }: {
-  flake.nixosModules.myFeatures.zen = { pkgs, ... }: {
+{ pkgs, lib, config }:
+
+let
+  cfg = config.myFeatures.programs.zen;
+in
+{
+  options.myFeatures.programs.zen = {
+    enable = lib.mkEnableOption "Enables Zen Browser";
+  };
+
+  config = lib.mkIf cfg.enable {
+
     # System-wide package (assuming it's in your nixpkgs or an overlay)
     environment.systemPackages = [ pkgs.zen-browser ];
 

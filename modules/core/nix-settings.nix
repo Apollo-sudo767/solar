@@ -8,7 +8,6 @@
       settings = {
         experimental-features = [ "nix-command" "flakes" ];
         auto-optimise-store = true;
-        # Mizzou student tip: This helps with build speeds
         warn-dirty = false;
       };
       

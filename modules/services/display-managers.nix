@@ -15,17 +15,17 @@ in
   config = {
     # Tuigreet (Minimal TUI) [cite: 18, 19]
     services.greetd = lib.mkIf (cfg.manager == "tuigreet") {
-      enable = true; [cite: 18]
+      enable = true; 
       settings.default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd niri-session"; [cite: 19]
-        user = "greeter"; [cite: 20]
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd niri-session"; 
+        user = "greeter"; 
       };
     };
 
     # GDM (Gnome) [cite: 29]
-    services.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; [cite: 29]
+    services.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; 
 
     # SDDM (Plasma) [cite: 24]
-    services.displayManager.sddm.enable = lib.mkIf (cfg.manager == "sddm") true; [cite: 24]
+    services.displayManager.sddm.enable = lib.mkIf (cfg.manager == "sddm") true; 
   };
 }

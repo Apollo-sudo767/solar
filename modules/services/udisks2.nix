@@ -9,8 +9,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.udisks2.enable = true; [cite: 15]
-    services.dbus.enable = true; [cite: 15]
+    services.udisks2.enable = true; 
+    services.dbus.enable = true; 
     services.gvfs.enable = true; # Needed for Trash/Network in file managers [cite: 16]
   };
 }

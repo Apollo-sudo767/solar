@@ -10,20 +10,20 @@ in
 
   config = lib.mkIf cfg.enable {
     xdg = {
-      autostart.enable = true; [cite: 9]
+      autostart.enable = true; 
       portal = {
-        enable = true; [cite: 10]
-        xdgOpenUsePortal = true; [cite: 10]
+        enable = true; 
+        xdgOpenUsePortal = true; 
         extraPortals = with pkgs; [
-          xdg-desktop-portal-gnome [cite: 11]
-          xdg-desktop-portal-gtk [cite: 11]
-          xdg-desktop-portal-kde [cite: 11]
-          xdg-desktop-portal-wlr [cite: 11]
+          xdg-desktop-portal-gnome 
+          xdg-desktop-portal-gtk 
+          xdg-desktop-portal-kde 
+          xdg-desktop-portal-wlr 
         ];
         config = {
-          common.default = [ "gtk" ]; [cite: 12]
-          niri.default = [ "gnome" "gtk" ]; [cite: 13]
-          plasma.default = [ "kde" "gtk" ]; [cite: 13]
+          common.default = [ "gtk" ]; 
+          niri.default = [ "gnome" "gtk" ]; 
+          plasma.default = [ "kde" "gtk" ]; 
         };
       };
     };

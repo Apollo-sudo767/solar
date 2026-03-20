@@ -1,5 +1,5 @@
 {
-  description = "Fully Automated Dendretic Flake";
+  description = "Fully Automated Dendritic Flake";
 
   inputs = {
     # Core nixpkgs channels
@@ -16,6 +16,9 @@
     # Stylix
     stylix-unstable.url = "github:danth/stylix";
     stylix-stable.url = "github:danth/stylix/release-25.11";
+
+    # Sops-nix
+    sops-nix.url = "github:Mic92/sops-nix";
 
     # Zen Browser
     zen-browser = {

@@ -1,20 +1,19 @@
-{ lib, inputs, globalModules, ... }:
+{ lib, inputs, ... }:
 
 let
   hostFiles = builtins.readDir ./.;
-  
   validHosts = lib.filterAttrs (name: type:
-    (type == "regular" || type == "symlink") && 
-    (lib.hasSuffix ".nix" name) && 
-    (name != "default.nix")
+    (type == "regular") && (name != "default.nix")
   ) hostFiles;
 
   mkHost = name: _: lib.nixosSystem {
     system = "x86_64-linux";
     specialArgs = { inherit inputs; };
     modules = [
-      (./. + "/${name}") # The specific machine file
-    ] ++ globalModules;   # This injects /modules/default.nix into every host
+      (./. + "/${name}")        # The host file (e.g., desktop.nix)
+      ../modules/default.nix    # The global recursive scanner
+      inputs.home-manager-unstable.nixosModules.home-manager
+    ];
   };
 in
 {

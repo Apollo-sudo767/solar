@@ -19,6 +19,9 @@ in
       hypridle
       swaylock
       networkmanagerapplet
+      thunar
+      swww
+      swaynotificationcenter
     ];
   };
 }

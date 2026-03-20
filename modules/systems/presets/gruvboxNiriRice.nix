@@ -5,10 +5,6 @@ let
 in
 {
 
-  imports = [
-    ../../niri.nix
-    ../presets/niriKeybinds.nix
-  ]
   options.myFeatures.systems.presets.gruvboxNiri.enable = lib.mkEnableOption "Apollo's Gruvbox Niri Rice";
 
   config = lib.mkIf cfg.enable {
@@ -19,6 +15,9 @@ in
       stylix = {
         enable = true;
         rice = "gruvbox";
+      };
+      presets = {
+        niriKeybinds = true;
       };
     };
 

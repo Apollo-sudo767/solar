@@ -4,9 +4,8 @@ let
   cfg = config.myFeatures.systems.stylix;
 in
 {
-  imports = [ inputs.stylix-unstable.nixosModules.stylix ];
-
-  options.myFeatures.systems.styling = {
+    imports = [ inputs.stylix.nixosModules.stylix ];
+    options.myFeatures.systems.styling = {
     enable = lib.mkEnableOption "Universal Stylix Styling";
     
     # Internal options populated by presets

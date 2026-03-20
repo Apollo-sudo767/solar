@@ -17,6 +17,7 @@ in
       powerManagement.enable = false; # Set to true only if you have suspend issues
       open = true; # Use the modern open-source kernel modules for your 4070 Ti
       nvidiaSettings = true;
+      forceFullCompositionPipeline = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
 
@@ -24,6 +25,9 @@ in
     hardware.graphics.extraPackages = with pkgs; [
       nvidia-vaapi-driver
       libva-vdpau-driver
+      libvdpau-va-gl
+      vulkan-loader
+      vulkan-tools
     ];
     
     hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [

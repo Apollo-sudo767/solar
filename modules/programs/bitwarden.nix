@@ -4,29 +4,35 @@ let
   cfg = config.myFeatures.programs.bitwarden;
 in
 {
-  options.myFeatures.programs.bitwarden = {
-    enable = lib.mkEnableOption "Bitwarden and Goldwarden Integration";
-  };
+  options.myFeatures.programs.bitwarden.enable = lib.mkEnableOption "Bitwarden Stack";
 
   config = lib.mkIf cfg.enable {
-    # 1. Install the essential toolset
+    # 1. System-wide packages (Migrated from Phanes desktop.nix)
     environment.systemPackages = with pkgs; [
-      bitwarden          # The GUI Desktop Application
-      bitwarden-cli      # The 'bw' command line tool
-      goldwarden         # The specialized background daemon
+      bitwarden          # Official Desktop GUI
+      bitwarden-cli      # Official 'bw' CLI
+      goldwarden         # Background Daemon for seamless unlocking
+      pinentry-gnome3    # Required for rbw/bitwarden to prompt for passwords
     ];
 
-    # 2. Enable the Goldwarden Service
-    # This is the "special NixOS thing" that keeps your vault unlocked 
-    # and syncs it with your browser and terminal automatically.
+    # 2. Enable Goldwarden Daemon
     services.goldwarden.enable = true;
-
-    # 3. Security & Auth integration
-    # Required for Goldwarden to prompt you for your password or system auth
-    security.polkit.enable = true;
-    
-    # Ensures Goldwarden can communicate with your browsers (Zen/Firefox)
-    # for the auto-fill and "unlock with biometrics" features.
     services.dbus.enable = true;
+    security.polkit.enable = true;
+
+    # 3. Home Manager block for rbw & User Config
+    home-manager.users = lib.mapAttrs (name: _: {
+      # rbw: The Rust Bitwarden client you liked in Phanes
+      programs.rbw = {
+        enable = true;
+        settings = {
+          email = "fireshifter767@gmail.com";
+          pinentry = pkgs.pinentry-gnome3;
+        };
+      };
+
+      # Ensure the Bitwarden desktop app is easily discoverable
+      home.packages = [ pkgs.bitwarden ];
+    }) config.myFeatures.users;
   };
 }

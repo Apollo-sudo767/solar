@@ -4,7 +4,7 @@ let
 in
 {
   options.myFeatures.programs.firefox = {
-    enable = lib.mkEnableOption "Enables Firefox"
+    enable = lib.mkEnableOption "Enables Firefox";
   };
 
   config = lib.mkIf cfg.enable {

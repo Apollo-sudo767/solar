@@ -5,7 +5,7 @@ let
 in
 {
   options.myFeatures.hardware.bluetooth = {
-    enable = lib.mkEnableOption "Enables bluetooth services"
+    enable = lib.mkEnableOption "Enables bluetooth services";
   };
 
   config = lib.mkIf cfg.enable {

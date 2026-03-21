@@ -1,21 +1,28 @@
 { lib, inputs, ... }:
 
 let
-  hostFiles = builtins.readDir ./.;
-  validHosts = lib.filterAttrs (name: type:
-    (type == "regular") && (name != "default.nix")
-  ) hostFiles;
+  hostEntries = builtins.readDir ./.;
+  
+  # Filter for directories (each folder is a host)
+  validHosts = lib.filterAttrs (name: type: type == "directory") hostEntries;
 
-  mkHost = name: _: lib.nixosSystem {
+  # Standard builder
+  mkHost = name: type: let
+    hostPath = ./. + "/${name}";
+  in 
+  lib.nixosSystem {
     system = "x86_64-linux";
-    specialArgs = { inherit inputs; };
+    specialArgs = { inherit inputs; }; 
     modules = [
-      (./. + "/${name}")        # The host file (e.g., desktop.nix)
-      ../modules/default.nix    # The global recursive scanner
-      inputs.home-manager-unstable.nixosModules.home-manager
+      (hostPath + "/default.nix") # Load the host's configuration
+      ../modules/default.nix      # Load your recursive module scanner
+      inputs.home-manager-unstable.nixosModules.home-manager # Default HM
     ];
   };
 in
 {
-  nixosConfigurations = lib.mapAttrs mkHost validHosts;
+  # Map the builder across the found directories
+  nixosConfigurations = lib.mapAttrs (name: type: 
+    mkHost name type
+  ) validHosts;
 }

@@ -7,7 +7,7 @@ in
     enable = lib.mkEnableOption "Enables Wifi Services";
   };
 
-  config = lib.mkIf cfg.enable = {  
+  config = lib.mkIf cfg.enable {  
     networking.networkmanager.enable = true;
   };
 }

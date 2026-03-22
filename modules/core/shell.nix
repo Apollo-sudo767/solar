@@ -5,39 +5,80 @@ let
   host = config.networking.hostName;
 in
 {
-  options.myFeatures.core.shell.enable = lib.mkEnableOption "Apollo's Zsh & P10k Setup";
+  options.myFeatures.core.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
 
   config = lib.mkIf cfg.enable {
-    # Install system-wide zsh and the p10k theme
     environment.systemPackages = [ 
       pkgs.eza 
       pkgs.fzf
+      pkgs.starship
     ];
     
     programs.zsh.enable = true;
 
-    programs.starship = {
-      enable = true;
-      # Optional: preset for a very clean look
-      settings = {
-        add_newline = false;
-        format = "$directory$git_branch$symbol$character";
-        directory.style = "bold fg:11"; # Gruvbox Yellow-ish
-      };
-    };
-
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      programs.starship = {
+        enable = true;
+        enableZshIntegration = true;
+        settings = {
+          add_newline = false;
+          format = "$directory$git_branch$character";
+          
+          # Clean Gruvbox Directory
+          directory = {
+            style = "bold fg:214"; # Gruvbox Orange
+            truncation_length = 3;
+            fish_style_pwd_dir_length = 1;
+          };
+
+          # Git Branch with the icon you were using
+          git_branch = {
+            symbol = " ";
+            style = "bold fg:142"; # Gruvbox Green
+          };
+
+          # Character symbols (➜)
+          character = {
+            success_symbol = "[➜](bold fg:108)"; # Gruvbox Aqua
+            error_symbol = "[➜](bold fg:167)";   # Gruvbox Red
+          };
+
+          # Fixed Palette (Underscores only, no hyphens)
+          palette = lib.mkForce "gruvbox_dark";
+          palettes.gruvbox_dark = {
+            black = "#282828";
+            bright_black = "#928374";
+            red = "#cc241d";
+            bright_red = "#fb4934";
+            green = "#98971a";
+            bright_green = "#b8bb26";
+            yellow = "#d79921";
+            bright_yellow = "#fabd2f";
+            blue = "#458588";
+            bright_blue = "#83a598";
+            magenta = "#b16286";
+            bright_magenta = "#d3869b";
+            cyan = "#689d6a";
+            bright_cyan = "#8ec07c";
+            white = "#a89984";
+            bright_white = "#ebdbb2";
+            orange = "#d65d0e";
+            bright_orange = "#fe8019";
+          };
+        };
+      };
+
       programs.zsh = {
         enable = true;
         enableCompletion = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
-        # Correct Home Manager attribute name
           
         shellAliases = {
           ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
           ll = "ls -l";
           la = "eza -a";
+          # Use your host variable for easy rebuilds
           nrs = "sudo nixos-rebuild switch --flake .#${host}";
           nrb = "sudo nixos-rebuild boot --flake .#${host}";
           nfu = "nix flake update";
@@ -45,16 +86,16 @@ in
           gs = "git status";
           ga = "git add";
           gc = "git commit";
+          v = "hx"; # Short for Helix
         };
 
         initContent = ''
+          # Ensure Starship initializes correctly
+          eval "$(starship init zsh)"
+  
+          # General Shell Prefs
           export EDITOR=helix
-          export PATH="$HOME/.local/bin:$PATH"
-          setopt HIST_IGNORE_ALL_DUPS
-          setopt SHARE_HISTORY
-          
-          # Source p10k theme from the nix store path
-          source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+          # ... the rest of your init code
         '';
       };
     });

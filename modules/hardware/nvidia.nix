@@ -19,6 +19,8 @@ in
       kernelParams = [
         "nvidia-drm.modeset=1"
         "nvidia-drm.fbdev=1"
+        "video=DP-1:2560x1440@180"
+        "nvidia.NVreg_PrimaryDisplay=DP-1"
       ];
       initrd.kernelModules = [
         "nvidia"
@@ -30,7 +32,7 @@ in
     
     hardware.nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = false; # Recommended for modern Wayland/Niri
+      powerManagement.enable = true; # Recommended for modern Wayland/Niri
       open = cfg.open; # Now uses the toggle
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;

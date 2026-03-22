@@ -2,6 +2,8 @@
 
 let
   cfg = config.myFeatures.programs.fastfetch;
+  # Filter to get just the usernames as strings
+  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
 in
 {
   options.myFeatures.programs.fastfetch.enable = lib.mkEnableOption "Apollo's Riced Fastfetch";
@@ -9,8 +11,7 @@ in
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ pkgs.fastfetch ];
 
-    # FIX: Only map over the list of strings in .usernames
-    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+    home-manager.users = lib.genAttrs usernames (name: {
       programs.fastfetch = {
         enable = true;
         settings = {
@@ -58,10 +59,11 @@ in
           ];
         };
       };
-    });
 
-    programs.zsh.interactiveShellInit = ''
-      fastfetch
-    '';
+      # Move the Zsh init here so it uses the Home Manager module
+      programs.zsh.initExtra = lib.mkAfter ''
+        fastfetch
+      '';
+    });
   };
 }

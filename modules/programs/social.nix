@@ -1,8 +1,11 @@
 { config, lib, pkgs, ... }:
+let
+  cfg = config.myFeatures.programs.social;
+in
 {
-  options.myFeatures.programs.media.social.enable = lib.mkEnableOption "Spotify and Vesktop";
+  options.myFeatures.programs.social.enable = lib.mkEnableOption "Spotify and Vesktop";
 
-  config = lib.mkIf config.myFeatures.programs.media.social.enable {
+  config = lib.mkIf cfg.enable {
     home-manager.users.apollo = {
       home.packages = [ 
         pkgs.spotify 

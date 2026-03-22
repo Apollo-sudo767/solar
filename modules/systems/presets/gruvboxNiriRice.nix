@@ -19,6 +19,7 @@ in
         gruvbox.enable = true;
       };
       presets.niriKeybinds.enable = true;
+      fuzzel.enable = true;
     };
 
     home-manager.users = let
@@ -30,26 +31,24 @@ in
 
       programs.niri.settings = {
         layout = {
-          gaps = 8;
+          gaps = 0;
           focus-ring = {
             enable = true;
             width = 2;
             active.color = "#${config.lib.stylix.colors.base0D}";
             inactive.color = "#${config.lib.stylix.colors.base02}";
           };
+          border.enable = false;
+          struts = {
+            left = 0;
+            right = 0;
+            top = 0;
+            bottom = 0;
+          };
         };
 
       };
 
-      programs.waybar.style = lib.mkForce ''
-        @define-color base00 #${config.lib.stylix.colors.base00};
-        @define-color base0D #${config.lib.stylix.colors.base0D};
-        window#waybar {
-          background: @base00;
-          border-bottom: 2px solid @base0D;
-          font-family: "JetBrainsMono Nerd Font";
-        }
-      '';
     });
   };
 }

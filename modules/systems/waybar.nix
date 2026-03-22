@@ -2,7 +2,8 @@
 
 let
   cfg = config.myFeatures.systems.waybar;
-  usernames = config.myFeatures.core.users.usernames;
+  # Filter usernames to ensure we only apply to real users [cite: 16]
+  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
 in {
   options.myFeatures.systems.waybar.enable = lib.mkEnableOption "waybar status bar";
 
@@ -11,33 +12,32 @@ in {
       programs.waybar = {
         enable = true;
         systemd.enable = true;
-        
-        settings.mainbar = {
+
+        settings.mainBar = {
           layer = "top";
           position = "bottom";
           height = 30;
+          spacing = 0; # Kill internal module spacing
+          
           modules-left = [ "custom/power" "niri/workspaces" "niri/window" ];
           modules-center = [ "custom/branding" "mpris" ];
           modules-right = [ "cpu" "memory" "pulseaudio" "clock" "tray" ];
 
           "custom/power" = {
-            format = "⏻";
-            tooltip = "click: suspend | right-click: shutdown | middle-click: reboot";
+            format = " ⏻ ";
             on-click = "systemctl suspend";
             on-click-right = "systemctl poweroff";
             on-click-middle = "systemctl reboot";
-            interval = 0;
           };
 
           "niri/workspaces" = {
-            format = "{icon}";
+            # Use {index} so numbers actually show up alongside icons
+            format = "{index}: {icon}";
             on-click = "activate";
-            sort-by-number = true;
-            disable-scroll = false;
             format-icons = {
-              default = "";
+              default = "";
               focused = "";
-              urgent = "";
+              urgent = "󰀦";
             };
           };
 
@@ -47,158 +47,91 @@ in {
           };
 
           "custom/branding" = {
-            format = " apollo - gruvbox ";
-            tooltip = false;
+            format = " Apollo - Gruvbox ";
           };
 
           "mpris" = {
-            format = "|  {player_icon} {artist} - {title}";
-            format-paused = "|  {status_icon} <i>{artist} - {title}</i>";
+            format = " {player_icon} {artist} - {title} ";
             player-icons = {
-              default = "";
-              spotify = "";
-              ncspot = "";
-              vlc = "󰕼";
-              cmus = "󰓠";
+              default = "▶";
+              spotify = " ";
             };
             status-icons = {
-              paused = "";
-              playing = "";
+              playing = " ";
+              paused = " ";
             };
-            tooltip = true;
-            max-length = 60;
-            on-click = "playerctl play-pause";
-            on-click-right = "playerctl next";
+            max-length = 40;
           };
 
-          "cpu" = {
-            format = "cpu: {usage}%";
-            interval = 5;
-          };
-
-          "memory" = {
-            format = "ram: {}%";
-            interval = 5;
-          };
+          "cpu" = { format = " CPU: {usage}% "; };
+          "memory" = { format = " RAM: {}% "; };
 
           "pulseaudio" = {
-            format = "{icon} {volume}% {format_source}";
-            format-bluetooth = " {icon} {volume}% {format_source}";
-            format-bluetooth-muted = "  {icon} {format_source}";
-            format-muted = " {format_source}";
-            format-source = " {volume}%";
-            format-source-muted = "";
-            format-icons.default = [ "" "" "" ];
+            format = " {icon} {volume}% ";
+            format-muted = " 󰝟 Muted ";
+            format-icons.default = [ "󰕿" "󰖀" "󰕾" ];
             on-click = "pavucontrol";
           };
 
           "clock" = {
-            format = "󰥔    {:%h:%m  %a, %b %e}";
-            tooltip-format = "<big>{:%y %b}</big>\n<tt><small>{calendar}</small></tt>";
-            interval = 60;
+            format = " 󰥔  {:%H:%M  %a, %b %e} ";
           };
 
           "tray" = {
             icon-size = 16;
-            spacing = 10;
+            spacing = 8;
           };
         };
 
-        style = ''
-          /* gruvbox dark soft palette */
-          @define-color bg0-hard #1d2021;
-          @define-color bg0-soft #32302f;
-          @define-color bg1 #3c3836;
-          @define-color fg0 #fbf1c7;
-          @define-color fg1 #ebdbb2;
-          @define-color border #504945;
-          @define-color red #cc241d;
-          @define-color green #98971a;
-          @define-color yellow #d79921;
-          @define-color blue #458588;
-          @define-color purple #b16286;
-          @define-color aqua #689d6a;
-          @define-color orange #d65d0e;
+        # Stylix-integrated CSS for a flush look
+        style = lib.mkForce ''
+          @define-color bg0 #${config.lib.stylix.colors.base00};
+          @define-color bg1 #${config.lib.stylix.colors.base01};
+          @define-color fg1 #${config.lib.stylix.colors.base05};
+          @define-color blue #${config.lib.stylix.colors.base0D};
+          @define-color red #${config.lib.stylix.colors.base08};
+          @define-color green #${config.lib.stylix.colors.base0B};
 
           * {
-            font-family: "firacode nerd font", monospace;
+            font-family: "JetBrainsMono Nerd Font", monospace;
             border: none;
             border-radius: 0;
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
             min-height: 0;
           }
 
           window#waybar {
-            background-color: @bg0-soft;
+            background-color: @bg0;
             color: @fg1;
-            border-bottom: 1px solid @border;
+            /* Thin top border since the bar is on the bottom */
+            border-top: 2px solid @blue;
           }
 
-          #custom-power,
-          #workspaces button,
-          #window,
-          #custom-branding,
-          #mpris,
-          #cpu,
-          #memory,
-          #pulseaudio,
-          #clock,
-          #tray {
+          #custom-power, #workspaces button, #window, #custom-branding, #mpris, #cpu, #memory, #pulseaudio, #clock, #tray {
             padding: 0 10px;
-            margin: 0;
-            background-color: @bg0-soft;
-            color: @fg1;
-            transition: background-color 0.2s, color 0.2s;
+            margin: 0; 
+            background-color: transparent;
           }
-
-          /* --- specific module styling --- */
 
           #custom-power {
             background-color: @red;
-            color: @fg0;
-          }
-
-          #workspaces button {
-            background-color: @bg0-soft;
+            color: @bg0;
           }
 
           #workspaces button.focused {
             background-color: @blue;
-            color: @fg0;
+            color: @bg0;
           }
 
           #workspaces button.urgent {
             background-color: @red;
-            color: @fg0;
           }
 
-          #window {
-            background-color: @bg1;
-            color: @green;
-            font-weight: bold;
-          }
-
-          #custom-branding {
-            background-color: @bg1;
-            color: @purple;
-            font-weight: bold;
-          }
-
-          #mpris {
-            background-color: @bg1;
-            color: @purple;
-          }
-
-          #mpris.playing { color: @green; }
-          #mpris.paused { color: @yellow; }
-
-          #cpu { background-color: @bg1; color: @blue; }
-          #memory { background-color: @bg1; color: @purple; }
-          #pulseaudio { background-color: @bg1; color: @aqua; }
-          #clock { background-color: @bg1; }
-          #tray { background-color: @bg1; }
+          #window { color: @green; }
+          #mpris { color: @blue; }
+          #tray { margin-right: 5px; }
         '';
       };
     });

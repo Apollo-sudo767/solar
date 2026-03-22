@@ -1,10 +1,10 @@
 { config, lib, pkgs, ...  }:
 
 let
-  cfg = config.myFeatures.program.stylePackages;
+  cfg = config.myFeatures.programs.stylePackages;
 in
 {
-  options.myFeatures.program.stylePackages = {
+  options.myFeatures.programs.stylePackages = {
     enable = lib.mkEnableOption "Enables style packages for terminal";
   };
 

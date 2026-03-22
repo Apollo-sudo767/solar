@@ -1,13 +1,18 @@
 { config, lib, pkgs, ... }:
+let
+  # Point this to the 'obs' attribute set, not the 'enable' boolean
+  cfg = config.myFeatures.programs.obs;
+in
 {
-  options.myFeatures.programs.media.obs.enable = lib.mkEnableOption "OBS Studio with Wayland plugins";
+  # Define the option as 'obs', which creates 'obs.enable' automatically
+  options.myFeatures.programs.obs.enable = lib.mkEnableOption "OBS Studio with Wayland plugins";
   
-  config = lib.mkIf config.myFeatures.programs.media.obs.enable {
+  config = lib.mkIf cfg.enable {
     home-manager.users.apollo.programs.obs-studio = {
       enable = true;
       plugins = with pkgs.obs-studio-plugins; [
-        wlrobs                 # Essential for Wayland/Niri capture
-        obs-vaapi              # Hardware acceleration for your 4070 Ti
+        wlrobs                 
+        obs-vaapi              
         obs-pipewire-audio-capture
       ];
     };

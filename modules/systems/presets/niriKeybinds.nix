@@ -21,11 +21,11 @@ in
           };
 
           outputs = {
-            "DP-4" = {
+            "DP-1" = {
               mode = { width = 2560; height = 1440; refresh = 180.0; };
               position = { x = 0; y = 0; };
             };
-            "DP-5" = {
+            "DP-2" = {
               mode = { width = 1920; height = 1080; refresh = 165.0; };
               position = { x = 2560; y = 0; }; 
             };
@@ -39,6 +39,7 @@ in
             "Mod+C".action."close-window" = [ ];
             "Mod+Return".action.spawn = [ "foot" ];
             "Mod+Shift+E".action."quit" = [ ];
+            "Mod+Super+L".action.spawn = [ "swaylock" ];
 
             # --- Navigation ---
             "Mod+Left".action."focus-column-left" = [ ];

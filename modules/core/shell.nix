@@ -16,20 +16,24 @@ in
     
     programs.zsh.enable = true;
 
+    programs.starship = {
+      enable = true;
+      # Optional: preset for a very clean look
+      settings = {
+        add_newline = false;
+        format = "$directory$git_branch$symbol$character";
+        directory.style = "bold fg:11"; # Gruvbox Yellow-ish
+      };
+    };
+
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       programs.zsh = {
         enable = true;
         enableCompletion = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
-
         # Correct Home Manager attribute name
-        oh-my-zsh = {
-          enable = true;
-          plugins = [ "git" "z" "sudo" "colored-man-pages" "extract" "history-substring-search" ];
-          theme = "robbyrussell"; 
-        };
-
+          
         shellAliases = {
           ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
           ll = "ls -l";

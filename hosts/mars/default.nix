@@ -15,7 +15,7 @@
     hardware = {
       amd.enable = true;
       nvidia = {
-        enable = false;
+        enable = true;
         open = false;
         beta = true;
       };

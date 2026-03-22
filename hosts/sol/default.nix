@@ -20,5 +20,8 @@
     systems.presets.gruvboxNiri.enable = true;
     programs.ghostty.enable = true;
     programs.gaming.enable = true;
+    programs.firefox.enable = true;
+    programs.zen.enable = true;
+    programs.fastfetch.enable = true;
   };
 }

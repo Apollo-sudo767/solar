@@ -1,7 +1,8 @@
-{ config, lib, pkgs, isStable, ... }: # Added isStable
+{ config, lib, pkgs, isStable, inputs, ... }:
 
 let
   cfg = config.myFeatures.systems.presets.gruvboxNiri;
+  # Determine stateVersion based on the host's channel
   dynamicVersion = if isStable then "25.11" else "26.05";
 in
 {
@@ -18,8 +19,11 @@ in
       presets.niriKeybinds.enable = true;
     };
 
-    home-manager.users = lib.mapAttrs (name: _: {
-      # Synchronize version with host channel
+    home-manager.users = let
+      # Specifically filter the usernames list to prevent option keys from leaking
+      userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+    in lib.genAttrs userList (name: {
+
       home.stateVersion = dynamicVersion;
 
       programs.niri.settings = {
@@ -47,6 +51,6 @@ in
           font-family: "JetBrainsMono Nerd Font";
         }
       '';
-    }) (lib.genAttrs config.myFeatures.core.users.usernames (name: { inherit name; }));
+    });
   };
 }

@@ -4,24 +4,31 @@ let
   cfg = config.myFeatures.hardware.nvidia;
 in
 {
-  options.myFeatures.hardware.nvidia.enable = lib.mkEnableOption "Nvidia Proprietary Drivers";
+  options.myFeatures.hardware.nvidia = {
+    enable = lib.mkEnableOption "Nvidia Proprietary Drivers";
+    beta = lib.mkEnableOption "Use Nvidia Beta Driver Channel";
+    open = lib.mkEnableOption "Use Open Source Kernel Modules (Modern)";
+  };
 
   config = lib.mkIf cfg.enable {
-    # Hardware graphics must be on for Nvidia to work
     myFeatures.hardware.graphics.enable = true;
 
     services.xserver.videoDrivers = [ "nvidia" ];
 
     hardware.nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = false; # Set to true only if you have suspend issues
-      open = true; # Use the modern open-source kernel modules for your 4070 Ti
+      powerManagement.enable = true; # Recommended for modern Wayland/Niri
+      open = cfg.open; # Now uses the toggle
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      
+      # Select package based on beta toggle
+      package = if cfg.beta 
+                then config.boot.kernelPackages.nvidiaPackages.beta 
+                else config.boot.kernelPackages.nvidiaPackages.stable;
     };
 
-    # Specific Nvidia Video Acceleration
+    # ... keep the rest of your VA-API and environment.variables exactly as they were ...
     hardware.graphics.extraPackages = with pkgs; [
       nvidia-vaapi-driver
       libva-vdpau-driver
@@ -29,18 +36,17 @@ in
       vulkan-loader
       vulkan-tools
     ];
-    
+
     hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
       nvidia-vaapi-driver
     ];
 
-    # Essential "Glue" Variables for Niri + Nvidia
     environment.variables = {
       LIBVA_DRIVER_NAME = "nvidia";
       GBM_BACKEND = "nvidia-drm";
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-      WLR_NO_HARDWARE_CURSORS = "1"; # Fixes flickering cursors in Niri
-      NVD_BACKEND = "direct";        # Modern VA-API backend
+      WLR_NO_HARDWARE_CURSORS = "1";
+      NVD_BACKEND = "direct";
     };
   };
 }

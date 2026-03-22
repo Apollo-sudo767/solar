@@ -7,21 +7,18 @@ in
   options.myFeatures.programs.bitwarden.enable = lib.mkEnableOption "Bitwarden Stack";
 
   config = lib.mkIf cfg.enable {
-    # 1. System-wide packages (Migrated from Phanes desktop.nix)
     environment.systemPackages = with pkgs; [
-      bitwarden          # Official Desktop GUI
-      bitwarden-cli      # Official 'bw' CLI
-      goldwarden         # Background Daemon for seamless unlocking
-      pinentry-gnome3    # Required for rbw/bitwarden to prompt for passwords
+      bitwarden
+      bitwarden-cli
+      goldwarden
+      pinentry-gnome3
     ];
 
-    # 2. Enable Goldwarden Daemon
     services.dbus.enable = true;
     security.polkit.enable = true;
 
-    # 3. Home Manager block for rbw & User Config
-    home-manager.users = lib.mapAttrs (name: _: {
-      # rbw: The Rust Bitwarden client you liked in Phanes
+    # FIX: Only map over the list of strings in .usernames
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       programs.rbw = {
         enable = true;
         settings = {
@@ -29,9 +26,7 @@ in
           pinentry = pkgs.pinentry-gnome3;
         };
       };
-
-      # Ensure the Bitwarden desktop app is easily discoverable
       home.packages = [ pkgs.bitwarden ];
-    }) config.myFeatures.users;
+    });
   };
 }

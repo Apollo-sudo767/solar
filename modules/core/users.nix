@@ -13,6 +13,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # This makes 'usernames' available as a module argument (like pkgs or lib)
+    _module.args.usernames = cfg.usernames;
+
     nix.settings.trusted-users = [ "root" ] ++ cfg.usernames;
     users.users = lib.genAttrs cfg.usernames (name: {
       isNormalUser = true;

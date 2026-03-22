@@ -7,10 +7,10 @@ in
   options.myFeatures.programs.fastfetch.enable = lib.mkEnableOption "Apollo's Riced Fastfetch";
 
   config = lib.mkIf cfg.enable {
-    # Install the package system-wide so 'fastfetch' command is always available
     environment.systemPackages = [ pkgs.fastfetch ];
 
-    home-manager.users = lib.mapAttrs (name: _: {
+    # FIX: Only map over the list of strings in .usernames
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       programs.fastfetch = {
         enable = true;
         settings = {
@@ -20,55 +20,46 @@ in
           };
           display = {
             separator = " ❯ ";
-            color = "magenta"; # Stylix will override this to Gruvbox magenta/purple
+            color = "magenta";
             binaryPrefix = "jedec";
           };
           modules = [
-            # --- USER & HOST ---
-            "title" # This shows 'apollo@nyx' or 'nova@nova-pc'
+            "title"
             "separator"
-            
-            # --- SYSTEM INFO ---
             { type = "os"; key = "󱄅 OS  "; }
             { type = "kernel"; key = " KRN "; }
             { type = "uptime"; key = "󰅐 UPT "; }
             { type = "packages"; key = "󰏖 PKG "; }
             "break"
-            
-            # --- HARDWARE SPECS (Phanes Parity) ---
-            { 
-              type = "cpu"; 
-              key = "󰻠 CPU "; 
-              showPeCoreCount = true; 
-              temp = true; # Requires lm_sensors enabled in core
+            {
+              type = "cpu";
+              key = "󰻠 CPU ";
+              showPeCoreCount = true;
+              temp = true;
             }
-            { 
-              type = "gpu"; 
-              key = "󰢮 GPU "; 
-              format = "{2}"; # Shows "NVIDIA GeForce RTX 4070 Ti"
+            {
+              type = "gpu";
+              key = "󰢮 GPU ";
+              format = "{2}";
               temp = true;
             }
             { type = "memory"; key = "󰍛 MEM "; }
             { type = "disk"; key = "󰋊 DSK "; folders = "/"; }
-            { 
-              type = "display"; 
-              key = "󰍹 RES "; 
-              compactType = "unquoted"; # Shows "2560x1440 @ 180Hz"
+            {
+              type = "display";
+              key = "󰍹 RES ";
+              compactType = "unquoted";
             }
             "break"
-
-            # --- NETWORK & MISC ---
             { type = "localip"; key = "󰩟 LAN "; showIpv4 = true; }
-            { type = "battery"; key = "󰁹 BAT "; } # Only displays if a battery is detected (Laptop)
-            
+            { type = "battery"; key = "󰁹 BAT "; }
             "break"
-            "colors" # The Gruvbox color palette blocks
+            "colors"
           ];
         };
       };
-    }) config.myFeatures.users;
+    });
 
-    # Optional: Auto-run on shell start (Migrated logic)
     programs.zsh.interactiveShellInit = ''
       fastfetch
     '';

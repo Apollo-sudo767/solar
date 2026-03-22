@@ -12,6 +12,8 @@ in
     myFeatures.systems = {
       niri.enable = true;
       waybar.enable = true;
+      swaybg.enable = true;
+      idle.enable = true;
       stylix = {
         enable = true;
         gruvbox.enable = true;
@@ -37,9 +39,6 @@ in
           };
         };
 
-        spawn-at-startup = [
-          { command = [ "${pkgs.swww}/bin/swww" "img" "${../../../assets/wallpapers/gruvbox.jpg}" ]; }
-        ];
       };
 
       programs.waybar.style = lib.mkForce ''

@@ -10,7 +10,6 @@ in
   config = lib.mkIf cfg.enable {
     # Install system-wide zsh and the p10k theme
     environment.systemPackages = [ 
-      pkgs.zsh-powerlevel10k 
       pkgs.eza 
       pkgs.fzf
     ];

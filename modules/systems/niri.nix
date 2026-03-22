@@ -17,7 +17,7 @@ in
       xwayland-satellite
       mako
       swaybg
-      hypridle
+      swayidle
       swaylock
       networkmanagerapplet
       thunar

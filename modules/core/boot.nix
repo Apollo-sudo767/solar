@@ -24,9 +24,11 @@ in
       # FIX: Wrap the path in a list [ ] and remove the attribute name
       style = {
         wallpapers = [ wallpaperPath ];
+        wallpaperStyle = "stretched";
       };
     };
 
+    boot.plymouth.enable = true;
     # Essential system packages
     environment.systemPackages = with pkgs; [
       limine

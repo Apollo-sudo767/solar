@@ -20,6 +20,14 @@ in
       base16Scheme = cfg.scheme;
       polarity = "dark";
       # ... (Keep your font and cursor settings here from the previous refactor)
+      targets = {
+        limine.enable = false;
+        plymouth = {
+          enable = true;
+          logoAnimated = true;
+          logo = "${pkgs.nixos-icons}/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";          
+        };
+      };
     };
   };
 }

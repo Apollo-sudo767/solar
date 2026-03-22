@@ -19,6 +19,7 @@
         open = false;
         beta = true;
       };
+      dualboot.enable = true;
       bluetooth.enable = true;
     };
     systems = {
@@ -31,6 +32,7 @@
       firefox.enable = true;
       zen.enable = true;
       fastfetch.enable = true;
+      helix.enable = true;
     };
     services = {
       audio.enable = true;

@@ -15,6 +15,9 @@ in
         enable = true;
         enableZshIntegration = true;
         settings = {
+          theme = "Gruvbox Dark";
+          font-size = 12;
+          font-family = "JetBrainsMono Nerd Font";
           window-padding-x = 10;
           window-padding-y = 10;
           window-decoration = false;

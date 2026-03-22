@@ -2,72 +2,58 @@
 
 let
   cfg = config.myFeatures.systems.waybar;
-  # Use the direct list of usernames from your core config
   usernames = config.myFeatures.core.users.usernames;
 in {
   options.myFeatures.systems.waybar.enable = lib.mkEnableOption "Waybar status bar";
 
   config = lib.mkIf cfg.enable {
-    # Ensure the package is available to the system
-    environment.systemPackages = [ pkgs.waybar pkgs.pavucontrol ];
-
     home-manager.users = lib.genAttrs usernames (name: {
       programs.waybar = {
         enable = true;
-        systemd.enable = true; # Auto-starts with Niri
-        settings = {
-          mainBar = {
-            layer = "top";
-            position = "top";
-            height = 30;
-            # Ensure the bar appears on all connected monitors
-            output = [ "DP-5" "*" ]; 
-            
-            modules-left = [ "niri/window" "niri/workspaces" ];
-            modules-center = [ "clock" ];
-            modules-right = [ "cpu" "memory" "network" "pulseaudio" "tray" ];
+        systemd.enable = true;
+        settings.mainBar = {
+          layer = "top";
+          position = "bottom";
+          height = 30;
+          modules-left = [ "custom/power" "niri/workspaces" "niri/window" ];
+          modules-center = [ "custom/branding" "mpris" ];
+          modules-right = [ "cpu" "memory" "pulseaudio" "clock" "tray" ];
 
-            "niri/workspaces" = {
-              format = "{name}";
-            };
+          "custom/power" = {
+            format = "⏻";
+            on-click = "systemctl suspend";
+            on-click-right = "systemctl poweroff";
+          };
 
-            "clock" = {
-              format = "{:%H:%M | %a %d}";
-              tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-            };
+          "niri/workspaces".format = "{icon}";
+          "niri/window".format = "{title}";
+          "custom/branding".format = " Apollo - Gruvbox ";
 
-            "cpu" = { format = "  {usage}%"; };
-            "memory" = { format = "  {}%"; };
+          "mpris" = {
+            format = "|  {player_icon} {artist} - {title}";
+            player-icons.default = "";
+          };
 
-            "pulseaudio" = {
-              format = "{icon} {volume}%";
-              format-muted = "";
-              format-icons = {
-                default = [ "" "" "" ];
-              };
-              on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
-            };
+          "pulseaudio" = {
+            format = "{icon} {volume}%";
+            format-icons.default = [ "" "" "" ];
           };
         };
 
         style = ''
-          * {
-            font-family: "JetBrainsMono Nerd Font";
-            font-size: 13px;
-          }
+          @define-color bg #32302f;
+          @define-color fg #ebdbb2;
+          @define-color blue #458588;
+          @define-color red #cc241d;
+
           window#waybar {
-            background: rgba(40, 40, 40, 0.9);
-            color: #ebdbb2;
-            border-bottom: 2px solid #d65d0e;
+            background-color: @bg;
+            color: @fg;
+            border-top: 1px solid #504945;
           }
-          #workspaces button {
-            color: #a89984;
-            padding: 0 5px;
-          }
-          #workspaces button.active {
-            color: #fabd2f;
-            border-bottom: 2px solid #fabd2f;
-          }
+          #custom-power { background-color: @red; padding: 0 10px; }
+          #workspaces button.focused { background-color: @blue; }
+          #custom-branding { font-weight: bold; color: #b16286; }
         '';
       };
     });

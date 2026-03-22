@@ -16,7 +16,6 @@ in
     ];
 
     # 2. Enable Goldwarden Daemon
-    services.goldwarden.enable = true;
     services.dbus.enable = true;
     security.polkit.enable = true;
 

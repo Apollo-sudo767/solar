@@ -32,6 +32,6 @@ in
           # JetBrains Mono font if you have Stylix enabled!
         };
       };
-    }) config.myFeatures.users;
+    }) config.myFeatures.core.users;
   };
 }

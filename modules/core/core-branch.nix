@@ -19,6 +19,7 @@ in
       users.enable = lib.mkDefault true;
       fonts.enable = lib.mkDefault true;
       localeChicago.enable = lib.mkDefault true;
+      ssh.enable = lib.mkDefault true;
     };
   };
 }

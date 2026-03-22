@@ -1,9 +1,13 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, inputs, ... }:
 
 let
   cfg = config.myFeatures.core.security;
 in
 {
+  imports = [
+    inputs.sops-nix.nixosModules.sops
+  ];
+  
   options.myFeatures.core.security.enable = lib.mkEnableOption "SSH Host-key Security";
 
   config = lib.mkIf cfg.enable {

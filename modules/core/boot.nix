@@ -12,7 +12,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # Disable the default systemd-boot to make room for Limine
-    boot.loader.nixos.enable = false;
+    boot.loader.systemd-boot.enable = false;
     
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;
@@ -22,7 +22,9 @@ in
       enableEditor = false; # Keeps the boot menu clean
       
       # Use the background image from your Phanes assets
-      backgroundFile = wallpaper;
+      style.wallpapers = {
+        inherit wallpaper;
+      };
     };
 
     # Essential system packages for managing boot entries if needed

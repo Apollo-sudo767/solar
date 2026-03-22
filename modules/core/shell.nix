@@ -53,6 +53,6 @@ in
           source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
         '';
       };
-    }) config.myFeatures.users;
+    }) config.myFeatures.core.users;
   };
 }

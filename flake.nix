@@ -20,6 +20,9 @@
     # Sops-nix
     sops-nix.url = "github:Mic92/sops-nix";
 
+    # Niri
+    niri.url = "github:YaLTeR/niri";
+    
     # Zen Browser
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";

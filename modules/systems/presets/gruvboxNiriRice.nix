@@ -1,47 +1,43 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isStable, ... }: # Added isStable
 
 let
   cfg = config.myFeatures.systems.presets.gruvboxNiri;
+  dynamicVersion = if isStable then "25.11" else "26.05";
 in
 {
-
   options.myFeatures.systems.presets.gruvboxNiri.enable = lib.mkEnableOption "Apollo's Gruvbox Niri Rice";
 
   config = lib.mkIf cfg.enable {
-    # 1. Trigger the underlying Systems
     myFeatures.systems = {
       niri.enable = true;
       waybar.enable = true;
       stylix = {
         enable = true;
-        rice = "gruvbox";
+        gruvbox.enable = true;
       };
-      presets = {
-        niriKeybinds = true;
-      };
+      presets.niriKeybinds.enable = true;
     };
 
-    # 2. Rice-Specific Niri Overrides (Parity with Phanes desktop.nix)
     home-manager.users = lib.mapAttrs (name: _: {
+      # Synchronize version with host channel
+      home.stateVersion = dynamicVersion;
+
       programs.niri.settings = {
         layout = {
           gaps = 8;
           focus-ring = {
             enable = true;
             width = 2;
-            # These pull directly from the Stylix Gruvbox palette
-            active.color = "#${config.lib.stylix.colors.base0D}"; 
+            active.color = "#${config.lib.stylix.colors.base0D}";
             inactive.color = "#${config.lib.stylix.colors.base02}";
           };
         };
-        
-        # Ensure the Gruvbox wallpaper is set via swww or similar
+
         spawn-at-startup = [
-          { command = [ "${pkgs.swww}/bin/swww" "img" "${../../assets/wallpapers/gruvbox.jpg}" ]; }
+          { command = [ "${pkgs.swww}/bin/swww" "img" "${../../../assets/wallpapers/gruvbox.jpg}" ]; }
         ];
       };
 
-      # 3. Rice-Specific Waybar Styling
       programs.waybar.style = lib.mkForce ''
         @define-color base00 #${config.lib.stylix.colors.base00};
         @define-color base0D #${config.lib.stylix.colors.base0D};
@@ -51,6 +47,6 @@ in
           font-family: "JetBrainsMono Nerd Font";
         }
       '';
-    }) config.myFeatures.users;
+    }) (lib.genAttrs config.myFeatures.core.users.usernames (name: { inherit name; }));
   };
 }

@@ -1,9 +1,13 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
   cfg = config.myFeatures.systems.niri;
 in
 {
+  imports = [
+    inputs.niri.homeManagerModules.niri
+  ];
+  
   options.myFeatures.systems.niri = {
     enable = lib.mkEnableOption "Niri Window Manager";
   };

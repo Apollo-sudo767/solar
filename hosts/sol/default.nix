@@ -18,7 +18,7 @@
       bluetooth.enable = true;
     };
     systems.presets.gruvboxNiri.enable = true;
-    programs.terminal.enable = true;
+    programs.ghostty.enable = true;
     programs.gaming.enable = true;
   };
 }

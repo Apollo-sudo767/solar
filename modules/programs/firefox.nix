@@ -14,6 +14,7 @@ in
 
     # FIX: Dynamic multi-user mapping
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      stylix.targets.firefox.profileNames = [ "${name}" ];
       programs.firefox = {
         enable = true;
         # Creates a profile named after the user (e.g., 'apollo' or 'aidan')

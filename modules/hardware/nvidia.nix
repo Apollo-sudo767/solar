@@ -30,7 +30,7 @@ in
     
     hardware.nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = true; # Recommended for modern Wayland/Niri
+      powerManagement.enable = false; # Recommended for modern Wayland/Niri
       open = cfg.open; # Now uses the toggle
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;
@@ -59,6 +59,7 @@ in
       GBM_BACKEND = "nvidia-drm";
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
       WLR_NO_HARDWARE_CURSORS = "1";
+      NIXOS_OZONE_WL = "1";
     };
   };
 }

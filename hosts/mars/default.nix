@@ -6,7 +6,7 @@
     ./hardware-configuration.nix
   ];
 
-  networking.hostName = "sol";
+  networking.hostName = "mars";
   system.stateVersion = "26.05";
 
   myFeatures = {

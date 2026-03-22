@@ -33,6 +33,10 @@
       zen.enable = true;
       fastfetch.enable = true;
       helix.enable = true;
+      media.enable = true;
+      social.enable = true;
+      obs.enable = true;
+      stylePackages.enable = true;
     };
     services = {
       audio.enable = true;

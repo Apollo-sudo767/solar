@@ -8,44 +8,47 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  # Earbuds
-  boot.extraModprobeConfig = ''
-  options snd-hda-intel patch=hda-jack-retask.fw
-  '';
-
-  hardware.firmware = [
-    (pkgs.runCommand "hda-jack-retask-fw" {} ''
-      mkdir -p $out/lib/firmware
-      cat <<EOF > $out/lib/firmware/hda-jack-retask.fw
-  [codec]
-  0x10ec0897 0x1022c950 0
-
-  [pincfg]
-  0x19 0x03a11020
-  0x1b 0x40000000
-  EOF
-    '')
-  ];
-
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usb_storage" "usbhid" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
-  boot.kernelParams = [ "snd_hda_intel.model=alc897-headset-multi" "snd_hda_intel.jack_detect=0" ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/14fad7d0-a853-4077-b00b-45a319a12f8c";
+    { device = "/dev/disk/by-uuid/fce8da37-711c-4ca6-b53a-40efb6bbdfab";
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/E88B-D3A7";
+    { device = "/dev/disk/by-uuid/825E-7E48";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
+  
+  # Windows Boot Partition
+  fileSystems."/boot/EFI/windows" = 
+    {
+      device = "/dev/disk/by-uuid/6823-22BA";
+      fsType = "vfat";
+      options = [ "nofail" "noauto" ];
+    };
+
+  fileSystems."/home/nvme" =
+    { device = "/dev/disk/by-uuid/bd61e42b-16e9-4222-9075-d6318db371ca";
+      fsType = "ext4";
+    };
+
+  fileSystems."/home/ssd" =
+    { device = "/dev/disk/by-uuid/4ecb3d2d-85b7-4f08-82a5-e32ff1801100";
+      fsType = "ext4";
+    };
+
+  fileSystems."/home/hdd" =
+    { device = "/dev/disk/by-uuid/5ee3390e-5e47-4794-953b-a6cde2a5f955";
+      fsType = "ext4";
+    };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/751f8bd1-ce8d-473e-9f22-91dd2f6e00c8"; }
+    [ { device = "/dev/disk/by-uuid/1a7a0a79-784e-44fb-b4ba-72ed39ecc68a"; }
     ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
@@ -53,9 +56,8 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp12s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp13s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

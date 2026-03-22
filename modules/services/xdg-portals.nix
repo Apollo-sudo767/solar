@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.myFeatures.systems.xdgPortals;
+  cfg = config.myFeatures.services.xdgPortals;
 in
 {
-  options.myFeatures.systems.xdgPortals = {
+  options.myFeatures.services.xdgPortals = {
     enable = lib.mkEnableOption "XDG Portals for Wayland/Desktop";
   };
 
@@ -17,7 +17,7 @@ in
         extraPortals = with pkgs; [
           xdg-desktop-portal-gnome 
           xdg-desktop-portal-gtk 
-          xdg-desktop-portal-kde 
+          kdePackages.xdg-desktop-portal-kde 
           xdg-desktop-portal-wlr 
         ];
         config = {

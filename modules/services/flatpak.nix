@@ -1,10 +1,10 @@
 { config, lib, ... }:
 
 let
-  cfg = config.myFeatures.programs.flatpak;
+  cfg = config.myFeatures.services.flatpak;
 in
 {
-  options.myFeatures.programs.flatpak = {
+  options.myFeatures.services.flatpak = {
     enable = lib.mkEnableOption "Flatpak Support";
   };
 

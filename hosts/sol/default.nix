@@ -17,11 +17,23 @@
       nvidia.enable = false;
       bluetooth.enable = true;
     };
-    systems.presets.gruvboxNiri.enable = true;
-    programs.ghostty.enable = true;
-    programs.gaming.enable = true;
-    programs.firefox.enable = true;
-    programs.zen.enable = true;
-    programs.fastfetch.enable = true;
+    systems = {
+      presets.gruvboxNiri.enable = true;
+      displayManager.manager = "tuigreet";
+    };
+    programs = {
+      ghostty.enable = true;
+      gaming.enable = true;
+      firefox.enable = true;
+      zen.enable = true;
+      fastfetch.enable = true;
+    };
+    services = {
+      audio.enable = true;
+      flatpak.enable = true;
+      printing.enable = true;
+      xdgPortals.enable = true;
+      udisks2.enable = true;
+    };
   };
 }

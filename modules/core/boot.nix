@@ -22,9 +22,9 @@ in
       enableEditor = false;
 
       # FIX: Wrap the path in a list [ ] and remove the attribute name
-      style.wallpapers = [
-        wallpaperPath
-      ];
+      style = {
+        wallpapers = [ wallpaperPath ];
+      };
     };
 
     # Essential system packages

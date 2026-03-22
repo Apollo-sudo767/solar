@@ -18,7 +18,22 @@ in
 
       programs.niri = {
         enable = true; # Ensures the niri binary and service are managed
-        
+
+        settings.outputs = {
+          "DP-4" = {
+             enable = true;
+             mode = { width = 2560; height = 1440; refresh = 180.0; };
+             position = { x = 0; y = 0; };
+           };
+
+           # Secondary Monitor: 1080p @ 165Hz (Placed to the right)
+          "DP-5" = { # Check 'niri msg outputs' to confirm if this is DP-5 or DP-1
+             enable = true;
+             mode = { width = 1920; height = 1080; refresh = 165.0; };
+             # Position starts where the first monitor ends (x = 2560)
+             position = { x = 2560; y = 0; }; 
+           };
+        };
         settings.binds = let
           actions = config.lib.niri.actions;
         in {

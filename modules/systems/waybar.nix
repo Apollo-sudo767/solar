@@ -2,23 +2,27 @@
 
 let
   cfg = config.myFeatures.systems.waybar;
-  # Use your existing user list logic
-  userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+  # Use the direct list of usernames from your core config
+  usernames = config.myFeatures.core.users.usernames;
 in {
-  options.myFeatures.systems.waybar = {
-    enable = lib.mkEnableOption "Waybar status bar";
-  };
+  options.myFeatures.systems.waybar.enable = lib.mkEnableOption "Waybar status bar";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs userList (name: {
+    # Ensure the package is available to the system
+    environment.systemPackages = [ pkgs.waybar pkgs.pavucontrol ];
+
+    home-manager.users = lib.genAttrs usernames (name: {
       programs.waybar = {
         enable = true;
-        systemd.enable = true; # Auto-starts with your session
+        systemd.enable = true; # Auto-starts with Niri
         settings = {
           mainBar = {
             layer = "top";
             position = "top";
             height = 30;
+            # Ensure the bar appears on all connected monitors
+            output = [ "DP-5" "*" ]; 
+            
             modules-left = [ "niri/window" "niri/workspaces" ];
             modules-center = [ "clock" ];
             modules-right = [ "cpu" "memory" "network" "pulseaudio" "tray" ];
@@ -46,7 +50,6 @@ in {
           };
         };
 
-        # Default style (Rice module will override this with lib.mkForce)
         style = ''
           * {
             font-family: "JetBrainsMono Nerd Font";
@@ -59,9 +62,11 @@ in {
           }
           #workspaces button {
             color: #a89984;
+            padding: 0 5px;
           }
           #workspaces button.active {
             color: #fabd2f;
+            border-bottom: 2px solid #fabd2f;
           }
         '';
       };

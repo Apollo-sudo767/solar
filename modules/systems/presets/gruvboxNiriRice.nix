@@ -39,6 +39,7 @@ in
 
         spawn-at-startup = [
           { command = [ "${pkgs.swww}/bin/swww" "img" "${../../../assets/wallpapers/gruvbox.jpg}" ]; }
+          { command = [ "${pkgs.waybar}/bin/waybar" ]; }
         ];
       };
 

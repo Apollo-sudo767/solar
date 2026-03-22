@@ -14,7 +14,11 @@
     shell.enable = true;
     hardware = {
       amd.enable = true;
-      nvidia.enable = false;
+      nvidia = {
+        enable = false;
+        open = false;
+        beta = true;
+      };
       bluetooth.enable = true;
     };
     systems = {

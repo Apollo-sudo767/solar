@@ -21,10 +21,11 @@
       };
       dualboot.enable = true;
       bluetooth.enable = true;
+      ttyResolution.enable = true;
     };
     systems = {
       presets.gruvboxNiri.enable = true;
-      displayManager.manager = "gtkGreet";
+      displayManager.manager = "tuigreet";
     };
     programs = {
       ghostty.enable = true;
@@ -37,6 +38,7 @@
       social.enable = true;
       obs.enable = true;
       stylePackages.enable = true;
+      bitwarden.enable = true;
     };
     services = {
       audio.enable = true;

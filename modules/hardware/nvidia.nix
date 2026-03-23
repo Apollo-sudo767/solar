@@ -19,7 +19,7 @@ in
       kernelParams = [
         "nvidia-drm.modeset=1"
         "nvidia-drm.fbdev=1"
-        "video=DP-1:2560x1440@180"
+        "video=DP-1:2560x1440@180e"
         "nvidia.NVreg_PrimaryDisplay=DP-1"
       ];
       initrd.kernelModules = [

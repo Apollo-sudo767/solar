@@ -1,9 +1,14 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.myFeatures.programs.fuzzel;
+  cfg = config.myFeatures.systems.fuzzel;
   usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
-in {
+in
+{
+  options.myFeatures.systems.fuzzel = {
+    enable = lib.mkEnableOption "Fuzzel according to stylix";
+  };
+  
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs usernames (name: {
       # This allows Stylix to take over Fuzzel styling 

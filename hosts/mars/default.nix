@@ -24,7 +24,7 @@
     };
     systems = {
       presets.gruvboxNiri.enable = true;
-      displayManager.manager = "tuigreet";
+      displayManager.manager = "gtkGreet";
     };
     programs = {
       ghostty.enable = true;

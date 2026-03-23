@@ -17,7 +17,7 @@ in {
           layer = "top";
           position = "bottom";
           height = 30;
-          spacing = 0; # Kill internal module spacing
+          # spacing = 0; # Kill internal module spacing
           
           modules-left = [ "custom/power" "niri/workspaces" "niri/window" ];
           modules-center = [ "custom/branding" "mpris" ];

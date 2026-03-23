@@ -87,6 +87,7 @@ in
           ga = "git add";
           gc = "git commit";
           v = "hx"; # Short for Helix
+          ff = "fastfetch";
         };
 
         initContent = ''

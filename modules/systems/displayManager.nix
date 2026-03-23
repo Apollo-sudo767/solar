@@ -6,7 +6,7 @@ in
 {
   options.myFeatures.systems.displayManager = {
     manager = lib.mkOption {
-      type = lib.types.enum [ "tuigreet" "gdm" "sddm" "none" ];
+      type = lib.types.enum [ "tuigreet" "gdm" "sddm" "gtkGreet" "none" ];
       default = "none";
       description = "Which display manager to use.";
     };
@@ -22,6 +22,16 @@ in
       };
     };
 
+    # gtkgreet
+    services.greetd = lib.mkIf (cfg.manager == "gtkGreet" ) {
+      enable = true;
+      settings.default_session = {
+        # 'cage' is a kiosk compositor that runs one app on one screen
+        command = "${pkgs.cage}/bin/cage -s -m last -- ${pkgs.greetd.gtkgreet}/bin/gtkgreet -l";
+        user = "greeter";
+      };
+    };
+    
     # GDM (Gnome) [cite: 29]
     services.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; 
 

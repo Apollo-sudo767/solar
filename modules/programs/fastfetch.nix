@@ -47,7 +47,7 @@ in
             { type = "memory"; key = "󰍛 MEM "; }
             { type = "disk"; key = "󰋊 DSK "; folders = "/"; }
             {
-              type = "display";
+              type = "monitor";
               key = "󰍹 RES ";
               compactType = "unquoted";
             }

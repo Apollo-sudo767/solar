@@ -12,30 +12,33 @@ in
     };
   };
 
-  config = {
-    # Tuigreet (Minimal TUI) [cite: 18, 19]
-    services.greetd = lib.mkIf (cfg.manager == "tuigreet") {
-      enable = true; 
-      settings.default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --container-padding 2 --cmd niri-session"; 
-        user = "greeter"; 
-      };
+  config = lib.mkIf (cfg.manager != "none") {
+    # Consolidated greetd configuration
+    services.greetd = {
+      enable = lib.mkIf (cfg.manager == "tuigreet" || cfg.manager == "gtkGreet") true;
+      settings = lib.mkMerge [
+        # Tuigreet Logic
+        (lib.mkIf (cfg.manager == "tuigreet") {
+          default_session = {
+            # Added --width 60 to help with your 1440p scaling
+            command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --asterisks --container-padding 2 --width 60 --cmd niri-session"; 
+            user = "greeter"; 
+          };
+        })
+        # GtkGreet Logic
+        (lib.mkIf (cfg.manager == "gtkGreet") {
+          default_session = {
+            command = "${pkgs.cage}/bin/cage -s -m last -- ${pkgs.greetd.gtkgreet}/bin/gtkgreet -l";
+            user = "greeter";
+          };
+        })
+      ];
     };
 
-    # gtkgreet
-    services.greetd = lib.mkIf (cfg.manager == "gtkGreet" ) {
-      enable = true;
-      settings.default_session = {
-        # 'cage' is a kiosk compositor that runs one app on one screen
-        command = "${pkgs.cage}/bin/cage -s -m last -- ${pkgs.greetd.gtkgreet}/bin/gtkgreet -l";
-        user = "greeter";
-      };
-    };
-    
-    # GDM (Gnome) [cite: 29]
+    # GDM (Gnome)
     services.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; 
 
-    # SDDM (Plasma) [cite: 24]
+    # SDDM (Plasma)
     services.displayManager.sddm.enable = lib.mkIf (cfg.manager == "sddm") true; 
   };
 }

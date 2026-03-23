@@ -10,7 +10,6 @@ in
     environment.systemPackages = with pkgs; [
       bitwarden-desktop
       bitwarden-cli
-      goldwarden
       pinentry-gnome3
     ];
 
@@ -26,7 +25,7 @@ in
           pinentry = pkgs.pinentry-gnome3;
         };
       };
-      home.packages = [ pkgs.bitwarden ];
+      home.packages = [ pkgs.bitwarden-desktop ];
     });
   };
 }

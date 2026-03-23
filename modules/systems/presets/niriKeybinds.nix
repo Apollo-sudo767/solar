@@ -16,9 +16,28 @@ in
         enable = true;
         settings = {
           input = {
+            # --- Keybind Modifiers ---
             mod-key = "Alt";
             mod-key-nested = "Super";
+
+            # --- Trackpad Settings ---
+            # Basic 3-finger gestures are BUILT-IN and active once this block exists.
+            touchpad = {
+              tap = true;
+              dwt = false;
+              natural-scroll = true;
+              accel-speed = 0.2;
+              accel-profile = "adaptive";
+              click-method = "clickfinger"; 
+            };
+
+            touch = {
+              map-to-output = "eDP-1"; 
+            };
           };
+
+          # Removed the gestures block to prevent further Nix evaluation errors.
+          # Default 3-finger swipes will still work!
 
           outputs = {
             "DP-1" = {

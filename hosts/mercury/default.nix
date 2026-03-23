@@ -12,10 +12,9 @@
     core.enable = true;
     shell.enable = true;
     hardware = {
-      intel.enable = true;
+      graphics.enable = true;
       battery.enable = true;
       bluetooth.enable = true;
-      wifi.enable = true;
       controllers.enable = true;
       trackpad.enable = true;
       wifi.enable = true;
@@ -39,7 +38,7 @@
     services = {
       audio.enable = true;
       flatpak.enable = true;
-      xdgPortal.enable = true;
+      xdgPortals.enable = true;
       printing.enable = true;
       udisks2.enable = true;
     };

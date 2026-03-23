@@ -1,8 +1,6 @@
 { config, lib, pkgs, ... }:
-
 let
   cfg = config.myFeatures.systems.waybar;
-  # Filter usernames to ensure we only apply to real users [cite: 16]
   usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
 in {
   options.myFeatures.systems.waybar.enable = lib.mkEnableOption "waybar status bar";
@@ -17,11 +15,11 @@ in {
           layer = "top";
           position = "bottom";
           height = 30;
-          # spacing = 0; # Kill internal module spacing
           
           modules-left = [ "custom/power" "niri/workspaces" "niri/window" ];
           modules-center = [ "custom/branding" "mpris" ];
-          modules-right = [ "cpu" "memory" "pulseaudio" "clock" "tray" ];
+          # Added 'network' and 'battery' here
+          modules-right = [ "cpu" "memory" "network" "battery" "pulseaudio" "clock" "tray" ];
 
           "custom/power" = {
             format = " ⏻ ";
@@ -31,7 +29,6 @@ in {
           };
 
           "niri/workspaces" = {
-            # Use {index} so numbers actually show up alongside icons
             format = "{index}: {icon}";
             on-click = "activate";
             format-icons = {
@@ -66,6 +63,27 @@ in {
           "cpu" = { format = " CPU: {usage}% "; };
           "memory" = { format = " RAM: {}% "; };
 
+          # --- Network Module ---
+          "network" = {
+            format-wifi = "   {essid} ";
+            format-ethernet = " 󰈀  {ifname} ";
+            format-disconnected = " 󰖪  Disconnected ";
+            tooltip-format = "{ifname} via {gwaddr}";
+            on-click = "nm-connection-editor";
+          };
+
+          # --- Battery Module ---
+          "battery" = {
+            states = {
+              warning = 30;
+              critical = 15;
+            };
+            format = " {icon} {capacity}% ";
+            format-charging = " 󱐋 {capacity}% ";
+            format-plugged = "  {capacity}% ";
+            format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+          };
+
           "pulseaudio" = {
             format = " {icon} {volume}% ";
             format-muted = " 󰝟 Muted ";
@@ -83,7 +101,6 @@ in {
           };
         };
 
-        # Stylix-integrated CSS for a flush look
         style = lib.mkForce ''
           @define-color bg0 #${config.lib.stylix.colors.base00};
           @define-color bg1 #${config.lib.stylix.colors.base01};
@@ -91,6 +108,7 @@ in {
           @define-color blue #${config.lib.stylix.colors.base0D};
           @define-color red #${config.lib.stylix.colors.base08};
           @define-color green #${config.lib.stylix.colors.base0B};
+          @define-color yellow #${config.lib.stylix.colors.base0A};
 
           * {
             font-family: "JetBrainsMono Nerd Font", monospace;
@@ -105,13 +123,14 @@ in {
           window#waybar {
             background-color: @bg0;
             color: @fg1;
-            /* Thin top border since the bar is on the bottom */
             border-top: 2px solid @blue;
           }
 
-          #custom-power, #workspaces button, #window, #custom-branding, #mpris, #cpu, #memory, #pulseaudio, #clock, #tray {
+          /* Added #network and #battery to the padding list */
+          #custom-power, #workspaces button, #window, #custom-branding, #mpris, 
+          #cpu, #memory, #network, #battery, #pulseaudio, #clock, #tray {
             padding: 0 10px;
-            margin: 0; 
+            margin: 0;
             background-color: transparent;
           }
 
@@ -129,8 +148,17 @@ in {
             background-color: @red;
           }
 
+          #battery.critical:not(.charging) {
+            color: @red;
+          }
+
+          #battery.warning:not(.charging) {
+            color: @yellow;
+          }
+
           #window { color: @green; }
           #mpris { color: @blue; }
+          #network { color: @yellow; }
           #tray { margin-right: 5px; }
         '';
       };

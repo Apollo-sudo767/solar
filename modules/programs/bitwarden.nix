@@ -8,7 +8,7 @@ in
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      bitwarden
+      bitwarden-desktop
       bitwarden-cli
       goldwarden
       pinentry-gnome3

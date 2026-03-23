@@ -22,6 +22,8 @@ in
       fuzzel.enable = true;
     };
 
+    myFeatures.systems.theme.gruvbox.wallpaper = ../../../assets/wallpapers/gruvbox.jpg;
+
     home-manager.users = let
       # Specifically filter the usernames list to prevent option keys from leaking
       userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;

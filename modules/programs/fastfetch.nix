@@ -104,9 +104,22 @@ in {
               (startGroup "Network" p.net)
               { type = "localIp";      key = "│ 󰩠 Local   "; keyColor = p.net; showIpv4 = true; }
               (endGroup p.net)
-              
+
+              # ---- Calendar Group ----
               { type = "break"; }
-              { type = "dateTime"; key = "󰃶 Date"; keyColor = p.time; format = "%A, %d %b %Y"; }
+              { 
+                type = "datetime"; 
+                key = "󰃶 Date"; 
+                keyColor = p.time; 
+                # Note: Use all lowercase 'datetime'
+                format = "{1}, {3} {2} {4}"; # This is Fastfetch's internal token system
+              }
+
+              (lib.optional (cfg.showBattery) {
+                type = "battery";
+                key = "󰁹 Battery";
+                keyColor = p.bat;
+              })
             ];
           };
         };

@@ -13,7 +13,10 @@
     shell.enable = true;
     hardware = {
       graphics.enable = true;
-      battery.enable = true;
+      battery = {
+        enable = true;
+        fullCharge.enable = true;
+      };
       bluetooth.enable = true;
       controllers.enable = true;
       trackpad.enable = true;

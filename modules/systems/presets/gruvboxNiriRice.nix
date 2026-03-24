@@ -20,6 +20,7 @@ in
       };
       presets.niriKeybinds.enable = true;
       fuzzel.enable = true;
+      swaylock.enable = true;
     };
 
     myFeatures.systems.theme.gruvbox.wallpaper = ../../../assets/wallpapers/gruvbox.jpg;

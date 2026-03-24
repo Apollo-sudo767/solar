@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, inputs, ... }: # Add 'inputs' to the arguments here
 
 let
   cfg = config.myFeatures.programs.firefox;
@@ -9,22 +9,18 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # System-level enable
     programs.firefox.enable = true;
 
-    # FIX: Dynamic multi-user mapping
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
-      stylix.targets.firefox.profileNames = [ "${name}" ];
+      # FORCE the Stylix Home Manager module to load for this specific user
+
       programs.firefox = {
         enable = true;
-        # Creates a profile named after the user (e.g., 'apollo' or 'aidan')
         profiles.${name} = {
           isDefault = true;
           settings = {
             "browser.download.dir" = "/home/${name}/Downloads";
-            "browser.startup.page" = 3; # Resume previous session
-            
-            # Privacy and Bloat-removal (Optional Phanes parity)
+            "browser.startup.page" = 3;
             "datareporting.healthreport.uploadEnabled" = false;
             "browser.topsites.contile.enabled" = false;
             "browser.newtabpage.activity-stream.showSponsored" = false;

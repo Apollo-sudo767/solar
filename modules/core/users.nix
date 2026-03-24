@@ -1,10 +1,11 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, isStable ? true, ... }: # Note the ? true fallback here
 
 let
   cfg = config.myFeatures.core.users;
+  # Set a definite default if isStable is not passed correctly
+  dynamicVersion = if isStable then "25.11" else "26.05";
 in
 {
-  # 1. DECLARE the option so Nix knows it exists
   options.myFeatures.core.users = {
     enable = lib.mkEnableOption "Standard User Configuration";
     usernames = lib.mkOption {
@@ -13,17 +14,19 @@ in
     };
   };
 
-  # 2. DEFINE what happens when it's enabled
   config = lib.mkIf cfg.enable {
     _module.args.usernames = cfg.usernames;
 
-    # The Home Manager "Bridge" lives here now to keep things dendritic
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
-      backupFileExtension = "backup"; # This fixes the Firefox/Zsh collision
+      backupFileExtension = "backup";
       extraSpecialArgs = { inherit inputs; };
-      users = lib.genAttrs cfg.usernames (name: { });
+      
+      # Assign the mandatory stateVersion to every user
+      users = lib.genAttrs cfg.usernames (name: {
+        home.stateVersion = dynamicVersion;
+      });
     };
 
     users.users = lib.genAttrs cfg.usernames (name: {

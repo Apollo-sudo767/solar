@@ -6,17 +6,16 @@ in
   options.myFeatures.programs.social.enable = lib.mkEnableOption "Spotify and Vesktop";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.apollo = {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       home.packages = [ 
         pkgs.spotify 
       ];
       
-      # Vesktop (Discord with Vencord built-in)
       programs.vesktop = {
         enable = true;
         settings = {
           discordBranch = "stable";
-          hardwareAcceleration = true; # Uses that 4070 Ti
+          hardwareAcceleration = true;
           vencord = {
             settings.plugins = {
               ChatInputButtonAPI.enabled = true;
@@ -25,6 +24,6 @@ in
           };
         };
       };
-    };
+    });
   };
 }

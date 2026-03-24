@@ -9,22 +9,20 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.apollo = {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       home.packages = with pkgs; [
-        imv           # Image viewer
+        imv
       ];
 
       programs.mpv = lib.mkIf cfg.mpv.enable {
         enable = true;
         config = {
-          # Hardware acceleration for your 4070 Ti
           hwdec = "auto-safe";
           vo = "gpu";
           profile = "gpu-hq";
-          # Prioritize 1440p for your monitor
           ytdl-format = "bestvideo[height<=?1440]+bestaudio/best";
         };
       };
-    };
+    });
   };
 }

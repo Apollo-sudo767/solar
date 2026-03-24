@@ -11,7 +11,8 @@ in
   config = lib.mkIf cfg.enable {
     # This automatically turns on the main styling logic!
     myFeatures.systems.stylix = {
-      enable = true; 
+      enable = true;
+      scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
       wallpaper = ../../../assets/wallpapers/forest.jpg;
     };
   };

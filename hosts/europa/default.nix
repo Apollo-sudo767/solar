@@ -28,6 +28,7 @@
     systems = {
       kde.enable = true;
       displayManager.manager = "sddm";
+      stylix.enable = true;
     };
     programs = {
       ghostty.enable = true;

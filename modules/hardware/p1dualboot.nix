@@ -13,13 +13,13 @@ in
   config = lib.mkIf cfg.enable {
     boot.loader.limine = {
       # This allows you to press 'E' at the boot screen if we need to debug
-      editor_enabled = true;
+      enableEditor = true;
 
       extraEntries = ''
-        + Windows
+        :Windows
             protocol: efi_chainload
-            # Since they share a partition, boot(): starts at the root of that drive
-            image_path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
+            # boot(): refers to the partition Limine was loaded from (the ESP)
+            path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
       '';
     };
   };

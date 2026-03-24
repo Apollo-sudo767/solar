@@ -23,6 +23,7 @@ in
       thunar
       swww
       swaynotificationcenter
+      brightnessctl
     ];
   };
 }

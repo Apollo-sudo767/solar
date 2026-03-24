@@ -95,6 +95,23 @@ in
             "Mod+Shift+8".action."move-column-to-workspace" = 8;
             "Mod+Shift+9".action."move-column-to-workspace" = 9;
 
+            # --- Brightness Controls ---
+            "XF86MonBrightnessUp".action.spawn = [ "brightnessctl" "set" "5%+" ];
+            "XF86MonBrightnessDown".action.spawn = [ "brightnessctl" "set" "5%-" ];
+
+            # --- Volume Controls ---
+            # Increase volume (capped at 100% with -l 1.0)
+            "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+" ];
+            # Decrease volume
+            "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ];
+            # Toggle Mute
+            "XF86AudioMute".action.spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ];
+
+            # --- Media Controls (Optional) ---
+            "XF86AudioPlay".action.spawn = [ "playerctl" "play-pause" ];
+            "XF86AudioNext".action.spawn = [ "playerctl" "next" ];
+            "XF86AudioPrev".action.spawn = [ "playerctl" "previous" ];
+  
             # --- Screenshots ---
             "Print".action."screenshot" = [ ];
             "Ctrl+Print".action."screenshot-screen" = [ ];

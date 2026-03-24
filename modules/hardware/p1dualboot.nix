@@ -1,25 +1,19 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
-  # 1. Setup a shortcut to your feature's config
-  # Replace 'myFeature' with your actual feature name
   cfg = config.myFeatures.hardware.p1dualboot;
 in
 {
-  # --- OPTIONS ---
-  # This defines the "switches" you flip in your /hosts files
   options.myFeatures.hardware.p1dualboot = {
     enable = lib.mkEnableOption "Enables Windows Dualboot on Mars";
   };
 
-  # --- CONFIG ---
-  # This is the "payload" that only runs if 'enable' is true
   config = lib.mkIf cfg.enable {
     boot.loader.limine = {
       extraEntries = ''
-        /Windows
+        :Windows
          protocol: efi_chainload
-         image_path=boot():/EFI/Microsoft/Boot/bootmgfw.efi
+         image_path: uuid://FA0B-D29A/EFI/Microsoft/Boot/bootmgfw.efi
       '';
     };
   };

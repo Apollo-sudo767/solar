@@ -5,17 +5,20 @@
     ./hardware-configuration.nix
   ];
 
-  networking.hostName = "mercury";
+  networking.hostName = "europa";
   system.stateVersion = "26.05";
 
   myFeatures = {
-    core.enable = true;
+    core = {
+      enable = true;
+      users.usernames = [ "hephaestus" ];
+    };
     shell.enable = true;
     hardware = {
       graphics.enable = true;
       battery = {
         enable = true;
-        fullCharge = true;
+        fullCharge.enable = true;
       };
       bluetooth.enable = true;
       controllers.enable = true;
@@ -23,8 +26,8 @@
       wifi.enable = true;
     };
     systems = {
-      presets.gruvboxNiri.enable = true;
-      displayManager.manager = "tuigreet";
+      kde.enable = true;
+      displayManager.manager = "sddm";
     };
     programs = {
       ghostty.enable = true;

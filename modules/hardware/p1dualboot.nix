@@ -1,4 +1,16 @@
-config = lib.mkIf cfg.enable {
+{ config, lib, pkgs, inputs, ... }:
+
+let
+  cfg = config.myFeatures.hardware.p1dualboot;
+in
+{
+  # --- OPTIONS ---
+  options.myFeatures.hardware.p1dualboot = {
+    enable = lib.mkEnableOption "Enables Windows Dualboot on Mars";
+  };
+
+  # --- CONFIG ---
+  config = lib.mkIf cfg.enable {
     boot.loader.limine = {
       extraEntries = ''
         :Windows
@@ -7,3 +19,4 @@ config = lib.mkIf cfg.enable {
       '';
     };
   };
+}

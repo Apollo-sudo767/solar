@@ -13,9 +13,8 @@ in
   config = lib.mkIf cfg.enable {
     boot.loader.limine = {
       extraEntries = ''
-        +Windows
+        + Windows
             protocol: efi_chainload
-            # We add the /EFI/ prefix explicitly
             image_path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
       '';
     };

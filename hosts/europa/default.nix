@@ -24,7 +24,6 @@
       controllers.enable = true;
       trackpad.enable = true;
       wifi.enable = true;
-      p1dualboot.enable = true;
     };
     systems = {
       kde.enable = true;

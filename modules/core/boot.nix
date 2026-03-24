@@ -19,7 +19,6 @@ in
 
     boot.loader.limine = {
       enable = true;
-      enableEditor = false;
 
       # FIX: Wrap the path in a list [ ] and remove the attribute name
       style = {

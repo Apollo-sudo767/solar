@@ -20,6 +20,7 @@ in
       sysstat
       lm_sensors
       fastfetch
+      tree
     ];
   };
 }

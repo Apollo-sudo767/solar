@@ -9,12 +9,17 @@ in
     enable = lib.mkEnableOption "Enables Windows Dualboot on Europa";
   };
 
+  # --- CONFIG ---
   config = lib.mkIf cfg.enable {
     boot.loader.limine = {
+      # This allows you to press 'E' at the boot screen if we need to debug
+      settings.editor_enabled = true;
+
       extraEntries = ''
         + Windows
             protocol: efi_chainload
-            image_path: uuid://FA0B-D29A/EFI/Microsoft/Boot/bootmgfw.efi
+            # Since they share a partition, boot(): starts at the root of that drive
+            image_path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
       '';
     };
   };

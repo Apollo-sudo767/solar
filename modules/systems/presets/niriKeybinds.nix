@@ -71,6 +71,7 @@ in
             "Mod+Equal".action."set-column-width" = "+10%";
             "Mod+F".action."maximize-column" = [ ];
             "Mod+Shift+F".action."fullscreen-window" = [ ];
+            "Mod+V".action."toggle-window-floating" = [];
 
             # --- 9 Workspaces (Focus) ---
             "Mod+1".action."focus-workspace" = 1;

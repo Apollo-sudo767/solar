@@ -17,6 +17,8 @@ in
       prismlauncher
       mangohud
       gamemode
+      libkrb5
+      keyutils
     ];
   };
 }

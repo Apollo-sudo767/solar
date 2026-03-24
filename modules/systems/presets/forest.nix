@@ -4,16 +4,14 @@ let
   cfg = config.myFeatures.systems.stylix.forest;
 in
 {
-  options.myFeatures.systems.stylix.forest = {
-    enable = lib.mkEnableOption "Apply Gruvbox Theme";
-  };
+  options.myFeatures.systems.stylix.forest.enable = lib.mkEnableOption "Forest Theme";
 
   config = lib.mkIf cfg.enable {
-    # This automatically turns on the main styling logic!
     myFeatures.systems.stylix = {
       enable = true;
-      scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
-      wallpaper = ../../../assets/wallpapers/forest.jpg;
+      # Using mkDefault allows the base engine fallbacks to stay at lower priority
+      scheme = lib.mkDefault "${pkgs.base16-schemes}/share/themes/nord.yaml";
+      wallpaper = lib.mkDefault ../../../assets/wallpapers/forest.jpg;
     };
   };
 }

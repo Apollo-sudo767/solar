@@ -12,14 +12,14 @@ in
   # --- CONFIG ---
   config = lib.mkIf cfg.enable {
     boot.loader.limine = {
-      # This allows you to press 'E' at the boot screen if we need to debug
+      # Allows pressing 'E' to edit the entry at boot if needed
       enableEditor = true;
 
       extraEntries = ''
         :Windows
             protocol: efi_chainload
-            # boot(): refers to the partition Limine was loaded from (the ESP)
-            path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
+            # Explicitly pointing to the EFI partition via its PARTUUID
+            path: guid(048d93bb-58b4-432d-97b6-a8efc3d81977):/EFI/Microsoft/Boot/bootmgfw.efi
       '';
     };
   };

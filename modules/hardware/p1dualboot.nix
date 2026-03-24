@@ -3,12 +3,12 @@
 let
   # 1. Setup a shortcut to your feature's config
   # Replace 'myFeature' with your actual feature name
-  cfg = config.myFeatures.hardware.dualboot;
+  cfg = config.myFeatures.hardware.p1dualboot;
 in
 {
   # --- OPTIONS ---
   # This defines the "switches" you flip in your /hosts files
-  options.myFeatures.hardware.dualboot = {
+  options.myFeatures.hardware.p1dualboot = {
     enable = lib.mkEnableOption "Enables Windows Dualboot on Mars";
   };
 

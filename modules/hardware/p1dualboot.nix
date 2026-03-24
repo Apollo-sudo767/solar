@@ -13,7 +13,7 @@ in
   config = lib.mkIf cfg.enable {
     boot.loader.limine = {
       # This allows you to press 'E' at the boot screen if we need to debug
-      settings.editor_enabled = true;
+      editor_enabled = true;
 
       extraEntries = ''
         + Windows

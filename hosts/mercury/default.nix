@@ -16,6 +16,8 @@
       battery = {
         enable = true;
         fullCharge = true;
+        bluetooth.enable = true;
+        aggressive =true;
       };
       bluetooth.enable = true;
       controllers.enable = true;

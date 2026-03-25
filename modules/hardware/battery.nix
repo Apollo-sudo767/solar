@@ -3,47 +3,40 @@
 let
   cfg = config.myFeatures.hardware.battery;
 
-  # Nix-native script to toggle Bluetooth (only included if bluetooth.enable is true)
-  toggle-bt = pkgs.writeShellScriptBin "toggle-bt" ''
-    if bluetoothctl show | grep -q "Powered: yes"; then
-      ${pkgs.bluez}/bin/bluetoothctl power off
-      ${pkgs.libnotify}/bin/notify-send "Bluetooth" "Powered Off" -i bluetooth-disabled
-    else
-      ${pkgs.bluez}/bin/bluetoothctl power on
-      ${pkgs.libnotify}/bin/notify-send "Bluetooth" "Powered On" -i bluetooth
-    fi
+  # Battery threshold script for T14 Gen 2 hardware registers
+  set-battery-thresholds = pkgs.writeShellScriptBin "set-battery-thresholds" ''
+    # BAT0 is the internal battery
+    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s ST 0 ${if cfg.fullCharge then "95" else "75"}
+    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s SP 0 ${if cfg.fullCharge then "100" else "80"}
   '';
 in
 {
   # --- OPTIONS ---
   options.myFeatures.hardware.battery = {
-    enable = lib.mkEnableOption "ThinkPad Battery & Power Management";
-    
-    fullCharge = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
+    enable = lib.mkEnableOption "ThinkPad Power Management";
+    fullCharge = lib.mkOption { 
+      type = lib.types.bool; 
+      default = false; 
       description = "If false, caps charge at 80% to preserve battery health.";
     };
-
-    bluetooth = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Start Bluetooth OFF on boot and enable AC plug-in automation.";
-      };
+    bluetooth = { 
+      enable = lib.mkOption { 
+        type = lib.types.bool; 
+        default = false; 
+        description = "Manage Bluetooth power states based on AC/Battery.";
+      }; 
     };
-
-    aggressive = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable experimental kernel tweaks (ASPM/NVME) for maximum savings.";
+    aggressive = lib.mkOption { 
+      type = lib.types.bool; 
+      default = false; 
+      description = "Enable experimental kernel tweaks for maximum savings.";
     };
   };
 
   # --- CONFIG ---
   config = lib.mkIf cfg.enable {
-    # 1. CPU Management (The Brain)
-    # auto-cpufreq is dynamic and better for modern Ryzen/Intel scaling
+    # 1. CPU Management
+    # auto-cpufreq handles dynamic scaling better than TLP on modern Ryzen/Intel
     services.auto-cpufreq.enable = true;
     services.auto-cpufreq.settings = {
       charger = {
@@ -56,50 +49,51 @@ in
       };
     };
 
-    # 2. TLP Management (The Body & Battery Health)
-    services.tlp = {
-      enable = true;
-      settings = {
-        # CRITICAL: We block TLP from touching the CPU so it doesn't fight auto-cpufreq
-        CPU_SCALING_GOVERNOR_ON_AC = lib.mkForce null;
-        CPU_SCALING_GOVERNOR_ON_BAT = lib.mkForce null;
-        CPU_ENERGY_PERF_POLICY_ON_AC = lib.mkForce null;
-        CPU_ENERGY_PERF_POLICY_ON_BAT = lib.mkForce null;
-
-        # Battery Charge Thresholds
-        START_CHARGE_THRESH_BAT0 = if cfg.fullCharge then 95 else 75;
-        STOP_CHARGE_THRESH_BAT0 = if cfg.fullCharge then 100 else 80;
-
-        # Platform Profiles (T14/P1 specific cooling/power)
-        PLATFORM_PROFILE_ON_AC = "performance";
-        PLATFORM_PROFILE_ON_BAT = "low-power";
-
-        # General Hardware Power Saving
-        USB_AUTOSUSPEND = 1;
-        WIFI_PWR_ON_BAT = "on";
+    # 2. Battery Thresholds (Manual hardware sets)
+    systemd.services.battery-thresholds = {
+      description = "Set ThinkPad battery charge thresholds";
+      after = [ "multi-user.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${set-battery-thresholds}/bin/set-battery-thresholds";
+        RemainAfterExit = true;
       };
     };
 
-    # 3. Connectivity Logic
+    # 3. Explicit Hardware Control & Conflict Resolution
+    # We use mkForce to ensure these stay OFF even if other modules try to enable them
+    services.tlp.enable = lib.mkForce false;
+    services.power-profiles-daemon.enable = lib.mkForce false;
+
+    boot.kernelParams = [ 
+      "mem_sleep_default=deep"   # Ensure ports/logic power off completely during sleep
+      "usbcore.autosuspend=-1"   # Prevent USB idling while the system is awake
+    ] ++ (lib.optionals cfg.aggressive [
+      "pcie_aspm=force"           # Force PCIe lanes to sleep
+      "workqueue.power_efficient=Y" 
+      "nvme.noacpi=1"             # Deep sleep for NVME SSDs
+    ]);
+
+    # 4. Radio & Networking
     networking.networkmanager.wifi.powersave = true;
     hardware.bluetooth.powerOnBoot = lib.mkIf cfg.bluetooth.enable false;
 
-    # udev: Automatically "Wake Up" Bluetooth/Wifi when you plug in the charger
-    services.udev.extraRules = lib.mkIf cfg.bluetooth.enable ''
+    # udev: Manual control over Radio and Wifi power states
+    services.udev.extraRules = ''
+      # ON AC: Max performance, Bluetooth ON
       SUBSYSTEM=="power_supply", ATTR{online}=="1", \
+        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save off", \
         RUN+="${pkgs.bluez}/bin/bluetoothctl power on", \
         RUN+="${pkgs.networkmanager}/bin/nmcli radio wifi on"
+
+      # ON BATTERY: Power save Wifi, Bluetooth OFF
+      SUBSYSTEM=="power_supply", ATTR{online}=="0", \
+        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save on", \
+        RUN+="${pkgs.bluez}/bin/bluetoothctl power off"
     '';
 
-    # 4. Aggressive Hardware Tweaks (Sub-option)
-    boot.kernelParams = lib.mkIf cfg.aggressive [
-      "pcie_aspm=force"           # Forces PCIe lanes to go to sleep
-      "workqueue.power_efficient=Y" 
-      "nvme.noacpi=1"             # Helps modern SSDs enter deep sleep
-    ];
-
-    # 5. Conflict Resolution & Sleep Stability
-    services.power-profiles-daemon.enable = false;
+    # 5. Sleep Stability
     services.logind = {
       lidSwitch = "suspend";
       lidSwitchExternalPower = "lock";
@@ -107,10 +101,11 @@ in
 
     # 6. System Packages
     environment.systemPackages = with pkgs; [
-      tpacpi-bat  # ThinkPad specific battery control
-      powertop    # For monitoring wattage
-      blueman     # Bluetooth GUI
-      libnotify   # For toggle-bt notifications
-    ] ++ (lib.optional cfg.bluetooth.enable toggle-bt);
+      tpacpi-bat  # Backend for thresholds
+      powertop    # Power monitoring
+      acpi        # Battery status
+      iw          # Wifi power control
+      bluez       # Bluetooth control
+    ];
   };
 }

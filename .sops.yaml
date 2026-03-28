@@ -1,0 +1,25 @@
+keys:
+  # The "Master Keys" (You)
+  - &apollo_user  age1jzsawxq4e054x3yt8m78a0q7mmu3lw5yt34r25dgtac9jt8dz37qn3dd0q
+
+  # The "Host Keys" (The Machines)
+  - &mars_host    age15jjutm32rsyy35x4lf6p9t5nmsx5gmzqmhykz95dt22jrvphrpssdll0xe
+  - &mercury_host age1_mercury_output_here...
+  - &venus_host   age1_venus_output_here...
+
+creation_rules:
+  # Secrets that EVERY machine needs (e.g., your user password)
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+          - *apollo_user
+          - *mars_host
+          - *mercury_host
+          - *venus_host
+
+  # Secrets unique to Mars (e.g., specific GPU settings or local backups)
+  # - path_regex: secrets/mars\.yaml$
+  #  key_groups:
+  #    - age:
+  #        - *apollo_user
+  #        - *mars_host

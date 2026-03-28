@@ -12,6 +12,7 @@
   myFeatures = {
     core.enable = true;
     shell.enable = true;
+    core.secureboot.enable = true;
     hardware = {
       amd.enable = true;
       nvidia = {

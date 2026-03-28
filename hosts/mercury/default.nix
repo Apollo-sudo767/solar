@@ -11,6 +11,7 @@
   myFeatures = {
     core.enable = true;
     shell.enable = true;
+    core.secureboot.enable = true;
     hardware = {
       graphics.enable = true;
       battery = {

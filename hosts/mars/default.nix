@@ -40,6 +40,7 @@
       obs.enable = true;
       stylePackages.enable = true;
       bitwarden.enable = true;
+      davinci.enable = true;
     };
     services = {
       audio.enable = true;

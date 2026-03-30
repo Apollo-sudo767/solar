@@ -10,14 +10,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    systemd.services.set-tty-resolution = {
-      description = "Force TTY resolution to 1440p";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        # This forces the framebuffer to 1440p on all monitors
-        ExecStart = "${pkgs.fbset}/bin/fbset -xres 2560 -yres 1440 -match";
-      };
-    };
+    boot.kernelParams = [ "video=2560x1440@60" ]
   };
 }

@@ -16,7 +16,6 @@
     hardware = {
       amd.enable = true;
       bluetooth.enable = true;
-      ttyResolution.enable = true;
     };
     systems = {
       presets.gruvboxNiri.enable = true;

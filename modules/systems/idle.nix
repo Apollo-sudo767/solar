@@ -22,6 +22,6 @@ in {
       };
     });
 
-    services.logind.lidSwitch = "suspend";
+    services.logind.settings.Login.HandlelidSwitch = "suspend";
   };
 }

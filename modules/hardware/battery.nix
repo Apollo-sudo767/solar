@@ -95,8 +95,8 @@ in
 
     # 5. Sleep Stability
     services.logind = {
-      lidSwitch = "suspend";
-      lidSwitchExternalPower = "lock";
+      settings.Login.HandleLidSwitch = "suspend";
+      settings.Login.HandleLidSwitchExternalPower = "lock";
     };
 
     # 6. System Packages

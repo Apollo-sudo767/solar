@@ -21,7 +21,7 @@ in
         (lib.mkIf (cfg.manager == "tuigreet") {
           default_session = {
             # Added --width 60 to help with your 1440p scaling
-            command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --asterisks --container-padding 2 --width 60 --cmd niri-session"; 
+            command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --container-padding 2 --width 60 --cmd niri-session"; 
             user = "greeter"; 
           };
         })

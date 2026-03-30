@@ -15,7 +15,6 @@
     # core.secureboot.enable = true;
     hardware = {
       amd.enable = true;
-      dualboot.enable = true;
       bluetooth.enable = true;
       ttyResolution.enable = true;
     };

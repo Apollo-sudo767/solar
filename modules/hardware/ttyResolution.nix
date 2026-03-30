@@ -10,6 +10,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.kernelParams = [ "video=2560x1440@60" ]
+    boot.kernelParams = [ "video=2560x1440@60" ];
   };
 }

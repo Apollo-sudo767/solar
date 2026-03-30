@@ -13,7 +13,8 @@ in
 
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       # FORCE the Stylix Home Manager module to load for this specific user
-
+      stylix.targets.firefox.profileNames = [ name ];
+      
       programs.firefox = {
         enable = true;
         profiles.${name} = {

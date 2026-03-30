@@ -73,14 +73,18 @@ in
             "Mod+Ctrl+Down".action."move-window-down" = [ ];
 
             # --- Monitor Navigation (Moving between DP-1 and DP-2) ---
-            "Mod+Home".action."focus-monitor-left" = [ ];
-            "Mod+End".action."focus-monitor-right" = [ ];
-            "Mod+Shift+Home".action."move-column-to-monitor-left" = [ ];
-            "Mod+Shift+End".action."move-column-to-monitor-right" = [ ];
+            "Mod+Shift+Left".action."focus-monitor-left" = [ ];
+            "Mod+Shift+Right".action."focus-monitor-right" = [ ];
+            "Mod+Ctrl+Shift+Left".action."move-column-to-monitor-left" = [ ];
+            "Mod+Ctrl+Shift+Right".action."move-column-to-monitor-right" = [ ];
 
             # --- Layout Management ---
             "Mod+Comma".action."consume-window-into-column" = [ ];
             "Mod+Period".action."expel-window-from-column" = [ ];
+
+
+            # --- Show Keybinds ---
+            "Mod+Shift+slash".action."show-hotkey-overlay" = [];
 
             # --- Resizing & Columns ---
             "Mod+Minus".action."set-column-width" = "-10%";

@@ -15,10 +15,10 @@ in {
           { timeout = 300; command = lockCmd; }
           { timeout = 600; command = "niri msg action power-off-monitors"; }
         ];
-        events = [ 
-          { event = "before-sleep"; command = lockCmd; }
-          { event = "after-resume"; command = "niri msg action power-on-monitors"; }
-        ];
+        events = { 
+          "before-sleep" = lockCmd; 
+          "after-resume" = "niri msg action power-on-monitors"; 
+        };
       };
     });
 

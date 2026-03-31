@@ -16,9 +16,12 @@
         "/var/lib/systemd/coredump"
         "/etc/NetworkManager/system-connections"
         "/etc/ssh"
+        "/var/lib/sbctl"
+        "/etc/secureboot"
       ];
       files = [
         "/etc/machine-id"
+        "/etc/adjtime"
       ];
       # Dynamically applies persistence to your users (defaulting to "apollo")
       users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
@@ -33,6 +36,7 @@
           ".local/share/PrismLauncher" # Prism persistence
           ".local/share/direnv"
           ".ssh"
+          ".config/sops"
         ];
       });
     };

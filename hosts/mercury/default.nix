@@ -38,7 +38,7 @@
       gaming.enable = true;
       fastfetch = {
         enable = true;
-        showBattery.enable = true;
+        showBattery = true;
       };
       helix.enable = true;
       media.enable = true;

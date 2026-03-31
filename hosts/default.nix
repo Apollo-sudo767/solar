@@ -2,7 +2,6 @@
 
 let
   # 1. Discover all directories in the current folder (hosts/), excluding "shared"
-  # This prevents the loader from treating the 'shared' directory as a bootable host.
   hostDirs = lib.filter (name: 
     let 
       type = (builtins.readDir ./.).${name};
@@ -17,11 +16,7 @@ let
   # 3. The generator function
   mkHost = name: 
     let
-      # Load machine-specific settings (system type, stability, etc.)
-      # We expect a 'settings.nix' file in each host folder
       machine = import ./${name}/settings.nix;
-      
-      # Determine stability from the machine's own settings
       isStable = machine.stable or false;
       pkgs-input = getPkgInput isStable;
     in
@@ -29,14 +24,13 @@ let
       inherit (machine) system;
       specialArgs = { 
         inherit inputs isStable;
-        # Provide the 'other' channel for convenience
         pkgs-stable = import inputs.nixpkgs-stable { 
           inherit (machine) system; 
           config.allowUnfree = true; 
         };
       };
       modules = globalModules ++ [
-        ./${name} # Automatically imports hosts/${name}/default.nix
+        ./${name} 
         (getHMInput isStable).nixosModules.home-manager
         {
           networking.hostName = name;

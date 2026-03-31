@@ -4,7 +4,7 @@ keys:
 
   # The "Host Keys" (The Machines)
   - &mars_host    age15jjutm32rsyy35x4lf6p9t5nmsx5gmzqmhykz95dt22jrvphrpssdll0xe
-  - &mercury_host age1_mercury_output_here...
+  - &mercury_host age15h08fe9uny3np7ltxr9ggyd4k2e04mw6lz6ahshahcrdcwpfw9gsv5nggv
   - &venus_host   age17au70tcp7jyyl9ln2wgdmef9tpt6ex6jy7qayezp44rsdhzrlqtqmg4ftz
 creation_rules:
   # Secrets that EVERY machine needs (e.g., your user password)

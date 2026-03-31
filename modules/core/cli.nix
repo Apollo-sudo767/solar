@@ -23,5 +23,8 @@ in
       tree
       jq
     ];
+
+    environment.variables.EDITOR = "hx";
+    environment.variables.VISUAL = "hx";
   };
 }

@@ -19,6 +19,12 @@
       };
     };
 
+    programs.ssh.extraConfig = ''
+    Host github.com
+      IdentityFile /etc/ssh/ssh_host_ed25519_key
+      User git
+    '';
+
     # Allow unfree packages (like Nvidia drivers or Steam)
     nixpkgs.config.allowUnfree = true;
   };

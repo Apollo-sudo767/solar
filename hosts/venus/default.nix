@@ -13,6 +13,11 @@
     core.enable = true;
     shell.enable = true;
     core.secureboot.enable = true;
+    core.security = {
+      enable = true;
+      useAppArmor = true;
+    };
+    core.sops.enable = true;
     hardware = {
       amd.enable = true;
       bluetooth.enable = true;

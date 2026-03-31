@@ -1,28 +1,58 @@
-{ config, lib, inputs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.core.security;
-  # Reference the private repo input
-  secretsPath = inputs.solar-secrets; 
-  # Path for the RAM-only key
-  volatileKey = "/run/user/1000/sops/keys.txt";
 in
 {
-  imports = [ inputs.sops-nix.nixosModules.sops ];
-
-  options.myFeatures.core.security.enable = lib.mkEnableOption "Sops-nix Security";
+  options.myFeatures.core.security = {
+    enable = lib.mkEnableOption "General System Security Hardening";
+    useAppArmor = lib.mkEnableOption "AppArmor MAC support";
+    useOOMD = lib.mkEnableOption "Systemd-OOMD stability";
+  };
 
   config = lib.mkIf cfg.enable {
-    sops = {
-      # Use the common secrets from your private repo
-      defaultSopsFile = "${secretsPath}/secrets/common.yaml";
+    security = {
+      # 1. AppArmor Logic
+      apparmor = lib.mkIf cfg.useAppArmor {
+        enable = true;
+        enableCache = true;
+        killUnconfinedConfinables = true;
+        packages = with pkgs; [
+          apparmor-profiles
+          apparmor-utils
+        ];
+      };
+
+      # 2. Kernel & User-space Hardening
+      forcePageTableIsolation = true;
+      protectKernelImage = true;
       
-      # Use the RAM key if you've run 'seed', otherwise fallback to host SSH
-      age.keyFile = lib.mkIf (builtins.pathExists volatileKey) volatileKey;
-      age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      # Disabling unprivileged user namespaces
+      unprivilegedUsernsClone = false; 
       
-      # Define secrets used during activation
-      secrets."apollo-password" = { neededForUsers = true; };
+      sudo.execWheelOnly = true;
+      auditd.enable = true;
+      audit.enable = true;
     };
+
+    # 3. Systemd OOMD
+    systemd.oomd.enable = cfg.useOOMD;
+
+    # 4. Glibc & Memory Allocator Hardening
+    environment.variables.MALLOC_CHECK_ = "1";
+
+    # 5. Network Privacy: DNS-over-TLS (Structured Settings Refactor)
+    services.resolved = {
+      enable = true;
+      # FIX: Use the specific Resolve sub-attribute set as indicated by warnings
+      settings.Resolve = {
+        DNSSEC = "true";
+        DNSOverTLS = "opportunistic";
+        Domains = "~.";
+        FallbackDNS = "1.1.1.1 9.9.9.9";
+      };
+    };
+
+    networking.firewall.enable = lib.mkDefault true;
   };
 }

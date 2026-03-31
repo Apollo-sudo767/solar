@@ -12,6 +12,11 @@
     core.enable = true;
     shell.enable = true;
     core.secureboot.enable = true;
+    core.security = {
+      enable = true;
+      useAppArmor = true;
+    };
+    core.sops.enable = true;
     hardware = {
       graphics.enable = true;
       battery = {

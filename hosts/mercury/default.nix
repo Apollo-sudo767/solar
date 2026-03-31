@@ -1,4 +1,4 @@
-{
+{ lib, inputs, ...}: {
   imports = [
     ./hardware.nix
     ../shared/disko-standard.nix

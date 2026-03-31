@@ -12,7 +12,7 @@
   myFeatures = {
     core.enable = true;
     shell.enable = true;
-    # core.secureboot.enable = true;
+    core.secureboot.enable = true;
     hardware = {
       amd.enable = true;
       bluetooth.enable = true;
@@ -25,7 +25,6 @@
       ghostty.enable = true;
       gaming.enable = true;
       firefox.enable = true;
-      zen.enable = true;
       fastfetch.enable = true;
       helix.enable = true;
       media.enable = true;

@@ -32,7 +32,6 @@
       ghostty.enable = true;
       gaming.enable = true;
       firefox.enable = true;
-      zen.enable = true;
       fastfetch.enable = true;
       helix.enable = true;
       media.enable = true;

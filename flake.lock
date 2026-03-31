@@ -630,10 +630,27 @@
         "niri": "niri",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "solar-secrets": "solar-secrets",
         "sops-nix": "sops-nix",
         "stylix-stable": "stylix-stable",
         "stylix-unstable": "stylix-unstable",
         "zen-browser": "zen-browser"
+      }
+    },
+    "solar-secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1774926511,
+        "narHash": "sha256-pbo9/aeyzn+2ffAqgVjb0sBT4SqmCSwwJwHSh+h6RDU=",
+        "ref": "refs/heads/main",
+        "rev": "cb2c07f582875959ea7e3d410a1aa51f75668dbe",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/apollo-sudo767/solar-secrets.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/apollo-sudo767/solar-secrets.git"
       }
     },
     "sops-nix": {

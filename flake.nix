@@ -19,7 +19,11 @@
 
     # Sops-nix
     sops-nix.url = "github:Mic92/sops-nix";
-
+    solar-secrets = {
+      url= "git+ssh://git@github.com/apollo-sudo767/solar-secrets.git";
+      flake = false;
+    };
+    
     # Niri
     niri.url = "github:sodiboo/niri-flake";
     

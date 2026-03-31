@@ -75,6 +75,8 @@ in
         syntaxHighlighting.enable = true;
           
         shellAliases = {
+          # The Seeding Command: RAM-only, vanishes on reboot
+          seed = "export BW_SESSION=$(bw unlock --raw) && mkdir -p /run/user/$(id -u)/sops && bw get item 'Solar Age Master' | jq -r '.notes' > /run/user/$(id -u)/sops/keys.txt && chmod 600 /run/user/$(id -u)/sops/keys.txt";
           ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
           ll = "ls -l";
           la = "eza -a";

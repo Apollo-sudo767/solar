@@ -2,24 +2,27 @@
 
 let
   cfg = config.myFeatures.core.security;
+  # Reference the private repo input
+  secretsPath = inputs.solar-secrets; 
+  # Path for the RAM-only key
+  volatileKey = "/run/user/1000/sops/keys.txt";
 in
 {
-  imports = [
-    inputs.sops-nix.nixosModules.sops
-  ];
-  
-  options.myFeatures.core.security.enable = lib.mkEnableOption "SSH Host-key Security";
+  imports = [ inputs.sops-nix.nixosModules.sops ];
+
+  options.myFeatures.core.security.enable = lib.mkEnableOption "Sops-nix Security";
 
   config = lib.mkIf cfg.enable {
     sops = {
-      # This is the path to the private SSH key already on your SSD
+      # Use the common secrets from your private repo
+      defaultSopsFile = "${secretsPath}/secrets/common.yaml";
+      
+      # Use the RAM key if you've run 'seed', otherwise fallback to host SSH
+      age.keyFile = lib.mkIf (builtins.pathExists volatileKey) volatileKey;
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       
-      # Point to your actual secrets file in the repo
-      defaultSopsFile = ../../secrets/secrets.yaml;
-      
-      # Optional: prevents sops from looking for a YubiKey/GPG
-      gnupg.sshKeyPaths = [ ];
+      # Define secrets used during activation
+      secrets."apollo-password" = { neededForUsers = true; };
     };
   };
 }

@@ -1,12 +1,12 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.programs.fastfetch;
+  # Filter to ensure we only target actual usernames
   userList = lib.filter
     (n: n != "enable" && n != "usernames")
     config.myFeatures.core.users.usernames;
 in {
-  # ── OPTIONS (Unchanged) ───────────────────────────────────────────────────
   options.myFeatures.programs.fastfetch = {
     enable = lib.mkEnableOption "fastfetch system info fetcher";
     theme = lib.mkOption {
@@ -31,17 +31,17 @@ in {
     };
   };
 
-  # ── CONFIG ────────────────────────────────────────────────────────────────
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs userList (_name:
       let
         palette = {
           gruvbox = {
             keys  = "yellow"; title = "208";     output = "white";
-            sep   = "90"; sys = "yellow"; de = "208"; hw = "red";
-            net   = "cyan"; bat = "blue"; time = "208";
+            sep   = "90";     sys   = "yellow";  de     = "208"; 
+            hw    = "red";    net   = "cyan";    bat    = "blue"; 
+            time  = "208";
           };
-          # ... (other palettes omitted for brevity, keep your originals here)
+          # Add other palettes here as needed
         };
 
         p = palette.${cfg.theme};
@@ -55,7 +55,8 @@ in {
           enable = true;
           settings = {
             logo = {
-              source  = "auto";
+              # Protocol: Force NixOS logo to prevent Arch leakage
+              source  = "nixos"; 
               type    = cfg.logoType;
               width   = 24;
               height  = 12;
@@ -68,51 +69,55 @@ in {
             };
 
             modules = [
-              { type = "title"; format = "{user-name}@{host-name}"; color = { user = p.title; at = p.sep; host = p.keys; }; }
+              { 
+                type = "title";
+                format = "{user-name}@{host-name}"; 
+                color = { user = p.title; at = p.sep; host = p.keys; };
+              }
               { type = "colors"; symbol = "circle"; paddingLeft = 2; }
               { type = "break"; }
 
               # ── SYSTEM GROUP ──
               (startGroup "System" p.sys)
-              { type = "os";           key = "│ 󰣇 OS      "; keyColor = p.sys; }
-              { type = "kernel";       key = "│ 󰒋 Kernel  "; keyColor = p.sys; }
-              { type = "shell";        key = "│ 󱆃 Shell   "; keyColor = p.sys; }
-              { type = "terminal";     key = "│ 󰆍 Terminal"; keyColor = p.sys; }
+              { type = "os"; key = "│ 󰣇 OS      "; keyColor = p.sys; }
+              { type = "kernel"; key = "│ 󰒋 Kernel  "; keyColor = p.sys; }
+              { type = "shell"; key = "│ 󱆃 Shell   "; keyColor = p.sys; }
+              { type = "terminal"; key = "│ 󰆍 Terminal"; keyColor = p.sys; }
               (endGroup p.sys)
               { type = "break"; }
 
               # ── DESKTOP GROUP ──
               (startGroup "Desktop" p.de)
-              { type = "wm";           key = "│ 󱂬 WM      "; keyColor = p.de; }
-              { type = "wmTheme";      key = "│ 󰉼 Theme   "; keyColor = p.de; }
-              { type = "icons";        key = "│ 󰀻 Icons   "; keyColor = p.de; }
-              { type = "packages";     key = "│ 󰏗 Packages"; keyColor = "green"; }
+              { type = "wm"; key = "│ 󱂬 WM      "; keyColor = p.de; }
+              { type = "wmTheme"; key = "│ 󰉼 Theme   "; keyColor = p.de; }
+              { type = "icons"; key = "│ 󰀻 Icons   "; keyColor = p.de; }
+              { type = "packages"; key = "│ 󰏗 Packages"; keyColor = "green"; }
               (endGroup p.de)
               { type = "break"; }
 
               # ── HARDWARE GROUP ──
               (startGroup "Hardware" p.hw)
-              { type = "host";         key = "│ 󰌢 Host    "; keyColor = p.hw; }
-              { type = "cpu";          key = "│ 󰻠 CPU     "; keyColor = p.hw; }
-              { type = "gpu";          key = "│ 󰍛 GPU     "; keyColor = p.hw; }
-              { type = "memory";       key = "│ 󰍛 RAM     "; keyColor = p.hw; }
-              { type = "disk";         key = "│ 󰋊 Disk    "; keyColor = p.hw; }
+              { type = "host"; key = "│ 󰌢 Host    "; keyColor = p.hw; }
+              { type = "cpu"; key = "│ 󰻠 CPU     "; keyColor = p.hw; }
+              { type = "gpu"; key = "│ 󰍛 GPU     "; keyColor = p.hw; }
+              { type = "memory"; key = "│ 󰍛 RAM     "; keyColor = p.hw; }
+              { type = "disk"; key = "│ 󰋊 Disk    "; keyColor = p.hw; }
               (endGroup p.hw)
               { type = "break"; }
 
               # ── NETWORK GROUP ──
               (startGroup "Network" p.net)
-              { type = "localIp";      key = "│ 󰩠 Local   "; keyColor = p.net; showIpv4 = true; }
+              { type = "localIp"; key = "│ 󰩠 Local   "; keyColor = p.net; showIpv4 = true; }
               (endGroup p.net)
-
-              # ---- Calendar Group ----
               { type = "break"; }
+
+              # ── DATETIME (Corrected Syntax) ──
               { 
-                type = "datetime"; 
+                type = "datetime";
                 key = "󰃶 Date"; 
                 keyColor = p.time; 
-                # Note: Use all lowercase 'datetime'
-                format = "{1}, {3} {2} {4}"; # This is Fastfetch's internal token system
+                # Nixpkgs-Unstable fastfetch uses direct strftime-style formatting
+                format = "%A, %B %d %Y"; 
               }
 
               (lib.optional (cfg.showBattery) {

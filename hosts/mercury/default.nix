@@ -33,7 +33,10 @@
       ghostty.enable = true;
       firefox.enable = true;
       gaming.enable = true;
-      fastfetch.enable = true;
+      fastfetch = {
+        enable = true;
+        showBattery = true;
+      };
       helix.enable = true;
       media.enable = true;
       social.enable = true;

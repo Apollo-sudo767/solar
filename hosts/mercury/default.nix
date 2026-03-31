@@ -1,8 +1,7 @@
-{ lib, inputs, ...}:
-
 {
   imports = [
-    ./hardware-configuration.nix
+    ./hardware.nix
+    ../shared/disko-standard.nix
   ];
 
   networking.hostName = "mercury";
@@ -10,37 +9,36 @@
 
   myFeatures = {
     core.enable = true;
+    core.persistence.enable = true;
     shell.enable = true;
     core.secureboot.enable = true;
-    core.security = {
-      enable = true;
-      useAppArmor = true;
-    };
-    core.sops.enable = true;
+
     hardware = {
       graphics.enable = true;
       battery = {
         enable = true;
         fullCharge = true;
         bluetooth.enable = true;
-        aggressive =true;
+        aggressive = true;
       };
       bluetooth.enable = true;
       controllers.enable = true;
       trackpad.enable = true;
       wifi.enable = true;
     };
+
     systems = {
       presets.gruvboxNiri.enable = true;
       displayManager.manager = "tuigreet";
     };
+
     programs = {
       ghostty.enable = true;
       firefox.enable = true;
       gaming.enable = true;
       fastfetch = {
         enable = true;
-        showBattery = true;
+        showBattery.enable = true;
       };
       helix.enable = true;
       media.enable = true;
@@ -49,6 +47,7 @@
       bitwarden.enable = true;
       stylePackages.enable = true;
     };
+
     services = {
       audio.enable = true;
       flatpak.enable = true;

@@ -26,7 +26,11 @@
     
     # Niri
     niri.url = "github:sodiboo/niri-flake";
-    
+
+    # Disko & Impermance
+    disko.url = "github:nix-community/disko"; #
+    impermanence.url = "github:nix-community/impermanence"; #
+
     # Zen Browser
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";

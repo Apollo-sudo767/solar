@@ -22,6 +22,9 @@
       files = [
         "/etc/machine-id"
         "/etc/adjtime"
+        "/etc/group"
+        "/etc/shadow"
+        "/etc/group"
       ];
       # Dynamically applies persistence to your users (defaulting to "apollo")
       users = lib.genAttrs config.myFeatures.core.users.usernames (name: {

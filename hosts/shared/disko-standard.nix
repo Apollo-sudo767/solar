@@ -1,10 +1,6 @@
 { lib, inputs, ... }:
-
 {
-  imports = [
-    inputs.disko.nixosModules.disko
-  ];
-  
+  imports = [ inputs.disko.nixosModules.disko ];
   disko.devices = {
     disk.main = {
       type = "disk";
@@ -27,11 +23,23 @@
             content = {
               type = "luks";
               name = "crypted";
-              # Disko prompts for the password during installation
               content = {
-                type = "filesystem";
-                format = "brtfs";
-                mountpoint = "/nix"; 
+                type = "btrfs";
+                extraArgs = [ "-f" ];
+                subvolumes = {
+                  "/root" = {
+                    mountpoint = "/"; # This is your fallback root
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/nix" = {
+                    mountpoint = "/nix";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/persist" = {
+                    mountpoint = "/persist";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                };
               };
             };
           };
@@ -40,7 +48,7 @@
     };
     nodev."/" = {
       fsType = "tmpfs";
-      mountOptions = [ "size=4G" "mode=755" ]; #
+      mountOptions = [ "size=4G" "mode=755" ];
     };
   };
 }

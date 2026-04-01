@@ -30,7 +30,7 @@
               # Disko prompts for the password during installation
               content = {
                 type = "filesystem";
-                format = "ext4";
+                format = "brtfs";
                 mountpoint = "/nix"; 
               };
             };

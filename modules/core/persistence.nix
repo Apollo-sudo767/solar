@@ -24,7 +24,7 @@
         "/etc/adjtime"
         "/etc/group"
         "/etc/shadow"
-        "/etc/group"
+        "/etc/passwd"
       ];
       # Dynamically applies persistence to your users (defaulting to "apollo")
       users = lib.genAttrs config.myFeatures.core.users.usernames (name: {

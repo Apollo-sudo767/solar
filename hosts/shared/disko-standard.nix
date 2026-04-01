@@ -28,7 +28,7 @@
                 extraArgs = [ "-f" ];
                 subvolumes = {
                   "/root" = {
-                    mountpoint = "/"; # This is your fallback root
+                    mountpoint = "/mnt-root"; # This is your fallback root
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
                   "/nix" = {

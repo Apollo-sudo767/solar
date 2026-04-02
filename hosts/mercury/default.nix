@@ -8,10 +8,13 @@
   system.stateVersion = "26.05";
 
   myFeatures = {
-    core.enable = true;
-    core.persistence.enable = true;
+    core = {
+      enable = true;
+      persistence.enable = true;
+      secureboot.enable = true;
+      userPersistence = true;
+    };
     shell.enable = true;
-    core.secureboot.enable = true;
 
     hardware = {
       graphics.enable = true;

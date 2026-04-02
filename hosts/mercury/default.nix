@@ -13,6 +13,7 @@
       persistence.enable = true;
       secureboot.enable = true;
       persistentUsers.enable = true;
+      sops.enable = true;
     };
     shell.enable = true;
 

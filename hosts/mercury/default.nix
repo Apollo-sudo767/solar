@@ -12,7 +12,7 @@
       enable = true;
       persistence.enable = true;
       secureboot.enable = true;
-      userPersistence = true;
+      persistentUsers.enable = true;
     };
     shell.enable = true;
 

@@ -7,7 +7,6 @@ in
   options.myFeatures.core = {
     enable = lib.mkEnableOption "Core System Foundation";
     
-    # New toggle for persistence mode
     usePersistence = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -20,17 +19,32 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    myFeatures.core = {
-      boot.enable = lib.mkDefault true;
-      nix-settings.enable = lib.mkDefault true;
-      fonts.enable = lib.mkDefault true;
-      localeChicago.enable = lib.mkDefault true;
-      ssh.enable = lib.mkDefault true;
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. Global Core Defaults
+    {
+      myFeatures.core = {
+        boot.enable = lib.mkDefault true;
+        nix-settings.enable = lib.mkDefault true;
+        fonts.enable = lib.mkDefault true;
+        localeChicago.enable = lib.mkDefault true;
+        ssh.enable = lib.mkDefault true;
+        
+        virtualization = {
+          docker = lib.mkIf cfg.virtualization.docker (lib.mkDefault true);
+          libvirt = lib.mkIf cfg.virtualization.libvirt (lib.mkDefault true);
+        };
+      };
+    }
 
-      # Logic to choose between the two modules
-      users.enable = lib.mkIf (!cfg.usePersistence) (lib.mkDefault true);
-      persistentUsers.enable = lib.mkIf (cfg.usePersistence) (lib.mkDefault true);
-    };
-  };
+    # 2. The Switcher - This prevents the collision
+    (lib.mkIf (!cfg.usePersistence) {
+      myFeatures.core.users.enable = lib.mkForce true;
+      myFeatures.core.persistentUsers.enable = lib.mkForce false;
+    })
+
+    (lib.mkIf cfg.usePersistence {
+      myFeatures.core.persistentUsers.enable = lib.mkForce true;
+      myFeatures.core.users.enable = lib.mkForce false;
+    })
+  ]);
 }

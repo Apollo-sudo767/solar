@@ -22,17 +22,18 @@ in
       useUserPackages = true;
       backupFileExtension = "backup";
       extraSpecialArgs = { inherit inputs; };
-      
+
       # Assign the mandatory stateVersion to every user
       users = lib.genAttrs cfg.usernames (name: {
         home.stateVersion = dynamicVersion;
       });
     };
-
     users.users = lib.genAttrs cfg.usernames (name: {
       isNormalUser = true;
       extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "lp" ];
       shell = pkgs.zsh;
+      hashedPassword = "$6$DiPno6lAVW7X0o2y$o/N4trYRrezewknSOX6/Iz5USTfYxvkPHh1mun4CSI/havYPLh3EI8eiTeIe32apouwjI3b2NAtMsB6Hl9Trd0";
     });
+
   };
 }

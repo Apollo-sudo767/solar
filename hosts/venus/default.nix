@@ -21,7 +21,6 @@
     hardware = {
       amd.enable = true;
       bluetooth.enable = true;
-      wifi.enable = true;
     };
     systems = {
       presets.gruvboxNiri.enable = true;

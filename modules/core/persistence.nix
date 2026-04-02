@@ -24,9 +24,6 @@
       files = [
         "/etc/machine-id"
         "/etc/adjtime"
-        "/etc/passwd"        # Essential for persistent user definitions
-        "/etc/shadow"        # Essential for persistent password hashes
-        "/etc/group"
       ];
 
       # 2. System-level user persistence

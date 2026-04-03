@@ -1,7 +1,6 @@
 { lib, inputs, ...}: {
   imports = [
-    ./hardware.nix
-    ../shared/disko-standard.nix
+    ./hardware-configuration.nix
   ];
 
   networking.hostName = "mercury";
@@ -12,8 +11,6 @@
       enable = true;
       persistence.enable = true;
       secureboot.enable = true;
-      persistentUsers.enable = true;
-      sops.enable = true;
     };
     shell.enable = true;
 

@@ -9,8 +9,11 @@
   myFeatures = {
     core = {
       enable = true;
-      persistence.enable = true;
       secureboot.enable = true;
+      security = {
+        enable = true;
+        useAppArmor = true;
+      };
     };
     shell.enable = true;
 

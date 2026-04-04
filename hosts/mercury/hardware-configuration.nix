@@ -12,13 +12,22 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
-
+  boot.initrd.systemd = {
+    enable = true;
+    tpm2.enable = true;
+  };
+  
   fileSystems."/" =
     { device = "/dev/mapper/luks-9e40bb0e-dbe2-4d30-b016-29c386b9c476";
       fsType = "ext4";
     };
 
-  boot.initrd.luks.devices."luks-9e40bb0e-dbe2-4d30-b016-29c386b9c476".device = "/dev/disk/by-uuid/9e40bb0e-dbe2-4d30-b016-29c386b9c476";
+  boot.initrd.luks.devices."luks-9e40bb0e-dbe2-4d30-b016-29c386b9c476" = {
+    device = "/dev/disk/by-uuid/9e40bb0e-dbe2-4d30-b016-29c386b9c476";
+    crypttabExtraOpts = [ "tpm2-device=auto" ];
+    preLVM = true;
+    allowDiscards = true;
+  };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/4476-6407";

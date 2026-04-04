@@ -47,10 +47,9 @@ in
           binds = {
             # --- Apps ---
             "Mod+Q".action.spawn = [ "ghostty" ];
-            "Mod+Shift+Q".action.spawn = [ "zen-beta" ];
+            "Mod+Shift+Q".action.spawn = [ "firefox" ];
             "Mod+D".action.spawn = [ "fuzzel" ];
             "Mod+C".action.close-window = { };
-            "Mod+Return".action.spawn = [ "foot" ];
             "Mod+Shift+E".action.quit = { };
             "Mod+Super+L".action.spawn = [ "swaylock" ];
 

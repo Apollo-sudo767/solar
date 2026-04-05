@@ -14,6 +14,7 @@ in
 
       programs.niri = {
         enable = true;
+        package = pkgs.niri;
         settings = {
           input = {
             # --- Keybind Modifiers ---

@@ -59,6 +59,9 @@
       xdgPortals.enable = true;
       printing.enable = true;
       udisks2.enable = true;
+      firmware.enable = true;
     };
   };
+
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 }

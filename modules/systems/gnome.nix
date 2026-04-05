@@ -9,7 +9,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.xserver.desktopManager.gnome.enable = true;     
+    services.xserver = {
+      enable = true;
+      desktopManager.gnome.enable = true;
+    };
+    
     # Exclude bloat to keep the system lean
     environment.gnome.excludePackages = with pkgs; [
       gnome-tour

@@ -1,4 +1,4 @@
 {
   system = "aarch64-linux";
-  stable = true; # Using the stable branch (25.11) for server reliability
+  stable = false; # Using the stable branch (25.11) for server reliability
 }

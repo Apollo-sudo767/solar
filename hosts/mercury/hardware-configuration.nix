@@ -29,6 +29,14 @@
     allowDiscards = true;
   };
 
+  # Swap Partition (p3) - This fixes the 90s hang
+  boot.initrd.luks.devices."luks-95dd7114-f8ee-4b6f-a8b1-2285dafdf137" = {
+    device = "/dev/disk/by-uuid/95dd7114-f8ee-4b6f-a8b1-2285dafdf137";
+    crypttabExtraOpts = [ "tpm2-device=auto" ];
+    preLVM = true;
+    allowDiscards = true;
+  };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/4476-6407";
       fsType = "vfat";

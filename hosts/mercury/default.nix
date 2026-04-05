@@ -50,6 +50,7 @@
       obs.enable = true;
       bitwarden.enable = true;
       stylePackages.enable = true;
+      anytype.enable = true;
     };
 
     services = {

@@ -16,9 +16,11 @@ in
         enable = true;
         settings = {
           input = {
+            # --- Keybind Modifiers ---
             mod-key = "Alt";
             mod-key-nested = "Super";
 
+            # --- Trackpad Settings ---
             touchpad = {
               tap = true;
               dwt = false;
@@ -45,10 +47,11 @@ in
           };
 
           binds = {
-            # --- Apps ---
+            # --- Apps & System ---
             "Mod+Q".action.spawn = [ "ghostty" ];
             "Mod+Shift+Q".action.spawn = [ "firefox" ];
             "Mod+D".action.spawn = [ "fuzzel" ];
+            "Mod+O".action.toggle-overview = { }; #
             "Mod+C".action.close-window = { };
             "Mod+Shift+E".action.quit = { };
             "Mod+Super+L".action.spawn = [ "swaylock" ];
@@ -58,6 +61,8 @@ in
             "Mod+Right".action.focus-column-right = { };
             "Mod+Up".action.focus-window-up = { };
             "Mod+Down".action.focus-window-down = { };
+            "Mod+Home".action.focus-column-first = { }; #
+            "Mod+End".action.focus-column-last = { }; #
 
             # --- Move Windows ---
             "Mod+Ctrl+Left".action.move-column-left = { };
@@ -71,16 +76,26 @@ in
             "Mod+Ctrl+Shift+Left".action.move-column-to-monitor-left = { };
             "Mod+Ctrl+Shift+Right".action.move-column-to-monitor-right = { };
 
-            # --- Layout Management (FIXED) ---
+            # --- Workspace Navigation ---
+            "Mod+WheelScrollDown".action.focus-workspace-down = { }; #
+            "Mod+WheelScrollUp".action.focus-workspace-up = { }; #
+            "Mod+TouchpadScrollDown".action.focus-workspace-down = { }; #
+            "Mod+TouchpadScrollUp".action.focus-workspace-up = { }; #
+
+            # --- Layout Management ---
             "Mod+Comma".action.consume-window-into-column = { };
             "Mod+Period".action.expel-window-from-column = { };
+            "Mod+K".action.center-column = { }; #
+            "Mod+R".action.switch-preset-column-width = { }; #
 
             # --- Show Keybinds ---
             "Mod+Shift+slash".action.show-hotkey-overlay = { };
 
             # --- Resizing & Columns ---
-            "Mod+Minus".action.set-column-width = "-10%";
-            "Mod+Equal".action.set-column-width = "+10%";
+            "Mod+Minus".action.set-column-width = "-10%"; #
+            "Mod+Equal".action.set-column-width = "+10%"; #
+            "Mod+Shift+Minus".action.set-window-height = "-10%"; #
+            "Mod+Shift+Equal".action.set-window-height = "+10%"; #
             "Mod+F".action.maximize-column = { };
             "Mod+Shift+F".action.fullscreen-window = { };
             "Mod+V".action.toggle-window-floating = { };
@@ -107,16 +122,12 @@ in
             "Mod+Shift+8".action.move-column-to-workspace = 8;
             "Mod+Shift+9".action.move-column-to-workspace = 9;
 
-            # --- Brightness Controls ---
+            # --- Brightness & Audio (Media) ---
             "XF86MonBrightnessUp".action.spawn = [ "brightnessctl" "set" "5%+" ];
             "XF86MonBrightnessDown".action.spawn = [ "brightnessctl" "set" "5%-" ];
-
-            # --- Volume Controls ---
             "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+" ];
             "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ];
             "XF86AudioMute".action.spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ];
-
-            # --- Media Controls ---
             "XF86AudioPlay".action.spawn = [ "playerctl" "play-pause" ];
             "XF86AudioNext".action.spawn = [ "playerctl" "next" ];
             "XF86AudioPrev".action.spawn = [ "playerctl" "previous" ];

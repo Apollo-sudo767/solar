@@ -38,6 +38,7 @@
       stylePackages.enable = true;
       bitwarden.enable = true;
       davinci.enable = true;
+      anytype.enable = true;
     };
     services = {
       audio.enable = true;

@@ -15,7 +15,6 @@ in
     environment.systemPackages = with pkgs; [
       fuzzel
       xwayland-satellite
-      mako
       swaybg
       swayidle
       swaylock

@@ -19,7 +19,11 @@
     systems.displayManager.manager = lib.mkForce "none";
     
     services = {
-      anytypeSync.enable = true; 
+      anytypeSync.enable = true;
+      nginx = {
+        enable = true;
+        domain = "anytype.apollan.cc"
+      }
     };
     programs = {
       fastfetch.enable = true;

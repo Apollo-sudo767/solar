@@ -32,4 +32,5 @@
   
   # Set the architecture for the image
   nixpkgs.hostPlatform = "aarch64-linux";
+  users.users.apollo.hashedPassword = "$6$uEe7O.pykcuIaZVc$oCGnxu68r7wpVkOAhJiXC.TGDwE6kETEYQTWCl.Y1Vsxn21WgRkjsuv0sTXB0ygf1duIJytQ6h3TgLmjVuKbr/";
 }

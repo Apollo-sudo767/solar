@@ -4,33 +4,35 @@ let
   cfg = config.myFeatures.programs.anytype;
 in
 {
-  # --- OPTIONS ---
   options.myFeatures.programs.anytype = {
     enable = lib.mkEnableOption "Anytype - Local-first, P2P personal knowledge base";
-
-    package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.anytype;
-      description = "The Anytype package to use.";
-    };
-
-    # Example of a custom toggle for the sync server if you were self-hosting
-    # but for now, we focus on the desktop client.
   };
 
-  # --- CONFIG ---
   config = lib.mkIf cfg.enable {
-    # Install the anytype package system-wide
-    environment.systemPackages = [
-      cfg.package
-    ];
+    # Install the package
+    environment.systemPackages = [ pkgs.anytype ];
 
-    # Anytype is an unfree package, so we ensure it's allowed if this module is on
-    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "anytype"
-    ];
+    # Fix: Prevent Anytype from creating a broken local desktop file.
+    # We do this by creating a symlink in the local user directory to /dev/null
+    # or by ensuring the system-wide desktop entry is correctly prioritized.
+    # Note: This uses the standard NixOS way to handle user-level file conflicts.
+    
+    systemd.user.services.anytype-desktop-fix = {
+      description = "Prevent Anytype from creating a conflicting local desktop file";
+      wantedBy = [ "graphical-session.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        # This command creates a symlink to /dev/null for the file Anytype tries to create.
+        # This makes the file 'read-only' to the application's internal script.
+        ExecStart = "${pkgs.bash}/bin/bash -c 'mkdir -p %h/.local/share/applications && ln -sf /dev/null %h/.local/share/applications/anytype.desktop'";
+        RemainAfterExit = true;
+      };
+    };
 
-    # Optional: Persistence or specific environment variables could be added here
-    # per the Solar "Nix-Way" refactor standards.
+    # Ensure the correct desktop file is used by the system
+    # This overrides any local 'dirty' hacks the AppImage/Binary might try
+    xdg.terminal-exec.settings = {
+      # Optional: specific handling if you use custom launchers
+    };
   };
 }

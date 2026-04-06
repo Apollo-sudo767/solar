@@ -28,7 +28,7 @@ in
       protectKernelImage = true;
       
       # Disabling unprivileged user namespaces
-      unprivilegedUsernsClone = false; 
+      unprivilegedUsernsClone = true; 
       
       sudo.execWheelOnly = true;
       auditd.enable = true;
@@ -41,17 +41,6 @@ in
     # 4. Glibc & Memory Allocator Hardening
     environment.variables.MALLOC_CHECK_ = "1";
 
-    # 5. Network Privacy: DNS-over-TLS (Structured Settings Refactor)
-    services.resolved = {
-      enable = true;
-      # FIX: Use the specific Resolve sub-attribute set as indicated by warnings
-      settings.Resolve = {
-        DNSSEC = "true";
-        DNSOverTLS = "opportunistic";
-        Domains = "~.";
-        FallbackDNS = "1.1.1.1 9.9.9.9";
-      };
-    };
 
     networking.firewall.enable = lib.mkDefault true;
   };

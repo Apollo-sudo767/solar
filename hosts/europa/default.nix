@@ -12,10 +12,19 @@
     core = {
       enable = true;
       users.usernames = [ "hephaestus" ];
+      security = {
+        enable = true;
+        useAppArmor = true;
+      };
     };
     shell.enable = true;
     hardware = {
       graphics.enable = true;
+      nvidia = {
+        enable = true;
+        open = false;
+        beta = true;
+      };
       battery = {
         enable = true;
         fullCharge = true;

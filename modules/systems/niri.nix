@@ -23,7 +23,7 @@ in
       swaylock
       networkmanagerapplet
       thunar
-      swww
+      awww
       swaynotificationcenter
       brightnessctl
     ];

@@ -36,6 +36,10 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    # Nix Minecraft
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    
   };
 
   outputs = { self, nixpkgs-unstable, ... }@inputs: 

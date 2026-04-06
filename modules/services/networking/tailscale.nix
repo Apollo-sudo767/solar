@@ -4,7 +4,7 @@ let
   cfg = config.myFeatures.services.networking.tailscale;
 in
 {
-  options.myFeatures.core.services.tailscale = {
+  options.myFeatures.services.networking.tailscale = {
     enable = lib.mkEnableOption "Tailscale Mesh VPN";
   };
 

@@ -9,7 +9,7 @@ let
     lib.flatten (lib.mapAttrsToList (name: type:
       let path = "${toString dir}/${name}"; in
       if type == "directory" then
-        getNixFiles path
+        if name == "hosts" then [] else getNixFiles path
       else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
         path
       else []

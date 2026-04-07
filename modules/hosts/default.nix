@@ -1,7 +1,7 @@
 { lib, inputs, globalModules }:
 
 let
-  # 1. Discover all directories in the current folder (hosts/), excluding "shared"
+  # 1. Discover all directories in the current folder (modules/hosts/), excluding "shared"
   hostDirs = lib.filter (name: 
     let 
       type = (builtins.readDir ./.).${name};
@@ -16,6 +16,7 @@ let
   # 3. The generator function
   mkHost = name: 
     let
+      # Load machine-specific settings from the new location under modules/hosts/
       machine = import ./${name}/settings.nix;
       isStable = machine.stable or false;
       pkgs-input = getPkgInput isStable;
@@ -24,13 +25,14 @@ let
       inherit (machine) system;
       specialArgs = { 
         inherit inputs isStable;
+        # Provide the 'other' channel for convenience
         pkgs-stable = import inputs.nixpkgs-stable { 
           inherit (machine) system; 
           config.allowUnfree = true; 
         };
       };
       modules = globalModules ++ [
-        ./${name} 
+        ./${name} # Automatically imports modules/hosts/${name}/default.nix
         (getHMInput isStable).nixosModules.home-manager
         {
           networking.hostName = name;

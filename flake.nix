@@ -47,7 +47,7 @@
       inherit (nixpkgs-unstable) lib;
       
       # We import the host loader here
-      hostLoader = import ./hosts/default.nix {
+      hostLoader = import ./modules/hosts/default.nix {
         inherit lib inputs;
         # We pass the path to the modules/default.nix here
         globalModules = [ ./modules/default.nix ]; 

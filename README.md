@@ -4,7 +4,7 @@ ___
 A NixOS configuration that is structured like a tree \| Modular, Automated, and purely nix declarative   
 
 ![limine-bg](assets/wallpapers/limine-bg.png)    
-## The Dendretic Tree   
+## 🌲 The Dendretic Tree   
 New Features and Hosts are automatically discovered and integrated. This structure treats the fleet of machines it serves as a single unified module tree.
 
 ````text

@@ -17,35 +17,34 @@
       enable = true;
       useAppArmor = true;
     };
-    core.sops.enable = true;
     hardware = {
       amd.enable = true;
-      bluetooth.enable = true;
-    };
-    systems = {
-      presets.gruvboxNiri.enable = true;
-      displayManager.manager = "tuigreet";
     };
     programs = {
       ghostty.enable = true;
-      gaming.enable = true;
-      firefox.enable = true;
       fastfetch.enable = true;
       helix.enable = true;
-      media.enable = true;
-      social.enable = true;
-      obs.enable = true;
-      stylePackages.enable = true;
-      bitwarden.enable = true;
-      davinci.enable = true;
-      anytype.enable = true;
     };
     services = {
-      audio.enable = true;
-      flatpak.enable = true;
-      printing.enable = true;
-      xdgPortals.enable = true;
       udisks2.enable = true;
+      networking = {
+        enable = true;
+        cloudflare = {
+          enable = true;
+          tunnelId = "17984f9e-b81c-4884-ace1-5347716a0928";
+          domains = {
+            "sllv.apollan.cc" = "tcp://localhost:25566";
+            "survival.apollan.cc" = "tcp//localhost:25565";
+            "phastorio.apollan.cc" = "tcp//localhost:34197";
+          };
+        };
+        tailscale.enable = true;
+      };
+      game-servers = {
+        factorio.enable = true;
+        minecraft-mca.enable = true;
+        minecraft-vanilla.enable = true;
+      };
     };
   };
 }

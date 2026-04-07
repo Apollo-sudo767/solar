@@ -9,22 +9,34 @@ in
 
   options.myFeatures.services.game-servers.minecraft-mca = {
     enable = lib.mkEnableOption "Minecraft MCA Reborn (4 Player)";
+    address = lib.mkOption { type = lib.types.str; default = "0.0.0.0"; };
+    port = lib.mkOption { type = lib.types.port; default = 25566; };
   };
 
   config = lib.mkIf cfg.enable {
+    # CRITICAL: Apply the overlay so pkgs contains the fabricServers attributes
+    nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
+
     services.minecraft-servers = {
       enable = true;
       eula = true;
       servers.mca-reborn = {
         enable = true;
-        package = pkgs.minecraftServers.fabric-1_21_1;
-        jvmOpts = "-Xmx4G -Xms4G";
+        
+        # Updated to the correct attribute path provided by the nix-minecraft overlay
+        package = pkgs.fabricServers.fabric-1_21_1;
+        
+        jvmOpts = "-Xmx8G -Xms8G";
         serverProperties = {
-          server-port = 25566;
+          server-ip = cfg.address;
+          server-port = cfg.port;
           motd = "Solar MCA Reborn | Family & Friends";
           max-players = 4;
         };
       };
     };
+
+    # Automatically open the configured port in the firewall
+    networking.firewall.allowedTCPPorts = [ cfg.port ];
   };
 }

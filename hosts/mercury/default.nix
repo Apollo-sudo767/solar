@@ -60,6 +60,9 @@
       printing.enable = true;
       udisks2.enable = true;
       firmware.enable = true;
+      networking = {
+        tailscale.enable = true;
+      };
     };
   };
 

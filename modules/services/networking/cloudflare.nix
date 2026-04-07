@@ -12,7 +12,8 @@ in
     };
     credentialsFile = lib.mkOption {
       type = lib.types.path;
-      default = "/var/lib/cloudflare/tunnel-creds.json";
+      # Recommended to use a path that sops-nix can provide
+      default = "/var/lib/cloudflare/tunnel-creds.json"; 
       description = "Local path to the tunnel JSON credentials";
     };
     domains = lib.mkOption {
@@ -27,8 +28,10 @@ in
       enable = true;
       tunnels."${cfg.tunnelId}" = {
         inherit (cfg) credentialsFile;
-        ingress = cfg.domains;
-        default = "http_status:404";
+        # Map your domains attribute set into the list format cloudflared expects
+        ingress = (lib.mapAttrsToList (hostname: service: {
+          inherit hostname service;
+        }) cfg.domains) ++ [ { default = "http_status:404"; } ];
       };
     };
   };

@@ -34,14 +34,12 @@
           tunnelId = "17984f9e-b81c-4884-ace1-5347716a0928";
           domains = {
             "sllv.apollan.cc" = "tcp://localhost:25566";
-            "survival.apollan.cc" = "tcp//localhost:25565";
-            "phastorio.apollan.cc" = "tcp//localhost:34197";
+            "survival.apollan.cc" = "tcp://localhost:25565"; # Added missing colon
           };
         };
         tailscale.enable = true;
       };
       game-servers = {
-        factorio.enable = true;
         minecraft-mca.enable = true;
         minecraft-vanilla.enable = true;
       };

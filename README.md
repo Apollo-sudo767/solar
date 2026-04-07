@@ -1,6 +1,7 @@
-# README.md
-___ 
-## Solar ☀️: Fully Automated Dendretic Flake   
+# Solar ☀️
+____
+
+## ❄️ Fully Automated Dendretic Flake   
 A NixOS configuration that is structured like a tree \| Modular, Automated, and purely nix declarative   
 
 ![limine-bg](assets/wallpapers/limine-bg.png)    

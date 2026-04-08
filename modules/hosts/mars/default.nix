@@ -17,7 +17,7 @@
       enable = true;
       useAppArmor = true;
     };
-    core.sops.enable = true;
+    core.lix.enable = true;
     hardware = {
       amd.enable = true;
       nvidia = {

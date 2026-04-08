@@ -11,6 +11,7 @@
 
   myFeatures = {
     core.enable = true;
+    core.lix.enable = true;
     shell.enable = true;
     core.secureboot.enable = true;
     core.security = {

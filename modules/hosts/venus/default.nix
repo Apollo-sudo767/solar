@@ -29,14 +29,6 @@
       udisks2.enable = true;
       networking = {
         enable = true;
-        cloudflare = {
-          enable = true;
-          tunnelId = "17984f9e-b81c-4884-ace1-5347716a0928";
-          domains = {
-            "sllv.apollan.cc" = "tcp://localhost:25566";
-            "survival.apollan.cc" = "tcp://localhost:25565"; # Added missing colon
-          };
-        };
         tailscale.enable = true;
       };
       game-servers = {

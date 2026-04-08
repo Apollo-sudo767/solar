@@ -91,7 +91,7 @@ in {
               { type = "wm"; key = "│ 󱂬 WM      "; keyColor = p.de; }
               { type = "wmTheme"; key = "│ 󰉼 Theme   "; keyColor = p.de; }
               { type = "icons"; key = "│ 󰀻 Icons   "; keyColor = p.de; }
-              { type = "packages"; key = "│ 󰏗 Packages"; keyColor = "green"; }
+              { type = "packages"; key = "│ 󰏗 Packages"; keyColor = p.de; }
               (endGroup p.de)
               { type = "break"; }
 
@@ -111,14 +111,16 @@ in {
               (endGroup p.net)
               { type = "break"; }
 
-              # ── DATETIME (Corrected Syntax) ──
+              # ── TIME GROUP (Corrected Syntax & Themed) ──
+              (startGroup "Time" p.time)
               { 
                 type = "datetime";
-                key = "󰃶 Date"; 
+                key = "│ 󰃶 Date    "; 
                 keyColor = p.time; 
                 # Nixpkgs-Unstable fastfetch uses direct strftime-style formatting
                 format = "%A, %B %d %Y"; 
               }
+              (endGroup p.time)
 
               (lib.optional (cfg.showBattery) {
                 type = "battery";

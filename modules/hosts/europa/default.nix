@@ -22,6 +22,7 @@
         open = false;
         beta = false;
       };
+      prime.enable = true;
       battery = {
         enable = true;
         fullCharge = true;
@@ -58,6 +59,7 @@
       xdgPortals.enable = true;
       printing.enable = true;
       udisks2.enable = true;
+      networking.tailscale.enable = true;
     };
   };
 }

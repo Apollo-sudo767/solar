@@ -27,6 +27,7 @@
           nvidiaBusId = "PCI:1:0:0";
         };
       };
+      intel.enable = true;
       battery = {
         enable = true;
         fullCharge = true;

@@ -20,7 +20,7 @@ in
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
-      backupFileExtension = "backup";
+      backupFileExtension = "hm-backup";
       extraSpecialArgs = { inherit inputs; };
 
       # Assign the mandatory stateVersion to every user

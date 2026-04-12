@@ -5,18 +5,13 @@ let
 in
 {
   options.myFeatures.hardware.nvidia.prime = {
-    enable = lib.mkEnableOption "Nvidia PRIME Offload Mode";
-    intelBusId = lib.mkOption {
-      type = lib.types.str;
-      default = "PCI:0:2:0";
-    };
-    nvidiaBusId = lib.mkOption {
-      type = lib.types.str;
-      default = "PCI:1:0:0";
-    };
+    enable = lib.mkEnableOption "Nvidia PRIME Offload Mode (Laptop)";
+    intelBusId = lib.mkOption { type = lib.types.str; default = "PCI:0:2:0"; };
+    nvidiaBusId = lib.mkOption { type = lib.types.str; default = "PCI:1:0:0"; };
   };
 
   config = lib.mkIf cfg.enable {
+    # Ensure Nvidia is enabled if PRIME is enabled
     myFeatures.hardware.nvidia.enable = lib.mkDefault true;
 
     hardware.nvidia.prime = {

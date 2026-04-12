@@ -13,7 +13,9 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.hardware.graphics.enable = true;
 
-    services.xserver.videoDrivers = [ "nvidia" ];
+    # Prepend 'nvidia' so it's available, but let 'modesetting' (Intel) 
+    # take priority on laptops via lib.mkDefault in intel.nix
+    services.xserver.videoDrivers = lib.mkBefore [ "nvidia" ];
 
     boot = {
       kernelParams = [
@@ -21,12 +23,7 @@ in
         "nvidia.NVREG_PreserveVideoMemoryAllocations=1"
         "nvidia-drm.fbdev=1"
       ];
-      initrd.kernelModules = [
-        "nvidia"
-        "nvidia_modeset"
-        "nvidia_uvm"
-        "nvidia_drm"
-      ];
+      initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
     };
     
     hardware.nvidia = {
@@ -36,7 +33,6 @@ in
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;
       
-      # Correct package logic for Pascal cards like the P2000
       package = let 
         pkgs-nvidia = config.boot.kernelPackages.nvidiaPackages;
       in if cfg.beta then pkgs-nvidia.beta 
@@ -57,11 +53,9 @@ in
     ];
 
     environment.variables = {
-      LIBVA_DRIVER_NAME = "nvidia";
-      GBM_BACKEND = "nvidia-drm";
-      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
       WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONE_WL = "1";
+      # Removed global LIBVA_DRIVER_NAME to prevent Intel/Nvidia conflicts
     };
   };
 }

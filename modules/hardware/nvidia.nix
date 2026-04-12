@@ -31,18 +31,19 @@ in
     
     hardware.nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = true; # Recommended for modern Wayland/Niri
-      open = cfg.open; # Now uses the toggle
+      powerManagement.enable = true;
+      open = cfg.open;
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;
       
-      # Select package based on beta toggle
-      package = if cfg.beta 
-                then config.boot.kernelPackages.nvidiaPackages.beta 
-                else config.boot.kernelPackages.nvidiaPackages.stable;
+      # Correct package logic for Pascal cards like the P2000
+      package = let 
+        pkgs-nvidia = config.boot.kernelPackages.nvidiaPackages;
+      in if cfg.beta then pkgs-nvidia.beta 
+         else if cfg.open then pkgs-nvidia.open 
+         else pkgs-nvidia.stable; 
     };
 
-    # ... keep the rest of your VA-API and environment.variables exactly as they were ...
     hardware.graphics.extraPackages = with pkgs; [
       nvidia-vaapi-driver
       libva-vdpau-driver

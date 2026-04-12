@@ -9,17 +9,14 @@ in
     intelBusId = lib.mkOption {
       type = lib.types.str;
       default = "PCI:0:2:0";
-      description = "Bus ID of the Intel GPU. Find with lspci.";
     };
     nvidiaBusId = lib.mkOption {
       type = lib.types.str;
       default = "PCI:1:0:0";
-      description = "Bus ID of the Nvidia GPU. Find with lspci.";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # Ensure the base Nvidia driver is also enabled
     myFeatures.hardware.nvidia.enable = lib.mkDefault true;
 
     hardware.nvidia.prime = {
@@ -31,7 +28,6 @@ in
       nvidiaBusId = cfg.nvidiaBusId;
     };
 
-    # Helper script for the user: 'nvidia-offload <program>'
     environment.systemPackages = [
       (pkgs.writeShellScriptBin "nvidia-offload" ''
         export __NV_PRIME_RENDER_OFFLOAD=1

@@ -10,7 +10,9 @@ in
 
   config = lib.mkIf cfg.enable {
     services.xserver.enable = true; 
-    services.desktopManager.plasma6.enable = true; 
+    services.desktopManager.plasma6.enable = true;
+
+    programs.kde-pim.enable = false;
 
     environment.systemPackages = with pkgs; [
       kdePackages.krunner
@@ -19,6 +21,8 @@ in
       kdePackages.dolphin
       kdePackages.spectacle
       kdePackages.ark
+      kdePackages.qtstyleplugin-kvantum
+      libsForQt5.qtstyleplugin-kvantum
     ]; 
 
     # Ensure Plasma uses its specific portal

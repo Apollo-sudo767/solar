@@ -11,7 +11,7 @@ in
 
     # Ensure the kernel uses the correct driver for modern Intel iGPUs
     boot.initrd.kernelModules = [ "i915" ];
-    services.xserver.videoDrivers = [ "modesetting" ];
+    services.xserver.videoDrivers = lib.mkDefault [ "modesetting" ];
 
     hardware.graphics.extraPackages = with pkgs; [
       intel-media-driver # Modern iHD driver for Broadwell+

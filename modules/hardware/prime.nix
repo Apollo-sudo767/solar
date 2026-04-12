@@ -28,6 +28,7 @@ in
         export __NV_PRIME_RENDER_OFFLOAD=1
         export __NV_PRIME_RENDER_OFFLOAD_HANDLER=nvidia
         export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        export __EGL_VENDOR_LIBRARY_FILENAMES=/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json
         export __VK_LAYER_NV_optimus=NVIDIA_only
         exec "$@"
       '')

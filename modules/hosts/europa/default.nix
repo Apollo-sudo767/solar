@@ -28,7 +28,6 @@
         bluetooth.enable = false;
         aggressive = true;
       };
-      bluetooth.enable = true;
       controllers.enable = true;
       trackpad.enable = true;
       wifi.enable = true;

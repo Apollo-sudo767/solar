@@ -12,10 +12,6 @@
     core = {
       enable = true;
       users.usernames = [ "hephaestus" ];
-      security = {
-        enable = true;
-        useAppArmor = true;
-      };
       lix.enable = true;
     };
     shell.enable = true;

@@ -17,14 +17,10 @@ in
       intel-media-driver # Modern iHD driver for Broadwell+
       intel-vaapi-driver # Older i965 driver (Keep for compatibility)
       libvdpau-va-gl
-      vulkan-intel
-      mesa.drivers
     ];
 
     hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
       intel-media-driver
-      vulkan-intel
-      mesa.drivers
     ];
 
     environment.variables = {

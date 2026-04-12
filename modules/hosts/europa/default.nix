@@ -20,7 +20,7 @@
       nvidia = {
         enable = true;
         open = false;
-        beta = true;
+        beta = false;
       };
       battery = {
         enable = true;

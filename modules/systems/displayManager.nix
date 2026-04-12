@@ -38,6 +38,6 @@ in
     services.xserver.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; 
 
     # SDDM (Plasma) - Updated path for consistency
-    services.displayManager.sddm.enable = lib.mkIf (cfg.manager == "sddm") true; 
+    services.displayManager.sddm.wayland.enable = lib.mkIf (cfg.manager == "sddm") true; 
   };
 }

@@ -22,7 +22,6 @@ in
       kdePackages.spectacle
       kdePackages.ark
       kdePackages.qtstyleplugin-kvantum
-      libsForQt5.qtstyleplugin-kvantum
     ]; 
 
     # Ensure Plasma uses its specific portal

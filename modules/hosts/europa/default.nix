@@ -32,6 +32,7 @@
       bluetooth.enable = true;
       controllers.enable = true;
       trackpad.enable = true;
+      wifi.enable = true;
     };
     systems = {
       kde.enable = true;

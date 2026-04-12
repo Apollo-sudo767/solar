@@ -38,7 +38,7 @@ in
       base16Scheme = if (cfg.scheme != null) 
                      then cfg.scheme 
                      else "${pkgs.base16-schemes}/share/themes/nord.yaml";
-      
+
       polarity = "dark";
       
       targets = {
@@ -48,9 +48,19 @@ in
           logoAnimated = true;
           logo = "${pkgs.nixos-icons}/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";          
         };
-        qt.platform = lib.mkForce "qtct";
+        qt = {
+          enable = true;
+          platform = lib.mkForce "qtct";
+        };
       };
+
     };
+
+    qt = {
+      enable = true;
+      platformTheme = lib.mkForce "kde";
+      style = lib.mkForce "kvantum";
+    };    
 
     # We do NOT use home-manager.sharedModules here. 
     # The NixOS module automatically injects these settings into all HM users.

@@ -8,19 +8,18 @@ in
     enable = lib.mkEnableOption "Nvidia Proprietary Drivers";
     beta = lib.mkEnableOption "Use Nvidia Beta Driver Channel";
     open = lib.mkEnableOption "Use Open Source Kernel Modules (Modern)";
+    legacy = lib.mkEnableOption "Use Legacy Driver Branch (for P2000/Pascal)";
   };
 
   config = lib.mkIf cfg.enable {
     myFeatures.hardware.graphics.enable = true;
-
-    # Prepend 'nvidia' so it's available, but let 'modesetting' (Intel) 
-    # take priority on laptops via lib.mkDefault in intel.nix
     services.xserver.videoDrivers = lib.mkBefore [ "nvidia" ];
 
     boot = {
       kernelParams = [
         "nvidia-drm.modeset=1"
-        "nvidia.NVREG_PreserveVideoMemoryAllocations=1"
+        # Fixed lowercase syntax to avoid kernel ignore error
+        "nvidia.nvreg_preserve_video_memory_allocations=1" 
         "nvidia-drm.fbdev=1"
       ];
       initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
@@ -33,9 +32,11 @@ in
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;
       
+      # Advanced package selection logic
       package = let 
         pkgs-nvidia = config.boot.kernelPackages.nvidiaPackages;
-      in if cfg.beta then pkgs-nvidia.beta 
+      in if cfg.legacy then pkgs-nvidia.legacy_580 # Explicitly for your P2000
+         else if cfg.beta then pkgs-nvidia.beta 
          else if cfg.open then pkgs-nvidia.open 
          else pkgs-nvidia.stable; 
     };
@@ -55,7 +56,6 @@ in
     environment.variables = {
       WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONE_WL = "1";
-      # Removed global LIBVA_DRIVER_NAME to prevent Intel/Nvidia conflicts
     };
   };
 }

@@ -20,7 +20,7 @@
       nvidia = {
         enable = true;
         open = false;
-        beta = false;
+        legacy = true;
         prime = {
           enable = true;
           intelBusId = "PCI:0:2:0";

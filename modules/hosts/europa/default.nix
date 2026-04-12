@@ -21,8 +21,8 @@
         enable = true;
         open = false;
         beta = false;
+        prime.enable = true;
       };
-      prime.enable = true;
       battery = {
         enable = true;
         fullCharge = true;

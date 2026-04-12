@@ -2,12 +2,19 @@
 
 let
   cfg = config.myFeatures.hardware.battery;
+  
+  # Define thresholds as strings to ensure clean interpolation
+  startThreshold = if cfg.fullCharge then "95" else "75";
+  stopThreshold = if cfg.fullCharge then "100" else "80";
 
   # Battery threshold script for T14 Gen 2 hardware registers
   set-battery-thresholds = pkgs.writeShellScriptBin "set-battery-thresholds" ''
+    # Wait a moment for acpi_call to be fully initialized
+    sleep 2
     # BAT0 is the internal battery
-    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s ST 0 ${if cfg.fullCharge then "95" else "75"}
-    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s SP 0 ${if cfg.fullCharge then "100" else "80"}
+    # -s ST (Start Threshold), -s SP (Stop Threshold)
+    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s ST 0 ${startThreshold}
+    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s SP 0 ${stopThreshold}
   '';
 in
 {
@@ -16,27 +23,31 @@ in
     enable = lib.mkEnableOption "ThinkPad Power Management";
     fullCharge = lib.mkOption { 
       type = lib.types.bool; 
-      default = false; 
+      default = false;
       description = "If false, caps charge at 80% to preserve battery health.";
     };
     bluetooth = { 
       enable = lib.mkOption { 
-        type = lib.types.bool; 
+        type = lib.types.bool;
         default = false; 
         description = "Manage Bluetooth power states based on AC/Battery.";
       }; 
     };
     aggressive = lib.mkOption { 
       type = lib.types.bool; 
-      default = false; 
+      default = false;
       description = "Enable experimental kernel tweaks for maximum savings.";
     };
   };
 
   # --- CONFIG ---
   config = lib.mkIf cfg.enable {
+    # 0. Kernel Requirements
+    # Required backend for tpacpi-bat to talk to ThinkPad hardware registers
+    boot.kernelModules = [ "acpi_call" ];
+    boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
+
     # 1. CPU Management
-    # auto-cpufreq handles dynamic scaling better than TLP on modern Ryzen/Intel
     services.auto-cpufreq.enable = true;
     services.auto-cpufreq.settings = {
       charger = {
@@ -62,24 +73,22 @@ in
     };
 
     # 3. Explicit Hardware Control & Conflict Resolution
-    # We use mkForce to ensure these stay OFF even if other modules try to enable them
     services.tlp.enable = lib.mkForce false;
     services.power-profiles-daemon.enable = lib.mkForce false;
 
     boot.kernelParams = [ 
-      "mem_sleep_default=deep"   # Ensure ports/logic power off completely during sleep
-      "usbcore.autosuspend=-1"   # Prevent USB idling while the system is awake
+      "mem_sleep_default=deep"
+      "usbcore.autosuspend=-1"
     ] ++ (lib.optionals cfg.aggressive [
-      "pcie_aspm=force"           # Force PCIe lanes to sleep
+      "pcie_aspm=force"
       "workqueue.power_efficient=Y" 
-      "nvme.noacpi=1"             # Deep sleep for NVME SSDs
+      "nvme.noacpi=1"
     ]);
 
     # 4. Radio & Networking
     networking.networkmanager.wifi.powersave = true;
     hardware.bluetooth.powerOnBoot = lib.mkIf cfg.bluetooth.enable false;
 
-    # udev: Manual control over Radio and Wifi power states
     services.udev.extraRules = ''
       # ON AC: Max performance, Bluetooth ON
       SUBSYSTEM=="power_supply", ATTR{online}=="1", \
@@ -101,11 +110,11 @@ in
 
     # 6. System Packages
     environment.systemPackages = with pkgs; [
-      tpacpi-bat  # Backend for thresholds
-      powertop    # Power monitoring
-      acpi        # Battery status
-      iw          # Wifi power control
-      bluez       # Bluetooth control
+      tpacpi-bat
+      powertop
+      acpi
+      iw
+      bluez
     ];
   };
 }

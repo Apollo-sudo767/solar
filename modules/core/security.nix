@@ -31,8 +31,6 @@ in
       unprivilegedUsernsClone = true; 
       
       sudo.execWheelOnly = true;
-      auditd.enable = true;
-      audit.enable = true;
     };
 
     # 3. Systemd OOMD

@@ -37,10 +37,10 @@ Managed via **Stylix**. Wallpapers and themes are centralized in the `assets/` f
 ![Screenshot from 2026-04-06 23-30-27](assets/screenshots/ss3.png)    
    
 ## 🚀 Enabling Features   
-Every module in the /modules directory can be enabled through   
+Every module in the /modules directory can be enabled through (with the Niri feature module as an example"
 ```
 # Inside modules/hosts/<hostname>/default.nix
-myFeatures.programs.niri.enable = true;
+myFeatures.systems.niri.enable = true;
 ```
 ## ⚒️Deployment Instructions   
 To apply a configuration to a machine for the first time run   

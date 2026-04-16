@@ -49,9 +49,11 @@ sudo nixos-rebuild boot --flake .#<hostname>
 ```
 To update a machine enter   
 ```
+# First to Update Flake Inputs (This puts you on the latest version)
 nix flake update
+# And then to do a live update to the system
 nrs
-# Or, if you'd like to update system without rebooting
+# Or, if you'd like to update system that only applies changes after a reboot
 nrb
 ```
    

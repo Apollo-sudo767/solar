@@ -36,7 +36,7 @@
         # Set host-specific ports here
         factorio = {
           enable = true;
-          port = 34200; 
+          port = 34197; 
         };
         minecraft-mca = {
           enable = true;

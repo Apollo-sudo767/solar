@@ -22,7 +22,7 @@ in
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
         
-        jvmOpts = "-Xmx8G -Xms8G";
+        jvmOpts = "-Xmx8G -Xms8G -Djava.awt.headless=true";
         serverProperties = {
           server-ip = cfg.address;
           server-port = cfg.port;

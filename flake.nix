@@ -39,6 +39,9 @@
 
     # Nix Minecraft
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+
+    # Anytype Server
+    anytype-bundle.url = "github:grishy/any-sync-bundle";
     
   };
 

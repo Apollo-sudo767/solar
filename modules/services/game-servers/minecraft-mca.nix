@@ -1,4 +1,3 @@
-# modules/services/game-servers/minecraft-mca.nix
 { config, lib, pkgs, inputs, ... }:
 
 let
@@ -14,7 +13,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # CRITICAL: Apply the overlay so pkgs contains the fabricServers attributes
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
     services.minecraft-servers = {
@@ -22,9 +20,7 @@ in
       eula = true;
       servers.mca-reborn = {
         enable = true;
-        
-        # Updated to the correct attribute path provided by the nix-minecraft overlay
-        package = pkgs.fabricServers.fabric-1_21_1;
+        package = pkgs.minecraftServers.fabric-1_21_1;
         
         jvmOpts = "-Xmx8G -Xms8G";
         serverProperties = {
@@ -36,7 +32,6 @@ in
       };
     };
 
-    # Automatically open the configured port in the firewall
     networking.firewall.allowedTCPPorts = [ cfg.port ];
   };
 }

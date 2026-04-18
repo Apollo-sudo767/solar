@@ -33,8 +33,23 @@
         tailscale.enable = true;
       };
       game-servers = {
-        minecraft-mca.enable = true;
-        minecraft-vanilla.enable = true;
+        # Set host-specific ports here
+        factorio = {
+          enable = true;
+          port = 34200; 
+        };
+        minecraft-mca = {
+          enable = true;
+          port = 25570;
+        };
+        minecraft-vanilla = {
+          enable = true;
+          # (Uses default 25565 if not defined in module)
+        };
+      };
+      anytype = {
+        enable = true;
+        externalAddr = "anytype.apollan.cc";
       };
     };
   };

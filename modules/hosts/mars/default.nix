@@ -53,6 +53,10 @@
       printing.enable = true;
       xdgPortals.enable = true;
       udisks2.enable = true;
+      networking = {
+        enable = true;
+        tailscale.enable = true;
+      };
     };
   };
 }

@@ -1,4 +1,3 @@
-# modules/services/game-servers/minecraft-vanilla.nix
 { config, lib, pkgs, inputs, ... }:
 
 let
@@ -9,23 +8,26 @@ in
 
   options.myFeatures.services.game-servers.minecraft-vanilla = {
     enable = lib.mkEnableOption "Minecraft Vanilla+ (Terralith/Distant Horizons)";
+    port = lib.mkOption { type = lib.types.port; default = 25565; };
   };
 
   config = lib.mkIf cfg.enable {
+    nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
+
     services.minecraft-servers = {
       enable = true;
       eula = true;
       servers.vanilla-plus = {
         enable = true;
-        # Using Fabric for Distant Horizons / Terralith support
-        package = pkgs.minecraftServers.fabric-1_21_11; 
-        jvmOpts = "-Xmx6G -Xms6G"; # Increased for world-gen mods
+        package = pkgs.minecraftServers.fabric-1_21_1; 
+        jvmOpts = "-Xmx6G -Xms6G";
         serverProperties = {
-          server-port = 25565;
+          server-port = cfg.port;
           motd = "Solar Vanilla+ | Terralith & Tectonic";
-          level-type = "minecraft:normal"; # Terralith/Tectonic handle this via datapacks
         };
       };
     };
+
+    networking.firewall.allowedTCPPorts = [ cfg.port ];
   };
 }

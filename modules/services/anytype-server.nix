@@ -22,7 +22,10 @@ in
 
   config = lib.mkIf cfg.enable {
     # 1. Dependencies - Anytype Bundle needs Mongo and Redis
-    services.mongodb.enable = true;
+    services.mongodb = {
+      enable = true;
+      package = pkgs.mongodb-ce;
+    };
     services.redis.servers.anytype = {
       enable = true;
       port = 6379;

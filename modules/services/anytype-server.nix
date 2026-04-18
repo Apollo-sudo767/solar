@@ -1,42 +1,40 @@
 { config, lib, ... }:
 
 let
-  cfg = config.myfeatures.services.anytype;
+  cfg = config.myFeatures.services.anytype;
 in
 {
-  options.myfeatures.services.anytype = {
-    enable = lib.mkenableoption "anytype self-hosted network";
-    externaladdr = lib.mkoption {
+  options.myFeatures.services.anytype = {
+    enable = lib.mkEnableOption "Anytype Self-Hosted Network";
+    externalAddr = lib.mkOption {
       type = lib.types.str;
       default = "anytype.apollan.cc";
     };
   };
 
-  config = lib.mkif cfg.enable {
+  config = lib.mkIf cfg.enable {
     virtualisation.podman.enable = true;
     virtualisation.oci-containers.backend = "podman";
     
     virtualisation.oci-containers.containers = {
-      # 1. the sync node
       anytype-sync = {
         image = "docker.io/anyproto/any-sync-node:latest";
         ports = [ "33010:33010" "33020:33020/udp" ];
         volumes = [ "/var/lib/anytype/storage:/etc/any-sync" ];
         environment = {
-          "any_sync_mongodb_connection" = "mongodb://anytype-mongo:27017";
-          "any_sync_redis_connection" = "redis://anytype-redis:6379";
+          "ANY_SYNC_MONGODB_CONNECTION" = "mongodb://anytype-mongo:27017";
+          "ANY_SYNC_REDIS_CONNECTION" = "redis://anytype-redis:6379";
         };
-        extraoptions = [ "--restart=always" ];
-        dependson = [ "anytype-mongo" "anytype-redis" ];
+        extraOptions = [ "--restart=always" ];
+        dependsOn = [ "anytype-mongo" "anytype-redis" ];
       };
 
-      # 2. the consensus node (required for syncing to work)
       anytype-consensus = {
         image = "docker.io/anyproto/any-sync-consensusnode:latest";
         ports = [ "3000:3000" ];
         environment = {
-          "any_sync_mongodb_connection" = "mongodb://anytype-mongo:27017";
-          "any_sync_redis_connection" = "redis://anytype-redis:6379";
+          "ANY_SYNC_MONGODB_CONNECTION" = "mongodb://anytype-mongo:27017";
+          "ANY_SYNC_REDIS_CONNECTION" = "redis://anytype-redis:6379";
         };
       };
 
@@ -50,7 +48,8 @@ in
       };
     };
 
-    networking.firewall.allowedtcpports = [ 33010 3000 ];
-    networking.firewall.allowedudpports = [ 33020 ];
+    # CAPITALIZED TCP/UDP
+    networking.firewall.allowedTCPPorts = [ 33010 3000 ];
+    networking.firewall.allowedUDPPorts = [ 33020 ];
   };
 }

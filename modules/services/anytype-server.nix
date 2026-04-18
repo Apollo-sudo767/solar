@@ -1,60 +1,55 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
-  cfg = config.myFeatures.services.anytype;
+  cfg = config.myFeatures.services.any-sync;
+  # community-maintained all-in-one binary
+  any-sync-bundle = inputs.anytype-bundle.packages.${pkgs.system}.default;
 in
 {
-  options.myFeatures.services.anytype = {
-    enable = lib.mkEnableOption "Anytype Self-Hosted Network";
-    externalAddr = lib.mkOption {
-      type = lib.types.str;
-      default = "anytype.apollan.cc";
+  options.myFeatures.services.any-sync = {
+    enable = lib.mkEnableOption "Anytype Self-Hosted Sync Server";
+    dataDir = lib.mkOption {
+      type = lib.types.path;
+      default = "/var/lib/anytype";
+      description = "Directory for Anytype sync data and configs";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    virtualisation.podman.enable = true;
-    virtualisation.oci-containers.backend = "podman";
-    
-    virtualisation.oci-containers.containers = {
-      anytype-sync = {
-        image = "docker.io/anyproto/any-sync-node:latest"; # Use the image that worked!
-        ports = [
-          "33010:33010"
-          "33020:33020/udp"
-        ];
-        volumes = [
-          "/var/lib/anytype/storage:/etc/any-sync"
-        ];
-        environment = {
-          "ANY_SYNC_MONGODB_CONNECTION" = "mongodb://anytype-mongo:27017";
-          "ANY_SYNC_REDIS_CONNECTION" = "redis://anytype-redis:6379";
-        };
-        # REMOVE the --restart=always line here to fix the "conflict" error
-        dependsOn = [ "anytype-mongo" "anytype-redis" ];
-      };
+    # 1. Required dependencies for the sync server
+    services.mongodb.enable = true;
+    services.redis.servers."any-sync" = {
+      enable = true;
+      port = 6379;
+    };
 
-      anytype-consensus = {
-        image = "docker.io/anyproto/any-sync-consensusnode:latest"; # Use the image that worked!
-        ports = [ "3000:3000" ];
-        environment = {
-          "ANY_SYNC_MONGODB_CONNECTION" = "mongodb://anytype-mongo:27017";
-          "ANY_SYNC_REDIS_CONNECTION" = "redis://anytype-redis:6379";
-        };
-      };
-            
-      anytype-mongo = {
-        image = "docker.io/library/mongo:latest";
-        volumes = [ "/var/lib/anytype/mongo:/data/db" ];
-      };
+    # 2. Networking: Open ports required for Anytype nodes
+    networking.firewall.allowedTCPPorts = [ 33010 33030 33060 33080 ];
+    networking.firewall.allowedUDPPorts = [ 33020 ]; # QUIC protocol
 
-      anytype-redis = {
-        image = "docker.io/library/redis:alpine";
+    # 3. Systemd Service for the bundle
+    systemd.services.any-sync = {
+      description = "Anytype Self-Hosted Sync Server";
+      after = [ "network.target" "mongodb.service" "redis.service" ];
+      requires = [ "mongodb.service" "redis.service" ];
+      wantedBy = [ "multi-user.target" ];
+
+      serviceConfig = {
+        ExecStart = "${any-sync-bundle}/bin/any-sync-bundle start-bundle --config-path ${cfg.dataDir}/bundle-config.yml";
+        User = "anytype";
+        Group = "anytype";
+        StateDirectory = "anytype";
+        Restart = "always";
       };
     };
 
-    # CAPITALIZED TCP/UDP
-    networking.firewall.allowedTCPPorts = [ 33010 3000 ];
-    networking.firewall.allowedUDPPorts = [ 33020 ];
+    # 4. Define the dedicated system user
+    users.users.anytype = {
+      isSystemUser = true;
+      group = "anytype";
+      home = cfg.dataDir;
+      createHome = true;
+    };
+    users.groups.anytype = {};
   };
 }

@@ -47,9 +47,8 @@
           # (Uses default 25565 if not defined in module)
         };
       };
-      anytype = {
+      any-sync = {
         enable = true;
-        externalAddr = "anytype.apollan.cc";
       };
       ddns = {
         enable = true;

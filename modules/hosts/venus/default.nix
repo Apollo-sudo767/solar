@@ -47,8 +47,10 @@
           # (Uses default 25565 if not defined in module)
         };
       };
-      any-sync = {
+      anytype = {
         enable = true;
+        port = 9000;
+        domain = "anytype.apollan.cc";
       };
       ddns = {
         enable = true;

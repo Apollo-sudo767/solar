@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.myFeatures.programs.sunshine;
+  cfg = config.myFeatures.services.sunshine;
 in
 {
-  options.myFeatures.programs.sunshine = {
+  options.myFeatures.services.sunshine = {
     enable = lib.mkEnableOption "Sunshine: Open-source GameStream host";
     openFirewall = lib.mkOption {
       type = lib.types.bool;

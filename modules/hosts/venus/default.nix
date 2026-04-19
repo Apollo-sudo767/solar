@@ -38,10 +38,10 @@
           enable = true;
           port = 34197; 
         };
-        minecraft-mca = {
-          enable = true;
-          port = 25570;
-        };
+        # minecraft-mca = {
+        #  enable = true;
+        #  port = 25570;
+        # };
         minecraft-vanilla = {
           enable = true;
           # (Uses default 25565 if not defined in module)

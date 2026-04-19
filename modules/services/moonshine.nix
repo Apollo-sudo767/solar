@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.myFeatures.programs.moonlight;
+  cfg = config.myFeatures.services.moonlight;
 in
 {
-  options.myFeatures.programs.moonlight = {
+  options.myFeatures.services.moonlight = {
     enable = lib.mkEnableOption "Moonlight: High-performance game streaming client";
   };
 

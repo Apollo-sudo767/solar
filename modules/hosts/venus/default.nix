@@ -47,9 +47,6 @@
           # (Uses default 25565 if not defined in module)
         };
       };
-      anytype = {
-        enable = true;
-      };
       ddns = {
         enable = true;
         domains = [

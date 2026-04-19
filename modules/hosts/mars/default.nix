@@ -57,6 +57,7 @@
         enable = true;
         tailscale.enable = true;
       };
+      sunshine.enable = true;
     };
   };
 }

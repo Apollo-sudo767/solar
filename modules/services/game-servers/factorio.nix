@@ -20,5 +20,7 @@ in
       # bind is not a standard option; port is.
       inherit (cfg) port;
     };
+
+    networking.firewall.allowedUDPPorts = [ cfg.port ];
   };
 }

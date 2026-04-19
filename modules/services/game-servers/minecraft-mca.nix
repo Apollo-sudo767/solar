@@ -33,5 +33,6 @@ in
     };
 
     networking.firewall.allowedTCPPorts = [ cfg.port ];
+    networking.firewall.allowedUDPPorts = [ cfg.port ];
   };
 }

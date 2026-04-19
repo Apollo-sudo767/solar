@@ -9,13 +9,17 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # Install the Moonlight-Qt client
     environment.systemPackages = [ pkgs.moonlight-qt ];
 
-    # Ensure the firewall allows discovery of local Sunshine hosts
+    # Open discovery ports for the client to find Sunshine hosts
     networking.firewall = {
-      allowedUDPPorts = [ 5353 ]; # mDNS for host discovery
+      allowedUDPPorts = [ 1900 5353 ]; 
       allowedTCPPorts = [ 47984 47989 48010 ];
+    };
+
+    services.avahi = {
+      enable = true;
+      nssmdns4 = true;
     };
   };
 }

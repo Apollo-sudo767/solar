@@ -57,7 +57,10 @@
         enable = true;
         tailscale.enable = true;
       };
-      sunshine.enable = true;
+      sunshine = {
+        enable = true;
+        port = 48000;
+      };
     };
   };
 }

@@ -50,7 +50,6 @@
       # Add MacBook (Darwin) support alongside Linux
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
-      # THE FIX: Tell flake-parts how to provide 'pkgs' using your custom input name
       perSystem = { system, ... }: {
         _module.args.pkgs = import nixpkgs-unstable {
           inherit system;

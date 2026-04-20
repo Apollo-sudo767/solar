@@ -1,47 +1,53 @@
 { lib, inputs, globalModules }:
 
 let
-  # 1. Discover all directories in the current folder (modules/hosts/), excluding "shared"
-  hostDirs = lib.filter (name: 
-    let 
-      type = (builtins.readDir ./.).${name};
-    in 
-    type == "directory" && name != "shared"
-  ) (lib.attrNames (builtins.readDir ./.));
+  hostDirs = lib.attrNames (lib.filterAttrs (name: type: 
+    type == "directory"
+  ) (builtins.readDir ./.));
 
-  # 2. Helper to select inputs based on a boolean
   getPkgInput = isStable: if isStable then inputs.nixpkgs-stable else inputs.nixpkgs-unstable;
   getHMInput  = isStable: if isStable then inputs.home-manager-stable else inputs.home-manager-unstable;
 
-  # 3. The generator function
   mkHost = name: 
     let
-      # Load machine-specific settings from the new location under modules/hosts/
       machine = import ./${name}/settings.nix;
       isStable = machine.stable or false;
       pkgs-input = getPkgInput isStable;
-    in
-    pkgs-input.lib.nixosSystem {
-      inherit (machine) system;
+      isDarwin = lib.strings.hasInfix "darwin" machine.system;
+      
+      # Select the builder based on the system type
+      builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
+      
       specialArgs = { 
         inherit inputs isStable;
-        # Provide the 'other' channel for convenience
         pkgs-stable = import inputs.nixpkgs-stable { 
-          inherit (machine) system; 
+          inherit (machine) system;
           config.allowUnfree = true; 
         };
       };
+
       modules = globalModules ++ [
-        ./${name} # Automatically imports modules/hosts/${name}/default.nix
+        ./${name}
         (getHMInput isStable).nixosModules.home-manager
         {
-          networking.hostName = name;
+          # Networking.hostName is platform-dependent; nix-darwin uses networking.computerName
+          networking = if isDarwin then { computerName = name; hostName = name; } else { hostName = name; };
           nixpkgs.config.allowUnfree = true;
         }
       ];
+    in
+    {
+      inherit isDarwin;
+      value = builder {
+        system = machine.system;
+        inherit specialArgs modules;
+      };
     };
+
+  # Generate both sets of configurations
+  allHosts = lib.genAttrs hostDirs (name: mkHost name);
 in
 {
-  # 4. Map discovered directories to nixosConfigurations
-  nixosConfigurations = lib.genAttrs hostDirs (name: mkHost name);
+  nixosConfigurations = lib.mapAttrs (name: v: v.value) (lib.filterAttrs (name: v: !v.isDarwin) allHosts);
+  darwinConfigurations = lib.mapAttrs (name: v: v.value) (lib.filterAttrs (name: v: v.isDarwin) allHosts);
 }

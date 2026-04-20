@@ -11,32 +11,17 @@ in
 
     # Ensure the kernel uses the correct driver for modern Intel iGPUs
     boot.initrd.kernelModules = [ "i915" ];
+    services.xserver.videoDrivers = lib.mkDefault [ "modesetting" ];
 
-    # FIX: Correct washed out colors and stability on external monitors (T14 Gen 2 + Dock)
-    boot.kernelParams = [ 
-      "i915.enable_fbc=1" 
-      "i915.enable_psr=0" 
-      "i915.modeset=1"
+    hardware.graphics.extraPackages = with pkgs; [
+      intel-media-driver # Modern iHD driver for Broadwell+
+      intel-vaapi-driver # Older i965 driver (Keep for compatibility)
+      libvdpau-va-gl
     ];
 
-    services.xserver.videoDrivers = [ "modesetting" ];
-
-    hardware.graphics = {
-      enable = true;
-      extraPackages = with pkgs; [
-        intel-media-driver # Modern iHD driver for Broadwell+
-        intel-vaapi-driver # VA-API driver
-        libvdpau-va-gl
-        intel-compute-runtime # OpenCL
-        vulkan-loader
-        mesa
-      ];
-      extraPackages32 = with pkgs.pkgsi686Linux; [
-        intel-media-driver
-        intel-vaapi-driver
-        mesa
-      ];
-    };
+    hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
+      intel-media-driver
+    ];
 
     environment.variables = {
       # Forces the use of the modern Intel Media Driver for VA-API

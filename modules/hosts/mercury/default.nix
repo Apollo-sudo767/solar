@@ -61,10 +61,11 @@
       printing.enable = true;
       udisks2.enable = true;
       firmware.enable = true;
-      moonlight.enable = true;
       networking = {
         tailscale.enable = true;
       };
     };
   };
+
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 }

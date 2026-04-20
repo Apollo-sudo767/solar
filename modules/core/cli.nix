@@ -10,6 +10,7 @@ in
     environment.systemPackages = with pkgs; [
       git
       helix
+      nixd
       btop
       eza
       fzf

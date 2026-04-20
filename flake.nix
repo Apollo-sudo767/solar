@@ -1,7 +1,8 @@
+# flake.nix
 {
   description = "Fully Automated Dendritic Flake";
 
-  inputs = {
+   inputs = {
     # Core nixpkgs channels
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -42,17 +43,29 @@
 
   };
 
-  outputs = { self, nixpkgs-unstable, ... }@inputs: 
-    let
-      inherit (nixpkgs-unstable) lib;
-      
-      # We import the host loader here
-      hostLoader = import ./modules/hosts/default.nix {
-        inherit lib inputs;
-        # We pass the path to the modules/default.nix here
-        globalModules = [ ./modules/default.nix ]; 
+  outputs = inputs@{ self, nixpkgs-unstable, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ ./parts ];
+
+      # Add MacBook (Darwin) support alongside Linux
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
+
+      # THE FIX: Tell flake-parts how to provide 'pkgs' using your custom input name
+      perSystem = { system, ... }: {
+        _module.args.pkgs = import nixpkgs-unstable {
+          inherit system;
+          config.allowUnfree = true; # Required for things like sops or discord
+        };
       };
-    in {
-      nixosConfigurations = hostLoader.nixosConfigurations;
+
+      flake = let
+        inherit (nixpkgs-unstable) lib;
+        hostLoader = import ./modules/hosts/default.nix {
+          inherit lib inputs;
+          globalModules = [ ./modules/default.nix ];
+        };
+      in {
+        nixosConfigurations = hostLoader.nixosConfigurations;
+      };
     };
 }

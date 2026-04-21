@@ -40,11 +40,6 @@ let
     };
 
     # --- Performance ---
-    distant-horizons = fetchMod {
-      name = "distant-horizons";
-      url = "https://modrinth.com/plugin/distant-horizons-support";
-      hash = "sha256-Fr8wdN5WiT5FvPziaaZlKUFl9SqKRF57QjgwElygU/c=";
-    };
     lithium = fetchMod {
       name = "lithium";
       url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";
@@ -181,7 +176,7 @@ in
       enable = true;
       eula = true;
 
-      servers.mca-server = {
+      servers.sllv = {
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
 

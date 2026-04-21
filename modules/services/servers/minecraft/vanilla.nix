@@ -1,12 +1,12 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
-  cfg = config.myFeatures.services.game-servers.minecraft-vanilla;
+  cfg = config.myFeatures.services.servers.minecraft.vanilla;
 in
 {
   imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
-  options.myFeatures.services.game-servers.minecraft-vanilla = {
+  options.myFeatures.services.servers.minecraft.vanilla = {
     enable = lib.mkEnableOption "Minecraft Vanilla+ (Terralith/Distant Horizons)";
     port = lib.mkOption { type = lib.types.port; default = 25565; };
   };

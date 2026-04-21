@@ -1,8 +1,7 @@
-~/s/solar on  main ➜ cat modules/services/game-servers/minecraft-mca.nix
 { config, lib, pkgs, inputs, ... }:
 
 let
-  cfg = config.myFeatures.services.game-servers.minecraft-mca;
+  cfg = config.myFeatures.services.servers.minecraft.sllv;
 
   # Solar Helper: Updated to accept an optional hash, defaulting to lib.fakeHash
   fetchMod = { name, url, hash ? lib.fakeHash }: pkgs.fetchurl {
@@ -167,7 +166,7 @@ in
 {
   imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
-  options.myFeatures.services.game-servers.minecraft-mca = {
+  options.myFeatures.services.servers.minecraft.sllv = {
     enable = lib.mkEnableOption "Minecraft MCA Fabric Server (1.21.1)";
     port = lib.mkOption {
       type = lib.types.port;

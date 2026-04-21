@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.myFeatures.services.game-servers.factorio;
+  cfg = config.myFeatures.services.servers.factorio;
 in
 {
-  options.myFeatures.services.game-servers.factorio = {
+  options.myFeatures.services.servers.factorio = {
     enable = lib.mkEnableOption "Factorio Headless Server";
     port = lib.mkOption {
       type = lib.types.port;

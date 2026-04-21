@@ -3,66 +3,175 @@
 let
   cfg = config.myFeatures.services.game-servers.minecraft-mca;
   
+  # Solar Helper: Updated to accept an optional hash, defaulting to lib.fakeHash
   fetchMod = { name, url, hash ? lib.fakeHash }: pkgs.fetchurl {
     inherit url;
-    sha256 = hash;
+    sha256 = hash; 
     name = "${name}.jar";
   };
+
+  # Complete server-side mod list
   mods = {
-    # Core Libraries & APIs - Updated Version IDs
-    fabric-api = fetchMod { name = "fabric-api"; url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/v2W8Z9O2/fabric-api-0.102.1%2B1.21.1.jar"; };
-    architectury = fetchMod { name = "architectury"; url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/lhGA9TYQ/architectury-13.0.6-fabric.jar"; };
-    cloth-config = fetchMod { name = "cloth-config"; url = "https://cdn.modrinth.com/data/9s6osm5g/versions/9s6osm5g/cloth-config-15.0.140-fabric.jar"; };
-    bad-packets = fetchMod { name = "bad-packets"; url = "https://cdn.modrinth.com/data/ftdbN0KK/versions/ftdbN0KK/badpackets-fabric-0.8.2.jar"; };
-    geckolib = fetchMod { name = "geckolib"; url = "https://cdn.modrinth.com/data/8BmcQJ2H/versions/8BmcQJ2H/geckolib-fabric-1.21.1-4.8.4.jar"; };
-    placeholder-api = fetchMod { name = "placeholder-api"; url = "https://cdn.modrinth.com/data/eXts2L7r/versions/eXts2L7r/placeholder-api-2.4.2+1.21.jar"; };
-
-    # Performance
-    lithium = fetchMod { name = "lithium"; url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/gvQqBUqZ/lithium-fabric-0.15.3%2Bmc1.21.1.jar"; };
-    ferritecore = fetchMod { name = "ferritecore"; url = "https://cdn.modrinth.com/data/uXXizFIs/versions/uXXizFIs/ferritecore-7.0.3-fabric.jar"; };
-
-    # Gameplay & Content
-    farmers-delight = fetchMod { name = "farmers-delight"; url = "https://cdn.modrinth.com/data/7vxePowz/versions/7vxePowz/FarmersDelight-1.21.1-3.2.8%2Brefabricated.jar"; };
-    mca-reborn = fetchMod { name = "mca-reborn"; url = "https://cdn.modrinth.com/data/1W98a849/versions/1W98a849/mca-fabric-7.7.6+1.21.1.jar"; };
-
-    # World Generation
-    ctov = fetchMod { name = "ctov"; url = "https://cdn.modrinth.com/data/fgmhI8kH/versions/fgmhI8kH/%5BFabric%5Dctov-3.6.3.jar"; };
-    tectonic = fetchMod { name = "tectonic"; url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/lWDHr9jE/tectonic-3.0.21-fabric-21.1.jar"; };
-    terralith = fetchMod { name = "terralith"; url = "https://cdn.modrinth.com/data/8oi3bsk5/versions/8oi3bsk5/Terralith_1.21.x_v2.5.8.jar"; };
-    terrablender = fetchMod { name = "terrablender"; url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/kkmrDlKT/TerraBlender-fabric-1.21.1-4.1.0.8.jar"; };
-    lithostitched = fetchMod { name = "lithostitched"; url = "https://cdn.modrinth.com/data/XaDC71GB/versions/XaDC71GB/lithostitched-1.6.3-fabric-21.1.jar"; };
-
-    # Distant Horizons (Verified Hash from previous run)
-    distant-horizons = fetchMod { 
-      name = "distant-horizons"; 
-      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/VH8Pl4yr/DistantHorizons-3.0.1-b-1.21.1-fabric-neoforge.jar"; 
-      hash = "sha256-B7dlWP7cOUYBiI4AtCdb/ZscaBdtBGx7xdZ4NVfyqmA=";
+    # --- Core Libraries & APIs ---
+    architectury = fetchMod { 
+      name = "architectury"; 
+      url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/Wto0RchG/architectury-13.0.8-fabric.jar"; 
+      hash = "sha256-EMu7b1+WovGFOwzGhChCTOyJA0CVF7KZ/wI1B1a2OZ0=";
+    };
+    fabric-api = fetchMod { 
+      name = "fabric-api"; 
+      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/IpaMcBLh/fabric-api-0.116.11%2B1.21.1.jar";
+      hash = "sha256-t5Heb23OnFjU6ir2xxO7zG3GTQpZlai61vIl7ljPF9I=";
+    };
+    bad-packets = fetchMod { 
+      name = "bad-packets"; 
+      url = "https://cdn.modrinth.com/data/ftdbN0KK/versions/hjhT2sMz/badpackets-fabric-0.8.2.jar";
+      hash = "sha256-VeoLAcVK1P12mWNkm+sgoZcabIIMmiWKzfQ8o1PZBNg="; 
+    };
+    placeholder-api = fetchMod { 
+      name = "placeholder-api"; 
+      url = "https://cdn.modrinth.com/data/eXts2L7r/versions/U5bhVym2/placeholder-api-2.4.2%2B1.21.jar";
+      hash = "sha256-wBh+4plSesej4LHoNgHc3A3mMeKG/kHmvhp1lY6o5EM=";
+    };
+    yungs-api = fetchMod { 
+      name = "yungs-api"; 
+      url = "https://cdn.modrinth.com/data/Ua7DFN59/versions/9aZPNrZC/YungsApi-1.21.1-Fabric-5.1.6.jar";
+      hash = "sha256-NvuQOh688VEXRb4tqeUUTx0kZb/3pcF77/00c5ms0bo=";
     };
 
-    # YUNG's Suite - FIXED 404s
-    yungs-api = fetchMod { name = "yungs-api"; url = "https://cdn.modrinth.com/data/Ua7DFN59/versions/Ua7DFN59/YungsApi-1.21.1-Fabric-5.1.6.jar"; };
-    yungs-caves = fetchMod { name = "yungs-caves"; url = "https://cdn.modrinth.com/data/Dfu00ggU/versions/Dfu00ggU/YungsBetterCaves-1.21.1-Fabric-3.1.4.jar"; };
-    yungs-desert-temples = fetchMod { name = "yungs-desert-temples"; url = "https://cdn.modrinth.com/data/XNlO7sBv/versions/XNlO7sBv/YungsBetterDesertTemples-1.21.1-Fabric-4.1.5.jar"; };
-    yungs-dungeons = fetchMod { name = "yungs-dungeons"; url = "https://cdn.modrinth.com/data/o1C1Dkj5/versions/o1C1Dkj5/YungsBetterDungeons-1.21.1-Fabric-5.1.4.jar"; }; # Fixed ID
-    yungs-jungle-temples = fetchMod { name = "yungs-jungle-temples"; url = "https://cdn.modrinth.com/data/z9Ve58Ih/versions/z9Ve58Ih/YungsBetterJungleTemples-1.21.1-Fabric-3.1.2.jar"; };
-    yungs-mineshafts = fetchMod { name = "yungs-mineshafts"; url = "https://cdn.modrinth.com/data/HjmxVlSr/versions/HjmxVlSr/YungsBetterMineshafts-1.21.1-Fabric-5.1.1.jar"; };
-    yungs-nether-fortresses = fetchMod { name = "yungs-nether-fortresses"; url = "https://cdn.modrinth.com/data/Z2mXHnxP/versions/Z2mXHnxP/YungsBetterNetherFortresses-1.21.1-Fabric-3.1.5.jar"; };
-    yungs-ocean-monuments = fetchMod { name = "yungs-ocean-monuments"; url = "https://cdn.modrinth.com/data/3dT9sgt4/versions/3dT9sgt4/YungsBetterOceanMonuments-1.21.1-Fabric-4.1.2.jar"; };
-    yungs-strongholds = fetchMod { name = "yungs-strongholds"; url = "https://cdn.modrinth.com/data/kidLKymU/versions/kidLKymU/YungsBetterStrongholds-1.21.1-Fabric-5.1.3.jar"; };
-    yungs-witch-huts = fetchMod { name = "yungs-witch-huts"; url = "https://cdn.modrinth.com/data/t5FRdP87/versions/t5FRdP87/YungsBetterWitchHuts-1.21.1-Fabric-4.1.1.jar"; };
-    yungs-bridges = fetchMod { name = "yungs-bridges"; url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/Ht4BfYp6/YungsBridges-1.21.1-Fabric-5.1.1.jar"; };
-    yungs-cave-biomes = fetchMod { name = "yungs-cave-biomes"; url = "https://cdn.modrinth.com/data/cs7iGVq1/versions/cs7iGVq1/YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar"; };
-    yungs-extras = fetchMod { name = "yungs-extras"; url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/ZYgyPyfq/YungsExtras-1.21.1-Fabric-5.1.1.jar"; };
-    wthit = fetchMod { name = "wthit"; url = "https://cdn.modrinth.com/data/6AQIaxuO/versions/6AQIaxuO/wthit-1.21.1-fabric-12.10.2.jar"; };
+    # --- Performance ---
+    distant-horizons = fetchMod {
+      name = "distant-horizons";
+      url = "https://modrinth.com/plugin/distant-horizons-support";
+      hash = "sha256-hYZdgolYRAmiHWSOfFYyjb3Fs2M2Qi64Jr58pucMK20=";
+    };
+    lithium = fetchMod { 
+      name = "lithium"; 
+      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";
+      hash = "sha256-oes7FQtVmwwJdvYo/9X3kUWLmIkWNCEbJyf/eFfRV7g="; 
+    };
+    ferritecore = fetchMod { 
+      name = "ferritecore"; 
+      url = "https://cdn.modrinth.com/data/uXXizFIs/versions/sOzRw3CG/ferritecore-7.0.3-fabric.jar";
+      hash = "sha256-mMOrHVqrjxS10ILT8aRncn/TNfAtEkVVyUM5dhxMGPI="; 
+    };
+    lithostitched = fetchMod { 
+      name = "lithostitched"; 
+      url = "https://cdn.modrinth.com/data/XaDC71GB/versions/Awf91DUj/lithostitched-1.6.8-fabric-21.1.jar";
+      hash = "sha256-WL63egOqN8y+n6+sRafoE3zAHNOPuNlO0wgYYOB4cDk=";
+    };
+
+    # --- World Generation & Structures ---
+    terrablender = fetchMod { 
+      name = "terrablender"; 
+      url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/XNtIBXyQ/TerraBlender-fabric-1.21.1-4.1.0.8.jar";
+      hash = "sha256-+H6Up/oSJ3EcP4rqn/rHoU4Me+IS/lDd7pXSxrpyPKw=";
+    };
+    terralith = fetchMod { 
+      name = "terralith"; 
+      url = "https://cdn.modrinth.com/data/8oi3bsk5/versions/MuJMtPGQ/Terralith_1.21.x_v2.5.8.jar";
+      hash = "sha256-ADM6EwrDi3ucqTcACY1eAuBhK9wtNSKq2i825WAGIb8="; 
+    };
+    tectonic = fetchMod { 
+      name = "tectonic"; 
+      url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/cXSQRWNy/tectonic-3.0.22-fabric-21.1.jar";
+      hash = "sha256-Py0nZWSZaNlMH7xpU+TJMDMDPV7Ch/BRqEswm8f5uqY=";
+    };
+    ctov = fetchMod { 
+      name = "ctov"; 
+      url = "https://cdn.modrinth.com/data/fgmhI8kH/versions/dqaObRbU/%5BFabric%5Dctov-3.6.3.jar";
+      hash = "sha256-5EOSXY/k0JLx85Ji+nMYLknjTcv5ylHqqlMGS7ku5lI="; 
+    };
+    incendium = fetchMod { 
+      name = "incendium"; 
+      url = "https://cdn.modrinth.com/data/ZVzW5oNS/versions/7mVvV9Th/Incendium_1.21.x_v5.4.4.jar"; 
+      hash = "sha256-KFpPaf4jkfIXX3/JMW1yejnHm90hSSPFkoTVabzmVvQ=";
+    };
+    nullscape = fetchMod { 
+      name = "nullscape"; 
+      url = "https://cdn.modrinth.com/data/LPjGiSO4/versions/3fv8O3xX/Nullscape_1.21.x_v1.2.14.jar";
+      hash = "sha256-h0nG/dplkzXlARbBjgEs34aZs3iYWcglWa8sb0Jck64=";
+    };
+
+    # --- YUNG's Better Series ---
+    yungs-caves = fetchMod { 
+      name = "yungs-caves"; 
+      url = "https://cdn.modrinth.com/data/Dfu00ggU/versions/72UkhXm7/YungsBetterCaves-1.21.1-Fabric-3.1.4.jar";
+      hash = "sha256-W6PDLoqiMIPb+f00mX9Q4Dpk4xdWynRcpSV0IeDRN1c=";
+    };
+    yungs-mineshafts = fetchMod { 
+      name = "yungs-mineshafts"; 
+      url = "https://cdn.modrinth.com/data/HjmxVlSr/versions/4ybDuGhA/YungsBetterMineshafts-1.21.1-Fabric-5.1.1.jar";
+      hash = "sha256-J5SfW64K/v9FdxGltCSCvjAbdryLETbxEg+EhIm7X6Y="; 
+    };
+    yungs-strongholds = fetchMod { 
+      name = "yungs-strongholds"; 
+      url = "https://cdn.modrinth.com/data/kidLKymU/versions/uYZShp1p/YungsBetterStrongholds-1.21.1-Fabric-5.1.3.jar";
+      hash = "sha256-HLQSyDqg6Cc9KaESLFeZ6xWkisyPC3cO/kUcUWZH9fg="; 
+    };
+    yungs-dungeons = fetchMod { 
+      name = "yungs-dungeons"; 
+      url = "https://cdn.modrinth.com/data/o1C1Dkj5/versions/fQ7EjDPE/YungsBetterDungeons-1.21.1-Fabric-5.1.4.jar";
+      hash = "sha256-af59k6+hgD12WN8/hhIT+CVfaNTpdtZt3OZvugjRILw=";
+    };
+    yungs-desert-temples = fetchMod { 
+      name = "yungs-desert-temples"; 
+      url = "https://cdn.modrinth.com/data/XNlO7sBv/versions/M6eeDRkC/YungsBetterDesertTemples-1.21.1-Fabric-4.1.5.jar";
+      hash = "sha256-K7c+7yeMJ3ZXsn9y0vodkXoXwUBSv1JqK6F19ummMBI="; 
+    };
+    yungs-witch-huts = fetchMod { 
+      name = "yungs-witch-huts"; 
+      url = "https://cdn.modrinth.com/data/t5FRdP87/versions/bdpPtvTn/YungsBetterWitchHuts-1.21.1-Fabric-4.1.1.jar";
+      hash = "sha256-lU/wBN4VFlLZvmngPRuEjW/RWg9fLfFcTOLnZEZ2hec="; 
+    };
+    yungs-ocean-monuments = fetchMod { 
+      name = "yungs-ocean-monuments"; 
+      url = "https://cdn.modrinth.com/data/3dT9sgt4/versions/TGK6gpeO/YungsBetterOceanMonuments-1.21.1-Fabric-4.1.2.jar";
+      hash = "sha256-TPuyJr0dsXAyrH5zBulO0n8aji8+CftixHaI+KUnrew=";
+    };
+    yungs-nether-fortresses = fetchMod { 
+      name = "yungs-nether-fortresses"; 
+      url = "https://cdn.modrinth.com/data/Z2mXHnxP/versions/gxBGYcIL/YungsBetterNetherFortresses-1.21.1-Fabric-3.1.5.jar";
+      hash = "sha256-d6JY5JlVnxGQyHInf47s8gLdTvBoFnTc6UEAP6Q2f3g=";
+    };
+    yungs-jungle-temples = fetchMod { 
+      name = "yungs-jungle-temples"; 
+      url = "https://cdn.modrinth.com/data/z9Ve58Ih/versions/uiGCmR8O/YungsBetterJungleTemples-1.21.1-Fabric-3.1.2.jar";
+      hash = "sha256-i2rABDRdqTW1uby3BiT0oxl0EflCDWRZowJST43qQtw=";
+    };
+    yungs-extras = fetchMod { 
+      name = "yungs-extras"; 
+      url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/aVsikHca/YungsExtras-1.21.1-Fabric-5.1.1.jar";
+      hash = "sha256-EgAjzJfLXrhpcqd4MlDLs1UF1C1dazHacJBshcD/t/U="; 
+    };
+    yungs-bridges = fetchMod { 
+      name = "yungs-bridges"; 
+      url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/8h9N9fvs/YungsBridges-1.21.1-Fabric-5.1.1.jar";
+      hash = "sha256-N8wSCs62Jjr7ztru4cn+l3DH1dq9k40AKTAX54EFG0U=";
+    };
+
+    # --- Gameplay ---
+    mca-reborn = fetchMod { 
+      name = "mca-reborn"; 
+      url = "https://cdn.modrinth.com/data/1W98a849/versions/1PlgQkBW/mca-fabric-7.7.7%2B1.21.1.jar";
+      hash = "sha256-Dhgm6jMrswg4JKrT9GvXNThAJwJQlMAO7qmNaNLW0/M=";
+    };
+    farmers-delight = fetchMod { 
+      name = "farmers-delight"; 
+      url = "https://cdn.modrinth.com/data/7vxePowz/versions/YEHRH8LC/FarmersDelight-1.21.1-3.2.8%2Brefabricated.jar";
+      hash = "sha256-96/hH+2BVWRvpDCemWlPv6tB4Z2niEtiYqsRLFweLaM="; 
+    };
   };
-  in
+in
 {
   imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
   options.myFeatures.services.game-servers.minecraft-mca = {
-    enable = lib.mkEnableOption "Minecraft MCA Reborn (4 Player)";
-    address = lib.mkOption { type = lib.types.str; default = "0.0.0.0"; };
-    port = lib.mkOption { type = lib.types.port; default = 25566; };
+    enable = lib.mkEnableOption "Minecraft MCA Fabric Server (1.21.1)";
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 25565;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -71,24 +180,27 @@ let
     services.minecraft-servers = {
       enable = true;
       eula = true;
-      servers.mca-reborn = {
+
+      servers.mca-server = {
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
         
+        # Resource-heavy world generation requires ample RAM
         jvmOpts = "-Xmx8G -Xms8G -Djava.awt.headless=true";
 
+        # Symbolically link our fetched mods into the server structure
         symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 
         serverProperties = {
-          server-ip = cfg.address;
           server-port = cfg.port;
-          motd = "Solar MCA Reborn | Family & Friends";
-          max-players = 4;
+          online-mode = true;
           level-type = "minecraft:normal";
+          motd = "Solar MCA Server | 1.21.1 Fabric";
         };
       };
     };
 
+    # Firewall configuration following Solar host rules
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
   };

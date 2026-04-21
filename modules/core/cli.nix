@@ -22,6 +22,8 @@ in
       fastfetch
       tree
       jq
+      nurl
+      comma
     ];
 
     environment.variables.EDITOR = "hx";

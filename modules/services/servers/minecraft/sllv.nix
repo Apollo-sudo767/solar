@@ -40,6 +40,11 @@ let
     };
 
     # --- Performance ---
+    distant-horizons = fetchMod {
+      name = "distant-horizons";
+      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/VH8Pl4yr/DistantHorizons-3.0.1-b-1.21.1-fabric-neoforge.jar";
+      hash = "sha256-B7dlWP7cOUYBiI4AtCdb/ZscaBdtBGx7xdZ4NVfyqmA="; 
+    };
     lithium = fetchMod {
       name = "lithium";
       url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";

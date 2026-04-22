@@ -41,12 +41,12 @@
         minecraft = {
           sllv = {
             enable = true;
-            port = 25570;
+            port = 25565;
           };
-          vanilla = {
-            enable = true;
-            # (Uses default 25565 if not defined in module)
-          };
+          # vanilla = {
+          #   enable = true;
+          #   # (Uses default 25565 if not defined in module)
+          # };
         };
       };
       ddns = {

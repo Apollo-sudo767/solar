@@ -40,11 +40,11 @@ let
     };
 
     # --- Performance ---
-    distant-horizons = fetchMod {
-      name = "distant-horizons";
-      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/VH8Pl4yr/DistantHorizons-3.0.1-b-1.21.1-fabric-neoforge.jar";
-      hash = "sha256-B7dlWP7cOUYBiI4AtCdb/ZscaBdtBGx7xdZ4NVfyqmA=";
-    };
+    # distant-horizons = fetchMod {
+    #   name = "distant-horizons";
+    #   url = "https://cdn.modrinth.com/data/uCdwusMi/versions/VH8Pl4yr/DistantHorizons-3.0.1-b-1.21.1-fabric-neoforge.jar";
+    #   hash = "sha256-B7dlWP7cOUYBiI4AtCdb/ZscaBdtBGx7xdZ4NVfyqmA=";
+    # };
     lithium = fetchMod {
       name = "lithium";
       url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";
@@ -183,14 +183,16 @@ in
       enable = true;
       eula = true;
 
-      # Force systemd management instead of tmux to ensure logs hit the journal
-      managementSystem.tmux.enable = lib.mkForce false;
+      managementSystem = {
+        tmux.enable = lib.mkForce false;
+        systemd-socket.enable = true;
+      };
 
       servers.sllv = {
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
 
-        # Resource-heavy world generation requires ample RAM and specific GC flags
+        # Standard Solar GC optimization and heap allocation
         jvmOpts = lib.concatStringsSep " " [
           "-Xmx8G"
           "-Xms8G"
@@ -225,15 +227,13 @@ in
           max-players = 4;
           gamemode = "survival";
           motd = "Solar MCA Server | 1.21.1 Fabric";
-          simulation-distance = 8;
-          view-distance = 10;
         };
       };
     };
 
     systemd.services.minecraft-server-sllv = {
       unitConfig = {
-        StartLimitIntervalSec = 0; # Allow infinite retries while we debug mod loads
+        StartLimitIntervalSec = lib.mkForce 0; 
       };
       serviceConfig = {
         Restart = "always";

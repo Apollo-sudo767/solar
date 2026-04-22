@@ -38,6 +38,10 @@
           enable = true;
           port = 34197; 
         };
+        terraria = {
+          enable = true;
+          worldSize = "large";
+        };
         minecraft = {
           sllv = {
             enable = true;

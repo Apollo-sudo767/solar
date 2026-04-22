@@ -225,6 +225,15 @@ in
       };
     };
 
+    systemd.services.minecraft-server-sllv = {
+      serviceConfig = {
+        Restart = "always";
+        RestartSec = "10s";
+        StandardOutput = "journal";
+        StandardError = "journal";
+      };
+    };
+
     # Firewall configuration following Solar host rules
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];

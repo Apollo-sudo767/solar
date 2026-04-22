@@ -185,31 +185,8 @@ in
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
 
-        # FIXED: Corrected spelling of SurvivorRatio
-        jvmOpts = lib.concatStringsSep " " [
-          "-Xmx8G"
-          "-Xms8G"
-          "-Djava.net.preferIPv4Stack=true"
-          "-Djava.awt.headless=true"
-          "-XX:+UseG1GC"
-          "-XX:+ParallelRefProcEnabled"
-          "-XX:MaxGCPauseMillis=200"
-          "-XX:+UnlockExperimentalVMOptions"
-          "-XX:+DisableExplicitGC"
-          "-XX:+AlwaysPreTouch"
-          "-XX:G1NewSizePercent=30"
-          "-XX:G1MaxNewSizePercent=40"
-          "-XX:G1HeapRegionSize=8M"
-          "-XX:G1ReservePercent=20"
-          "-XX:G1HeapWastePercent=5"
-          "-XX:G1MixedGCCountTarget=4"
-          "-XX:InitiatingHeapOccupancyPercent=15"
-          "-XX:G1MixedGCLiveThresholdPercent=90"
-          "-XX:G1RSetUpdatingPauseTimePercent=5"
-          "-XX:SurvivorRatio=32"
-          "-XX:+PerfDisableSharedMem"
-          "-XX:MaxTenuringThreshold=1"
-        ];
+        # Debug Mode: Simplified JVM options to ensure startup
+        jvmOpts = "-Xmx8G -Xms8G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
 
         symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 
@@ -233,8 +210,8 @@ in
         RestartSec = "10s";
         StandardOutput = "journal";
         StandardError = "journal";
-        # FIXED: Give the server more time to save heavy world data before systemd kills it
-        TimeoutStopSec = "120s";
+        # FIXED: Use lib.mkForce to override nix-minecraft's default timeout
+        TimeoutStopSec = lib.mkForce "120s";
       };
     };
 

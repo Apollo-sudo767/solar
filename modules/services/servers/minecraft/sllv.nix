@@ -177,6 +177,7 @@ in
   config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
+    services.haveged.enalbe = true;
     services.minecraft-servers = {
       enable = true;
       eula = true;
@@ -194,9 +195,9 @@ in
         serverProperties = {
           server-port = cfg.port;
           online-mode = true;
-          level-type = "minecraft:normal";
+          max-players = 4;
+          gamemode = 0;
           motd = "Solar MCA Server | 1.21.1 Fabric";
-          "max-tick-time" = 120000;
         };
       };
     };

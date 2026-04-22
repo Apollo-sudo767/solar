@@ -177,7 +177,7 @@ in
   config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
-    services.haveged.enalbe = true;
+    services.haveged.enable = true;
     services.minecraft-servers = {
       enable = true;
       eula = true;
@@ -187,7 +187,30 @@ in
         package = pkgs.minecraftServers.fabric-1_21_1;
 
         # Resource-heavy world generation requires ample RAM
-        jvmOpts = "-Xmx8G -Xms8G -Djava.awt.headless=true";
+        jvmOpts = lib.concatStringsSep " " [
+          "-Xmx8G"
+          "-Xms8G"
+          "-Djava.net.preferIPv4Stack=true"
+          "-Djava.awt.headless=true"
+          "-XX:+UseG1GC"
+          "-XX:+ParallelRefProcEnabled"
+          "-XX:MaxGCPauseMillis=200"
+          "-XX:+UnlockExperimentalVMOptions"
+          "-XX:+DisableExplicitGC"
+          "-XX:+AlwaysPreTouch"
+          "-XX:G1NewSizePercent=30"
+          "-XX:G1MaxNewSizePercent=40"
+          "-XX:G1HeapRegionSize=8M"
+          "-XX:G1ReservePercent=20"
+          "-XX:G1HeapWastePercent=5"
+          "-XX:G1MixedGCCountTarget=4"
+          "-XX:InitiatingHeapOccupancyPercent=15"
+          "-XX:G1MixedGCLiveThresholdPercent=90"
+          "-XX:G1RSetUpdatingPauseTimePercent=5"
+          "-XX:SurviorRatio=32"
+          "-XX:+PerfDisableSharedMem"
+          "-XX:MaxTenuringThreshold=1"
+        ];
 
         # Symbolically link our fetched mods into the server structure
         symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;

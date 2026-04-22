@@ -9,8 +9,8 @@ let
     name = "${name}.jar";
   };
 
-  # MOD LIST: (Identical to your previous list, but Distant Horizons removed for server stability)
   mods = {
+    # --- Core Libraries & APIs ---
     architectury = fetchMod {
       name = "architectury";
       url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/Wto0RchG/architectury-13.0.8-fabric.jar";
@@ -36,6 +36,8 @@ let
       url = "https://cdn.modrinth.com/data/Ua7DFN59/versions/9aZPNrZC/YungsApi-1.21.1-Fabric-5.1.6.jar";
       hash = "sha256-NvuQOh688VEXRb4tqeUUTx0kZb/3pcF77/00c5ms0bo=";
     };
+
+    # --- Performance ---
     lithium = fetchMod {
       name = "lithium";
       url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";
@@ -51,6 +53,8 @@ let
       url = "https://cdn.modrinth.com/data/XaDC71GB/versions/Awf91DUj/lithostitched-1.6.8-fabric-21.1.jar";
       hash = "sha256-WL63egOqN8y+n6+sRafoE3zAHNOPuNlO0wgYYOB4cDk=";
     };
+
+    # --- World Generation & Structures ---
     terrablender = fetchMod {
       name = "terrablender";
       url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/XNtIBXyQ/TerraBlender-fabric-1.21.1-4.1.0.8.jar";
@@ -81,6 +85,8 @@ let
       url = "https://cdn.modrinth.com/data/LPjGiSO4/versions/3fv8O3xX/Nullscape_1.21.x_v1.2.14.jar";
       hash = "sha256-h0nG/dplkzXlARbBjgEs34aZs3iYWcglWa8sb0Jck64=";
     };
+
+    # --- YUNG's Better Series ---
     yungs-caves = fetchMod {
       name = "yungs-caves";
       url = "https://cdn.modrinth.com/data/Dfu00ggU/versions/72UkhXm7/YungsBetterCaves-1.21.1-Fabric-3.1.4.jar";
@@ -136,6 +142,8 @@ let
       url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/8h9N9fvs/YungsBridges-1.21.1-Fabric-5.1.1.jar";
       hash = "sha256-N8wSCs62Jjr7ztru4cn+l3DH1dq9k40AKTAX54EFG0U=";
     };
+
+    # --- Gameplay ---
     mca-reborn = fetchMod {
       name = "mca-reborn";
       url = "https://cdn.modrinth.com/data/1W98a849/versions/1PlgQkBW/mca-fabric-7.7.7%2B1.21.1.jar";
@@ -177,6 +185,7 @@ in
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
 
+        # FIXED: Corrected spelling of SurvivorRatio
         jvmOpts = lib.concatStringsSep " " [
           "-Xmx8G"
           "-Xms8G"
@@ -197,7 +206,7 @@ in
           "-XX:InitiatingHeapOccupancyPercent=15"
           "-XX:G1MixedGCLiveThresholdPercent=90"
           "-XX:G1RSetUpdatingPauseTimePercent=5"
-          "-XX:SurviorRatio=32"
+          "-XX:SurvivorRatio=32"
           "-XX:+PerfDisableSharedMem"
           "-XX:MaxTenuringThreshold=1"
         ];
@@ -217,7 +226,6 @@ in
 
     systemd.services.minecraft-server-sllv = {
       unitConfig = {
-        # OVERRIDE: Prevent systemd from rate-limiting the restarts
         StartLimitIntervalSec = lib.mkForce 0; 
       };
       serviceConfig = {
@@ -225,6 +233,8 @@ in
         RestartSec = "10s";
         StandardOutput = "journal";
         StandardError = "journal";
+        # FIXED: Give the server more time to save heavy world data before systemd kills it
+        TimeoutStopSec = "120s";
       };
     };
 

@@ -17,11 +17,11 @@ in
       default = 8;
       description = "Maximum number of players.";
     };
-    # New option for world size: 1 (small), 2 (medium), 3 (large)
+    # Corrected world size enum to use strings as required
     worldSize = lib.mkOption {
       type = lib.types.enum [ "small" "medium" "large" ];
-      default = 3; 
-      description = "Size of the world to create: 1 (Small), 2 (Medium), 3 (Large).";
+      default = "large"; 
+      description = "Size of the world to create.";
     };
     openFirewall = lib.mkOption {
       type = lib.types.bool;
@@ -41,8 +41,11 @@ in
       password = cfg.password;
       openFirewall = cfg.openFirewall;
 
-      # World Generation Settings
-      autoCreatedWorldSize = cfg.worldSize; # Set to 3 for max (Large) size
+      # Corrected option names for NixOS services.terraria
+      autoCreatedWorldSize = cfg.worldSize;
     };
+
+    # Logic & Debugging: Ensure state directory is managed by systemd
+    systemd.services.terraria.serviceConfig.StateDirectory = "terraria";
   };
 }

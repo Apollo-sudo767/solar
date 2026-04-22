@@ -43,7 +43,7 @@ let
     distant-horizons = fetchMod {
       name = "distant-horizons";
       url = "https://cdn.modrinth.com/data/uCdwusMi/versions/VH8Pl4yr/DistantHorizons-3.0.1-b-1.21.1-fabric-neoforge.jar";
-      hash = "sha256-B7dlWP7cOUYBiI4AtCdb/ZscaBdtBGx7xdZ4NVfyqmA="; 
+      hash = "sha256-B7dlWP7cOUYBiI4AtCdb/ZscaBdtBGx7xdZ4NVfyqmA=";
     };
     lithium = fetchMod {
       name = "lithium";
@@ -178,15 +178,19 @@ in
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
     services.haveged.enable = true;
+
     services.minecraft-servers = {
       enable = true;
       eula = true;
+
+      # Force systemd management instead of tmux to ensure logs hit the journal
+      managementSystem.tmux.enable = lib.mkForce false;
 
       servers.sllv = {
         enable = true;
         package = pkgs.minecraftServers.fabric-1_21_1;
 
-        # Resource-heavy world generation requires ample RAM
+        # Resource-heavy world generation requires ample RAM and specific GC flags
         jvmOpts = lib.concatStringsSep " " [
           "-Xmx8G"
           "-Xms8G"
@@ -212,20 +216,25 @@ in
           "-XX:MaxTenuringThreshold=1"
         ];
 
-        # Symbolically link our fetched mods into the server structure
         symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 
         serverProperties = {
           server-port = cfg.port;
           online-mode = true;
+          enforce-secure-profile = false;
           max-players = 4;
-          gamemode = 0;
+          gamemode = "survival";
           motd = "Solar MCA Server | 1.21.1 Fabric";
+          simulation-distance = 8;
+          view-distance = 10;
         };
       };
     };
 
     systemd.services.minecraft-server-sllv = {
+      unitConfig = {
+        StartLimitIntervalSec = 0; # Allow infinite retries while we debug mod loads
+      };
       serviceConfig = {
         Restart = "always";
         RestartSec = "10s";
@@ -234,7 +243,6 @@ in
       };
     };
 
-    # Firewall configuration following Solar host rules
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
   };

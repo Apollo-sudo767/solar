@@ -59,7 +59,7 @@
           "sllv.apollan.cc"
           "survival.apollan.cc"
           "factorio.apollan.cc"
-          "anytype.apollan.cc"
+          "terraria.apollan.cc"
         ];
       };
     };

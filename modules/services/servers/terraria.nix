@@ -2,6 +2,18 @@
 
 let
   cfg = config.myFeatures.services.servers.terraria;
+  # We create a server config file to force non-interactive mode
+  serverConfig = pkgs.writeText "serverconfig.txt" ''
+    port=${toString cfg.port}
+    maxplayers=${toString cfg.maxPlayers}
+    password=${cfg.password}
+    world=/var/lib/terraria/Worlds/SolarWorld.wld
+    worldname=SolarWorld
+    autocreate=${if cfg.worldSize == "small" then "1" else if cfg.worldSize == "medium" then "2" else "3"}
+    difficulty=1
+    secure=1
+    upnp=0
+  '';
 in
 {
   # --- OPTIONS ---
@@ -10,7 +22,6 @@ in
     port = lib.mkOption {
       type = lib.types.port;
       default = 7777;
-      description = "The port the Terraria server will listen on.";
     };
     password = lib.mkOption {
       type = lib.types.str;
@@ -32,14 +43,11 @@ in
 
   # --- CONFIG ---
   config = lib.mkIf cfg.enable {
-    # 1. Firewall Management
-    # Uses the configured port dynamically
     networking.firewall = lib.mkIf cfg.openFirewall {
       allowedTCPPorts = [ cfg.port ];
       allowedUDPPorts = [ cfg.port ];
     };
 
-    # 2. Direct Systemd Service (Bypassing Tmux)
     systemd.services.terraria = {
       description = "Terraria Server (Solar Managed)";
       after = [ "network.target" ];
@@ -52,21 +60,12 @@ in
         StateDirectory = "terraria";
         WorkingDirectory = "/var/lib/terraria";
         
-        # ExecStart uses the binary directly to ensure logs hit journalctl
-        ExecStart = ''
-          ${pkgs.terraria-server}/bin/TerrariaServer \
-            -port ${toString cfg.port} \
-            -players ${toString cfg.maxPlayers} \
-            -pass "${cfg.password}" \
-            -worldname "SolarWorld" \
-            -autocreate ${if cfg.worldSize == "small" then "1" else if cfg.worldSize == "medium" then "2" else "3"} \
-            -logpath /var/lib/terraria/logs
-        '';
+        # We point to the config file which bypasses the interactive menu
+        ExecStart = "${pkgs.terraria-server}/bin/TerrariaServer -config ${serverConfig}";
         Restart = "on-failure";
       };
     };
 
-    # 3. Dedicated System User
     users.users.terraria = {
       isSystemUser = true;
       group = "terraria";

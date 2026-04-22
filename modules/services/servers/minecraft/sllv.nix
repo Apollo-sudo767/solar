@@ -196,6 +196,7 @@ in
           online-mode = true;
           level-type = "minecraft:normal";
           motd = "Solar MCA Server | 1.21.1 Fabric";
+          "max-tick-time" = 120000;
         };
       };
     };

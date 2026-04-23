@@ -22,7 +22,7 @@
       graphics.enable = true;
       battery = {
         enable = true;
-        fullCharge = true;
+        fullCharge = false;
         bluetooth.enable = true;
         aggressive = true;
       };

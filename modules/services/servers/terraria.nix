@@ -2,7 +2,9 @@
 
 let
   cfg = config.myFeatures.services.servers.terraria;
-  # We create a server config file to force non-interactive mode
+  
+  # We create a server config file to force non-interactive mode.
+  # NOTE: This file is stored in the Nix Store (/nix/store/...) and is world-readable.
   serverConfig = pkgs.writeText "serverconfig.txt" ''
     port=${toString cfg.port}
     maxplayers=${toString cfg.maxPlayers}
@@ -16,9 +18,8 @@ let
   '';
 in
 {
-  # --- OPTIONS ---
   options.myFeatures.services.servers.terraria = {
-    enable = lib.mkEnableOption "Terraria Dedicated Server (Direct)";
+    enable = lib.mkEnableOption "Terraria Dedicated Server (Solar Managed)";
     port = lib.mkOption {
       type = lib.types.port;
       default = 7777;
@@ -41,8 +42,8 @@ in
     };
   };
 
-  # --- CONFIG ---
   config = lib.mkIf cfg.enable {
+    # Port management via host default.nix logic
     networking.firewall = lib.mkIf cfg.openFirewall {
       allowedTCPPorts = [ cfg.port ];
       allowedUDPPorts = [ cfg.port ];
@@ -57,12 +58,23 @@ in
         Type = "simple";
         User = "terraria";
         Group = "terraria";
+        
+        # StateDirectory automatically handles /var/lib/terraria creation
         StateDirectory = "terraria";
         WorkingDirectory = "/var/lib/terraria";
         
-        # We point to the config file which bypasses the interactive menu
+        # Direct execution bypassing the interactive menu
         ExecStart = "${pkgs.terraria-server}/bin/TerrariaServer -config ${serverConfig}";
-        Restart = "on-failure";
+        
+        # Stability & Protection against CPU leaks
+        Restart = "always";
+        RestartSec = "10s";
+        CPUQuota = "20%"; # Hard cap to prevent the 12%+ hang from impacting venus
+        MemoryMax = "2G";
+        
+        # Security Hardening
+        ProtectSystem = "full";
+        NoNewPrivileges = true;
       };
     };
 

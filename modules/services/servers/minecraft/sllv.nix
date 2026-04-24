@@ -26,6 +26,11 @@ let
       url = "https://cdn.modrinth.com/data/ftdbN0KK/versions/hjhT2sMz/badpackets-fabric-0.8.2.jar";
       hash = "sha256-VeoLAcVK1P12mWNkm+sgoZcabIIMmiWKzfQ8o1PZBNg=";
     };
+    balm = fetchMod {
+      name = "balm";
+      url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/kUyAERgX/balm-fabric-1.21.1-21.0.57.jar";
+      hash = "sha256-WuYd4XISt0iY9MJsQgzj0vMuKJ0eVzldbDX2ljJxCc0=";
+    };
     placeholder-api = fetchMod {
       name = "placeholder-api";
       url = "https://cdn.modrinth.com/data/eXts2L7r/versions/U5bhVym2/placeholder-api-2.4.2%2B1.21.jar";
@@ -144,10 +149,70 @@ let
     };
 
     # --- Gameplay ---
+    fabric-seasons = fetchMod {
+      name = "fabric-seasons";
+      url = "https://cdn.modrinth.com/data/KJe6y9Eu/versions/2mIvRTNp/fabric-seasons-2.4.2-BETA%2B1.21.jar";
+      hash = "sha256-X3mpTsDpih54se/6kvHCX2L9eC1OEcRCi6mderXneRc=";
+    };
+    fabric-seasons-delight  = fetchMod {
+      name = "fabric-seasons-delight";
+      url = "https://cdn.modrinth.com/data/4VYO7ir0/versions/KIzyS8hk/fabric-seasons-delight-1.3.9-compat-1.0.jar";
+      hash = "sha256-FJoHWqO0kCdUUow2vmbU1DUyuJbTFVhwv9DUKgmwLBM=";
+    };
+    fabric-seasons-terralith = fetchMod {
+      name = "fabric-seasons-terralith";
+      url = "https://cdn.modrinth.com/data/D53qveoj/versions/MJ2OF7eg/fabric-seasons-terralith-2.3.7-compat-1.0.jar";
+      hash = "sha256-xwlBZRLFmVjk8A0voxioFDbxTKoyVUqOWpe/0T37lSQ=";
+    };
+    fabric-seasons-extra = fetchMod {
+      name = "fabric-seasons-extra";
+      url = "https://cdn.modrinth.com/data/64FYdx5z/versions/W9dvZHrP/fabric-seasons-extras-1.3.2-BETA%2B1.21.jar";
+      hash = "sha256-mTGIJ9WSyI2L4O3lI/aXux4J77+JM9OkDwTU4JPtJ8c=";
+    };
     mca-reborn = fetchMod {
       name = "mca-reborn";
       url = "https://cdn.modrinth.com/data/1W98a849/versions/1PlgQkBW/mca-fabric-7.7.7%2B1.21.1.jar";
       hash = "sha256-Dhgm6jMrswg4JKrT9GvXNThAJwJQlMAO7qmNaNLW0/M=";
+    };
+    lootr = fetchMod {
+      name = "lootr";
+      url = "https://cdn.modrinth.com/data/EltpO5cN/versions/Rxyok2IC/lootr-fabric-1.21.1-1.11.37.118.jar";
+      hash = "sha256-4V5TWgXxhWYdrfoMrwLizeHKWpr17+xKlaRb61R5/vg=";
+    };
+    emi = fetchMod {
+      name = "EMI";
+      url = "https://cdn.modrinth.com/data/fRiHVvU7/versions/mYQ3bJs5/emi-1.1.22%2B1.21.1%2Bfabric.jar";
+      hash = "sha256-baAKjRPK1uVauqMDLYD/TR0VIBRraD8cp8Ap4BcY/gU=";
+    };
+    emi-enchanting = fetchMod {
+      name = "EMI-Enchanting";
+      url = "https://cdn.modrinth.com/data/wbWoo11W/versions/ld2zsfK3/emi_enchanting-0.1.2%2B1.21.jar";
+      hash = "sha256-C3TWAn2KLuEtARxecXAaHgX9+D4Zr8a7bSq7j90nStA=";
+    };
+    emi-xx = fetchMod {
+      name = "EMI++";
+      url = "https://cdn.modrinth.com/data/AWMWYMwC/versions/kzLya1iN/emixx-fabric-1.2.3.jar";
+      hash = "sha256-MLxQjdlCilYRZ88EUBreQSEOCNMU8v9bSE7o1GuJc5Y=";
+    };
+    waystones = fetchMod {
+      name = "waystones";
+      url = "https://cdn.modrinth.com/data/LOpKHB2A/versions/rojCNyJG/waystones-fabric-1.21.1-21.1.30.jar";
+      hash = "/EtlVqobqpyf6f4Tk/95esmB5c9op1BHplL+LVpIIy8=";
+    };
+    ends-delight = fetchMod {
+      name = "ends-delight";
+      url = "https://cdn.modrinth.com/data/yHN0njMr/versions/KOKpRenr/ends_delight-2.5.2%2Brefabricated.1.21.1.jar";
+      hash = "sha256-vfx9MxHz9UcsiIbdTUYJjvWMcHjTj03/BPXmzYEthh4=";
+    };
+    chefs-delight = fetchMod {
+      name = "chefs-delight";
+      url = "https://cdn.modrinth.com/data/pvcsfne4/versions/Sur0Lj66/chefsdelight-1.0.5-fabric-1.21.1.jar";
+      hash = "sha256-p7wmZuUGAvwFzHcBWXZ5OTa6cmAwU7MQ1mVwzpYkBLA=";
+    };
+    oceans-delight = fetchMod {
+      name = "oceans-delight";
+      url = "https://cdn.modrinth.com/data/DGiq4ZSW/versions/KXsDdyGk/oceansdelight-fdrf-fabric-1.0.3-1.21.1.jar";
+      hash = "sha256-TV+V/eLO7iy4W/WH+/RD7Y7y6L4rbVYmsqpxOlL1KNY=";
     };
     farmers-delight = fetchMod {
       name = "farmers-delight";
@@ -215,6 +280,16 @@ in
       };
     };
 
+    # Backups
+    services.borgbackup.jobs.minecraft = {
+      paths = [ "/srv/minecraft/sllv" ];
+      repo = "/mnt/backups/minecraft";
+      encryption = {
+        mode = "none";
+      };
+      compression = "auto,zstd"; # High compression, great for Tectonic world files
+      startAt = "daily";
+    };
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
   };

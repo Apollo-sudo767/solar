@@ -21,6 +21,11 @@ let
       url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/IpaMcBLh/fabric-api-0.116.11%2B1.21.1.jar";
       hash = "sha256-t5Heb23OnFjU6ir2xxO7zG3GTQpZlai61vIl7ljPF9I=";
     };
+    fabric-language-kotlin = fetchMod {
+      name = "fabric-language-kotlin";
+      url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/2i87JpYj/fabric-language-kotlin-1.13.11%2Bkotlin.2.3.21.jar";
+      hash = "sha256-w1cT7h2nD95r8OntJvjiuvCBTmDrmTzRKsuUDlf0/S8=";
+    };
     bad-packets = fetchMod {
       name = "bad-packets";
       url = "https://cdn.modrinth.com/data/ftdbN0KK/versions/hjhT2sMz/badpackets-fabric-0.8.2.jar";

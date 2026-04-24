@@ -2,6 +2,7 @@
 
 let
   cfg = config.myFeatures.services.servers.minecraft.sllv;
+  iconFile = ../../../../assets/icons/heelsBoots.png;
 
   fetchMod = { name, url, hash ? lib.fakeHash }: pkgs.fetchurl {
     inherit url;
@@ -295,6 +296,11 @@ in
       compression = "auto,zstd"; # High compression, great for Tectonic world files
       startAt = "daily";
     };
+
+    # Server Icon
+    systemd.tmpfiles.rules = [
+      "L+ /srv/minecraft/server-icon.png - minecraft minecraft - ${iconFile}"
+    ];
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
   };

@@ -261,6 +261,10 @@ in
 
         symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 
+        files = {
+          "server-icon.png" = iconFile;
+        };
+        
         serverProperties = {
           server-port = cfg.port;
           online-mode = true;
@@ -297,10 +301,6 @@ in
       startAt = "daily";
     };
 
-    # Server Icon
-    systemd.tmpfiles.rules = [
-      "L+ /srv/minecraft/sllv/server-icon.png - minecraft minecraft - ${iconFile}"
-    ];
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
   };

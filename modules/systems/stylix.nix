@@ -52,7 +52,6 @@ in
           # Shield ALL targets that are NixOS-specific
           targets = {
             # Common targets (e.g., helix, neovim) can go here
-            helix.enable = true;
           }
           // lib.optionalAttrs (!isDarwin) {
             limine.enable = false; # Moved inside the shield

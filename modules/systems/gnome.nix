@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }: # <-- Add pkgs.stdenv.isDarwin
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: # <-- Add pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.systems.gnome;
@@ -12,10 +17,10 @@ in
       enable = true;
       desktopManager.gnome.enable = true;
     };
-    
+
     environment.gnome.excludePackages = with pkgs; [
       gnome-tour
-      epiphany 
+      epiphany
     ];
   };
 }

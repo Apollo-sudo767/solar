@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }: # <-- Add pkgs.stdenv.isDarwin
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: # <-- Add pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.systems.kde;
@@ -8,7 +13,7 @@ in
 
   # Shield everything
   config = lib.mkIf cfg.enable {
-    services.xserver.enable = true; 
+    services.xserver.enable = true;
     services.desktopManager.plasma6.enable = true;
     programs.kde-pim.enable = false;
 
@@ -20,8 +25,8 @@ in
       kdePackages.spectacle
       kdePackages.ark
       kdePackages.qtstyleplugin-kvantum
-    ]; 
+    ];
 
-    xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ]; 
+    xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
   };
 }

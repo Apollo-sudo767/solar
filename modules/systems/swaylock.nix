@@ -1,32 +1,35 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.systems.swaylock;
-in {
-  options.myFeatures.systems.swaylock = {
-    enable = lib.mkEnableOption "swaylock screen locker";
-    image = lib.mkOption {
-      type = lib.types.path;
-      default = ../../assets/wallpapers/gruvbox.jpg; 
-    };
-  };
+  c = config.lib.stylix.colors;
+in
+{
+  options.myFeatures.systems.swaylock.enable = lib.mkEnableOption "swaylock screen locker";
 
   config = lib.mkIf cfg.enable {
-    # This dynamically loops over whatever usernames are defined for the CURRENT host
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
       programs.swaylock = {
         enable = true;
         package = pkgs.swaylock-effects;
         settings = lib.mkForce {
-          image = "${cfg.image}";
+          image = "${config.stylix.image}";
           scaling = "fill";
-          color = "282828";
-          ring-color = "fabd2f";
-          key-hl-color = "fb4934";
+
+          # Stylix Dynamic Palette
+          color = "${c.base00}";
+          ring-color = "${c.base0A}";
+          key-hl-color = "${c.base08}";
+
           line-color = "00000000";
           inside-color = "00000000";
           separator-color = "00000000";
-          # Effects
+
           screenshots = true;
           clock = true;
           indicator = true;

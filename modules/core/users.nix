@@ -1,9 +1,16 @@
-{ config, lib, pkgs, inputs, isStable ? true, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  isTotal,
+  isDarwin,
+  isStable ? true,
+  ...
+}:
 
 let
   cfg = config.myFeatures.core.users;
-  
-  # Standardize on your new version targets
   dynamicVersion = if isStable then "25.11" else "26.05";
 in
 {
@@ -30,27 +37,27 @@ in
       });
     };
 
-    # System-level user definitions
-    users.users = lib.genAttrs cfg.usernames (name: 
+    users.users = lib.genAttrs cfg.usernames (
+      name:
       lib.mkMerge [
         # 1. Attributes safe for BOTH macOS and Linux
         {
           shell = pkgs.zsh;
-          home = if pkgs.stdenv.isDarwin then "/Users/${name}" else "/home/${name}";
+          home = if isDarwin then "/Users/${name}" else "/home/${name}";
         }
 
         # 2. Attributes ONLY for Linux (Physically removed on Mac)
-        {
+        (lib.optionalAttrs (!isDarwin) {
           isNormalUser = true;
-          extraGroups = [ 
-            "wheel" 
-            "networkmanager" 
-            "video" 
-            "audio" 
-            "docker" 
-            "lp" 
+          extraGroups = [
+            "wheel"
+            "networkmanager"
+            "video"
+            "audio"
+            "docker"
+            "lp"
           ];
-    }
+        })
       ]
     );
   };

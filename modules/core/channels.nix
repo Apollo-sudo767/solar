@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.core.channels;
@@ -8,18 +13,18 @@ in
     # This is populated by the autoscanner (hosts/default.nix)
     isStable = lib.mkOption {
       type = lib.types.bool;
-      default = false; 
+      default = false;
       description = "Internal: Whether the host is using the stable branch.";
     };
 
     # Helper strings for stateVersion references
-    stableVersion = lib.mkOption { 
-      type = lib.types.str; 
-      default = "25.11"; 
+    stableVersion = lib.mkOption {
+      type = lib.types.str;
+      default = "25.11";
     };
-    unstableVersion = lib.mkOption { 
-      type = lib.types.str; 
-      default = "26.05"; 
+    unstableVersion = lib.mkOption {
+      type = lib.types.str;
+      default = "26.05";
     };
 
     # This provides a clean way to get the version string anywhere in your config

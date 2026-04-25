@@ -1,4 +1,11 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  isTotal,
+  isDarwin,
+  ...
+}:
 
 let
   cfg = config.myFeatures.core.ssh;
@@ -8,18 +15,20 @@ in
     enable = lib.mkEnableOption "SSH Service";
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    # 1. Common configuration for both Mac and Linux
-    {
-      services.openssh.enable = true;
-    }
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      # 1. Common configuration for both Mac and Linux
+      {
+        services.openssh.enable = true;
+      }
 
-    # 2. Linux-only configuration (Shielded from the Mac Evaluator)
-    {
-      services.openssh.settings = {
-        PermitRootLogin = "no";
-        PasswordAuthentication = true;
-      };
-    }
-  ]);
+      # 2. Linux-only configuration (Shielded from the Mac Evaluator)
+      (lib.optionalAttrs (!isDarwin) {
+        services.openssh.settings = {
+          PermitRootLogin = "no";
+          PasswordAuthentication = true;
+        };
+      })
+    ]
+  );
 }

@@ -3,6 +3,7 @@
   config,
   pkgs,
   isTotal,
+  isDarwin,
   ...
 }:
 
@@ -23,20 +24,25 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    myFeatures.core = {
-      # Only default the Linux-specific features to true on Linux
-      boot.enable = lib.mkIf pkgs.stdenv.isLinux (lib.mkDefault true);
-      nix-settings.enable = lib.mkDefault true;
-      fonts.enable = lib.mkDefault true;
-      localeChicago.enable = lib.mkDefault true;
-      ssh.enable = lib.mkDefault true;
-      users.enable = lib.mkDefault true;
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      # Universal Core Features (Loaded on both Mac and Linux)
+      {
+        myFeatures.core = {
+          nix-settings.enable = lib.mkDefault true;
+          fonts.enable = lib.mkDefault true;
+          localeChicago.enable = lib.mkDefault true;
+          ssh.enable = lib.mkDefault true;
+          users.enable = lib.mkDefault true;
+        };
+      }
 
-      virtualization = {
-        docker = lib.mkIf (cfg.virtualization.docker && pkgs.stdenv.isLinux) (lib.mkDefault true);
-        libvirt = lib.mkIf (cfg.virtualization.libvirt && pkgs.stdenv.isLinux) (lib.mkDefault true);
-      };
-    };
-  };
+      # Linux-Only Core Features (Completely erased from macOS view)
+      (lib.optionalAttrs (!isDarwin) {
+        myFeatures.core.boot.enable = lib.mkDefault true;
+        myFeatures.core.virtualization.docker = lib.mkIf cfg.virtualization.docker (lib.mkDefault true);
+        myFeatures.core.virtualization.libvirt = lib.mkIf cfg.virtualization.libvirt (lib.mkDefault true);
+      })
+    ]
+  );
 }

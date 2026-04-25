@@ -3,14 +3,15 @@
   config,
   pkgs,
   isTotal,
+  isDarwin,
   ...
 }:
 
 {
   options.myFeatures.hardware = { };
 
-  # Safely bind the graphics logic to Linux only
-  config = lib.mkIf pkgs.stdenv.isLinux {
+  # Completely erase the graphics binding logic on macOS
+  config = lib.optionalAttrs (!isDarwin) {
     myFeatures.hardware.graphics.enable = lib.mkIf (
       config.myFeatures.hardware.amd.gpu
       || config.myFeatures.hardware.nvidia.enable

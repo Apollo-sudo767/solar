@@ -299,7 +299,7 @@ in
 
     # Server Icon
     systemd.tmpfiles.rules = [
-      "L+ /srv/minecraft/server-icon.png - minecraft minecraft - ${iconFile}"
+      "L+ /srv/minecraft/sllv/server-icon.png - minecraft minecraft - ${iconFile}"
     ];
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   # 1. Setup a shortcut to your feature's config
@@ -19,10 +25,9 @@ in
       enable = true;
       onActivation.cleanup = "zap"; # Automatically uninstall apps you remove from this list!
       casks = [
-        "arc"
-        "raycast"
-        "discord"
         # Add your Mac-only GUI apps here
+        "anytype"
+        "ghostty"
       ];
     };
   };

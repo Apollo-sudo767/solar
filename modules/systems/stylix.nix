@@ -9,7 +9,7 @@
 }:
 
 let
-  cfg = config.myFeatures.systems.stylix or { enable = false; };
+  cfg = config.myFeatures.systems.stylix;
 in
 {
   imports = [
@@ -23,34 +23,58 @@ in
 
   options.myFeatures.systems.stylix = {
     enable = lib.mkEnableOption "Universal Stylix Styling";
-    scheme = lib.mkOption { type = lib.types.path; };
-    wallpaper = lib.mkOption { type = lib.types.path; };
+
+    scheme = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+    };
+
+    wallpaper = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+    };
   };
 
-  config = lib.mkIf (cfg.enable or false) (
+  config = lib.mkIf cfg.enable (
     lib.mkMerge [
       {
         stylix = {
           enable = true;
-          image = cfg.wallpaper;
-          base16Scheme = cfg.scheme;
+
+          image =
+            if (cfg.wallpaper != null) then
+              cfg.wallpaper
+            else
+              pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
+
+          base16Scheme =
+            if (cfg.scheme != null) then cfg.scheme else "${pkgs.base16-schemes}/share/themes/nord.yaml";
+
           polarity = "dark";
 
           targets = {
           }
           // lib.optionalAttrs (!isDarwin) {
-            # Only these targets crash the Mac
-            plymouth.enable = true;
-            gnome.enable = true;
-            qt.enable = true;
+            limine.enable = false;
+            plymouth = {
+              enable = true;
+              logoAnimated = true;
+              logo = "${pkgs.nixos-icons}/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
+            };
           };
         };
       }
+
       (lib.optionalAttrs (!isDarwin) {
         qt = {
           enable = true;
-          platformTheme = lib.mkForce "qt5ct";
+          platformTheme = lib.mkForce "kde";
           style = lib.mkForce "kvantum";
+        };
+
+        stylix.targets.qt = {
+          enable = true;
+          platform = lib.mkForce "qtct";
         };
       })
     ]

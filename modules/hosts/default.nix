@@ -1,47 +1,61 @@
 { lib, inputs, globalModules }:
 
 let
-  # 1. Discover all directories in the current folder (modules/hosts/), excluding "shared"
-  hostDirs = lib.filter (name: 
-    let 
-      type = (builtins.readDir ./.).${name};
-    in 
+  # Scan for host folders, ignoring 'shared'
+  hostDirs = lib.attrNames (lib.filterAttrs (name: type: 
     type == "directory" && name != "shared"
-  ) (lib.attrNames (builtins.readDir ./.));
+  ) (builtins.readDir ./.));
 
-  # 2. Helper to select inputs based on a boolean
   getPkgInput = isStable: if isStable then inputs.nixpkgs-stable else inputs.nixpkgs-unstable;
-  getHMInput  = isStable: if isStable then inputs.home-manager-stable else inputs.home-manager-unstable;
-
-  # 3. The generator function
+  
   mkHost = name: 
     let
-      # Load machine-specific settings from the new location under modules/hosts/
-      machine = import ./${name}/settings.nix;
-      isStable = machine.stable or false;
-      pkgs-input = getPkgInput isStable;
+      # Import the split file
+      hostFile = import ./${name}/default.nix;
+      
+      # Extract the metadata block
+      meta = hostFile.meta or { system = "x86_64-linux"; stable = false; };
+      
+      # Extract the configuration block
+      hostModule = hostFile.module;
+      
+      isDarwin = lib.hasSuffix "-darwin" meta.system;
+      pkgs-input = getPkgInput meta.stable;
+
+      builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
+      hmModule = if isDarwin 
+        then inputs.home-manager-unstable.darwinModules.home-manager 
+        else (if meta.stable then inputs.home-manager-stable else inputs.home-manager-unstable).nixosModules.home-manager;
     in
-    pkgs-input.lib.nixosSystem {
-      inherit (machine) system;
+    builder {
+      system = meta.system;
       specialArgs = { 
-        inherit inputs isStable;
-        # Provide the 'other' channel for convenience
+        inherit inputs isDarwin;
+        isStable = meta.stable; 
         pkgs-stable = import inputs.nixpkgs-stable { 
-          inherit (machine) system; 
+          system = meta.system;
           config.allowUnfree = true; 
         };
       };
       modules = globalModules ++ [
-        ./${name} # Automatically imports modules/hosts/${name}/default.nix
-        (getHMInput isStable).nixosModules.home-manager
-        {
+        hostModule # We pass ONLY the module block here, not the whole file!
+        hmModule
+        ({
           networking.hostName = name;
           nixpkgs.config.allowUnfree = true;
-        }
+        } // lib.optionalAttrs isDarwin {
+          networking.computerName = name;
+          networking.localHostName = name;
+        })
       ];
     };
 in
 {
-  # 4. Map discovered directories to nixosConfigurations
-  nixosConfigurations = lib.genAttrs hostDirs (name: mkHost name);
+  # Build NixOS branches (filter by checking the meta block)
+  nixosConfigurations = lib.filterAttrs (n: v: !lib.hasSuffix "-darwin" ((import ./${n}/default.nix).meta.system or "")) 
+    (lib.genAttrs hostDirs (name: mkHost name));
+
+  # Build Mac branches (filter by checking the meta block)
+  darwinConfigurations = lib.filterAttrs (n: v: lib.hasSuffix "-darwin" ((import ./${n}/default.nix).meta.system or "")) 
+    (lib.genAttrs hostDirs (name: mkHost name));
 }

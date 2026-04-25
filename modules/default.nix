@@ -1,7 +1,6 @@
-{ lib, ... }:
+{ lib, isDarwin ? false, ... }:
 
 let
-  # Recursively find all .nix files except this one
   getNixFiles = dir:
     let
       contents = builtins.readDir dir;
@@ -9,7 +8,9 @@ let
     lib.flatten (lib.mapAttrsToList (name: type:
       let path = "${toString dir}/${name}"; in
       if type == "directory" then
-        if name == "hosts" then [] else getNixFiles path
+        if name == "hosts" then []
+        else if name == "darwin" && !isDarwin then []
+        else getNixFiles path
       else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
         path
       else []

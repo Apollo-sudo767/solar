@@ -14,6 +14,12 @@
     home-manager-unstable.url = "github:nix-community/home-manager/master";
     home-manager-stable.url = "github:nix-community/home-manager/release-25.11";
 
+    # Darwin
+    nix-darwin =  {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    
     # Stylix
     stylix-unstable.url = "github:danth/stylix";
     stylix-stable.url = "github:danth/stylix/release-25.11";
@@ -65,6 +71,7 @@
         };
       in {
         nixosConfigurations = hostLoader.nixosConfigurations;
+        darwinConfigurations = hostLoader.darwinConfigurations;
       };
     };
 }

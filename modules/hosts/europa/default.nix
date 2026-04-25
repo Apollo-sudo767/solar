@@ -1,70 +1,74 @@
-{ lib, inputs, ...}:
-
 {
-  imports = [
-    ./hardware-configuration.nix
-  ];
+  meta = {
+    system = "x86_64-linux";
+    stable = false;
+  };
 
-  networking.hostName = "europa";
-  system.stateVersion = "26.05";
+  module = { lib, inputs, ...}: {
+    imports = [
+      ./hardware-configuration.nix
+    ];
 
-  myFeatures = {
-    core = {
-      enable = true;
-      users.usernames = [ "hephaestus" ];
-      lix.enable = true;
-    };
-    shell.enable = true;
-    hardware = {
-      graphics.enable = true;
-      nvidia = {
+    system.stateVersion = "26.05";
+
+    myFeatures = {
+      core = {
         enable = true;
-        open = false;
-        legacy = true;
-        prime = {
+        users.usernames = [ "hephaestus" ];
+        lix.enable = true;
+      };
+      shell.enable = true;
+      hardware = {
+        graphics.enable = true;
+        nvidia = {
           enable = true;
-          intelBusId = "PCI:0:2:0";
-          nvidiaBusId = "PCI:1:0:0";
+          open = false;
+          legacy = true;
+          prime = {
+            enable = true;
+            intelBusId = "PCI:0:2:0";
+            nvidiaBusId = "PCI:1:0:0";
+          };
         };
+        intel.enable = true;
+        battery = {
+          enable = true;
+          fullCharge = true;
+          bluetooth.enable = false;
+          aggressive = true;
+        };
+        controllers.enable = true;
+        trackpad.enable = true;
+        wifi.enable = true;
       };
-      intel.enable = true;
-      battery = {
-        enable = true;
-        fullCharge = true;
-        bluetooth.enable = false;
-        aggressive = true;
+      systems = {
+        kde.enable = true;
+        displayManager.manager = "sddm";
+        stylix.forest.enable = true;
       };
-      controllers.enable = true;
-      trackpad.enable = true;
-      wifi.enable = true;
-    };
-    systems = {
-      kde.enable = true;
-      displayManager.manager = "sddm";
-      stylix.forest.enable = true;
-    };
-    programs = {
-      ghostty.enable = true;
-      firefox.enable = true;
-      gaming.enable = true;
-      fastfetch = {
-        enable = true;
-        showBattery = true;
+      programs = {
+        ghostty.enable = true;
+        firefox.enable = true;
+        gaming.enable = true;
+        fastfetch = {
+          enable = true;
+          showBattery = true;
+        };
+        helix.enable = true;
+        media.enable = true;
+        social.enable = true;
+        obs.enable = true;
+        bitwarden.enable = true;
+        stylePackages.enable = true;
       };
-      helix.enable = true;
-      media.enable = true;
-      social.enable = true;
-      obs.enable = true;
-      bitwarden.enable = true;
-      stylePackages.enable = true;
-    };
-    services = {
-      audio.enable = true;
-      flatpak.enable = true;
-      xdgPortals.enable = true;
-      printing.enable = true;
-      udisks2.enable = true;
-      networking.tailscale.enable = true;
+      services = {
+        audio.enable = true;
+        flatpak.enable = true;
+        xdgPortals.enable = true;
+        printing.enable = true;
+        udisks2.enable = true;
+        networking.tailscale.enable = true;
+      };
     };
   };
 }

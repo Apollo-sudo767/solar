@@ -6,10 +6,18 @@ in {
   options.myFeatures.programs.helix.enable = lib.mkEnableOption "Helix Editor";
 
   config = lib.mkIf config.myFeatures.programs.helix.enable {
+    
+    # 1. Ensure the LSP and formatter binaries are actually installed on the system
+    environment.systemPackages = with pkgs; [
+      nixd
+      nixfmt
+    ];
+
     home-manager.users = lib.genAttrs usernames (name: {
       programs.helix = {
         enable = true;
-        # Use mkForce to override Stylix's automatic theme
+        
+        # Your existing settings
         settings = {
           theme = lib.mkForce "gruvbox"; 
           editor = {
@@ -20,6 +28,22 @@ in {
             };
           };
         };
+
+        # 2. Wire up the Language Server
+        languages = {
+          language-server.nixd = {
+            # lib.getExe safely points directly to the binary in the nix store
+            command = lib.getExe pkgs.nixd;
+          };
+          
+          language = [{
+            name = "nix";
+            auto-format = true;
+            formatter.command = lib.getExe pkgs.nixfmt;
+            language-servers = [ "nixd" ];
+          }];
+        };
+        
       };
     });
   };

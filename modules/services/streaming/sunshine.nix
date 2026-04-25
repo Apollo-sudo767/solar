@@ -13,40 +13,40 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.sunshine = {
-      enable = true;
-      autoStart = true;
-      capSysAdmin = true;
-      openFirewall = false; # Handled manually below using our custom port
-    };
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. Platform-agnostic settings
+    {
+      environment.systemPackages = with pkgs; [ sunshine miniupnpc ];
+    }
 
-    # Logic: Open required ports only if this feature is enabled
-    networking.firewall = {
-      allowedTCPPorts = [ 47984 47989 48010 cfg.port ];
-      allowedUDPPorts = [ 1900 5353 48010 ]; # 1900 is required for UPnP discovery
-      allowedUDPPortRanges = [
-        { from = 47998; to = 48000; }
-        { from = 8000; to = 8010; }
-      ];
-    };
-
-    boot.kernelModules = [ "uinput" ];
-    hardware.uinput.enable = true;
-    users.users.apollo.extraGroups = [ "uinput" ];
-
-    environment.systemPackages = with pkgs; [
-      sunshine
-      vpl-gpu-rt
-      miniupnpc # Necessary for Sunshine's internal UPnP logic
-    ];
-
-    services.avahi = {
-      enable = true;
-      publish = {
+    # 2. Linux-only settings (Guarded to prevent macOS from seeing 'boot')
+    (lib.mkIf pkgs.stdenv.isLinux {
+      services.sunshine = {
         enable = true;
-        userServices = true;
+        autoStart = true;
+        capSysAdmin = true;
+        openFirewall = false;
       };
-    };
-  };
+
+      networking.firewall = {
+        allowedTCPPorts = [ 47984 47989 48010 cfg.port ];
+        allowedUDPPorts = [ 1900 5353 48010 ];
+        allowedUDPPortRanges = [
+          { from = 47998; to = 48000; }
+          { from = 8000; to = 8010; }
+        ];
+      };
+
+      boot.kernelModules = [ "uinput" ];
+      hardware.uinput.enable = true;
+      users.users.apollo.extraGroups = [ "uinput" ];
+
+      environment.systemPackages = [ pkgs.vpl-gpu-rt ];
+
+      services.avahi = {
+        enable = true;
+        publish = { enable = true; userServices = true; };
+      };
+    })
+  ]);
 }

@@ -36,15 +36,5 @@ in
       };
     }
 
-    # 2. The Switcher - This prevents the collision
-    (lib.mkIf (!cfg.usePersistence) {
-      myFeatures.core.users.enable = lib.mkForce true;
-      myFeatures.core.persistentUsers.enable = lib.mkForce false;
-    })
-
-    (lib.mkIf cfg.usePersistence {
-      myFeatures.core.persistentUsers.enable = lib.mkForce true;
-      myFeatures.core.users.enable = lib.mkForce false;
-    })
   ]);
 }

@@ -10,7 +10,7 @@ in
     libvirt = lib.mkEnableOption "Libvirt/Virt-Manager";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf ( cfg.enable && pkgs.stdenv.isLinux ) {
     virtualisation = {
       docker.enable = cfg.docker;
       libvirtd.enable = cfg.libvirt;

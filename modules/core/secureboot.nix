@@ -8,7 +8,7 @@ in
     enable = lib.mkEnableOption "Native Limine Secure Boot";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) {
     # 1. Enable native Limine signing during rebuilds
     boot.loader.limine.secureBoot.enable = true;
 

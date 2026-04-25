@@ -1,21 +1,21 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.systems.stylix;
 in
 {
-  # 1. Import the NixOS module which handles system + home-manager styling
-  imports = [ inputs.stylix-unstable.nixosModules.stylix ];
-
+  # 1. Unconditional imports to avoid evaluation loops
+  imports = [
+    inputs.stylix-unstable.nixosModules.stylix
+    inputs.stylix-unstable.darwinModules.stylix
+  ];
+   
   options.myFeatures.systems.stylix = {
     enable = lib.mkEnableOption "Universal Stylix Styling";
-    
-    # Internal options populated by your presets (forest.nix, gruvbox.nix)
     scheme = lib.mkOption { 
       type = lib.types.nullOr lib.types.str; 
       default = null; 
     };
-
     wallpaper = lib.mkOption { 
       type = lib.types.nullOr lib.types.path;
       default = null; 
@@ -26,15 +26,11 @@ in
     stylix = {
       enable = true;
       
-      # FALLBACK LOGIC: 
-      # If a preset provides a wallpaper, use it. 
-      # Otherwise, use a safe absolute path from the Nix store to prevent crashes.
+      # Use a simple string check for image path to avoid pkgs.nixos-icons recursion
       image = if (cfg.wallpaper != null) 
               then cfg.wallpaper 
               else pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
 
-      # If a preset provides a scheme, use it. 
-      # Otherwise, default to Nord which matches your forest aesthetic.
       base16Scheme = if (cfg.scheme != null) 
                      then cfg.scheme 
                      else "${pkgs.base16-schemes}/share/themes/nord.yaml";
@@ -43,26 +39,23 @@ in
       
       targets = {
         limine.enable = false;
-        plymouth = {
-          enable = true;
-          logoAnimated = true;
-          logo = "${pkgs.nixos-icons}/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";          
-        };
+        # Use the isDarwin flag passed from the loader instead of pkgs.stdenv.isLinux
+        plymouth.enable = !isDarwin;
+        gnome.enable = !isDarwin;
+        
         qt = {
           enable = true;
-          platform = lib.mkForce "qtct";
+          # Lazy check: only apply mkForce if we are definitely on Linux
+          platform = if !isDarwin then lib.mkForce "qtct" else null;
         };
       };
-
     };
 
-    qt = {
+    # Use lib.optionalAttrs with the isDarwin flag to shield these from macOS
+    qt = lib.optionalAttrs (!isDarwin) {
       enable = true;
       platformTheme = lib.mkForce "kde";
       style = lib.mkForce "kvantum";
     };    
-
-    # We do NOT use home-manager.sharedModules here. 
-    # The NixOS module automatically injects these settings into all HM users.
   };
 }

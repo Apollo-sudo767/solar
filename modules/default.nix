@@ -1,3 +1,4 @@
+# modules/default.nix
 { lib, isDarwin ? false, ... }:
 
 let
@@ -18,4 +19,7 @@ let
 in
 {
   imports = getNixFiles ./.;
+
+  # This ensures isDarwin is available to the 'config' block of every sub-module
+  _module.args = { inherit isDarwin; }; 
 }

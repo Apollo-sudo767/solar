@@ -10,7 +10,7 @@ in
     enable = lib.mkEnableOption "Limine Bootloader";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) {
     # Disable the default systemd-boot to make room for Limine
     boot.loader.systemd-boot.enable = false;
 

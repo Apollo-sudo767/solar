@@ -4,7 +4,6 @@ let
   # 1. Setup a shortcut to your feature's config
   # Replace 'myFeature' with your actual feature name
   cfg = config.myFeatures.darwin.homebrew;
-  };
 in
 {
   # --- OPTIONS ---

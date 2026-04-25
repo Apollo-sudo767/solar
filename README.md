@@ -10,24 +10,24 @@ New Features and Hosts are automatically discovered and integrated. This structu
 
 ````text
 Solar
-├── flake.nix               # Project entry point & host loader
-├── flake.lock              # Version-locked inputs
-├── assets/                 # Wallpapers & branding
-│   └── wallpapers/
+├── flake.nix               # Entry point (now generates both nixosConfigurations and darwinConfigurations)
+├── flake.lock
+├── assets/
 ├── modules/                # The Dendritic Core
-│   ├── default.nix         # Recursive autoscanner (ignores /hosts)
-│   ├── core/               # System essentials (boot, users, etc.)
-│   ├── hardware/           # Hardware-specific modules
-│   ├── programs/           # Toggleable feature modules
-│   ├── services/           # Background system services
-│   ├── systems/            # Desktop environments (Niri, Gnome)
-│   └── hosts/              # The Terminal Leaves (Machine Definitions)
-│       ├── default.nix     # Manual host loader logic
-│       ├── mars/
-│       ├── mercury/
-│       └── venus/
-├── parts/                  # Flake-parts plumbing
-└── templates/              # Quick-start boilerplates
+│   ├── default.nix         # UPDATED: Autoscanner that filters based on 'isDarwin' and 'isTotal'
+│   ├── core/               # Cross-platform system essentials (users, nix-settings, etc.)
+│   ├── darwin/             # NEW: macOS-exclusive settings (Homebrew, Mac defaults)
+│   ├── hardware/           # Linux-exclusive hardware logic (stays hidden from Mac)
+│   ├── programs/           # Feature modules (Fastfetch, Helix, etc. marked as 'isTotal')
+│   ├── services/           # System services (Nginx, Tailscale, etc.)
+│   ├── systems/            # Desktop & Style (Stylix, Niri, Waybar)
+│   └── hosts/              # The Terminal Leaves
+│       ├── default.nix     # UPDATED: Dual-purpose host loader for NixOS and Darwin
+│       ├── mars/           # NixOS Host
+│       ├── phobos/         # NEW: Darwin Host (MacBook)
+│       └── venus/          # NixOS Host
+├── parts/
+└── templates/
 ````
    
 ## 🎨 Visual Styling   

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
+{ config, lib, pkgs, ... }: # <-- Add pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.systems.gnome;
@@ -7,7 +7,7 @@ in
   options.myFeatures.systems.gnome.enable = lib.mkEnableOption "GNOME Desktop Environment";
 
   # Shield everything
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       desktopManager.gnome.enable = true;
@@ -17,5 +17,5 @@ in
       gnome-tour
       epiphany 
     ];
-  });
+  };
 }

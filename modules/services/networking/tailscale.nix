@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }: # Added isDarwin [cite: 208]
+{ config, lib, pkgs, ... }: # Added pkgs.stdenv.isDarwin [cite: 208]
 
 let
   cfg = config.myFeatures.services.networking.tailscale;
@@ -12,9 +12,9 @@ in
     { services.tailscale.enable = true; }
     
     # Shield firewall rules from macOS [cite: 211]
-    (lib.optionalAttrs (!isDarwin) {
+    {
       networking.firewall.trustedInterfaces = [ "tailscale0" ];
       networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
-    })
+    }
   ]);
 }

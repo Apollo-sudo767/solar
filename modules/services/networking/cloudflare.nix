@@ -1,4 +1,4 @@
-{ config, lib, isDarwin, ... }: # Added isDarwin
+{ config, lib, ... }: # Added pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.services.networking.cloudflare;
@@ -23,7 +23,7 @@ in
   };
 
   # Shield the NixOS-only service from the macOS evaluator
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     services.cloudflared = {
       enable = true;
       tunnels."${cfg.tunnelId}" = {
@@ -33,5 +33,5 @@ in
         }) cfg.domains) ++ [ { default = "http_status:404"; } ];
       };
     };
-  });
+  };
 }

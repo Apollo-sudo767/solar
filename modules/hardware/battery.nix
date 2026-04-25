@@ -1,8 +1,13 @@
-{ config, lib, pkgs, isDarwin, ... }: # <-- ADDED isDarwin
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: # <-- ADDED pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.hardware.battery;
-  
+
   startThreshold = if cfg.fullCharge then "95" else "75";
   stopThreshold = if cfg.fullCharge then "100" else "80";
 
@@ -16,20 +21,20 @@ in
   # --- OPTIONS ---
   options.myFeatures.hardware.battery = {
     enable = lib.mkEnableOption "ThinkPad Power Management";
-    fullCharge = lib.mkOption { 
-      type = lib.types.bool; 
+    fullCharge = lib.mkOption {
+      type = lib.types.bool;
       default = false;
       description = "If false, caps charge at 80% to preserve battery health.";
     };
-    bluetooth = { 
-      enable = lib.mkOption { 
+    bluetooth = {
+      enable = lib.mkOption {
         type = lib.types.bool;
-        default = false; 
+        default = false;
         description = "Manage Bluetooth power states based on AC/Battery.";
-      }; 
+      };
     };
-    aggressive = lib.mkOption { 
-      type = lib.types.bool; 
+    aggressive = lib.mkOption {
+      type = lib.types.bool;
       default = false;
       description = "Enable experimental kernel tweaks for maximum savings.";
     };
@@ -37,7 +42,7 @@ in
 
   # --- CONFIG ---
   # SHIELDED: This entire block vanishes when building for macOS
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     # 0. Kernel Requirements
     boot.kernelModules = [ "acpi_call" ];
     boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
@@ -45,8 +50,14 @@ in
     # 1. CPU Management
     services.auto-cpufreq.enable = true;
     services.auto-cpufreq.settings = {
-      charger = { governor = "performance"; turbo = "always"; };
-      battery = { governor = "powersave"; turbo = "never"; };
+      charger = {
+        governor = "performance";
+        turbo = "always";
+      };
+      battery = {
+        governor = "powersave";
+        turbo = "never";
+      };
     };
 
     # 2. Battery Thresholds
@@ -65,12 +76,13 @@ in
     services.tlp.enable = lib.mkForce false;
     services.power-profiles-daemon.enable = lib.mkForce false;
 
-    boot.kernelParams = [ 
+    boot.kernelParams = [
       "mem_sleep_default=deep"
       "usbcore.autosuspend=-1"
-    ] ++ (lib.optionals cfg.aggressive [
+    ]
+    ++ (lib.optionals cfg.aggressive [
       "pcie_aspm=force"
-      "workqueue.power_efficient=Y" 
+      "workqueue.power_efficient=Y"
       "nvme.noacpi=1"
     ]);
 
@@ -105,5 +117,5 @@ in
       iw
       bluez
     ];
-  });
+  };
 }

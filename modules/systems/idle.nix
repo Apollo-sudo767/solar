@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
+{ config, lib, pkgs, ... }: # <-- Add pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.systems.idle;
@@ -26,8 +26,8 @@ in {
     }
     
     # Shield the Linux SystemD login service
-    (lib.optionalAttrs (!isDarwin) {
+    {
       services.logind.settings.Login.HandlelidSwitch = "suspend";
-    })
+    }
   ]);
 }

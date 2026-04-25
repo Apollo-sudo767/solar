@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.services.nginx;
@@ -11,7 +11,7 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     # ALL Linux-specific services must be inside this shield
     services.nginx = {
       enable = true;
@@ -28,5 +28,5 @@ in {
     security.acme.acceptTerms = true;
 
     networking.firewall.allowedTCPPorts = [ 80 443 ];
-  });
+  };
 }

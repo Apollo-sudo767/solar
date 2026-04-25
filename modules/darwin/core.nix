@@ -11,7 +11,7 @@
     enable = lib.mkEnableOption "Core macOS System Settings";
   };
 
-  config = lib.mkIf (config.myFeatures.darwin.core.enable && isDarwin) {
+  config = lib.mkIf (config.myFeatures.darwin.core.enable && pkgs.stdenv.isDarwin) {
 
     # CRITICAL: Tell nix-darwin to let Determinate handle the Nix daemon
     nix.enable = false;

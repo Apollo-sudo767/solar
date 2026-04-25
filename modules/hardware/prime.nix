@@ -1,4 +1,9 @@
-{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.hardware.nvidia.prime;
@@ -6,12 +11,17 @@ in
 {
   options.myFeatures.hardware.nvidia.prime = {
     enable = lib.mkEnableOption "Nvidia PRIME Offload Mode (Laptop)";
-    intelBusId = lib.mkOption { type = lib.types.str; default = "PCI:0:2:0"; };
-    nvidiaBusId = lib.mkOption { type = lib.types.str; default = "PCI:1:0:0"; };
+    intelBusId = lib.mkOption {
+      type = lib.types.str;
+      default = "PCI:0:2:0";
+    };
+    nvidiaBusId = lib.mkOption {
+      type = lib.types.str;
+      default = "PCI:1:0:0";
+    };
   };
 
-  # Shield everything
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     myFeatures.hardware.nvidia.enable = lib.mkDefault true;
 
     hardware.nvidia.prime = {
@@ -33,5 +43,5 @@ in
         exec "$@"
       '')
     ];
-  });
+  };
 }

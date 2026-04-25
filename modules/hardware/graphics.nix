@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.hardware.graphics;
@@ -6,7 +6,7 @@ in
 {
   options.myFeatures.hardware.graphics.enable = lib.mkEnableOption "Universal Graphics Acceleration";
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     hardware.graphics = {
       enable = true;
       enable32Bit = true; # Essential for Steam / TF2
@@ -35,5 +35,5 @@ in
       # Help apps find the right drivers
       XDG_SESSION_TYPE = "wayland";
     };
-  });
+  };
 }

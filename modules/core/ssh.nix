@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.core.ssh;
@@ -15,11 +15,11 @@ in
     }
 
     # 2. Linux-only configuration (Shielded from the Mac Evaluator)
-    (lib.optionalAttrs (!isDarwin) {
+    {
       services.openssh.settings = {
         PermitRootLogin = "no";
         PasswordAuthentication = true;
       };
-    })
+    }
   ]);
 }

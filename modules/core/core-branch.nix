@@ -1,4 +1,10 @@
-{ lib, config, isDarwin, ... }: # Added isDarwin [cite: 88]
+{
+  lib,
+  config,
+  pkgs,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.core;
@@ -17,23 +23,20 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    {
-      myFeatures.core = {
-        # Shield Linux-only core defaults [cite: 94]
-        boot.enable = lib.mkIf (!isDarwin) (lib.mkDefault true);
-        nix-settings.enable = lib.mkDefault true;
-        fonts.enable = lib.mkDefault true;
-        localeChicago.enable = lib.mkDefault true;
-        ssh.enable = lib.mkDefault true;
-        users.enable = lib.mkDefault true; 
-        
-        virtualization = {
-          # Added !isDarwin check to prevent crashes on Mac [cite: 94]
-          docker = lib.mkIf (cfg.virtualization.docker && !isDarwin) (lib.mkDefault true);
-          libvirt = lib.mkIf (cfg.virtualization.libvirt && !isDarwin) (lib.mkDefault true);
-        };
+  config = lib.mkIf cfg.enable {
+    myFeatures.core = {
+      # Only default the Linux-specific features to true on Linux
+      boot.enable = lib.mkIf pkgs.stdenv.isLinux (lib.mkDefault true);
+      nix-settings.enable = lib.mkDefault true;
+      fonts.enable = lib.mkDefault true;
+      localeChicago.enable = lib.mkDefault true;
+      ssh.enable = lib.mkDefault true;
+      users.enable = lib.mkDefault true;
+
+      virtualization = {
+        docker = lib.mkIf (cfg.virtualization.docker && pkgs.stdenv.isLinux) (lib.mkDefault true);
+        libvirt = lib.mkIf (cfg.virtualization.libvirt && pkgs.stdenv.isLinux) (lib.mkDefault true);
       };
-    }
-  ]);
+    };
+  };
 }

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.core.boot;
@@ -10,7 +10,7 @@ in
     enable = lib.mkEnableOption "Limine Bootloader";
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     # Disable the default systemd-boot to make room for Limine
     boot.loader.systemd-boot.enable = false;
 
@@ -35,5 +35,5 @@ in
       limine
       efibootmgr
     ];
-  });
+  };
 }

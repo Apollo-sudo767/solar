@@ -1,4 +1,9 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.shell;

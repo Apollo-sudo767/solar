@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
+{ config, lib, pkgs, ... }: # <-- Add pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.systems.displayManager;
@@ -13,7 +13,7 @@ in
   };
 
   # Shield the whole block
-  config = lib.mkIf (cfg.manager != "none") (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf (cfg.manager != "none") {
     services.greetd = {
       enable = lib.mkIf (cfg.manager == "tuigreet" || cfg.manager == "gtkGreet") true;
       settings = lib.mkMerge [
@@ -34,5 +34,5 @@ in
 
     services.xserver.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; 
     services.displayManager.sddm.wayland.enable = lib.mkIf (cfg.manager == "sddm") true; 
-  });
+  };
 }

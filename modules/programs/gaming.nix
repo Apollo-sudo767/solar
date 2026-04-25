@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.programs.gaming;
@@ -12,12 +12,12 @@ in
       environment.systemPackages = with pkgs; [ prismlauncher ];
     }
 
-    (lib.optionalAttrs (!isDarwin) {
+    {
       programs.steam = {
         enable = true;
         remotePlay.openFirewall = true;
       };
       environment.systemPackages = with pkgs; [ mangohud gamemode libkrb5 keyutils ];
-    })
+    }
   ]);
 }

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.core.virtualization;
@@ -10,7 +15,7 @@ in
     libvirt = lib.mkEnableOption "Libvirt/Virt-Manager";
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     virtualisation = {
       docker.enable = cfg.docker;
       libvirtd.enable = cfg.libvirt;
@@ -18,9 +23,7 @@ in
 
     # Automatically add users to the correct groups
     users.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
-      extraGroups = 
-        (lib.optional cfg.docker "docker") ++ 
-        (lib.optional cfg.libvirt "libvirtd");
+      extraGroups = (lib.optional cfg.docker "docker") ++ (lib.optional cfg.libvirt "libvirtd");
     });
-  });
+  };
 }

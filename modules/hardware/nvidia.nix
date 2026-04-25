@@ -1,4 +1,9 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.hardware.nvidia;
@@ -11,34 +16,44 @@ in
     legacy = lib.mkEnableOption "Use Legacy Driver Branch (for P2000/Pascal)";
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     myFeatures.hardware.graphics.enable = true;
     services.xserver.videoDrivers = lib.mkBefore [ "nvidia" ];
 
     boot = {
       kernelParams = [
         "nvidia-drm.modeset=1"
-        # Fixed lowercase syntax to avoid kernel ignore error
-        "nvidia.nvreg_preserve_video_memory_allocations=1" 
+        "nvidia.nvreg_preserve_video_memory_allocations=1"
         "nvidia-drm.fbdev=1"
       ];
-      initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+      initrd.kernelModules = [
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_uvm"
+        "nvidia_drm"
+      ];
     };
-    
+
     hardware.nvidia = {
       modesetting.enable = true;
       powerManagement.enable = true;
       open = cfg.open;
       nvidiaSettings = true;
       forceFullCompositionPipeline = true;
-      
+
       # Advanced package selection logic
-      package = let 
-        pkgs-nvidia = config.boot.kernelPackages.nvidiaPackages;
-      in if cfg.legacy then pkgs-nvidia.legacy_580 # Explicitly for your P2000
-         else if cfg.beta then pkgs-nvidia.beta 
-         else if cfg.open then pkgs-nvidia.open 
-         else pkgs-nvidia.stable; 
+      package =
+        let
+          pkgs-nvidia = config.boot.kernelPackages.nvidiaPackages;
+        in
+        if cfg.legacy then
+          pkgs-nvidia.legacy_580 # Explicitly for your P2000
+        else if cfg.beta then
+          pkgs-nvidia.beta
+        else if cfg.open then
+          pkgs-nvidia.open
+        else
+          pkgs-nvidia.stable;
     };
 
     hardware.graphics.extraPackages = with pkgs; [
@@ -57,5 +72,5 @@ in
       WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONE_WL = "1";
     };
-  });
+  };
 }

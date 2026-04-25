@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.hardware.intel;
@@ -6,7 +6,7 @@ in
 {
   options.myFeatures.hardware.intel.enable = lib.mkEnableOption "Intel Graphics Support";
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     myFeatures.hardware.graphics.enable = true;
 
     # Ensure the kernel uses the correct driver for modern Intel iGPUs
@@ -27,5 +27,5 @@ in
       # Forces the use of the modern Intel Media Driver for VA-API
       LIBVA_DRIVER_NAME = "iHD";
     };
-  });
+  };
 }

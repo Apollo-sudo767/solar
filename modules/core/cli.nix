@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.core.cli;
@@ -23,7 +23,7 @@ in
       jq
       nurl
       comma
-    ] ++ (lib.optionals (!isDarwin) [
+    ] ++ (lib.optionals (!pkgs.stdenv.isDarwin) [
       # --- Linux-Only Tools ---
       lm_sensors
       sysstat

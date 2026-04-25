@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.services.audio;
@@ -6,7 +6,7 @@ in
 {
   options.myFeatures.services.audio.enable = lib.mkEnableOption "Pipewire Audio & CLI Utilities";
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     security.rtkit.enable = true;
     services.pipewire = {
       enable = true;
@@ -21,5 +21,5 @@ in
     ];
 
     systemd.user.services.pipewire.wantedBy = [ "default.target" ];
-  });
+  };
 }

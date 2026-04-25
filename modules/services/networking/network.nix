@@ -1,4 +1,4 @@
-{ config, lib, isDarwin, ... }: # Added isDarwin
+{ config, lib, ... }: # Added pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.services.networking;
@@ -9,7 +9,7 @@ in
   };
 
   # Shield the Linux-only NetworkManager from macOS
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     networking.networkmanager.enable = lib.mkDefault true;
-  });
+  };
 }

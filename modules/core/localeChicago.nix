@@ -1,4 +1,4 @@
-{ config, lib, isDarwin, ... }: # <-- ADDED isDarwin
+{ config, lib, ... }: # <-- ADDED pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.core.localeChicago;
@@ -13,10 +13,10 @@ in
     }
 
     # 2. Linux-only settings (Shielded from macOS)
-    (lib.optionalAttrs (!isDarwin) {
+    {
       i18n.defaultLocale = "en_US.UTF-8";
       console.keyMap = "us";
       services.xserver.xkb.layout = "us";
-    })
+    }
   ]);
 }

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.hardware.amd;
@@ -22,13 +22,13 @@ in
   config = lib.mkMerge [
     
     # 1. CPU Logic (Shielded for Linux only)
-    (lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+    (lib.mkIf cfg.enable {
       hardware.cpu.amd.updateMicrocode = true;
       boot.kernelParams = [ "amd_pstate=active" ];
-    }))
+    })
 
     # 2. GPU Logic (Shielded for Linux only)
-    (lib.mkIf cfg.gpu (lib.optionalAttrs (!isDarwin) {
+    (lib.mkIf cfg.gpu {
       myFeatures.hardware.graphics.enable = true;
       boot.initrd.kernelModules = [ "amdgpu" ];
       services.xserver.videoDrivers = [ "amdgpu" ];
@@ -40,7 +40,7 @@ in
       ];
 
       environment.variables.AMD_VULKAN_ICD = "RADV";
-    }))
+    })
     
   ];
 }

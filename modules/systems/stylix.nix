@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  isTotal,
   isDarwin,
   ...
 }:
@@ -11,6 +12,7 @@ let
   cfg = config.myFeatures.systems.stylix or { enable = false; };
 in
 {
+  # Recursion-safe conditional import using the boolean flag
   imports = [
     (
       if isDarwin then
@@ -54,7 +56,7 @@ in
             # Common targets (e.g., helix, neovim) can go here
           }
           // lib.optionalAttrs (!isDarwin) {
-            limine.enable = false; # Moved inside the shield
+            limine.enable = false;
             plymouth.enable = true;
             gnome.enable = true;
             qt.enable = true;
@@ -63,7 +65,7 @@ in
       }
 
       # 2. Linux-only QT System-wide engine
-      (lib.optionalAttrs (!isDarwin) {
+      (lib.mkIf (!isDarwin) {
         qt = {
           enable = true;
           platformTheme = lib.mkForce "qt5ct";

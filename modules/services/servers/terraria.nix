@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.services.servers.terraria;
@@ -42,7 +42,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     # Port management via host default.nix logic
     networking.firewall = lib.mkIf cfg.openFirewall {
       allowedTCPPorts = [ cfg.port ];
@@ -84,5 +84,5 @@ in
       home = "/var/lib/terraria";
     };
     users.groups.terraria = {};
-  });
+  };
 }

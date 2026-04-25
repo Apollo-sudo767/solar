@@ -1,15 +1,20 @@
-{ lib, config, isDarwin, ... }: # Added isDarwin [cite: 12]
+{
+  lib,
+  config,
+  pkgs,
+  isTotal,
+  ...
+}:
 
 {
-  options.myFeatures.hardware = {};
+  options.myFeatures.hardware = { };
 
-  # Wrap configuration in optionalAttrs to prevent reading 
-  # hardware attributes on macOS [cite: 13]
-  config = lib.optionalAttrs (!isDarwin) {
+  # Safely bind the graphics logic to Linux only
+  config = lib.mkIf pkgs.stdenv.isLinux {
     myFeatures.hardware.graphics.enable = lib.mkIf (
-      config.myFeatures.hardware.amd.gpu || 
-      config.myFeatures.hardware.nvidia.enable || 
-      config.myFeatures.hardware.intel.enable
+      config.myFeatures.hardware.amd.gpu
+      || config.myFeatures.hardware.nvidia.enable
+      || config.myFeatures.hardware.intel.enable
     ) true;
   };
 }

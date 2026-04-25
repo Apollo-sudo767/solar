@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.services.streaming.sunshine;
@@ -23,7 +23,7 @@ in
     }
 
     # Linux-only part: HIDDEN from macOS evaluator to prevent 'boot' errors
-    (lib.optionalAttrs (!isDarwin) {
+    {
       services.sunshine = {
         enable = true;
         autoStart = true;
@@ -53,6 +53,6 @@ in
           userServices = true;
         };
       };
-    })
+    }
   ]);
 }

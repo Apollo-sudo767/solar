@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.core.security;
@@ -10,7 +10,7 @@ in
     useOOMD = lib.mkEnableOption "Systemd-OOMD stability";
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     security = {
       # 1. AppArmor Logic
       apparmor = lib.mkIf cfg.useAppArmor {
@@ -41,5 +41,5 @@ in
 
 
     networking.firewall.enable = lib.mkDefault true;
-  });
+  };
 }

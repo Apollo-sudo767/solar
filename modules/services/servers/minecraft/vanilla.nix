@@ -3,7 +3,6 @@
   lib,
   pkgs,
   inputs,
-  isDarwin,
   ...
 }:
 
@@ -43,7 +42,7 @@ let
   };
 in
 {
-  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
+  imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
   options.myFeatures.services.servers.minecraft.vanilla = {
     enable = lib.mkEnableOption "Minecraft Vanilla+ (1.21.1)";
@@ -53,53 +52,51 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (
-    lib.optionalAttrs (!isDarwin) {
-      nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
+  config = lib.mkIf cfg.enable {
+    nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
-      services.haveged.enable = true; # Entropy for faster server start
+    services.haveged.enable = true; # Entropy for faster server start
 
-      services.minecraft-servers = {
+    services.minecraft-servers = {
+      enable = true;
+      eula = true;
+
+      managementSystem = {
+        tmux.enable = lib.mkForce false;
+        systemd-socket.enable = true;
+      };
+
+      servers.vanilla-plus = {
         enable = true;
-        eula = true;
+        package = pkgs.minecraftServers.fabric-1_21_1;
 
-        managementSystem = {
-          tmux.enable = lib.mkForce false;
-          systemd-socket.enable = true;
-        };
+        # Consistent JVM options for 1.21.1 performance
+        jvmOpts = "-Xmx6G -Xms6G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
 
-        servers.vanilla-plus = {
-          enable = true;
-          package = pkgs.minecraftServers.fabric-1_21_1;
+        # Symlinks management matching sllv.nix
+        symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 
-          # Consistent JVM options for 1.21.1 performance
-          jvmOpts = "-Xmx6G -Xms6G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
-
-          # Symlinks management matching sllv.nix
-          symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
-
-          serverProperties = {
-            server-port = cfg.port;
-            online-mode = true;
-            enforce-secure-profile = false;
-            max-players = 10;
-            motd = "Solar Vanilla+ | 1.21.1 Terralith";
-          };
+        serverProperties = {
+          server-port = cfg.port;
+          online-mode = true;
+          enforce-secure-profile = false;
+          max-players = 10;
+          motd = "Solar Vanilla+ | 1.21.1 Terralith";
         };
       };
+    };
 
-      # Systemd stability (identical to sllv.nix logic)
-      systemd.services.minecraft-server-vanilla-plus = {
-        unitConfig.StartLimitIntervalSec = lib.mkForce 0;
-        serviceConfig = {
-          Restart = "always";
-          RestartSec = "10s";
-          TimeoutStopSec = lib.mkForce "120s";
-        };
+    # Systemd stability (identical to sllv.nix logic)
+    systemd.services.minecraft-server-vanilla-plus = {
+      unitConfig.StartLimitIntervalSec = lib.mkForce 0;
+      serviceConfig = {
+        Restart = "always";
+        RestartSec = "10s";
+        TimeoutStopSec = lib.mkForce "120s";
       };
+    };
 
-      networking.firewall.allowedTCPPorts = [ cfg.port ];
-      networking.firewall.allowedUDPPorts = [ cfg.port ];
-    }
-  );
+    networking.firewall.allowedTCPPorts = [ cfg.port ];
+    networking.firewall.allowedUDPPorts = [ cfg.port ];
+  };
 }

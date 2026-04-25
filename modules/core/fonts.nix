@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }: # <-- Added isDarwin
+{ config, lib, pkgs, ... }: # <-- Added pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.core.fonts;
@@ -19,13 +19,13 @@ in
     }
 
     # 2. Linux-only: Configure system default fonts and fallbacks
-    (lib.optionalAttrs (!isDarwin) {
+    {
       fonts.fontconfig.defaultFonts = {
         serif = [ "Noto Serif" "Noto Color Emoji" ];
         sansSerif = [ "Noto Sans" "Noto Color Emoji" ];
         monospace = [ "JetBrainsMono Nerd Font" "Noto Color Emoji" ];
         emoji = [ "Noto Color Emoji" ];
       };
-    })
+    }
   ]);
 }

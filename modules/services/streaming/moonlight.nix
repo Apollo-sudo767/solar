@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }: # Added isDarwin [cite: 212]
+{ config, lib, pkgs, ... }: # Added pkgs.stdenv.isDarwin [cite: 212]
 
 let
   cfg = config.myFeatures.services.streaming.moonlight;
@@ -11,7 +11,7 @@ in
   config = lib.mkIf cfg.enable (lib.mkMerge [
     { environment.systemPackages = [ pkgs.moonlight-qt ]; }
 
-    (lib.optionalAttrs (!isDarwin) {
+    {
       networking.firewall = {
         allowedUDPPorts = [ 1900 5353 ];
         allowedTCPPorts = [ 47984 47989 48010 ];
@@ -21,6 +21,6 @@ in
         enable = true;
         nssmdns4 = true;
       };
-    })
+    }
   ]);
 }

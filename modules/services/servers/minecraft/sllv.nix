@@ -1,14 +1,26 @@
-{ config, lib, pkgs, inputs, isDarwin, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.services.servers.minecraft.sllv;
   iconFile = ../../../../assets/icons/heelsBoots.png;
 
-  fetchMod = { name, url, hash ? lib.fakeHash }: pkgs.fetchurl {
-    inherit url;
-    sha256 = hash;
-    name = "${name}.jar";
-  };
+  fetchMod =
+    {
+      name,
+      url,
+      hash ? lib.fakeHash,
+    }:
+    pkgs.fetchurl {
+      inherit url;
+      sha256 = hash;
+      name = "${name}.jar";
+    };
 
   mods = {
     # --- Core Libraries & APIs ---
@@ -160,7 +172,7 @@ let
       url = "https://cdn.modrinth.com/data/KJe6y9Eu/versions/2mIvRTNp/fabric-seasons-2.4.2-BETA%2B1.21.jar";
       hash = "sha256-X3mpTsDpih54se/6kvHCX2L9eC1OEcRCi6mderXneRc=";
     };
-    fabric-seasons-delight  = fetchMod {
+    fabric-seasons-delight = fetchMod {
       name = "fabric-seasons-delight";
       url = "https://cdn.modrinth.com/data/4VYO7ir0/versions/KIzyS8hk/fabric-seasons-delight-1.3.9-compat-1.0.jar";
       hash = "sha256-FJoHWqO0kCdUUow2vmbU1DUyuJbTFVhwv9DUKgmwLBM=";
@@ -228,7 +240,7 @@ let
   };
 in
 {
-  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
+  imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
   options.myFeatures.services.servers.minecraft.sllv = {
     enable = lib.mkEnableOption "Minecraft MCA Fabric Server (1.21.1)";
     port = lib.mkOption {
@@ -237,7 +249,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
     services.haveged.enable = true;
@@ -263,7 +275,7 @@ in
         files = {
           "server-icon.png" = iconFile;
         };
-        
+
         serverProperties = {
           server-port = cfg.port;
           online-mode = true;
@@ -277,7 +289,7 @@ in
 
     systemd.services.minecraft-server-sllv = {
       unitConfig = {
-        StartLimitIntervalSec = lib.mkForce 0; 
+        StartLimitIntervalSec = lib.mkForce 0;
       };
       serviceConfig = {
         Restart = "always";
@@ -302,5 +314,5 @@ in
 
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
-  });
+  };
 }

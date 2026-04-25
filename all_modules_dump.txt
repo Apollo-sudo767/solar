@@ -1,0 +1,4211 @@
+
+
+=== modules/services/printing.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.printing;
+in
+{
+  options.myFeatures.services.printing.enable = lib.mkEnableOption "CUPS Printing Support";
+
+  config = lib.mkIf cfg.enable {
+    services.printing.enable = true;
+    services.avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+    };
+  });
+}
+
+
+=== modules/services/networking/nginx.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.nginx;
+in {
+  options.myFeatures.services.nginx = {
+    enable = lib.mkEnableOption "Nginx Reverse Proxy";
+    domain = lib.mkOption {
+      type = lib.types.str;
+      default = "pluto.local";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    # ALL Linux-specific services must be inside this shield
+    services.nginx = {
+      enable = true;
+      virtualHosts."${cfg.domain}" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8080";
+          proxyWebsockets = true;
+        };
+      };
+    };
+
+    security.acme.acceptTerms = true;
+
+    networking.firewall.allowedTCPPorts = [ 80 443 ];
+  });
+}
+
+
+=== modules/services/networking/tailscale.nix ===
+{ config, lib, pkgs, ... }: # Added isDarwin [cite: 208]
+
+let
+  cfg = config.myFeatures.services.networking.tailscale;
+in
+{
+  options.myFeatures.services.networking.tailscale = {
+    enable = lib.mkEnableOption "Tailscale Mesh VPN";
+  };
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    { services.tailscale.enable = true; }
+    
+    # Shield firewall rules from macOS [cite: 211]
+    {
+      networking.firewall.trustedInterfaces = [ "tailscale0" ];
+      networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+    })
+  ]);
+}
+
+
+=== modules/services/networking/cloudflare.nix ===
+{ config, lib, ... }: # Added isDarwin
+
+let
+  cfg = config.myFeatures.services.networking.cloudflare;
+in
+{
+  options.myFeatures.services.networking.cloudflare = {
+    enable = lib.mkEnableOption "Cloudflare Tunnel";
+    tunnelId = lib.mkOption {
+      type = lib.types.str;
+      description = "The UUID of your Cloudflare tunnel";
+    };
+    credentialsFile = lib.mkOption {
+      type = lib.types.path;
+      default = "/var/lib/cloudflare/tunnel-creds.json"; 
+      description = "Local path to the tunnel JSON credentials";
+    };
+    domains = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = {};
+      example = { "git.example.com" = "http://localhost:3000"; };
+    };
+  };
+
+  # Shield the NixOS-only service from the macOS evaluator
+  config = lib.mkIf cfg.enable {
+    services.cloudflared = {
+      enable = true;
+      tunnels."${cfg.tunnelId}" = {
+        inherit (cfg) credentialsFile;
+        ingress = (lib.mapAttrsToList (hostname: service: {
+          inherit hostname service;
+        }) cfg.domains) ++ [ { default = "http_status:404"; } ];
+      };
+    };
+  });
+}
+
+
+=== modules/services/networking/network.nix ===
+{ config, lib, ... }: # Added isDarwin
+
+let
+  cfg = config.myFeatures.services.networking;
+in
+{
+  options.myFeatures.services.networking = {
+    enable = lib.mkEnableOption "Core Networking Suite";
+  };
+
+  # Shield the Linux-only NetworkManager from macOS
+  config = lib.mkIf cfg.enable {
+    networking.networkmanager.enable = lib.mkDefault true;
+  });
+}
+
+
+=== modules/services/audio.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.audio;
+in
+{
+  options.myFeatures.services.audio.enable = lib.mkEnableOption "Pipewire Audio & CLI Utilities";
+
+  config = lib.mkIf cfg.enable {
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+      jack.enable = true;
+    };
+
+    environment.systemPackages = with pkgs; [
+      pulseaudio pamixer pavucontrol playerctl
+    ];
+
+    systemd.user.services.pipewire.wantedBy = [ "default.target" ];
+  });
+}
+
+
+=== modules/services/servers/terraria.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.servers.terraria;
+  
+  # We create a server config file to force non-interactive mode.
+  # NOTE: This file is stored in the Nix Store (/nix/store/...) and is world-readable.
+  serverConfig = pkgs.writeText "serverconfig.txt" ''
+    port=${toString cfg.port}
+    maxplayers=${toString cfg.maxPlayers}
+    password=${cfg.password}
+    world=/var/lib/terraria/Worlds/SolarWorld.wld
+    worldname=SolarWorld
+    autocreate=${if cfg.worldSize == "small" then "1" else if cfg.worldSize == "medium" then "2" else "3"}
+    difficulty=1
+    secure=1
+    upnp=0
+  '';
+in
+{
+  options.myFeatures.services.servers.terraria = {
+    enable = lib.mkEnableOption "Terraria Dedicated Server (Solar Managed)";
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 7777;
+    };
+    password = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+    };
+    maxPlayers = lib.mkOption {
+      type = lib.types.int;
+      default = 8;
+    };
+    worldSize = lib.mkOption { 
+      type = lib.types.enum [ "small" "medium" "large" ]; 
+      default = "large"; 
+    };
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    # Port management via host default.nix logic
+    networking.firewall = lib.mkIf cfg.openFirewall {
+      allowedTCPPorts = [ cfg.port ];
+      allowedUDPPorts = [ cfg.port ];
+    };
+
+    systemd.services.terraria = {
+      description = "Terraria Server (Solar Managed)";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
+
+      serviceConfig = {
+        Type = "simple";
+        User = "terraria";
+        Group = "terraria";
+        
+        # StateDirectory automatically handles /var/lib/terraria creation
+        StateDirectory = "terraria";
+        WorkingDirectory = "/var/lib/terraria";
+        
+        # Direct execution bypassing the interactive menu
+        ExecStart = "${pkgs.terraria-server}/bin/TerrariaServer -config ${serverConfig}";
+        
+        # Stability & Protection against CPU leaks
+        Restart = "always";
+        RestartSec = "10s";
+        CPUQuota = "20%"; # Hard cap to prevent the 12%+ hang from impacting venus
+        MemoryMax = "2G";
+        
+        # Security Hardening
+        ProtectSystem = "full";
+        NoNewPrivileges = true;
+      };
+    };
+
+    users.users.terraria = {
+      isSystemUser = true;
+      group = "terraria";
+      home = "/var/lib/terraria";
+    };
+    users.groups.terraria = {};
+  });
+}
+
+
+=== modules/services/servers/factorio.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.servers.factorio;
+in
+{
+  options.myFeatures.services.servers.factorio = {
+    enable = lib.mkEnableOption "Factorio Headless Server";
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 34197;
+      description = "UDP port for the Factorio server";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    services.factorio = {
+      enable = true;
+      openFirewall = true;
+      # bind is not a standard option; port is.
+      inherit (cfg) port;
+    };
+
+    networking.firewall.allowedUDPPorts = [ cfg.port ];
+  });
+}
+
+
+=== modules/services/servers/minecraft/sllv.nix ===
+{ config, lib, pkgs, inputs, ... }:
+
+let
+  cfg = config.myFeatures.services.servers.minecraft.sllv;
+  iconFile = ../../../../assets/icons/heelsBoots.png;
+
+  fetchMod = { name, url, hash ? lib.fakeHash }: pkgs.fetchurl {
+    inherit url;
+    sha256 = hash;
+    name = "${name}.jar";
+  };
+
+  mods = {
+    # --- Core Libraries & APIs ---
+    architectury = fetchMod {
+      name = "architectury";
+      url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/Wto0RchG/architectury-13.0.8-fabric.jar";
+      hash = "sha256-EMu7b1+WovGFOwzGhChCTOyJA0CVF7KZ/wI1B1a2OZ0=";
+    };
+    fabric-api = fetchMod {
+      name = "fabric-api";
+      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/IpaMcBLh/fabric-api-0.116.11%2B1.21.1.jar";
+      hash = "sha256-t5Heb23OnFjU6ir2xxO7zG3GTQpZlai61vIl7ljPF9I=";
+    };
+    fabric-language-kotlin = fetchMod {
+      name = "fabric-language-kotlin";
+      url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/2i87JpYj/fabric-language-kotlin-1.13.11%2Bkotlin.2.3.21.jar";
+      hash = "sha256-w1cT7h2nD95r8OntJvjiuvCBTmDrmTzRKsuUDlf0/S8=";
+    };
+    bad-packets = fetchMod {
+      name = "bad-packets";
+      url = "https://cdn.modrinth.com/data/ftdbN0KK/versions/hjhT2sMz/badpackets-fabric-0.8.2.jar";
+      hash = "sha256-VeoLAcVK1P12mWNkm+sgoZcabIIMmiWKzfQ8o1PZBNg=";
+    };
+    balm = fetchMod {
+      name = "balm";
+      url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/kUyAERgX/balm-fabric-1.21.1-21.0.57.jar";
+      hash = "sha256-WuYd4XISt0iY9MJsQgzj0vMuKJ0eVzldbDX2ljJxCc0=";
+    };
+    placeholder-api = fetchMod {
+      name = "placeholder-api";
+      url = "https://cdn.modrinth.com/data/eXts2L7r/versions/U5bhVym2/placeholder-api-2.4.2%2B1.21.jar";
+      hash = "sha256-wBh+4plSesej4LHoNgHc3A3mMeKG/kHmvhp1lY6o5EM=";
+    };
+    yungs-api = fetchMod {
+      name = "yungs-api";
+      url = "https://cdn.modrinth.com/data/Ua7DFN59/versions/9aZPNrZC/YungsApi-1.21.1-Fabric-5.1.6.jar";
+      hash = "sha256-NvuQOh688VEXRb4tqeUUTx0kZb/3pcF77/00c5ms0bo=";
+    };
+
+    # --- Performance ---
+    lithium = fetchMod {
+      name = "lithium";
+      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";
+      hash = "sha256-oes7FQtVmwwJdvYo/9X3kUWLmIkWNCEbJyf/eFfRV7g=";
+    };
+    ferritecore = fetchMod {
+      name = "ferritecore";
+      url = "https://cdn.modrinth.com/data/uXXizFIs/versions/sOzRw3CG/ferritecore-7.0.3-fabric.jar";
+      hash = "sha256-mMOrHVqrjxS10ILT8aRncn/TNfAtEkVVyUM5dhxMGPI=";
+    };
+    lithostitched = fetchMod {
+      name = "lithostitched";
+      url = "https://cdn.modrinth.com/data/XaDC71GB/versions/Awf91DUj/lithostitched-1.6.8-fabric-21.1.jar";
+      hash = "sha256-WL63egOqN8y+n6+sRafoE3zAHNOPuNlO0wgYYOB4cDk=";
+    };
+
+    # --- World Generation & Structures ---
+    terrablender = fetchMod {
+      name = "terrablender";
+      url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/XNtIBXyQ/TerraBlender-fabric-1.21.1-4.1.0.8.jar";
+      hash = "sha256-+H6Up/oSJ3EcP4rqn/rHoU4Me+IS/lDd7pXSxrpyPKw=";
+    };
+    terralith = fetchMod {
+      name = "terralith";
+      url = "https://cdn.modrinth.com/data/8oi3bsk5/versions/MuJMtPGQ/Terralith_1.21.x_v2.5.8.jar";
+      hash = "sha256-ADM6EwrDi3ucqTcACY1eAuBhK9wtNSKq2i825WAGIb8=";
+    };
+    tectonic = fetchMod {
+      name = "tectonic";
+      url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/cXSQRWNy/tectonic-3.0.22-fabric-21.1.jar";
+      hash = "sha256-Py0nZWSZaNlMH7xpU+TJMDMDPV7Ch/BRqEswm8f5uqY=";
+    };
+    ctov = fetchMod {
+      name = "ctov";
+      url = "https://cdn.modrinth.com/data/fgmhI8kH/versions/dqaObRbU/%5BFabric%5Dctov-3.6.3.jar";
+      hash = "sha256-5EOSXY/k0JLx85Ji+nMYLknjTcv5ylHqqlMGS7ku5lI=";
+    };
+    incendium = fetchMod {
+      name = "incendium";
+      url = "https://cdn.modrinth.com/data/ZVzW5oNS/versions/7mVvV9Th/Incendium_1.21.x_v5.4.4.jar";
+      hash = "sha256-KFpPaf4jkfIXX3/JMW1yejnHm90hSSPFkoTVabzmVvQ=";
+    };
+    nullscape = fetchMod {
+      name = "nullscape";
+      url = "https://cdn.modrinth.com/data/LPjGiSO4/versions/3fv8O3xX/Nullscape_1.21.x_v1.2.14.jar";
+      hash = "sha256-h0nG/dplkzXlARbBjgEs34aZs3iYWcglWa8sb0Jck64=";
+    };
+
+    # --- YUNG's Better Series ---
+    yungs-caves = fetchMod {
+      name = "yungs-caves";
+      url = "https://cdn.modrinth.com/data/Dfu00ggU/versions/72UkhXm7/YungsBetterCaves-1.21.1-Fabric-3.1.4.jar";
+      hash = "sha256-W6PDLoqiMIPb+f00mX9Q4Dpk4xdWynRcpSV0IeDRN1c=";
+    };
+    yungs-mineshafts = fetchMod {
+      name = "yungs-mineshafts";
+      url = "https://cdn.modrinth.com/data/HjmxVlSr/versions/4ybDuGhA/YungsBetterMineshafts-1.21.1-Fabric-5.1.1.jar";
+      hash = "sha256-J5SfW64K/v9FdxGltCSCvjAbdryLETbxEg+EhIm7X6Y=";
+    };
+    yungs-strongholds = fetchMod {
+      name = "yungs-strongholds";
+      url = "https://cdn.modrinth.com/data/kidLKymU/versions/uYZShp1p/YungsBetterStrongholds-1.21.1-Fabric-5.1.3.jar";
+      hash = "sha256-HLQSyDqg6Cc9KaESLFeZ6xWkisyPC3cO/kUcUWZH9fg=";
+    };
+    yungs-dungeons = fetchMod {
+      name = "yungs-dungeons";
+      url = "https://cdn.modrinth.com/data/o1C1Dkj5/versions/fQ7EjDPE/YungsBetterDungeons-1.21.1-Fabric-5.1.4.jar";
+      hash = "sha256-af59k6+hgD12WN8/hhIT+CVfaNTpdtZt3OZvugjRILw=";
+    };
+    yungs-desert-temples = fetchMod {
+      name = "yungs-desert-temples";
+      url = "https://cdn.modrinth.com/data/XNlO7sBv/versions/M6eeDRkC/YungsBetterDesertTemples-1.21.1-Fabric-4.1.5.jar";
+      hash = "sha256-K7c+7yeMJ3ZXsn9y0vodkXoXwUBSv1JqK6F19ummMBI=";
+    };
+    yungs-witch-huts = fetchMod {
+      name = "yungs-witch-huts";
+      url = "https://cdn.modrinth.com/data/t5FRdP87/versions/bdpPtvTn/YungsBetterWitchHuts-1.21.1-Fabric-4.1.1.jar";
+      hash = "sha256-lU/wBN4VFlLZvmngPRuEjW/RWg9fLfFcTOLnZEZ2hec=";
+    };
+    yungs-ocean-monuments = fetchMod {
+      name = "yungs-ocean-monuments";
+      url = "https://cdn.modrinth.com/data/3dT9sgt4/versions/TGK6gpeO/YungsBetterOceanMonuments-1.21.1-Fabric-4.1.2.jar";
+      hash = "sha256-TPuyJr0dsXAyrH5zBulO0n8aji8+CftixHaI+KUnrew=";
+    };
+    yungs-nether-fortresses = fetchMod {
+      name = "yungs-nether-fortresses";
+      url = "https://cdn.modrinth.com/data/Z2mXHnxP/versions/gxBGYcIL/YungsBetterNetherFortresses-1.21.1-Fabric-3.1.5.jar";
+      hash = "sha256-d6JY5JlVnxGQyHInf47s8gLdTvBoFnTc6UEAP6Q2f3g=";
+    };
+    yungs-jungle-temples = fetchMod {
+      name = "yungs-jungle-temples";
+      url = "https://cdn.modrinth.com/data/z9Ve58Ih/versions/uiGCmR8O/YungsBetterJungleTemples-1.21.1-Fabric-3.1.2.jar";
+      hash = "sha256-i2rABDRdqTW1uby3BiT0oxl0EflCDWRZowJST43qQtw=";
+    };
+    yungs-extras = fetchMod {
+      name = "yungs-extras";
+      url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/aVsikHca/YungsExtras-1.21.1-Fabric-5.1.1.jar";
+      hash = "sha256-EgAjzJfLXrhpcqd4MlDLs1UF1C1dazHacJBshcD/t/U=";
+    };
+    yungs-bridges = fetchMod {
+      name = "yungs-bridges";
+      url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/8h9N9fvs/YungsBridges-1.21.1-Fabric-5.1.1.jar";
+      hash = "sha256-N8wSCs62Jjr7ztru4cn+l3DH1dq9k40AKTAX54EFG0U=";
+    };
+
+    # --- Gameplay ---
+    fabric-seasons = fetchMod {
+      name = "fabric-seasons";
+      url = "https://cdn.modrinth.com/data/KJe6y9Eu/versions/2mIvRTNp/fabric-seasons-2.4.2-BETA%2B1.21.jar";
+      hash = "sha256-X3mpTsDpih54se/6kvHCX2L9eC1OEcRCi6mderXneRc=";
+    };
+    fabric-seasons-delight  = fetchMod {
+      name = "fabric-seasons-delight";
+      url = "https://cdn.modrinth.com/data/4VYO7ir0/versions/KIzyS8hk/fabric-seasons-delight-1.3.9-compat-1.0.jar";
+      hash = "sha256-FJoHWqO0kCdUUow2vmbU1DUyuJbTFVhwv9DUKgmwLBM=";
+    };
+    fabric-seasons-terralith = fetchMod {
+      name = "fabric-seasons-terralith";
+      url = "https://cdn.modrinth.com/data/D53qveoj/versions/MJ2OF7eg/fabric-seasons-terralith-2.3.7-compat-1.0.jar";
+      hash = "sha256-xwlBZRLFmVjk8A0voxioFDbxTKoyVUqOWpe/0T37lSQ=";
+    };
+    fabric-seasons-extra = fetchMod {
+      name = "fabric-seasons-extra";
+      url = "https://cdn.modrinth.com/data/64FYdx5z/versions/W9dvZHrP/fabric-seasons-extras-1.3.2-BETA%2B1.21.jar";
+      hash = "sha256-mTGIJ9WSyI2L4O3lI/aXux4J77+JM9OkDwTU4JPtJ8c=";
+    };
+    mca-reborn = fetchMod {
+      name = "mca-reborn";
+      url = "https://cdn.modrinth.com/data/1W98a849/versions/1PlgQkBW/mca-fabric-7.7.7%2B1.21.1.jar";
+      hash = "sha256-Dhgm6jMrswg4JKrT9GvXNThAJwJQlMAO7qmNaNLW0/M=";
+    };
+    lootr = fetchMod {
+      name = "lootr";
+      url = "https://cdn.modrinth.com/data/EltpO5cN/versions/Rxyok2IC/lootr-fabric-1.21.1-1.11.37.118.jar";
+      hash = "sha256-4V5TWgXxhWYdrfoMrwLizeHKWpr17+xKlaRb61R5/vg=";
+    };
+    emi = fetchMod {
+      name = "EMI";
+      url = "https://cdn.modrinth.com/data/fRiHVvU7/versions/mYQ3bJs5/emi-1.1.22%2B1.21.1%2Bfabric.jar";
+      hash = "sha256-baAKjRPK1uVauqMDLYD/TR0VIBRraD8cp8Ap4BcY/gU=";
+    };
+    emi-enchanting = fetchMod {
+      name = "EMI-Enchanting";
+      url = "https://cdn.modrinth.com/data/wbWoo11W/versions/ld2zsfK3/emi_enchanting-0.1.2%2B1.21.jar";
+      hash = "sha256-C3TWAn2KLuEtARxecXAaHgX9+D4Zr8a7bSq7j90nStA=";
+    };
+    emi-xx = fetchMod {
+      name = "EMI++";
+      url = "https://cdn.modrinth.com/data/AWMWYMwC/versions/kzLya1iN/emixx-fabric-1.2.3.jar";
+      hash = "sha256-MLxQjdlCilYRZ88EUBreQSEOCNMU8v9bSE7o1GuJc5Y=";
+    };
+    waystones = fetchMod {
+      name = "waystones";
+      url = "https://cdn.modrinth.com/data/LOpKHB2A/versions/rojCNyJG/waystones-fabric-1.21.1-21.1.30.jar";
+      hash = "/EtlVqobqpyf6f4Tk/95esmB5c9op1BHplL+LVpIIy8=";
+    };
+    ends-delight = fetchMod {
+      name = "ends-delight";
+      url = "https://cdn.modrinth.com/data/yHN0njMr/versions/KOKpRenr/ends_delight-2.5.2%2Brefabricated.1.21.1.jar";
+      hash = "sha256-vfx9MxHz9UcsiIbdTUYJjvWMcHjTj03/BPXmzYEthh4=";
+    };
+    chefs-delight = fetchMod {
+      name = "chefs-delight";
+      url = "https://cdn.modrinth.com/data/pvcsfne4/versions/Sur0Lj66/chefsdelight-1.0.5-fabric-1.21.1.jar";
+      hash = "sha256-p7wmZuUGAvwFzHcBWXZ5OTa6cmAwU7MQ1mVwzpYkBLA=";
+    };
+    oceans-delight = fetchMod {
+      name = "oceans-delight";
+      url = "https://cdn.modrinth.com/data/DGiq4ZSW/versions/KXsDdyGk/oceansdelight-fdrf-fabric-1.0.3-1.21.1.jar";
+      hash = "sha256-TV+V/eLO7iy4W/WH+/RD7Y7y6L4rbVYmsqpxOlL1KNY=";
+    };
+    farmers-delight = fetchMod {
+      name = "farmers-delight";
+      url = "https://cdn.modrinth.com/data/7vxePowz/versions/YEHRH8LC/FarmersDelight-1.21.1-3.2.8%2Brefabricated.jar";
+      hash = "sha256-96/hH+2BVWRvpDCemWlPv6tB4Z2niEtiYqsRLFweLaM=";
+    };
+  };
+in
+{
+  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
+  options.myFeatures.services.servers.minecraft.sllv = {
+    enable = lib.mkEnableOption "Minecraft MCA Fabric Server (1.21.1)";
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 25565;
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
+
+    services.haveged.enable = true;
+
+    services.minecraft-servers = {
+      enable = true;
+      eula = true;
+
+      managementSystem = {
+        tmux.enable = lib.mkForce false;
+        systemd-socket.enable = true;
+      };
+
+      servers.sllv = {
+        enable = true;
+        package = pkgs.minecraftServers.fabric-1_21_1;
+
+        # Debug Mode: Simplified JVM options to ensure startup
+        jvmOpts = "-Xmx8G -Xms8G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
+
+        symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
+
+        files = {
+          "server-icon.png" = iconFile;
+        };
+        
+        serverProperties = {
+          server-port = cfg.port;
+          online-mode = true;
+          enforce-secure-profile = false;
+          max-players = 4;
+          gamemode = "survival";
+          motd = "Solar MCA Server | 1.21.1 Fabric";
+        };
+      };
+    };
+
+    systemd.services.minecraft-server-sllv = {
+      unitConfig = {
+        StartLimitIntervalSec = lib.mkForce 0; 
+      };
+      serviceConfig = {
+        Restart = "always";
+        RestartSec = "10s";
+        StandardOutput = "journal";
+        StandardError = "journal";
+        # FIXED: Use lib.mkForce to override nix-minecraft's default timeout
+        TimeoutStopSec = lib.mkForce "120s";
+      };
+    };
+
+    # Backups
+    services.borgbackup.jobs.minecraft = {
+      paths = [ "/srv/minecraft/sllv" ];
+      repo = "/mnt/backups/minecraft";
+      encryption = {
+        mode = "none";
+      };
+      compression = "auto,zstd"; # High compression, great for Tectonic world files
+      startAt = "daily";
+    };
+
+    networking.firewall.allowedTCPPorts = [ cfg.port ];
+    networking.firewall.allowedUDPPorts = [ cfg.port ];
+  });
+}
+
+
+=== modules/services/servers/minecraft/vanilla.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  isDarwin,
+  ...
+}:
+
+let
+  cfg = config.myFeatures.services.servers.minecraft.vanilla;
+
+  # Utility to fetch mods from Modrinth (Aligned with sllv.nix)
+  fetchMod =
+    {
+      name,
+      url,
+      hash,
+    }:
+    pkgs.fetchurl {
+      inherit url;
+      sha256 = hash;
+      name = "${name}.jar";
+    };
+
+  # 1.21.1 Verified Mods
+  mods = {
+    lithium = fetchMod {
+      name = "lithium";
+      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/XQJtuOTA/lithium-fabric-0.15.3%2Bmc1.21.1.jar";
+      hash = "sha256-oes7FQtVmwwJdvYo/9X3kUWLmIkWNCEbJyf/eFfRV7g=";
+    };
+    terralith = fetchMod {
+      name = "terralith";
+      url = "https://cdn.modrinth.com/data/8oi3bsk5/versions/MuJMtPGQ/Terralith_1.21.x_v2.5.8.jar";
+      hash = "sha256-ADM6EwrDi3ucqTcACY1eAuBhK9wtNSKq2i825WAGIb8=";
+    };
+    tectonic = fetchMod {
+      name = "tectonic";
+      url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/cXSQRWNy/tectonic-3.0.22-fabric-21.1.jar";
+      hash = "sha256-Py0nZWSZaNlMH7xpU+TJMDMDPV7Ch/BRqEswm8f5uqY=";
+    };
+  };
+in
+{
+  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
+
+  options.myFeatures.services.servers.minecraft.vanilla = {
+    enable = lib.mkEnableOption "Minecraft Vanilla+ (1.21.1)";
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 25565;
+    };
+  };
+
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
+
+      services.haveged.enable = true; # Entropy for faster server start
+
+      services.minecraft-servers = {
+        enable = true;
+        eula = true;
+
+        managementSystem = {
+          tmux.enable = lib.mkForce false;
+          systemd-socket.enable = true;
+        };
+
+        servers.vanilla-plus = {
+          enable = true;
+          package = pkgs.minecraftServers.fabric-1_21_1;
+
+          # Consistent JVM options for 1.21.1 performance
+          jvmOpts = "-Xmx6G -Xms6G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
+
+          # Symlinks management matching sllv.nix
+          symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
+
+          serverProperties = {
+            server-port = cfg.port;
+            online-mode = true;
+            enforce-secure-profile = false;
+            max-players = 10;
+            motd = "Solar Vanilla+ | 1.21.1 Terralith";
+          };
+        };
+      };
+
+      # Systemd stability (identical to sllv.nix logic)
+      systemd.services.minecraft-server-vanilla-plus = {
+        unitConfig.StartLimitIntervalSec = lib.mkForce 0;
+        serviceConfig = {
+          Restart = "always";
+          RestartSec = "10s";
+          TimeoutStopSec = lib.mkForce "120s";
+        };
+      };
+
+      networking.firewall.allowedTCPPorts = [ cfg.port ];
+      networking.firewall.allowedUDPPorts = [ cfg.port ];
+    }
+  );
+}
+
+
+=== modules/services/xdg-portals.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.xdgPortals;
+in
+{
+  options.myFeatures.services.xdgPortals = {
+    enable = lib.mkEnableOption "XDG Portals for Wayland/Desktop";
+  };
+
+  config = lib.mkIf cfg.enable {
+    xdg = {
+      autostart.enable = true; 
+      portal = {
+        enable = true; 
+        xdgOpenUsePortal = true; 
+        extraPortals = with pkgs; [
+          xdg-desktop-portal-gnome 
+          xdg-desktop-portal-gtk 
+          kdePackages.xdg-desktop-portal-kde 
+          xdg-desktop-portal-wlr 
+        ];
+        config = {
+          common.default = [ "gtk" ]; 
+          niri.default = [ "gnome" "gtk" ]; 
+          plasma.default = [ "kde" "gtk" ]; 
+        };
+      };
+    };
+  });
+}
+
+
+=== modules/services/ddns.nix ===
+{ config, lib, ... }: # Added isDarwin
+
+let
+  cfg = config.myFeatures.services.ddns;
+in
+{
+  options.myFeatures.services.ddns = {
+    enable = lib.mkEnableOption "Cloudflare DDNS";
+    domains = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "List of apollan.cc subdomains to update";
+    };
+  };
+
+  # Shield the Linux-only Cloudflare service from macOS
+  config = lib.mkIf cfg.enable {
+    services.cloudflare-dyndns = {
+      enable = true;
+      inherit (cfg) domains;
+      # Point to your manually created token file
+      apiTokenFile = "/var/lib/secrets/cloudflare-token";
+    };
+  });
+}
+
+
+=== modules/services/udisks2.nix ===
+{ config, lib, ... }:
+
+let
+  cfg = config.myFeatures.services.udisks2;
+in
+{
+  options.myFeatures.services.udisks2 = {
+    enable = lib.mkEnableOption "Udisks2 and GVFS for automounting";
+  };
+
+  config = lib.mkIf cfg.enable {
+    services.udisks2.enable = true; 
+    services.dbus.enable = true; 
+    services.gvfs.enable = true; # Needed for Trash/Network in file managers [cite: 16]
+  });
+}
+
+
+=== modules/services/streaming/sunshine.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.services.streaming.sunshine;
+in
+{
+  options.myFeatures.services.streaming.sunshine = {
+    enable = lib.mkEnableOption "Sunshine: Open-source GameStream host";
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 47990;
+      description = "The port for the Sunshine Web UI";
+    };
+  };
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # Cross-platform safe part
+    {
+      environment.systemPackages = with pkgs; [
+        sunshine
+        miniupnpc
+      ];
+    }
+
+    # Linux-only part: HIDDEN from macOS evaluator to prevent 'boot' errors
+    {
+      services.sunshine = {
+        enable = true;
+        autoStart = true;
+        capSysAdmin = true;
+        openFirewall = false;
+      };
+
+      networking.firewall = {
+        allowedTCPPorts = [ 47984 47989 48010 cfg.port ];
+        allowedUDPPorts = [ 1900 5353 48010 ];
+        allowedUDPPortRanges = [
+          { from = 47998; to = 48000; }
+          { from = 8000; to = 8010; }
+        ];
+      };
+
+      boot.kernelModules = [ "uinput" ];
+      hardware.uinput.enable = true;
+      users.users.apollo.extraGroups = [ "uinput" ];
+
+      environment.systemPackages = [ pkgs.vpl-gpu-rt ];
+
+      services.avahi = {
+        enable = true;
+        publish = {
+          enable = true;
+          userServices = true;
+        };
+      };
+    })
+  ]);
+}
+
+
+=== modules/services/streaming/moonlight.nix ===
+{ config, lib, pkgs, ... }: # Added isDarwin [cite: 212]
+
+let
+  cfg = config.myFeatures.services.streaming.moonlight;
+in
+{
+  options.myFeatures.services.streaming.moonlight = {
+    enable = lib.mkEnableOption "Moonlight: High-performance game streaming client";
+  };
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    { environment.systemPackages = [ pkgs.moonlight-qt ]; }
+
+    {
+      networking.firewall = {
+        allowedUDPPorts = [ 1900 5353 ];
+        allowedTCPPorts = [ 47984 47989 48010 ];
+      };
+
+      services.avahi = {
+        enable = true;
+        nssmdns4 = true;
+      };
+    })
+  ]);
+}
+
+
+=== modules/services/firmware.nix ===
+{ config, lib, pkgs, inputs, ... }: # Added isDarwin
+
+let
+  cfg = config.myFeatures.services.firmware;
+in
+{
+  options.myFeatures.services.firmware = {
+    enable = lib.mkEnableOption "Enable Firmware Updates";
+  };
+
+  # --- CONFIG ---
+  # Shield the Linux-only firmware service from the macOS evaluator
+  config = lib.mkIf cfg.enable {
+    services.fwupd.enable = true;
+  });
+}
+
+
+=== modules/services/flatpak.nix ===
+{ config, lib, ... }:
+
+let
+  cfg = config.myFeatures.services.flatpak;
+in
+{
+  options.myFeatures.services.flatpak = {
+    enable = lib.mkEnableOption "Flatpak Support";
+  };
+
+  config = lib.mkIf cfg.enable {
+    services.flatpak.enable = true; 
+    xdg.portal.enable = true; # Required for Flatpak integration [cite: 32]
+  });
+}
+
+
+=== modules/programs/obs.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.programs.obs;
+in
+{
+  options.myFeatures.programs.obs.enable = lib.mkEnableOption "OBS Studio";
+  
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      programs.obs-studio = {
+        enable = true;
+        # Only load Wayland/VAAPI plugins if NOT on Darwin
+        plugins = if isDarwin then [ ] else with pkgs.obs-studio-plugins; [
+          wlrobs                 
+          obs-vaapi              
+          obs-pipewire-audio-capture
+        ];
+      };
+    });
+  };
+}
+
+
+=== modules/programs/social.nix ===
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.myFeatures.programs.social;
+in
+{
+  options.myFeatures.programs.social.enable = lib.mkEnableOption "Spotify and Vesktop";
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      home.packages = [ 
+        pkgs.spotify 
+      ];
+      
+      programs.vesktop = {
+        enable = true;
+        settings = {
+          discordBranch = "stable";
+          hardwareAcceleration = true;
+          vencord = {
+            settings.plugins = {
+              ChatInputButtonAPI.enabled = true;
+              MemberCount.enabled = true;
+            };
+          };
+        };
+      };
+    });
+  };
+}
+
+
+=== modules/programs/zen.nix ===
+{ config, lib, pkgs, inputs, ... }:
+
+let
+  cfg = config.myFeatures.programs.zen;
+  # Ported from Phanes desktop.nix
+  # This uses the flake input to apply your specific security policies
+  myZen = inputs.zen-browser.packages."${pkgs.system}".default.override {
+    extraPolicies = {
+      DisableTelemetry = true;
+      ExtensionSettings = {
+        # uBlock Origin
+        "uBlock0@raymondhill.net" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        # Bitwarden
+        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+          installation_mode = "force_installed";
+        };
+      };
+    };
+  };
+in
+{
+  options.myFeatures.programs.zen.enable = lib.mkEnableOption "Zen Browser with Phanes Overrides";
+
+  config = lib.mkIf cfg.enable {
+    # Install your customized Zen package system-wide
+    environment.systemPackages = [ myZen ];
+
+    # Optional: Set as default browser if desired
+    # home-manager.users.apollo.home.sessionVariables.BROWSER = "zen";
+  };
+}
+
+
+=== modules/programs/anytype.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.programs.anytype;
+in
+{
+  options.myFeatures.programs.anytype.enable = lib.mkEnableOption "Anytype";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    { environment.systemPackages = [ pkgs.anytype ]; }
+
+    # Shield the Systemd service from macOS
+    {
+      systemd.user.services.anytype-desktop-fix = {
+        description = "Prevent Anytype from creating a conflicting local desktop file";
+        wantedBy = [ "graphical-session.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.bash}/bin/bash -c 'mkdir -p %h/.local/share/applications && ln -sf /dev/null %h/.local/share/applications/anytype.desktop'";
+          RemainAfterExit = true;
+        };
+      };
+    })
+  ]);
+}
+
+
+=== modules/programs/firefox.nix ===
+{ config, lib, ... }: # Added isDarwin
+
+let
+  cfg = config.myFeatures.programs.firefox;
+in
+{
+  options.myFeatures.programs.firefox.enable = lib.mkEnableOption "Enables Firefox";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. NixOS System-wide Policies (Shielded)
+    {
+      programs.firefox = {
+        enable = true;
+        policies = {
+          ExtensionSettings = {
+            "uBlock0@raymondhill.net" = {
+              install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+              installation_mode = "force_installed";
+            };
+            "{446900e4-71c2-419f-a6a7-df9c091e268b}".install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+            # ... (keep your other extensions here)
+          };
+        };
+      };
+    })
+
+    # 2. Home Manager (Works on both macOS and Linux)
+    {
+      home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+        stylix.targets.firefox.profileNames = [ name ];
+        programs.firefox = {
+          enable = true;
+          profiles.${name} = {
+            isDefault = true;
+            settings = {
+              # Use conditional path for downloads
+              "browser.download.dir" = if isDarwin then "/Users/${name}/Downloads" else "/home/${name}/Downloads";
+              "browser.startup.page" = 3;
+            };
+          };
+        };
+      });
+    }
+  ]);
+}
+
+
+=== modules/programs/helix.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  usernames = config.myFeatures.core.users.usernames;
+in {
+  options.myFeatures.programs.helix.enable = lib.mkEnableOption "Helix Editor";
+
+  config = lib.mkIf config.myFeatures.programs.helix.enable {
+    
+    # 1. Ensure the LSP and formatter binaries are actually installed on the system
+    environment.systemPackages = with pkgs; [
+      nixd
+      nixfmt
+    ];
+
+    home-manager.users = lib.genAttrs usernames (name: {
+      programs.helix = {
+        enable = true;
+        
+        # Your existing settings
+        settings = {
+          theme = lib.mkForce "gruvbox"; 
+          editor = {
+            line-number = "relative";
+            cursor-shape = {
+              insert = "bar";
+              normal = "block";
+            };
+          };
+        };
+
+        # 2. Wire up the Language Server
+        languages = {
+          language-server.nixd = {
+            # lib.getExe safely points directly to the binary in the nix store
+            command = lib.getExe pkgs.nixd;
+          };
+          
+          language = [{
+            name = "nix";
+            auto-format = true;
+            formatter.command = lib.getExe pkgs.nixfmt;
+            language-servers = [ "nixd" ];
+          }];
+        };
+        
+      };
+    });
+  };
+}
+
+
+=== modules/programs/gaming.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.programs.gaming;
+in
+{
+  options.myFeatures.programs.gaming.enable = lib.mkEnableOption "Gaming Suite";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      # Standard packages for both
+      environment.systemPackages = with pkgs; [ prismlauncher ];
+    }
+
+    {
+      programs.steam = {
+        enable = true;
+        remotePlay.openFirewall = true;
+      };
+      environment.systemPackages = with pkgs; [ mangohud gamemode libkrb5 keyutils ];
+    })
+  ]);
+}
+
+
+=== modules/programs/bitwarden.nix ===
+{ config, lib, pkgs, ... }: # Added isDarwin
+
+let
+  cfg = config.myFeatures.programs.bitwarden;
+in
+{
+  options.myFeatures.programs.bitwarden.enable = lib.mkEnableOption "Bitwarden Stack";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      environment.systemPackages = with pkgs; [
+        bitwarden-desktop
+        bitwarden-cli
+        # pinentry-gnome3 is Linux-specific; on Mac, rbw can use native pinentry
+      ] ++ lib.optional (!isDarwin) pinentry-gnome3;
+
+      # Home Manager configuration works on both macOS and NixOS
+      home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+        programs.rbw = {
+          enable = true;
+          settings = {
+            email = "fireshifter767@gmail.com";
+            # Only use gnome3 pinentry if on Linux
+            pinentry = if isDarwin then null else pkgs.pinentry-gnome3;
+          };
+        };
+        home.packages = [ pkgs.bitwarden-desktop ];
+      });
+    }
+
+    # Shield Linux-only system services
+    {
+      services.dbus.enable = true;
+      security.polkit.enable = true;
+    })
+  ]);
+}
+
+
+=== modules/programs/media.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.programs.media;
+in {
+  options.myFeatures.programs.media = {
+    enable = lib.mkEnableOption "Apollo's Media Suite";
+    mpv.enable = lib.mkEnableOption "MPV with 1440p GPU acceleration" // { default = true; };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      home.packages = with pkgs; [
+        imv
+      ];
+
+      programs.mpv = lib.mkIf cfg.mpv.enable {
+        enable = true;
+        config = {
+          hwdec = "auto-safe";
+          vo = "gpu";
+          profile = "gpu-hq";
+          ytdl-format = "bestvideo[height<=?1440]+bestaudio/best";
+        };
+      };
+    });
+  };
+}
+
+
+=== modules/programs/davinci.nix ===
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.myFeatures.programs.davinci;
+in
+{
+  options.myFeatures.programs.davinci.enable = lib.mkEnableOption "Enable Davinci-resolve";
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      home.packages = [ 
+        pkgs.davinci-resolve 
+      ];
+      
+    });
+  };
+}
+
+
+=== modules/programs/fastfetch.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.programs.fastfetch;
+  # Filter to ensure we only target actual usernames
+  userList = lib.filter
+    (n: n != "enable" && n != "usernames")
+    config.myFeatures.core.users.usernames;
+in {
+  options.myFeatures.programs.fastfetch = {
+    enable = lib.mkEnableOption "fastfetch system info fetcher";
+    theme = lib.mkOption {
+      type    = lib.types.enum [ "gruvbox" "catppuccin" "nord" "tokyonight" ];
+      default = "gruvbox";
+      description = "Colour theme to use for fastfetch output.";
+    };
+    showBattery = lib.mkOption {
+      type    = lib.types.bool;
+      default = false;
+      description = "Show battery module.";
+    };
+    showPublicIp = lib.mkOption {
+      type    = lib.types.bool;
+      default = false;
+      description = "Show public IP.";
+    };
+    logoType = lib.mkOption {
+      type    = lib.types.enum [ "auto" "kitty" "sixel" "chafa" "ascii" ];
+      default = "auto";
+      description = "Logo rendering backend.";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs userList (_name:
+      let
+        palette = {
+          gruvbox = {
+            keys  = "yellow"; title = "208";     output = "white";
+            sep   = "90";     sys   = "yellow";  de     = "208"; 
+            hw    = "red";    net   = "cyan";    bat    = "blue"; 
+            time  = "208";
+          };
+          # Add other palettes here as needed
+        };
+
+        p = palette.${cfg.theme};
+
+        # Helper to create a bracketed group
+        startGroup = name: color: { type = "custom"; format = "╭─ ${name}"; outputColor = color; };
+        endGroup   = color:       { type = "custom"; format = "╰───────────────────────────────"; outputColor = color; };
+        
+      in {
+        programs.fastfetch = {
+          enable = true;
+          settings = {
+            logo = {
+              # Protocol: Force NixOS logo to prevent Arch leakage
+              source  = "nixos"; 
+              type    = cfg.logoType;
+              width   = 24;
+              height  = 12;
+              padding = { top = 2; left = 2; right = 2; };
+            };
+
+            display = {
+              separator = "  ";
+              color     = { keys = p.keys; title = p.title; output = p.output; };
+            };
+
+            modules = [
+              { 
+                type = "title";
+                format = "{user-name}@{host-name}"; 
+                color = { user = p.title; at = p.sep; host = p.keys; };
+              }
+              { type = "colors"; symbol = "circle"; paddingLeft = 2; }
+              { type = "break"; }
+
+              # ── SYSTEM GROUP ──
+              (startGroup "System" p.sys)
+              { type = "os"; key = "│ 󰣇 OS      "; keyColor = p.sys; }
+              { type = "kernel"; key = "│ 󰒋 Kernel  "; keyColor = p.sys; }
+              { type = "shell"; key = "│ 󱆃 Shell   "; keyColor = p.sys; }
+              { type = "terminal"; key = "│ 󰆍 Terminal"; keyColor = p.sys; }
+              (endGroup p.sys)
+              { type = "break"; }
+
+              # ── DESKTOP GROUP ──
+              (startGroup "Desktop" p.de)
+              { type = "wm"; key = "│ 󱂬 WM      "; keyColor = p.de; }
+              { type = "wmTheme"; key = "│ 󰉼 Theme   "; keyColor = p.de; }
+              { type = "icons"; key = "│ 󰀻 Icons   "; keyColor = p.de; }
+              { type = "packages"; key = "│ 󰏗 Packages"; keyColor = p.de; }
+              (endGroup p.de)
+              { type = "break"; }
+
+              # ── HARDWARE GROUP ──
+              (startGroup "Hardware" p.hw)
+              { type = "host"; key = "│ 󰌢 Host    "; keyColor = p.hw; }
+              { type = "cpu"; key = "│ 󰻠 CPU     "; keyColor = p.hw; }
+              { type = "gpu"; key = "│ 󰍛 GPU     "; keyColor = p.hw; }
+              { type = "memory"; key = "│ 󰍛 RAM     "; keyColor = p.hw; }
+              { type = "disk"; key = "│ 󰋊 Disk    "; keyColor = p.hw; }
+              (endGroup p.hw)
+              { type = "break"; }
+
+              # ── NETWORK GROUP ──
+              (startGroup "Network" p.net)
+              { type = "localIp"; key = "│ 󰩠 Local   "; keyColor = p.net; showIpv4 = true; }
+              (endGroup p.net)
+              { type = "break"; }
+
+              # ── TIME GROUP (Corrected Syntax & Themed) ──
+              (startGroup "Time" p.time)
+              { 
+                type = "datetime";
+                key = "│ 󰃶 Date    "; 
+                keyColor = p.time; 
+                # Nixpkgs-Unstable fastfetch uses direct strftime-style formatting
+                format = "%A, %B %d %Y"; 
+              }
+              (endGroup p.time)
+
+              (lib.optional (cfg.showBattery) {
+                type = "battery";
+                key = "󰁹 Battery";
+                keyColor = p.bat;
+              })
+            ];
+          };
+        };
+      }
+    );
+  };
+}
+
+
+=== modules/programs/ghossty.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+
+let
+  cfg = config.myFeatures.programs.ghostty;
+in
+{
+  options.myFeatures.programs.ghostty.enable = lib.mkEnableOption "Ghostty Terminal Emulator";
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = [ pkgs.ghostty ];
+
+    # FIX: Only map over the list of strings in .usernames
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      programs.ghostty = {
+        enable = true;
+        enableZshIntegration = true;
+        settings = {
+          theme = "Gruvbox Dark";
+          font-size = 12;
+          font-family = "JetBrainsMono Nerd Font";
+          window-padding-x = 10;
+          window-padding-y = 10;
+          window-decoration = false;
+          confirm-close-surface = false;
+        };
+      };
+    });
+  };
+}
+
+
+=== modules/programs/stylePackages.nix ===
+{ config, lib, pkgs, ...  }:
+
+let
+  cfg = config.myFeatures.programs.stylePackages;
+in
+{
+  options.myFeatures.programs.stylePackages = {
+    enable = lib.mkEnableOption "Enables style packages for terminal";
+  };
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      cbonsai
+      cmatrix
+      pipes
+      asciiquarium
+      cava
+      vitetris
+    ];
+  };
+}
+
+
+=== modules/systems/displayManager.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.systems.displayManager;
+in
+{
+  options.myFeatures.systems.displayManager = {
+    manager = lib.mkOption {
+      type = lib.types.enum [ "tuigreet" "gdm" "sddm" "gtkGreet" "none" ];
+      default = "none";
+      description = "Which display manager to use.";
+    };
+  };
+
+  # Shield the whole block
+  config = lib.mkIf (cfg.manager != "none") {
+    services.greetd = {
+      enable = lib.mkIf (cfg.manager == "tuigreet" || cfg.manager == "gtkGreet") true;
+      settings = lib.mkMerge [
+        (lib.mkIf (cfg.manager == "tuigreet") {
+          default_session = {
+            command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --container-padding 2 --width 60 --cmd niri-session"; 
+            user = "greeter"; 
+          };
+        })
+        (lib.mkIf (cfg.manager == "gtkGreet") {
+          default_session = {
+            command = "${pkgs.cage}/bin/cage -s -m last -- ${pkgs.greetd.gtkgreet}/bin/gtkgreet -l";
+            user = "greeter";
+          };
+        })
+      ];
+    };
+
+    services.xserver.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true; 
+    services.displayManager.sddm.wayland.enable = lib.mkIf (cfg.manager == "sddm") true; 
+  });
+}
+
+
+=== modules/systems/swaylock.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.systems.swaylock;
+in {
+  options.myFeatures.systems.swaylock = {
+    enable = lib.mkEnableOption "swaylock screen locker";
+    image = lib.mkOption {
+      type = lib.types.path;
+      default = ../../assets/wallpapers/gruvbox.jpg; 
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    # This dynamically loops over whatever usernames are defined for the CURRENT host
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      programs.swaylock = {
+        enable = true;
+        package = pkgs.swaylock-effects;
+        settings = lib.mkForce {
+          image = "${cfg.image}";
+          scaling = "fill";
+          color = "282828";
+          ring-color = "fabd2f";
+          key-hl-color = "fb4934";
+          line-color = "00000000";
+          inside-color = "00000000";
+          separator-color = "00000000";
+          # Effects
+          screenshots = true;
+          clock = true;
+          indicator = true;
+          indicator-radius = 100;
+          indicator-thickness = 7;
+          effect-blur = "7x5";
+          effect-vignette = "0.5:0.5";
+        };
+      };
+    });
+  };
+}
+
+
+=== modules/systems/fuzzel.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.systems.fuzzel;
+  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+in
+{
+  options.myFeatures.systems.fuzzel = {
+    enable = lib.mkEnableOption "Fuzzel according to stylix";
+  };
+  
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs usernames (name: {
+      # This allows Stylix to take over Fuzzel styling 
+      programs.fuzzel = {
+        enable = true;
+        settings = {
+          main = {
+            terminal = "${pkgs.ghostty}/bin/ghostty";
+            layer = "overlay";
+            # Force the font and radius to match your flush look
+            font = lib.mkForce "JetBrainsMono Nerd Font:size=11";
+          };
+          border.radius = lib.mkForce 0; 
+        };
+      };
+    });
+  };
+}
+
+
+=== modules/systems/waybar.nix ===
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.myFeatures.systems.waybar;
+  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+in {
+  options.myFeatures.systems.waybar.enable = lib.mkEnableOption "waybar status bar";
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs usernames (name: {
+      programs.waybar = {
+        enable = true;
+        systemd.enable = true;
+
+        settings.mainBar = {
+          layer = "top";
+          position = "bottom";
+          height = 30;
+          
+          modules-left = [ "custom/power" "niri/workspaces" "niri/window" ];
+          modules-center = [ "custom/branding" "mpris" ];
+          # Added 'network' and 'battery' here
+          modules-right = [ "cpu" "memory" "network" "battery" "pulseaudio" "clock" "tray" ];
+
+          "custom/power" = {
+            format = " ⏻ ";
+            on-click = "systemctl suspend";
+            on-click-right = "systemctl poweroff";
+            on-click-middle = "systemctl reboot";
+          };
+
+          "niri/workspaces" = {
+            format = "{index}: {icon}";
+            on-click = "activate";
+            format-icons = {
+              default = "";
+              focused = "";
+              urgent = "󰀦";
+            };
+          };
+
+          "niri/window" = {
+            format = "{title}";
+            icon-size = 18;
+          };
+
+          "custom/branding" = {
+            format = " Apollo - Gruvbox ";
+          };
+
+          "mpris" = {
+            format = " {player_icon} {artist} - {title} ";
+            player-icons = {
+              default = "▶";
+              spotify = " ";
+            };
+            status-icons = {
+              playing = " ";
+              paused = " ";
+            };
+            max-length = 40;
+          };
+
+          "cpu" = { format = " CPU: {usage}% "; };
+          "memory" = { format = " RAM: {}% "; };
+
+          # --- Network Module ---
+          "network" = {
+            format-wifi = "   {essid} ";
+            format-ethernet = " 󰈀  {ifname} ";
+            format-disconnected = " 󰖪  Disconnected ";
+            tooltip-format = "{ifname} via {gwaddr}";
+            on-click = "nm-connection-editor";
+          };
+
+          # --- Battery Module ---
+          "battery" = {
+            states = {
+              warning = 30;
+              critical = 15;
+            };
+            format = " {icon} {capacity}% ";
+            format-charging = " 󱐋 {capacity}% ";
+            format-plugged = "  {capacity}% ";
+            format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+          };
+
+          "pulseaudio" = {
+            format = " {icon} {volume}% ";
+            format-muted = " 󰝟 Muted ";
+            format-icons.default = [ "󰕿" "󰖀" "󰕾" ];
+            on-click = "pavucontrol";
+          };
+
+          "clock" = {
+            format = " 󰥔  {:%H:%M  %a, %b %e} ";
+          };
+
+          "tray" = {
+            icon-size = 16;
+            spacing = 8;
+          };
+        };
+
+        style = lib.mkForce ''
+          @define-color bg0 #${config.lib.stylix.colors.base00};
+          @define-color bg1 #${config.lib.stylix.colors.base01};
+          @define-color fg1 #${config.lib.stylix.colors.base05};
+          @define-color blue #${config.lib.stylix.colors.base0D};
+          @define-color red #${config.lib.stylix.colors.base08};
+          @define-color green #${config.lib.stylix.colors.base0B};
+          @define-color yellow #${config.lib.stylix.colors.base0A};
+
+          * {
+            font-family: "JetBrainsMono Nerd Font", monospace;
+            border: none;
+            border-radius: 0;
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+            min-height: 0;
+          }
+
+          window#waybar {
+            background-color: @bg0;
+            color: @fg1;
+            border-top: 2px solid @blue;
+          }
+
+          /* Added #network and #battery to the padding list */
+          #custom-power, #workspaces button, #window, #custom-branding, #mpris, 
+          #cpu, #memory, #network, #battery, #pulseaudio, #clock, #tray {
+            padding: 0 10px;
+            margin: 0;
+            background-color: transparent;
+          }
+
+          #custom-power {
+            background-color: @red;
+            color: @bg0;
+          }
+
+          #workspaces button.focused {
+            background-color: @blue;
+            color: @bg0;
+          }
+
+          #workspaces button.urgent {
+            background-color: @red;
+          }
+
+          #battery.critical:not(.charging) {
+            color: @red;
+          }
+
+          #battery.warning:not(.charging) {
+            color: @yellow;
+          }
+
+          #window { color: @green; }
+          #mpris { color: @blue; }
+          #network { color: @yellow; }
+          #tray { margin-right: 5px; }
+        '';
+      };
+    });
+  };
+}
+
+
+=== modules/systems/stylix.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  isDarwin,
+  ...
+}:
+
+let
+  cfg = config.myFeatures.systems.stylix or { enable = false; };
+in
+{
+  imports = [
+    (
+      if isDarwin then
+        inputs.stylix-unstable.darwinModules.stylix
+      else
+        inputs.stylix-unstable.nixosModules.stylix
+    )
+  ];
+
+  options.myFeatures.systems.stylix = {
+    enable = lib.mkEnableOption "Universal Stylix Styling";
+    scheme = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+    };
+    wallpaper = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+    };
+  };
+
+  config = lib.mkIf (cfg.enable or false) (
+    lib.mkMerge [
+      # 1. Global Stylix Config (Safe for both)
+      {
+        stylix = {
+          enable = true;
+          image =
+            if (cfg.wallpaper != null) then
+              cfg.wallpaper
+            else
+              pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
+
+          base16Scheme =
+            if (cfg.scheme != null) then cfg.scheme else "${pkgs.base16-schemes}/share/themes/nord.yaml";
+
+          polarity = "dark";
+
+          # Shield ALL targets that are NixOS-specific
+          targets = {
+            # Common targets (e.g., helix, neovim) can go here
+          }
+          // lib.optionalAttrs (!isDarwin) {
+            limine.enable = false; # Moved inside the shield
+            plymouth.enable = true;
+            gnome.enable = true;
+            qt.enable = true;
+          };
+        };
+      }
+
+      # 2. Linux-only QT System-wide engine
+      {
+        qt = {
+          enable = true;
+          platformTheme = lib.mkForce "qt5ct";
+          style = lib.mkForce "kvantum";
+        };
+      })
+    ]
+  );
+}
+
+
+=== modules/systems/idle.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.systems.idle;
+  theme = config.myFeatures.systems.theme.gruvbox;
+  lockCmd = "${pkgs.swaylock-effects}/bin/swaylock --image ${theme.wallpaper} --clock --indicator --effect-blur 7x5 --ring-color ${theme.accent} --key-hl-color ${theme.highlight}";
+in {
+  options.myFeatures.systems.idle.enable = lib.mkEnableOption "Swayidle/lock service";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # Home Manager attributes are safe-ish
+    {
+      home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+        services.swayidle = {
+          enable = true;
+          timeouts = [
+            { timeout = 300; command = lockCmd; }
+            { timeout = 600; command = "niri msg action power-off-monitors"; }
+          ];
+          events = { 
+            "before-sleep" = lockCmd; 
+            "after-resume" = "niri msg action power-on-monitors"; 
+          };
+        };
+      });
+    }
+    
+    # Shield the Linux SystemD login service
+    {
+      services.logind.settings.Login.HandlelidSwitch = "suspend";
+    })
+  ]);
+}
+
+
+=== modules/systems/presets/gruvbox.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.systems.stylix.gruvbox;
+in
+{
+  options.myFeatures.systems.stylix.gruvbox = {
+    enable = lib.mkEnableOption "Apply Gruvbox Theme";
+  };
+
+  config = lib.mkIf cfg.enable {
+    # This automatically turns on the main styling logic!
+    myFeatures.systems.stylix = {
+      enable = true; 
+      scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+      wallpaper = ../../../assets/wallpapers/gruvbox.jpg;
+    };
+  };
+}
+
+
+=== modules/systems/presets/gruvboxNiriRice.nix ===
+{ config, lib, pkgs, isStable, inputs, ... }:
+
+let
+  cfg = config.myFeatures.systems.presets.gruvboxNiri;
+  # Determine stateVersion based on the host's channel
+  dynamicVersion = if isStable then "25.11" else "26.05";
+in
+{
+  options.myFeatures.systems.presets.gruvboxNiri.enable = lib.mkEnableOption "Apollo's Gruvbox Niri Rice";
+
+  config = lib.mkIf cfg.enable {
+    myFeatures.systems = {
+      niri.enable = true;
+      waybar.enable = true;
+      swaybg.enable = true;
+      idle.enable = true;
+      stylix = {
+        enable = true;
+        gruvbox.enable = true;
+      };
+      presets.niriKeybinds.enable = true;
+      fuzzel.enable = true;
+      swaylock.enable = true;
+    };
+
+    myFeatures.systems.theme.gruvbox.wallpaper = ../../../assets/wallpapers/gruvbox.jpg;
+
+    home-manager.users = let
+      # Specifically filter the usernames list to prevent option keys from leaking
+      userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+    in lib.genAttrs userList (name: {
+
+      programs.niri.settings = {
+        layout = {
+          gaps = 0;
+          focus-ring = {
+            enable = true;
+            width = 2;
+            active.color = "#${config.lib.stylix.colors.base0D}";
+            inactive.color = "#${config.lib.stylix.colors.base02}";
+          };
+          border.enable = false;
+          struts = {
+            left = 0;
+            right = 0;
+            top = 0;
+            bottom = 0;
+          };
+        };
+
+      };
+
+    });
+  };
+}
+
+
+=== modules/systems/presets/forest.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.systems.stylix.forest;
+in
+{
+  options.myFeatures.systems.stylix.forest.enable = lib.mkEnableOption "Forest Theme";
+
+  config = lib.mkIf cfg.enable {
+    myFeatures.systems.stylix = {
+      enable = true;
+      # Using mkDefault allows the base engine fallbacks to stay at lower priority
+      scheme = lib.mkDefault "${pkgs.base16-schemes}/share/themes/nord.yaml";
+      wallpaper = lib.mkDefault ../../../assets/wallpapers/forest.jpg;
+    };
+  };
+}
+
+
+=== modules/systems/presets/niriKeybinds.nix ===
+{ config, lib, pkgs, isStable, inputs, ... }:
+
+let
+  cfg = config.myFeatures.systems.presets.niriKeybinds;
+  dynamicVersion = if isStable then "25.11" else "26.05";
+in
+{
+  options.myFeatures.systems.presets.niriKeybinds.enable = lib.mkEnableOption "Apollo's Niri Keybinds";
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: { config, ... }: {
+      imports = [ inputs.niri.homeModules.niri ];
+      
+      programs.niri = {
+        enable = true;
+        package = pkgs.niri;
+        settings = {
+          input = {
+            # --- Keybind Modifiers ---
+            mod-key = "Alt";
+            mod-key-nested = "Super";
+
+            # --- Trackpad Settings ---
+            touchpad = {
+              tap = true;
+              dwt = false;
+              natural-scroll = true;
+              accel-speed = 0.2;
+              accel-profile = "adaptive";
+              click-method = "clickfinger"; 
+            };
+
+            touch = {
+              map-to-output = "eDP-1"; 
+            };
+          };
+
+          outputs = {
+            "DP-1" = {
+              mode = { width = 2560; height = 1440; refresh = 180.0; };
+              position = { x = 0; y = 0; };
+            };
+            "DP-2" = {
+              mode = { width = 1920; height = 1080; refresh = 165.0; };
+              position = { x = 2560; y = 0; }; 
+            };
+          };
+
+          binds = {
+            # --- Apps & System ---
+            "Mod+Q".action.spawn = [ "ghostty" ];
+            "Mod+Shift+Q".action.spawn = [ "firefox" ];
+            "Mod+D".action.spawn = [ "fuzzel" ];
+            "Mod+O".action.toggle-overview = { }; #
+            "Mod+C".action.close-window = { };
+            "Mod+Shift+E".action.quit = { };
+            "Mod+Super+L".action.spawn = [ "swaylock" ];
+
+            # --- Navigation ---
+            "Mod+Left".action.focus-column-left = { };
+            "Mod+Right".action.focus-column-right = { };
+            "Mod+Up".action.focus-window-up = { };
+            "Mod+Down".action.focus-window-down = { };
+            "Mod+Home".action.focus-column-first = { }; #
+            "Mod+End".action.focus-column-last = { }; #
+
+            # --- Move Windows ---
+            "Mod+Ctrl+Left".action.move-column-left = { };
+            "Mod+Ctrl+Right".action.move-column-right = { };
+            "Mod+Ctrl+Up".action.move-window-up = { };
+            "Mod+Ctrl+Down".action.move-window-down = { };
+
+            # --- Monitor Navigation ---
+            "Mod+Shift+Left".action.focus-monitor-left = { };
+            "Mod+Shift+Right".action.focus-monitor-right = { };
+            "Mod+Ctrl+Shift+Left".action.move-column-to-monitor-left = { };
+            "Mod+Ctrl+Shift+Right".action.move-column-to-monitor-right = { };
+
+            # --- Workspace Navigation ---
+            "Mod+WheelScrollDown".action.focus-workspace-down = { }; #
+            "Mod+WheelScrollUp".action.focus-workspace-up = { }; #
+            "Mod+TouchpadScrollDown".action.focus-workspace-down = { }; #
+            "Mod+TouchpadScrollUp".action.focus-workspace-up = { }; #
+
+            # --- Layout Management ---
+            "Mod+Comma".action.consume-window-into-column = { };
+            "Mod+Period".action.expel-window-from-column = { };
+            "Mod+K".action.center-column = { }; #
+            "Mod+R".action.switch-preset-column-width = { }; #
+
+            # --- Show Keybinds ---
+            "Mod+Shift+slash".action.show-hotkey-overlay = { };
+
+            # --- Resizing & Columns ---
+            "Mod+Minus".action.set-column-width = "-10%"; #
+            "Mod+Equal".action.set-column-width = "+10%"; #
+            "Mod+Shift+Minus".action.set-window-height = "-10%"; #
+            "Mod+Shift+Equal".action.set-window-height = "+10%"; #
+            "Mod+F".action.maximize-column = { };
+            "Mod+Shift+F".action.fullscreen-window = { };
+            "Mod+V".action.toggle-window-floating = { };
+
+            # --- 9 Workspaces (Focus) ---
+            "Mod+1".action.focus-workspace = 1;
+            "Mod+2".action.focus-workspace = 2;
+            "Mod+3".action.focus-workspace = 3;
+            "Mod+4".action.focus-workspace = 4;
+            "Mod+5".action.focus-workspace = 5;
+            "Mod+6".action.focus-workspace = 6;
+            "Mod+7".action.focus-workspace = 7;
+            "Mod+8".action.focus-workspace = 8;
+            "Mod+9".action.focus-workspace = 9;
+
+            # --- 9 Workspaces (Move) ---
+            "Mod+Shift+1".action.move-column-to-workspace = 1;
+            "Mod+Shift+2".action.move-column-to-workspace = 2;
+            "Mod+Shift+3".action.move-column-to-workspace = 3;
+            "Mod+Shift+4".action.move-column-to-workspace = 4;
+            "Mod+Shift+5".action.move-column-to-workspace = 5;
+            "Mod+Shift+6".action.move-column-to-workspace = 6;
+            "Mod+Shift+7".action.move-column-to-workspace = 7;
+            "Mod+Shift+8".action.move-column-to-workspace = 8;
+            "Mod+Shift+9".action.move-column-to-workspace = 9;
+
+            # --- Brightness & Audio (Media) ---
+            "XF86MonBrightnessUp".action.spawn = [ "brightnessctl" "set" "5%+" ];
+            "XF86MonBrightnessDown".action.spawn = [ "brightnessctl" "set" "5%-" ];
+            "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+" ];
+            "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ];
+            "XF86AudioMute".action.spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ];
+            "XF86AudioPlay".action.spawn = [ "playerctl" "play-pause" ];
+            "XF86AudioNext".action.spawn = [ "playerctl" "next" ];
+            "XF86AudioPrev".action.spawn = [ "playerctl" "previous" ];
+
+            # --- Screenshots ---
+            "Print".action.screenshot = { };
+            "Ctrl+Print".action.screenshot-screen = { };
+            "Alt+Print".action.screenshot-window = { };
+          };
+        };
+      };
+    });
+  };
+}
+
+
+=== modules/systems/presets/gruvboxTheme.nix ===
+{ config, lib, ... }:
+
+{
+  options.myFeatures.systems.theme.gruvbox = {
+    wallpaper = lib.mkOption {
+      type = lib.types.path;
+      default = ../../../assets/wallpapers/gruvbox.jpg;
+    };
+    # You can add shared colors here for swaylock to pick up
+    accent = lib.mkOption {
+      type = lib.types.str;
+      default = "d65d0e";
+    };
+    highlight = lib.mkOption {
+      type = lib.types.str;
+      default = "fabd2f";
+    };
+  };
+}
+
+
+=== modules/systems/gnome.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.systems.gnome;
+in
+{
+  options.myFeatures.systems.gnome.enable = lib.mkEnableOption "GNOME Desktop Environment";
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {
+    services.xserver = {
+      enable = true;
+      desktopManager.gnome.enable = true;
+    };
+    
+    environment.gnome.excludePackages = with pkgs; [
+      gnome-tour
+      epiphany 
+    ];
+  });
+}
+
+
+=== modules/systems/kde.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.systems.kde;
+in
+{
+  options.myFeatures.systems.kde.enable = lib.mkEnableOption "KDE Plasma 6 Desktop";
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {
+    services.xserver.enable = true; 
+    services.desktopManager.plasma6.enable = true;
+    programs.kde-pim.enable = false;
+
+    environment.systemPackages = with pkgs; [
+      kdePackages.krunner
+      kdePackages.plasma-nm
+      kdePackages.plasma-pa
+      kdePackages.dolphin
+      kdePackages.spectacle
+      kdePackages.ark
+      kdePackages.qtstyleplugin-kvantum
+    ]; 
+
+    xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ]; 
+  });
+}
+
+
+=== modules/systems/swaybg.nix ===
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.myFeatures.systems.swaybg;
+  theme = config.myFeatures.systems.theme.gruvbox;
+in {
+  options.myFeatures.systems.swaybg.enable = lib.mkEnableOption "swaybg service";
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      systemd.user.services.swaybg = {
+        Unit = { Description = "Wallpaper"; After = [ "graphical-session.target" ]; };
+        Service = {
+          ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${theme.wallpaper} -m fill";
+          Restart = "on-failure";
+        };
+        Install.WantedBy = [ "graphical-session.target" ];
+      };
+    });
+  };
+}
+
+
+=== modules/systems/niri.nix ===
+{ config, lib, pkgs, inputs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.systems.niri;
+  system = pkgs.stdenv.hostPlatform.system;
+in
+{
+  options.myFeatures.systems.niri.enable = lib.mkEnableOption "Niri Window Manager";
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {
+    programs.niri.enable = true;
+    programs.niri.package = pkgs.niri;
+
+    environment.systemPackages = with pkgs; [
+      fuzzel xwayland-satellite mako swaybg swayidle
+      swaylock networkmanagerapplet thunar awww
+      swaynotificationcenter brightnessctl
+    ];
+  });
+}
+
+
+=== modules/core/security.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.core.security;
+in
+{
+  options.myFeatures.core.security = {
+    enable = lib.mkEnableOption "General System Security Hardening";
+    useAppArmor = lib.mkEnableOption "AppArmor MAC support";
+    useOOMD = lib.mkEnableOption "Systemd-OOMD stability";
+  };
+
+  config = lib.mkIf cfg.enable {
+    security = {
+      # 1. AppArmor Logic
+      apparmor = lib.mkIf cfg.useAppArmor {
+        enable = true;
+        enableCache = true;
+        killUnconfinedConfinables = true;
+        packages = with pkgs; [
+          apparmor-profiles
+          apparmor-utils
+        ];
+      };
+
+      # 2. Kernel & User-space Hardening
+      forcePageTableIsolation = true;
+      protectKernelImage = true;
+      
+      # Disabling unprivileged user namespaces
+      unprivilegedUsernsClone = true; 
+      
+      sudo.execWheelOnly = true;
+    };
+
+    # 3. Systemd OOMD
+    systemd.oomd.enable = cfg.useOOMD;
+
+    # 4. Glibc & Memory Allocator Hardening
+    environment.variables.MALLOC_CHECK_ = "1";
+
+
+    networking.firewall.enable = lib.mkDefault true;
+  });
+}
+
+
+=== modules/core/lix.nix ===
+{ config, lib, pkgs, inputs, ... }:
+
+let
+  # 1. Setup a shortcut to your feature's config
+  # Replace 'myFeature' with your actual feature name
+  cfg = config.myFeatures.core.lix;
+in
+{
+  # --- OPTIONS ---
+  # This defines the "switches" you flip in your /hosts files
+  options.myFeatures.core.lix = {
+    enable = lib.mkEnableOption "Enables Lix in systems";
+  };
+
+  # --- CONFIG ---
+  # This is the "payload" that only runs if 'enable' is true
+  config = lib.mkIf cfg.enable {
+    nixpkgs.overlays = [ (final: prev: {
+      inherit (prev.lixPackageSets.stable)
+        nixpkgs-review
+        nix-eval-jobs
+        nix-fast-build
+        colmena;
+    }) ];
+
+    nix.package = pkgs.lixPackageSets.stable.lix;
+  };
+}
+
+
+=== modules/core/virtualization.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.core.virtualization;
+in
+{
+  options.myFeatures.core.virtualization = {
+    enable = lib.mkEnableOption "Virtualization Suite";
+    docker = lib.mkEnableOption "Docker Engine";
+    libvirt = lib.mkEnableOption "Libvirt/Virt-Manager";
+  };
+
+  config = lib.mkIf cfg.enable {
+    virtualisation = {
+      docker.enable = cfg.docker;
+      libvirtd.enable = cfg.libvirt;
+    };
+
+    # Automatically add users to the correct groups
+    users.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      extraGroups = 
+        (lib.optional cfg.docker "docker") ++ 
+        (lib.optional cfg.libvirt "libvirtd");
+    });
+  });
+}
+
+
+=== modules/core/fonts.nix ===
+{ config, lib, pkgs, ... }: # <-- Added isDarwin
+
+let
+  cfg = config.myFeatures.core.fonts;
+in
+{
+  options.myFeatures.core.fonts.enable = lib.mkEnableOption "Apollo's Font Stack & Emoji Fallbacks";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. Cross-platform: Install the actual font files
+    {
+      fonts.packages = with pkgs; [
+        noto-fonts
+        noto-fonts-cjk-sans
+        noto-fonts-color-emoji
+        jetbrains-mono
+        nerd-fonts.jetbrains-mono
+      ];
+    }
+
+    # 2. Linux-only: Configure system default fonts and fallbacks
+    {
+      fonts.fontconfig.defaultFonts = {
+        serif = [ "Noto Serif" "Noto Color Emoji" ];
+        sansSerif = [ "Noto Sans" "Noto Color Emoji" ];
+        monospace = [ "JetBrainsMono Nerd Font" "Noto Color Emoji" ];
+        emoji = [ "Noto Color Emoji" ];
+      };
+    })
+  ]);
+}
+
+
+=== modules/core/boot.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.core.boot;
+  # Points to your assets folder relative to this file
+  wallpaperPath = ../../assets/wallpapers/limine-bg.png;
+in
+{
+  options.myFeatures.core.boot = {
+    enable = lib.mkEnableOption "Limine Bootloader";
+  };
+
+  config = lib.mkIf cfg.enable {
+    # Disable the default systemd-boot to make room for Limine
+    boot.loader.systemd-boot.enable = false;
+
+    # Enable UEFI support
+    boot.loader.efi.canTouchEfiVariables = true;
+
+    boot.loader.limine = {
+      enable = true;
+
+      # FIX: Wrap the path in a list [ ] and remove the attribute name
+      style = {
+        wallpapers = [ wallpaperPath ];
+        wallpaperStyle = "stretched";
+      };
+    };
+
+    boot.kernelParams = [ "quiet" "loglevel=3" "systemd.show_status=auto" "rd.udev.log_level=3" ];
+    
+    boot.plymouth.enable = true;
+    # Essential system packages
+    environment.systemPackages = with pkgs; [
+      limine
+      efibootmgr
+    ];
+  });
+}
+
+
+=== modules/core/nix-settings.nix ===
+{ config, lib, pkgs, ... }:
+
+{
+  options.myFeatures.core.nix-settings.enable = lib.mkEnableOption "Core Nix flake and optimization settings";
+
+  config = lib.mkIf config.myFeatures.core.nix-settings.enable {
+    nix = {
+      settings = {
+        experimental-features = [ "nix-command" "flakes" ];
+        auto-optimise-store = true;
+        warn-dirty = false;
+        substituters = [ "https://niri.cachix.org" ];
+        trusted-public-keys = [ "niri.cachix.org-1:Wv0Om607Z5KVzEDGyz69m0shV6vba6Kndf6966fS38Y=" ];
+      };
+      
+      # FIX: Only enable Nix-managed GC on Linux.
+      # Determinate Systems manages the Nix store on your Mac.
+      gc = lib.mkIf (!isDarwin) {
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 7d";
+      };
+    };
+
+    # Allow unfree packages
+    nixpkgs.config.allowUnfree = true;
+  };
+}
+
+
+=== modules/core/secureboot.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.core.secureboot;
+in
+{
+  options.myFeatures.core.secureboot = {
+    enable = lib.mkEnableOption "Native Limine Secure Boot";
+  };
+
+  config = lib.mkIf cfg.enable {
+    # 1. Enable native Limine signing during rebuilds
+    boot.loader.limine.secureBoot.enable = true;
+
+    # 2. Recommended: Embed a hash of your config in the binary
+    # This prevents tampering with kernel params (like init=/bin/sh)
+    boot.loader.limine.enrollConfig = true;
+
+    # 3. Add management tools
+    environment.systemPackages = [ pkgs.sbctl ];
+  });
+}
+
+
+=== modules/core/ssh.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.core.ssh;
+in
+{
+  options.myFeatures.core.ssh = {
+    enable = lib.mkEnableOption "SSH Service";
+  };
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. Common configuration for both Mac and Linux
+    {
+      services.openssh.enable = true;
+    }
+
+    # 2. Linux-only configuration (Shielded from the Mac Evaluator)
+    {
+      services.openssh.settings = {
+        PermitRootLogin = "no";
+        PasswordAuthentication = true;
+      };
+    })
+  ]);
+}
+
+
+=== modules/core/users.nix ===
+{ config, lib, pkgs, inputs, isStable ? true, ... }:
+
+let
+  cfg = config.myFeatures.core.users;
+  
+  # Standardize on your new version targets
+  dynamicVersion = if isStable then "25.11" else "26.05";
+in
+{
+  options.myFeatures.core.users = {
+    enable = lib.mkEnableOption "Standard User Configuration";
+    usernames = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ "apollo" ];
+      description = "List of users to initialize on this host";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    _module.args.usernames = cfg.usernames;
+
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      backupFileExtension = "hm-backup";
+      extraSpecialArgs = { inherit inputs; };
+
+      users = lib.genAttrs cfg.usernames (name: {
+        home.stateVersion = dynamicVersion;
+      });
+    };
+
+    # System-level user definitions
+    users.users = lib.genAttrs cfg.usernames (name: 
+      lib.mkMerge [
+        # 1. Attributes safe for BOTH macOS and Linux
+        {
+          shell = pkgs.zsh;
+          home = if isDarwin then "/Users/${name}" else "/home/${name}";
+        }
+
+        # 2. Attributes ONLY for Linux (Physically removed on Mac)
+        {
+          isNormalUser = true;
+          extraGroups = [ 
+            "wheel" 
+            "networkmanager" 
+            "video" 
+            "audio" 
+            "docker" 
+            "lp" 
+          ];
+        })
+      ]
+    );
+  };
+}
+
+
+=== modules/core/core-branch.nix ===
+{ lib, config, ... }: # Added isDarwin [cite: 88]
+
+let
+  cfg = config.myFeatures.core;
+in
+{
+  options.myFeatures.core = {
+    enable = lib.mkEnableOption "Core System Foundation";
+    usePersistence = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Switch from standard users to persistent SOPS-backed users.";
+    };
+    virtualization = {
+      docker = lib.mkEnableOption "Docker Engine";
+      libvirt = lib.mkEnableOption "Virt-Manager/VMs";
+    };
+  };
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      myFeatures.core = {
+        # Shield Linux-only core defaults [cite: 94]
+        boot.enable = lib.mkIf (!isDarwin) (lib.mkDefault true);
+        nix-settings.enable = lib.mkDefault true;
+        fonts.enable = lib.mkDefault true;
+        localeChicago.enable = lib.mkDefault true;
+        ssh.enable = lib.mkDefault true;
+        users.enable = lib.mkDefault true; 
+        
+        virtualization = {
+          # Added !isDarwin check to prevent crashes on Mac [cite: 94]
+          docker = lib.mkIf (cfg.virtualization.docker && !isDarwin) (lib.mkDefault true);
+          libvirt = lib.mkIf (cfg.virtualization.libvirt && !isDarwin) (lib.mkDefault true);
+        };
+      };
+    }
+  ]);
+}
+
+
+=== modules/core/shell.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
+  cfg = config.myFeatures.core.shell;
+  host = config.networking.hostName;
+in
+{
+  options.myFeatures.core.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = [
+      pkgs.eza
+      pkgs.fzf
+      pkgs.starship
+    ];
+
+    programs.zsh.enable = true;
+
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      programs.starship = {
+        enable = true;
+        enableZshIntegration = true;
+        settings = {
+          add_newline = false;
+          format = "$directory$git_branch$character";
+
+          # Clean Gruvbox Directory
+          directory = {
+            style = "bold fg:214"; # Gruvbox Orange
+            truncation_length = 3;
+            fish_style_pwd_dir_length = 1;
+          };
+
+          # Git Branch with the icon you were using
+          git_branch = {
+            symbol = " ";
+            style = "bold fg:142"; # Gruvbox Green
+          };
+
+          # Character symbols (➜)
+          character = {
+            success_symbol = "[➜](bold fg:108)"; # Gruvbox Aqua
+            error_symbol = "[➜](bold fg:167)"; # Gruvbox Red
+          };
+
+          # Fixed Palette (Underscores only, no hyphens)
+          palette = lib.mkForce "gruvbox_dark";
+          palettes.gruvbox_dark = {
+            black = "#282828";
+            bright_black = "#928374";
+            red = "#cc241d";
+            bright_red = "#fb4934";
+            green = "#98971a";
+            bright_green = "#b8bb26";
+            yellow = "#d79921";
+            bright_yellow = "#fabd2f";
+            blue = "#458588";
+            bright_blue = "#83a598";
+            magenta = "#b16286";
+            bright_magenta = "#d3869b";
+            cyan = "#689d6a";
+            bright_cyan = "#8ec07c";
+            white = "#a89984";
+            bright_white = "#ebdbb2";
+            orange = "#d65d0e";
+            bright_orange = "#fe8019";
+          };
+        };
+      };
+
+      programs.zsh = {
+        enable = true;
+        enableCompletion = true;
+        autosuggestion.enable = true;
+        syntaxHighlighting.enable = true;
+
+        shellAliases = {
+          # The Seeding Command: RAM-only, vanishes on reboot
+          seed = "export BW_SESSION=$(bw unlock --raw) && mkdir -p /run/user/$(id -u)/sops && bw get item 'Solar Age Master' | jq -r '.notes' > /run/user/$(id -u)/sops/keys.txt && chmod 600 /run/user/$(id -u)/sops/keys.txt";
+          unseed = "rm -f /run/user/$(id -u)/sops/keys.txt && echo 'Solar Master Key purged from RAM.'";
+          ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
+          ll = "ls -l";
+          la = "eza -a";
+          # Use your host variable for easy rebuilds
+          nrs = "sudo nixos-rebuild switch --flake .#${host}";
+          nrb = "sudo nixos-rebuild boot --flake .#${host}";
+          drs = "sudo darwin-rebuild switch --flake .#${host}";
+          nfu = "nix flake update";
+          nfc = "nix flake check";
+          gs = "git status";
+          ga = "git add";
+          gc = "git commit";
+          v = "hx"; # Short for Helix
+          ff = "fastfetch";
+        };
+
+        initContent = ''
+          # Ensure Starship initializes correctly
+          eval "$(starship init zsh)"
+
+          # General Shell Prefs
+          export EDITOR=helix
+          # ... the rest of your init code
+        '';
+      };
+    });
+  };
+}
+
+
+=== modules/core/cli.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.core.cli;
+in
+{
+  options.myFeatures.core.cli.enable = lib.mkEnableOption "Standard CLI tools";
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      # --- Cross-Platform Tools (Mac & Linux) ---
+      git
+      helix
+      btop
+      eza
+      fzf
+      fd
+      ripgrep
+      wget
+      curl
+      fastfetch
+      tree
+      jq
+      nurl
+      comma
+    ] ++ (lib.optionals (!isDarwin) [
+      # --- Linux-Only Tools ---
+      lm_sensors
+      sysstat
+    ]);
+
+    environment.variables.EDITOR = "hx";
+    environment.variables.VISUAL = "hx";
+  };
+}
+
+
+=== modules/core/localeChicago.nix ===
+{ config, lib, ... }: # <-- ADDED isDarwin
+
+let
+  cfg = config.myFeatures.core.localeChicago;
+in
+{
+  options.myFeatures.core.localeChicago.enable = lib.mkEnableOption "Missouri Locale & Timezone Settings";
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. Cross-platform settings
+    {
+      time.timeZone = "America/Chicago";
+    }
+
+    # 2. Linux-only settings (Shielded from macOS)
+    {
+      i18n.defaultLocale = "en_US.UTF-8";
+      console.keyMap = "us";
+      services.xserver.xkb.layout = "us";
+    })
+  ]);
+}
+
+
+=== modules/core/channels.nix ===
+{ config, lib, ... }:
+
+let
+  cfg = config.myFeatures.core.channels;
+in
+{
+  options.myFeatures.core.channels = {
+    # This is populated by the autoscanner (hosts/default.nix)
+    isStable = lib.mkOption {
+      type = lib.types.bool;
+      default = false; 
+      description = "Internal: Whether the host is using the stable branch.";
+    };
+
+    # Helper strings for stateVersion references
+    stableVersion = lib.mkOption { 
+      type = lib.types.str; 
+      default = "25.11"; 
+    };
+    unstableVersion = lib.mkOption { 
+      type = lib.types.str; 
+      default = "26.05"; 
+    };
+
+    # This provides a clean way to get the version string anywhere in your config
+    currentVersion = lib.mkOption {
+      type = lib.types.str;
+      readOnly = true;
+      default = if cfg.isStable then cfg.stableVersion else cfg.unstableVersion;
+    };
+  };
+
+  # DO NOT add a 'config = { ... }' block that sets nixpkgs.pkgs here.
+  # That logic now lives safely in hosts/default.nix.
+}
+
+
+=== modules/core/shell-branch.nix ===
+{ lib, config, ... }:
+
+let
+  cfg = config.myFeatures.shell;
+in
+{
+  options.myFeatures.shell = {
+    enable = lib.mkEnableOption "Interactive Shell Environment";
+    p10k = lib.mkEnableOption "Powerlevel10k Theme";
+    aliases = lib.mkEnableOption "Custom System Aliases";
+  };
+
+  config = lib.mkIf cfg.enable {
+    myFeatures.core = {
+      shell.enable = lib.mkDefault true;
+      cli.enable = lib.mkDefault true;
+    };
+  };
+}
+
+
+=== modules/darwin/homebrew.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+
+let
+  # 1. Setup a shortcut to your feature's config
+  # Replace 'myFeature' with your actual feature name
+  cfg = config.myFeatures.darwin.homebrew;
+in
+{
+  # --- OPTIONS ---
+  # This defines the "switches" you flip in your /hosts files
+  options.myFeatures.darwin.homebrew = {
+    enable = lib.mkEnableOption "Enable Homebrew";
+  };
+
+  # --- CONFIG ---
+  # This is the "payload" that only runs if 'enable' is true
+  config = lib.mkIf cfg.enable {
+    homebrew = {
+      enable = true;
+      onActivation.cleanup = "zap"; # Automatically uninstall apps you remove from this list!
+      casks = [
+        # Add your Mac-only GUI apps here
+        "anytype"
+        "ghostty"
+      ];
+    };
+  };
+}
+
+
+=== modules/darwin/core.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  isDarwin,
+  ...
+}:
+
+{
+  options.myFeatures.darwin.core = {
+    enable = lib.mkEnableOption "Core macOS System Settings";
+  };
+
+  config = lib.mkIf (config.myFeatures.darwin.core.enable && isDarwin) {
+
+    # CRITICAL: Tell nix-darwin to let Determinate handle the Nix daemon
+    nix.enable = false;
+
+    # --- Security ---
+    security.pam.services.sudo_local.touchIdAuth = true;
+
+    # --- System Defaults ---
+    system.defaults = {
+      dock = {
+        autohide = true;
+        show-recents = false;
+        mru-spaces = false;
+        orientation = "right";
+      };
+
+      finder = {
+        AppleShowAllExtensions = true;
+        ShowPathbar = true;
+        FXPreferredViewStyle = "clmv";
+      };
+
+      NSGlobalDomain = {
+        AppleInterfaceStyle = "Dark";
+        KeyRepeat = 2;
+        InitialKeyRepeat = 15;
+      };
+    };
+  };
+}
+
+
+=== modules/default.nix ===
+{ lib, isDarwin, ... }:
+
+let
+  getNixFiles =
+    dir:
+    let
+      contents = builtins.readDir dir;
+    in
+    lib.flatten (
+      lib.mapAttrsToList (
+        name: type:
+        let
+          path = "${toString dir}/${name}";
+        in
+        if type == "directory" then
+          # Skip the hosts directory to prevent recursive loop
+          if name == "hosts" then [ ] else getNixFiles path
+        else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
+          let
+            # 1. Peek inside the file
+            imported = import path;
+
+            # 2. Extract its top-level arguments safely
+            args = if builtins.isFunction imported then builtins.functionArgs imported else { };
+
+            # 3. Detect your flags
+            hasDarwin = args ? isDarwin;
+            hasTotal = args ? isTotal;
+
+            # 4. Implicit Linux Default
+            isLinuxDefault = !hasDarwin && !hasTotal;
+          in
+          # --- THE ROUTING LOGIC ---
+          if isDarwin then
+            # On Mac: Only import files that explicitly have the isDarwin or isTotal flag
+            if hasDarwin || hasTotal then path else [ ]
+          else
+          # On Linux: Import files that have the isTotal flag OR have no flags (Linux default)
+          if isLinuxDefault || hasTotal then
+            path
+          else
+            [ ]
+        else
+          [ ]
+      ) contents
+    );
+in
+{
+  imports = getNixFiles ./.;
+
+  # Inject the flags so modules that request them actually receive them
+  _module.args = {
+    inherit isDarwin;
+    isTotal = true;
+  };
+}
+
+
+=== modules/hosts/mercury/hardware-configuration.nix ===
+# Do not modify this file!  It was generated by ‘nixos-generate-config’
+# and may be overwritten by future invocations.  Please make changes
+# to /etc/nixos/configuration.nix instead.
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
+
+  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "sdhci_pci" ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-intel" ];
+  boot.extraModulePackages = [ ];
+  boot.initrd.systemd = {
+    enable = true;
+    tpm2.enable = true;
+  };
+  
+  fileSystems."/" =
+    { device = "/dev/mapper/luks-9e40bb0e-dbe2-4d30-b016-29c386b9c476";
+      fsType = "ext4";
+    };
+
+  boot.initrd.luks.devices."luks-9e40bb0e-dbe2-4d30-b016-29c386b9c476" = {
+    device = "/dev/disk/by-uuid/9e40bb0e-dbe2-4d30-b016-29c386b9c476";
+    crypttabExtraOpts = [ "tpm2-device=auto" ];
+    preLVM = true;
+    allowDiscards = true;
+  };
+
+  # Swap Partition (p3) - This fixes the 90s hang
+  boot.initrd.luks.devices."luks-95dd7114-f8ee-4b6f-a8b1-2285dafdf137" = {
+    device = "/dev/disk/by-uuid/95dd7114-f8ee-4b6f-a8b1-2285dafdf137";
+    crypttabExtraOpts = [ "tpm2-device=auto" ];
+    preLVM = true;
+    allowDiscards = true;
+  };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/4476-6407";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  swapDevices =
+    [ { device = "/dev/mapper/luks-95dd7114-f8ee-4b6f-a8b1-2285dafdf137"; }
+    ];
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+}
+
+
+=== modules/hosts/mercury/default.nix ===
+{
+  meta = {
+    system = "x86_64-linux";
+    stable = false;
+  };
+
+  module = { lib, inputs, ...}: {
+    imports = [
+      ./hardware-configuration.nix
+    ];
+
+    system.stateVersion = "26.05";
+    
+    myFeatures = {
+      core = {
+        enable = true;
+        secureboot.enable = true;
+        security = {
+          enable = true;
+          useAppArmor = true;
+        };
+        lix.enable = true;
+      };
+      shell.enable = true;
+
+      hardware = {
+        graphics.enable = true;
+        battery = {
+          enable = true;
+          fullCharge = false;
+          bluetooth.enable = true;
+          aggressive = true;
+        };
+        bluetooth.enable = true;
+        controllers.enable = true;
+        trackpad.enable = true;
+        wifi.enable = true;
+      };
+
+      systems = {
+        presets.gruvboxNiri.enable = true;
+        displayManager.manager = "tuigreet";
+      };
+
+      programs = {
+        ghostty.enable = true;
+        firefox.enable = true;
+        gaming.enable = true;
+        fastfetch = {
+          enable = true;
+          showBattery = true;
+        };
+        helix.enable = true;
+        media.enable = true;
+        social.enable = true;
+        obs.enable = true;
+        bitwarden.enable = true;
+        stylePackages.enable = true;
+        anytype.enable = true;
+      };
+
+      services = {
+        audio.enable = true;
+        flatpak.enable = true;
+        xdgPortals.enable = true;
+        printing.enable = true;
+        udisks2.enable = true;
+        firmware.enable = true;
+        networking = {
+          tailscale.enable = true;
+        };
+      };
+    };
+  };
+}
+
+
+=== modules/hosts/venus/hardware-configuration.nix ===
+# Do not modify this file!  It was generated by ‘nixos-generate-config’
+# and may be overwritten by future invocations.  Please make changes
+# to /etc/nixos/configuration.nix instead.
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
+
+  # Earbuds
+  boot.extraModprobeConfig = ''
+  options snd-hda-intel patch=hda-jack-retask.fw
+  '';
+
+  hardware.firmware = [
+    (pkgs.runCommand "hda-jack-retask-fw" {} ''
+      mkdir -p $out/lib/firmware
+      cat <<EOF > $out/lib/firmware/hda-jack-retask.fw
+  [codec]
+  0x10ec0897 0x1022c950 0
+
+  [pincfg]
+  0x19 0x03a11020
+  0x1b 0x40000000
+  EOF
+    '')
+  ];
+
+  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-amd" ];
+  boot.extraModulePackages = [ ];
+  boot.kernelParams = [ "snd_hda_intel.model=alc897-headset-multi" "snd_hda_intel.jack_detect=0" ];
+
+  fileSystems."/" =
+    { device = "/dev/disk/by-uuid/14fad7d0-a853-4077-b00b-45a319a12f8c";
+      fsType = "ext4";
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/E88B-D3A7";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/751f8bd1-ce8d-473e-9f22-91dd2f6e00c8"; }
+    ];
+
+  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
+  # (the default) this is the recommended approach. When using systemd-networkd it's
+  # still possible to use this option, but it's recommended to use it in conjunction
+  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+  networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+}
+
+
+=== modules/hosts/venus/default.nix ===
+{
+  meta = {
+    system = "x86_64-linux";
+    stable = false;
+  };
+
+  module = { lib, inputs, ... }: {
+    imports = [
+      ./hardware-configuration.nix
+    ];
+
+    system.stateVersion = "26.05";
+
+    myFeatures = {
+      core.enable = true;
+      core.lix.enable = true;
+      shell.enable = true;
+      core.secureboot.enable = true;
+      core.security = {
+        enable = true;
+        useAppArmor = true;
+      };
+      hardware = {
+        amd.enable = true;
+      };
+      programs = {
+        ghostty.enable = true;
+        fastfetch.enable = true;
+        helix.enable = true;
+      };
+      services = {
+        udisks2.enable = true;
+        networking = {
+          enable = true;
+          tailscale.enable = true;
+        };
+        servers = {
+          factorio = {
+            enable = true;
+            port = 34197; 
+          };
+          terraria = {
+            enable = true;
+            worldSize = "large";
+          };
+          minecraft = {
+            sllv = {
+              enable = true;
+              port = 25565;
+            };
+          };
+        };
+        ddns = {
+          enable = true;
+          domains = [
+            "sllv.apollan.cc"
+            "survival.apollan.cc"
+            "factorio.apollan.cc"
+            "terraria.apollan.cc"
+          ];
+        };
+      };
+    };
+  };
+}
+
+
+=== modules/hosts/europa/hardware-configuration.nix ===
+# Do not modify this file!  It was generated by ‘nixos-generate-config’
+# and may be overwritten by future invocations.  Please make changes
+# to /etc/nixos/configuration.nix instead.
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
+
+  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ ];
+  boot.extraModulePackages = [ ];
+
+  fileSystems."/" =
+    { device = "/dev/disk/by-uuid/7a85f4eb-4009-424f-a81d-94a1358022a3";
+      fsType = "ext4";
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/1CAC-36D7";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  swapDevices = [ ];
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+}
+
+
+=== modules/hosts/europa/default.nix ===
+{
+  meta = {
+    system = "x86_64-linux";
+    stable = false;
+  };
+
+  module = { lib, inputs, ...}: {
+    imports = [
+      ./hardware-configuration.nix
+    ];
+
+    system.stateVersion = "26.05";
+
+    myFeatures = {
+      core = {
+        enable = true;
+        users.usernames = [ "hephaestus" ];
+        lix.enable = true;
+      };
+      shell.enable = true;
+      hardware = {
+        graphics.enable = true;
+        nvidia = {
+          enable = true;
+          open = false;
+          legacy = true;
+          prime = {
+            enable = true;
+            intelBusId = "PCI:0:2:0";
+            nvidiaBusId = "PCI:1:0:0";
+          };
+        };
+        intel.enable = true;
+        battery = {
+          enable = true;
+          fullCharge = true;
+          bluetooth.enable = false;
+          aggressive = true;
+        };
+        controllers.enable = true;
+        trackpad.enable = true;
+        wifi.enable = true;
+      };
+      systems = {
+        kde.enable = true;
+        displayManager.manager = "sddm";
+        stylix.forest.enable = true;
+      };
+      programs = {
+        ghostty.enable = true;
+        firefox.enable = true;
+        gaming.enable = true;
+        fastfetch = {
+          enable = true;
+          showBattery = true;
+        };
+        helix.enable = true;
+        media.enable = true;
+        social.enable = true;
+        obs.enable = true;
+        bitwarden.enable = true;
+        stylePackages.enable = true;
+      };
+      services = {
+        audio.enable = true;
+        flatpak.enable = true;
+        xdgPortals.enable = true;
+        printing.enable = true;
+        udisks2.enable = true;
+        networking.tailscale.enable = true;
+      };
+    };
+  };
+}
+
+
+=== modules/hosts/mars/meta.nix ===
+{
+  stable = false; # Set to true only if you want the stable branch
+}
+
+
+=== modules/hosts/mars/hardware-configuration.nix ===
+# Do not modify this file!  It was generated by ‘nixos-generate-config’
+# and may be overwritten by future invocations.  Please make changes
+# to /etc/nixos/configuration.nix instead.
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
+
+  boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usb_storage" "usbhid" "sd_mod" "sr_mod" ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-amd" ];
+  boot.extraModulePackages = [ ];
+
+  fileSystems."/" =
+    { device = "/dev/disk/by-uuid/fce8da37-711c-4ca6-b53a-40efb6bbdfab";
+      fsType = "ext4";
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/825E-7E48";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+  
+  # Windows Boot Partition
+  fileSystems."/boot/EFI/windows" = 
+    {
+      device = "/dev/disk/by-uuid/6823-22BA";
+      fsType = "vfat";
+      options = [ "nofail" "noauto" ];
+    };
+
+  fileSystems."/home/nvme" =
+    { device = "/dev/disk/by-uuid/bd61e42b-16e9-4222-9075-d6318db371ca";
+      fsType = "ext4";
+    };
+
+  fileSystems."/home/ssd" =
+    { device = "/dev/disk/by-uuid/4ecb3d2d-85b7-4f08-82a5-e32ff1801100";
+      fsType = "ext4";
+    };
+
+  fileSystems."/home/hdd" =
+    { device = "/dev/disk/by-uuid/5ee3390e-5e47-4794-953b-a6cde2a5f955";
+      fsType = "ext4";
+    };
+
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/1a7a0a79-784e-44fb-b4ba-72ed39ecc68a"; }
+    ];
+
+  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
+  # (the default) this is the recommended approach. When using systemd-networkd it's
+  # still possible to use this option, but it's recommended to use it in conjunction
+  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+  networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp12s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp13s0.useDHCP = lib.mkDefault true;
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+}
+
+
+=== modules/hosts/mars/default.nix ===
+{
+  meta = {
+    system = "x86_64-linux";
+    stable = false;
+  };
+
+  module = { lib, inputs, ... }: {
+    imports = [
+      ./hardware-configuration.nix
+    ];
+
+    system.stateVersion = "26.05";
+    
+    myFeatures = {
+      core.enable = true;
+      shell.enable = true;
+      core.secureboot.enable = true;
+      core.security = {
+        enable = true;
+        useAppArmor = true;
+      };
+      core.lix.enable = true;
+      hardware = {
+        amd.enable = true;
+        nvidia = {
+          enable = true;
+          open = false;
+          beta = true;
+        };
+        dualboot.enable = true;
+        bluetooth.enable = true;
+      };
+      systems = {
+        presets.gruvboxNiri.enable = true;
+        displayManager.manager = "tuigreet";
+      };
+      programs = {
+        ghostty.enable = true;
+        gaming.enable = true;
+        firefox.enable = true;
+        fastfetch.enable = true;
+        helix.enable = true;
+        media.enable = true;
+        social.enable = true;
+        obs.enable = true;
+        stylePackages.enable = true;
+        bitwarden.enable = true;
+        davinci.enable = true;
+        anytype.enable = true;
+      };
+      services = {
+        audio.enable = true;
+        flatpak.enable = true;
+        printing.enable = true;
+        xdgPortals.enable = true;
+        udisks2.enable = true;
+        networking = {
+          enable = true;
+          tailscale.enable = true;
+        };
+        streaming = {
+          sunshine = {
+            enable = true;
+            port = 48000;
+          };
+        };
+      };
+    };
+  };
+}
+
+
+=== modules/hosts/shared/disko-standard.nix ===
+{ lib, inputs, ... }:
+{
+  imports = [ inputs.disko.nixosModules.disko ];
+  disko.devices = {
+    disk.main = {
+      type = "disk";
+      device = lib.mkDefault "/dev/nvme0n1";
+      content = {
+        type = "gpt";
+        partitions = {
+          ESP = {
+            size = "512M";
+            type = "EF00";
+            content = {
+              type = "filesystem";
+              format = "vfat";
+              mountpoint = "/boot";
+              mountOptions = [ "umask=0077" ];
+            };
+          };
+          luks = {
+            size = "100%";
+            content = {
+              type = "luks";
+              name = "crypted";
+              content = {
+                type = "btrfs";
+                extraArgs = [ "-f" ];
+                subvolumes = {
+                  "/root" = {
+                    mountpoint = "/mnt-root"; # This is your fallback root
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/nix" = {
+                    mountpoint = "/nix";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/persist" = {
+                    mountpoint = "/persist";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+    nodev."/" = {
+      fsType = "tmpfs";
+      mountOptions = [ "size=4G" "mode=755" ];
+    };
+  };
+}
+
+
+=== modules/hosts/shared/hardware.nix ===
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ];
+
+  boot = {
+    initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "sdhci_pci" ]; #
+    initrd.kernelModules = [ ];
+    kernelModules = [ "kvm-intel" ]; #
+    extraModulePackages = [ ]; #
+  };
+
+  # CPU/Platform Specifics
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux"; #
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware; #
+}
+
+
+=== modules/hosts/phobos/default.nix ===
+{
+  # NO FUNCTION WRAPPER AT THE TOP.
+  # This makes 'meta' a top-level attribute that 'import' can see instantly.
+  meta = {
+    system = "aarch64-darwin";
+    stable = false;
+  };
+
+  module =
+    { pkgs, lib, ... }:
+    {
+      system.stateVersion = 5;
+      system.primaryUser = "apollo";
+
+      myFeatures = {
+        core = {
+          enable = true;
+          lix.enable = true;
+          nix-settings.enable = true;
+          ssh.enable = true;
+          users = {
+            enable = true;
+            usernames = [ "apollo" ];
+          };
+        };
+        darwin = {
+          core.enable = true;
+          homebrew.enable = true;
+        };
+        shell.enable = true;
+        programs = {
+          fastfetch.enable = true;
+          helix.enable = true;
+        };
+        systems = {
+          stylix = {
+            enable = true;
+            gruvbox.enable = true;
+          };
+        };
+        services.networking.tailscale.enable = true;
+      };
+    };
+}
+
+
+=== modules/hosts/default.nix ===
+# hosts/default.nix
+{
+  lib,
+  inputs,
+  globalModules,
+}:
+
+let
+  hostDirs = lib.attrNames (
+    lib.filterAttrs (name: type: type == "directory" && name != "shared") (builtins.readDir ./.)
+  );
+
+  getPkgInput = isStable: if isStable then inputs.nixpkgs-stable else inputs.nixpkgs-unstable;
+
+  mkHost =
+    name:
+    let
+      hostData = import ./${name}/default.nix;
+      # Extract metadata from the host's 'meta' set
+      system = hostData.meta.system or "x86_64-linux";
+      isStable = hostData.meta.stable or false;
+
+      # Determine platform
+      isDarwin = lib.hasSuffix "-darwin" system;
+
+      pkgs-input = getPkgInput isStable;
+      builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
+
+      hmInput = if isStable then inputs.home-manager-stable else inputs.home-manager-unstable;
+      hmModule =
+        if isDarwin then hmInput.darwinModules.home-manager else hmInput.nixosModules.home-manager;
+    in
+    {
+      inherit isDarwin;
+      config = builder {
+        inherit system;
+        # Pass flags: isDarwin for Mac, isTotal for both
+        specialArgs = {
+          inherit inputs isStable isDarwin;
+          isTotal = true;
+        };
+        modules = globalModules ++ [
+          (hostData.module or { })
+          hmModule
+          {
+            networking.hostName = name;
+            nixpkgs.config.allowUnfree = true;
+          }
+        ];
+      };
+    };
+
+  allHosts = lib.genAttrs hostDirs (name: mkHost name);
+in
+{
+  nixosConfigurations = lib.mapAttrs (n: v: v.config) (lib.filterAttrs (n: v: !v.isDarwin) allHosts);
+
+  darwinConfigurations = lib.mapAttrs (n: v: v.config) (lib.filterAttrs (n: v: v.isDarwin) allHosts);
+}
+
+
+=== modules/hardware/intel.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.hardware.intel;
+in
+{
+  options.myFeatures.hardware.intel.enable = lib.mkEnableOption "Intel Graphics Support";
+
+  config = lib.mkIf cfg.enable {
+    myFeatures.hardware.graphics.enable = true;
+
+    # Ensure the kernel uses the correct driver for modern Intel iGPUs
+    boot.initrd.kernelModules = [ "i915" ];
+    services.xserver.videoDrivers = lib.mkDefault [ "modesetting" ];
+
+    hardware.graphics.extraPackages = with pkgs; [
+      intel-media-driver # Modern iHD driver for Broadwell+
+      intel-vaapi-driver # Older i965 driver (Keep for compatibility)
+      libvdpau-va-gl
+    ];
+
+    hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
+      intel-media-driver
+    ];
+
+    environment.variables = {
+      # Forces the use of the modern Intel Media Driver for VA-API
+      LIBVA_DRIVER_NAME = "iHD";
+    };
+  });
+}
+
+
+=== modules/hardware/hardware-branch.nix ===
+{ lib, config, ... }: # Added isDarwin [cite: 12]
+
+{
+  options.myFeatures.hardware = {};
+
+  # Wrap configuration in optionalAttrs to prevent reading 
+  # hardware attributes on macOS [cite: 13]
+  config = lib.optionalAttrs (!isDarwin) {
+    myFeatures.hardware.graphics.enable = lib.mkIf (
+      config.myFeatures.hardware.amd.gpu || 
+      config.myFeatures.hardware.nvidia.enable || 
+      config.myFeatures.hardware.intel.enable
+    ) true;
+  };
+}
+
+
+=== modules/hardware/nvidia.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.hardware.nvidia;
+in
+{
+  options.myFeatures.hardware.nvidia = {
+    enable = lib.mkEnableOption "Nvidia Proprietary Drivers";
+    beta = lib.mkEnableOption "Use Nvidia Beta Driver Channel";
+    open = lib.mkEnableOption "Use Open Source Kernel Modules (Modern)";
+    legacy = lib.mkEnableOption "Use Legacy Driver Branch (for P2000/Pascal)";
+  };
+
+  config = lib.mkIf cfg.enable {
+    myFeatures.hardware.graphics.enable = true;
+    services.xserver.videoDrivers = lib.mkBefore [ "nvidia" ];
+
+    boot = {
+      kernelParams = [
+        "nvidia-drm.modeset=1"
+        # Fixed lowercase syntax to avoid kernel ignore error
+        "nvidia.nvreg_preserve_video_memory_allocations=1" 
+        "nvidia-drm.fbdev=1"
+      ];
+      initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+    };
+    
+    hardware.nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true;
+      open = cfg.open;
+      nvidiaSettings = true;
+      forceFullCompositionPipeline = true;
+      
+      # Advanced package selection logic
+      package = let 
+        pkgs-nvidia = config.boot.kernelPackages.nvidiaPackages;
+      in if cfg.legacy then pkgs-nvidia.legacy_580 # Explicitly for your P2000
+         else if cfg.beta then pkgs-nvidia.beta 
+         else if cfg.open then pkgs-nvidia.open 
+         else pkgs-nvidia.stable; 
+    };
+
+    hardware.graphics.extraPackages = with pkgs; [
+      nvidia-vaapi-driver
+      libva-vdpau-driver
+      libvdpau-va-gl
+      vulkan-loader
+      vulkan-tools
+    ];
+
+    hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
+      nvidia-vaapi-driver
+    ];
+
+    environment.variables = {
+      WLR_NO_HARDWARE_CURSORS = "1";
+      NIXOS_OZONE_WL = "1";
+    };
+  });
+}
+
+
+=== modules/hardware/prime.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.hardware.nvidia.prime;
+in
+{
+  options.myFeatures.hardware.nvidia.prime = {
+    enable = lib.mkEnableOption "Nvidia PRIME Offload Mode (Laptop)";
+    intelBusId = lib.mkOption { type = lib.types.str; default = "PCI:0:2:0"; };
+    nvidiaBusId = lib.mkOption { type = lib.types.str; default = "PCI:1:0:0"; };
+  };
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {
+    myFeatures.hardware.nvidia.enable = lib.mkDefault true;
+
+    hardware.nvidia.prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+      intelBusId = cfg.intelBusId;
+      nvidiaBusId = cfg.nvidiaBusId;
+    };
+
+    environment.systemPackages = [
+      (pkgs.writeShellScriptBin "nvidia-offload" ''
+        export __NV_PRIME_RENDER_OFFLOAD=1
+        export __NV_PRIME_RENDER_OFFLOAD_HANDLER=nvidia
+        export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        export __EGL_VENDOR_LIBRARY_FILENAMES=/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json
+        export __VK_LAYER_NV_optimus=NVIDIA_only
+        exec "$@"
+      '')
+    ];
+  });
+}
+
+
+=== modules/hardware/battery.nix ===
+{ config, lib, pkgs, ... }: # <-- ADDED isDarwin
+
+let
+  cfg = config.myFeatures.hardware.battery;
+  
+  startThreshold = if cfg.fullCharge then "95" else "75";
+  stopThreshold = if cfg.fullCharge then "100" else "80";
+
+  set-battery-thresholds = pkgs.writeShellScriptBin "set-battery-thresholds" ''
+    sleep 2
+    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s ST 0 ${startThreshold}
+    ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s SP 0 ${stopThreshold}
+  '';
+in
+{
+  # --- OPTIONS ---
+  options.myFeatures.hardware.battery = {
+    enable = lib.mkEnableOption "ThinkPad Power Management";
+    fullCharge = lib.mkOption { 
+      type = lib.types.bool; 
+      default = false;
+      description = "If false, caps charge at 80% to preserve battery health.";
+    };
+    bluetooth = { 
+      enable = lib.mkOption { 
+        type = lib.types.bool;
+        default = false; 
+        description = "Manage Bluetooth power states based on AC/Battery.";
+      }; 
+    };
+    aggressive = lib.mkOption { 
+      type = lib.types.bool; 
+      default = false;
+      description = "Enable experimental kernel tweaks for maximum savings.";
+    };
+  };
+
+  # --- CONFIG ---
+  # SHIELDED: This entire block vanishes when building for macOS
+  config = lib.mkIf cfg.enable {
+    # 0. Kernel Requirements
+    boot.kernelModules = [ "acpi_call" ];
+    boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
+
+    # 1. CPU Management
+    services.auto-cpufreq.enable = true;
+    services.auto-cpufreq.settings = {
+      charger = { governor = "performance"; turbo = "always"; };
+      battery = { governor = "powersave"; turbo = "never"; };
+    };
+
+    # 2. Battery Thresholds
+    systemd.services.battery-thresholds = {
+      description = "Set ThinkPad battery charge thresholds";
+      after = [ "multi-user.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${set-battery-thresholds}/bin/set-battery-thresholds";
+        RemainAfterExit = true;
+      };
+    };
+
+    # 3. Explicit Hardware Control & Conflict Resolution
+    services.tlp.enable = lib.mkForce false;
+    services.power-profiles-daemon.enable = lib.mkForce false;
+
+    boot.kernelParams = [ 
+      "mem_sleep_default=deep"
+      "usbcore.autosuspend=-1"
+    ] ++ (lib.optionals cfg.aggressive [
+      "pcie_aspm=force"
+      "workqueue.power_efficient=Y" 
+      "nvme.noacpi=1"
+    ]);
+
+    # 4. Radio & Networking
+    networking.networkmanager.wifi.powersave = true;
+    hardware.bluetooth.powerOnBoot = lib.mkIf cfg.bluetooth.enable false;
+
+    services.udev.extraRules = ''
+      # ON AC: Max performance, Bluetooth ON
+      SUBSYSTEM=="power_supply", ATTR{online}=="1", \
+        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save off", \
+        RUN+="${pkgs.bluez}/bin/bluetoothctl power on", \
+        RUN+="${pkgs.networkmanager}/bin/nmcli radio wifi on"
+
+      # ON BATTERY: Power save Wifi, Bluetooth OFF
+      SUBSYSTEM=="power_supply", ATTR{online}=="0", \
+        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save on", \
+        RUN+="${pkgs.bluez}/bin/bluetoothctl power off"
+    '';
+
+    # 5. Sleep Stability
+    services.logind = {
+      settings.Login.HandleLidSwitch = "suspend";
+      settings.Login.HandleLidSwitchExternalPower = "lock";
+    };
+
+    # 6. System Packages
+    environment.systemPackages = with pkgs; [
+      tpacpi-bat
+      powertop
+      acpi
+      iw
+      bluez
+    ];
+  });
+}
+
+
+=== modules/hardware/bluetooth.nix ===
+{ config, lib, pkgs, inputs, ... }:
+
+let
+  cfg = config.myFeatures.hardware.bluetooth;
+in
+{
+  options.myFeatures.hardware.bluetooth = {
+    enable = lib.mkEnableOption "Enables bluetooth services";
+  };
+
+  config = lib.mkIf cfg.enable {
+    hardware.bluetooth = {
+      enable = true;
+    };
+    services.blueman.enable = true;
+    environment.systemPackages = [ pkgs.bluez ];
+  });
+}
+
+
+=== modules/hardware/trackpad.nix ===
+{ config, lib, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.hardware.trackpad;
+in
+{
+  options.myFeatures.hardware.trackpad.enable = lib.mkEnableOption "Trackpad Settings";
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {
+    services.libinput = {
+      enable = true;
+      touchpad = {
+        tapping = true;
+        naturalScrolling = true;
+        middleEmulation = true;
+      };
+    };
+  });
+}
+
+
+=== modules/hardware/fingerprint.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.hardware.fingerprint;
+in
+{
+  options.myFeatures.hardware.fingerprint.enable = lib.mkEnableOption "Fingerprint Sensor Support";
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {
+    services.fprintd.enable = true;
+    security.pam.services.sudo.fprintAuth = true;
+  });
+}
+
+
+=== modules/hardware/controllers.nix ===
+{
+  config,
+  lib,
+  pkgs,
+  isDarwin,
+  ...
+}:
+
+let
+  cfg = config.myFeatures.hardware.controllers;
+in
+{
+  # 1. DECLARE OPTIONS (Must always exist for the evaluator)
+  options.myFeatures.hardware.controllers = {
+    enable = lib.mkEnableOption "Game Controller Support";
+
+    xbox = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable Xbox (One/Series/360) controller drivers.";
+    };
+
+    playstation = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable PlayStation (DualShock/DualSense) support.";
+    };
+
+    nintendo = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable Nintendo Switch (Joy-Con/Pro Controller) support.";
+    };
+  };
+
+  # 2. DEFINE CONFIG (Shielded from macOS)
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      hardware.xone.enable = cfg.xbox;
+      hardware.xpadneo.enable = cfg.xbox;
+
+      services.udev.extraRules = lib.mkIf cfg.playstation ''
+        KERNEL=="hidraw*", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0ce6", MODE="0660", TAG+="uaccess"
+        KERNEL=="hidraw*", KERNELS=="*054C:0CE6*", MODE="0660", TAG+="uaccess"
+      '';
+
+      services.joycond.enable = cfg.nintendo;
+
+      environment.systemPackages =
+        with pkgs;
+        [
+          evtest
+          jstest-gtk
+        ]
+        ++ lib.optional cfg.xbox pkgs.linuxConsoleConfigs;
+    }
+  );
+}
+
+
+=== modules/hardware/graphics.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.hardware.graphics;
+in
+{
+  options.myFeatures.hardware.graphics.enable = lib.mkEnableOption "Universal Graphics Acceleration";
+
+  config = lib.mkIf cfg.enable {
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true; # Essential for Steam / TF2
+      
+      extraPackages = with pkgs; [
+        # Vulkan Core
+        vulkan-loader
+        vulkan-headers
+        vulkan-tools
+        vulkan-validation-layers
+        
+        # General Hardware Acceleration
+        mesa
+        libva
+        libvdpau-va-gl
+      ];
+
+      extraPackages32 = with pkgs.pkgsi686Linux; [ 
+        libva
+        mesa 
+      ];
+    };
+
+    # Basic environment for Wayland/Niri
+    environment.variables = {
+      # Help apps find the right drivers
+      XDG_SESSION_TYPE = "wayland";
+    };
+  });
+}
+
+
+=== modules/hardware/amd.nix ===
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.myFeatures.hardware.amd;
+in
+{
+  options.myFeatures.hardware.amd = {
+    # Set to false by default to prevent accidental driver loading
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable AMD CPU Support (P-State/Microcode)";
+    };
+    gpu = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable AMD GPU Support (amdgpu drivers)";
+    };
+  };
+
+  # mkMerge takes a LIST of sets.
+  config = lib.mkMerge [
+    
+    # 1. CPU Logic (Shielded for Linux only)
+    (lib.mkIf cfg.enable {
+      hardware.cpu.amd.updateMicrocode = true;
+      boot.kernelParams = [ "amd_pstate=active" ];
+    })
+
+    # 2. GPU Logic (Shielded for Linux only)
+    (lib.mkIf cfg.gpu {
+      myFeatures.hardware.graphics.enable = true;
+      boot.initrd.kernelModules = [ "amdgpu" ];
+      services.xserver.videoDrivers = [ "amdgpu" ];
+
+      hardware.graphics.extraPackages = with pkgs; [
+        amdvlk
+        rocmPackages.clr
+        libva-utils
+      ];
+
+      environment.variables.AMD_VULKAN_ICD = "RADV";
+    })
+    
+  ];
+}
+
+
+=== modules/hardware/dualboot.nix ===
+{ config, lib, pkgs, inputs, ... }: # <-- Added isDarwin here
+
+let
+  # 1. Setup a shortcut to your feature's config
+  cfg = config.myFeatures.hardware.dualboot;
+in
+{
+  # --- OPTIONS ---
+  options.myFeatures.hardware.dualboot = {
+    enable = lib.mkEnableOption "Enables Windows Dualboot on Mars";
+  };
+
+  # --- CONFIG ---
+  # Shield the payload from macOS using optionalAttrs
+  config = lib.mkIf cfg.enable {
+    boot.loader.limine = {
+      extraEntries = ''
+        /Windows
+          protocol: efi_chainload
+          image_path: guid(46ad5651-bf48-40a1-8a92-a8a1c377e009):/EFI/Microsoft/Boot/bootmgfw.efi
+      '';
+    };
+  });
+}
+
+
+=== modules/hardware/wifi.nix ===
+{ config, lib, pkgs, ... }: # <-- Add isDarwin
+
+let
+  cfg = config.myFeatures.hardware.wifi;
+in
+{
+  options.myFeatures.hardware.wifi = {
+    enable = lib.mkEnableOption "Enables Wifi Services";
+  };
+
+  # Shield everything
+  config = lib.mkIf cfg.enable {  
+    networking.networkmanager = {
+      enable = true;
+     };
+   });
+}

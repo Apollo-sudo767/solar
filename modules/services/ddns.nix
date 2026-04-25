@@ -1,4 +1,4 @@
-{ config, lib, isDarwin, ... }: # Added isDarwin
+{ config, lib, ... }: # Added pkgs.stdenv.isDarwin
 
 let
   cfg = config.myFeatures.services.ddns;
@@ -14,12 +14,12 @@ in
   };
 
   # Shield the Linux-only Cloudflare service from macOS
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     services.cloudflare-dyndns = {
       enable = true;
       inherit (cfg) domains;
       # Point to your manually created token file
       apiTokenFile = "/var/lib/secrets/cloudflare-token";
     };
-  });
+  };
 }

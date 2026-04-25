@@ -1,4 +1,4 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.myFeatures.programs.anytype;
@@ -10,7 +10,7 @@ in
     { environment.systemPackages = [ pkgs.anytype ]; }
 
     # Shield the Systemd service from macOS
-    (lib.optionalAttrs (!isDarwin) {
+    {
       systemd.user.services.anytype-desktop-fix = {
         description = "Prevent Anytype from creating a conflicting local desktop file";
         wantedBy = [ "graphical-session.target" ];
@@ -20,6 +20,6 @@ in
           RemainAfterExit = true;
         };
       };
-    })
+    }
   ]);
 }

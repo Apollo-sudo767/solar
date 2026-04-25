@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, isDarwin, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.hardware.bluetooth;
@@ -8,11 +14,11 @@ in
     enable = lib.mkEnableOption "Enables bluetooth services";
   };
 
-  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+  config = lib.mkIf cfg.enable {
     hardware.bluetooth = {
       enable = true;
     };
     services.blueman.enable = true;
     environment.systemPackages = [ pkgs.bluez ];
-  });
+  };
 }

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.core.shell;
@@ -8,12 +13,12 @@ in
   options.myFeatures.core.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ 
-      pkgs.eza 
+    environment.systemPackages = [
+      pkgs.eza
       pkgs.fzf
       pkgs.starship
     ];
-    
+
     programs.zsh.enable = true;
 
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
@@ -23,7 +28,7 @@ in
         settings = {
           add_newline = false;
           format = "$directory$git_branch$character";
-          
+
           # Clean Gruvbox Directory
           directory = {
             style = "bold fg:214"; # Gruvbox Orange
@@ -40,7 +45,7 @@ in
           # Character symbols (➜)
           character = {
             success_symbol = "[➜](bold fg:108)"; # Gruvbox Aqua
-            error_symbol = "[➜](bold fg:167)";   # Gruvbox Red
+            error_symbol = "[➜](bold fg:167)"; # Gruvbox Red
           };
 
           # Fixed Palette (Underscores only, no hyphens)
@@ -73,7 +78,7 @@ in
         enableCompletion = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
-          
+
         shellAliases = {
           # The Seeding Command: RAM-only, vanishes on reboot
           seed = "export BW_SESSION=$(bw unlock --raw) && mkdir -p /run/user/$(id -u)/sops && bw get item 'Solar Age Master' | jq -r '.notes' > /run/user/$(id -u)/sops/keys.txt && chmod 600 /run/user/$(id -u)/sops/keys.txt";
@@ -84,6 +89,7 @@ in
           # Use your host variable for easy rebuilds
           nrs = "sudo nixos-rebuild switch --flake .#${host}";
           nrb = "sudo nixos-rebuild boot --flake .#${host}";
+          drs = "sudo darwin-rebuild switch --flake .#${host}";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";
@@ -96,7 +102,7 @@ in
         initContent = ''
           # Ensure Starship initializes correctly
           eval "$(starship init zsh)"
-  
+
           # General Shell Prefs
           export EDITOR=helix
           # ... the rest of your init code

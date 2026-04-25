@@ -1,4 +1,10 @@
-{ config, lib, pkgs, isDarwin, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  isDarwin,
+  ...
+}:
 
 {
   options.myFeatures.darwin.core = {
@@ -6,7 +12,7 @@
   };
 
   config = lib.mkIf (config.myFeatures.darwin.core.enable && isDarwin) {
-    
+
     # CRITICAL: Tell nix-darwin to let Determinate handle the Nix daemon
     nix.enable = false;
 
@@ -19,18 +25,18 @@
         autohide = true;
         show-recents = false;
         mru-spaces = false;
-        orientation = "bottom";
+        orientation = "right";
       };
 
       finder = {
         AppleShowAllExtensions = true;
         ShowPathbar = true;
-        FXPreferredViewStyle = "clmv"; 
+        FXPreferredViewStyle = "clmv";
       };
 
       NSGlobalDomain = {
-        AppleInterfaceStyle = "Dark"; 
-        KeyRepeat = 2; 
+        AppleInterfaceStyle = "Dark";
+        KeyRepeat = 2;
         InitialKeyRepeat = 15;
       };
     };

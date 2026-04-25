@@ -13,21 +13,13 @@
         trusted-public-keys = [ "niri.cachix.org-1:Wv0Om607Z5KVzEDGyz69m0shV6vba6Kndf6966fS38Y=" ];
       };
       
-      # Automatic Garbage Collection
-      gc = lib.mkMerge [
-        {
-          automatic = true;
-          options = "--delete-older-than 7d";
-        }
-        # Linux-specific settings
-        (lib.optionalAttrs (!isDarwin) {
-          dates = "weekly";
-        })
-        # Darwin-specific settings
-        (lib.optionalAttrs isDarwin {
-          interval = { Weekday = 0; Hour = 0; Minute = 0; }; 
-        })
-      ];
+      # FIX: Only enable Nix-managed GC on Linux.
+      # Determinate Systems manages the Nix store on your Mac.
+      gc = lib.mkIf (!isDarwin) {
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 7d";
+      };
     };
 
     # Allow unfree packages

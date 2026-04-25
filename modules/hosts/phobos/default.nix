@@ -21,6 +21,10 @@
           usernames = [ "apollo" ];
         };
       };
+      darwin = {
+        core.enable = true;
+        homebrew.enable = true;
+      };
       shell.enable = true;
       programs = {
         fastfetch.enable = true;

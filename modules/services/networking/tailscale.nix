@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }: # Added isDarwin [cite: 208]
 
 let
   cfg = config.myFeatures.services.networking.tailscale;
@@ -8,13 +8,13 @@ in
     enable = lib.mkEnableOption "Tailscale Mesh VPN";
   };
 
-  config = lib.mkIf cfg.enable {
-    services.tailscale.enable = true;
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    { services.tailscale.enable = true; }
     
-    # Standard Solar Practice: Trust the tailscale interface
-    networking.firewall.trustedInterfaces = [ "tailscale0" ];
-    
-    # Allow the Tailscale UDP port through the firewall
-    networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
-  };
+    # Shield firewall rules from macOS [cite: 211]
+    (lib.optionalAttrs (!isDarwin) {
+      networking.firewall.trustedInterfaces = [ "tailscale0" ];
+      networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+    })
+  ]);
 }

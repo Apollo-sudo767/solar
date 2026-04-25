@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 {
   options.myFeatures.core.nix-settings.enable = lib.mkEnableOption "Core Nix flake and optimization settings";
@@ -14,20 +14,23 @@
       };
       
       # Automatic Garbage Collection
-      gc = {
-        automatic = true;
-        dates = "weekly";
-        options = "--delete-older-than 7d";
-      };
+      gc = lib.mkMerge [
+        {
+          automatic = true;
+          options = "--delete-older-than 7d";
+        }
+        # Linux-specific settings
+        (lib.optionalAttrs (!isDarwin) {
+          dates = "weekly";
+        })
+        # Darwin-specific settings
+        (lib.optionalAttrs isDarwin {
+          interval = { Weekday = 0; Hour = 0; Minute = 0; }; 
+        })
+      ];
     };
 
-    programs.ssh.extraConfig = ''
-    Host github.com
-      IdentityFile /etc/ssh/ssh_host_ed25519_key
-      User git
-    '';
-
-    # Allow unfree packages (like Nvidia drivers or Steam)
+    # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
   };
 }

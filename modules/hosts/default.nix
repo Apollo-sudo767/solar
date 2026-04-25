@@ -1,7 +1,6 @@
 { lib, inputs, globalModules }:
 
 let
-  # Scan for host folders, ignoring 'shared'
   hostDirs = lib.attrNames (lib.filterAttrs (name: type: 
     type == "directory" && name != "shared"
   ) (builtins.readDir ./.));
@@ -10,52 +9,43 @@ let
   
   mkHost = name: 
     let
-      # Import the split file
       hostFile = import ./${name}/default.nix;
+      # Debug: This will print the detected system to your console
+      system = hostFile.meta.system or hostFile.system or "x86_64-linux";
+      _debug = builtins.trace "Host: ${name} | System: ${system}" system; 
       
-      # Extract the metadata block
-      meta = hostFile.meta or { system = "x86_64-linux"; stable = false; };
+      isStable = hostFile.meta.stable or hostFile.stable or false;
+      isDarwin = lib.hasSuffix "-darwin" system;
       
-      # Extract the configuration block
-      hostModule = hostFile.module;
-      
-      isDarwin = lib.hasSuffix "-darwin" meta.system;
-      pkgs-input = getPkgInput meta.stable;
-
+      pkgs-input = getPkgInput isStable;
       builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
+      
       hmModule = if isDarwin 
         then inputs.home-manager-unstable.darwinModules.home-manager 
-        else (if meta.stable then inputs.home-manager-stable else inputs.home-manager-unstable).nixosModules.home-manager;
+        else (if isStable then inputs.home-manager-stable else inputs.home-manager-unstable).nixosModules.home-manager;
     in
-    builder {
-      system = meta.system;
-      specialArgs = { 
-        inherit inputs isDarwin;
-        isStable = meta.stable; 
-        pkgs-stable = import inputs.nixpkgs-stable { 
-          system = meta.system;
-          config.allowUnfree = true; 
-        };
+    {
+      inherit isDarwin;
+      config = builder {
+        inherit system;
+        specialArgs = { inherit inputs isStable isDarwin; };
+        modules = globalModules ++ [
+          (hostFile.module or { }) 
+          hmModule
+          {
+            networking.hostName = name;
+            nixpkgs.config.allowUnfree = true;
+          }
+        ];
       };
-      modules = globalModules ++ [
-        hostModule # We pass ONLY the module block here, not the whole file!
-        hmModule
-        ({
-          networking.hostName = name;
-          nixpkgs.config.allowUnfree = true;
-        } // lib.optionalAttrs isDarwin {
-          networking.computerName = name;
-          networking.localHostName = name;
-        })
-      ];
     };
+
+  allHosts = lib.genAttrs hostDirs (name: mkHost name);
 in
 {
-  # Build NixOS branches (filter by checking the meta block)
-  nixosConfigurations = lib.filterAttrs (n: v: !lib.hasSuffix "-darwin" ((import ./${n}/default.nix).meta.system or "")) 
-    (lib.genAttrs hostDirs (name: mkHost name));
+  nixosConfigurations = lib.mapAttrs (n: v: v.config) 
+    (lib.filterAttrs (n: v: !v.isDarwin) allHosts);
 
-  # Build Mac branches (filter by checking the meta block)
-  darwinConfigurations = lib.filterAttrs (n: v: lib.hasSuffix "-darwin" ((import ./${n}/default.nix).meta.system or "")) 
-    (lib.genAttrs hostDirs (name: mkHost name));
+  darwinConfigurations = lib.mapAttrs (n: v: v.config) 
+    (lib.filterAttrs (n: v: v.isDarwin) allHosts);
 }

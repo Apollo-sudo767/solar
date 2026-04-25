@@ -1,17 +1,17 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.services.servers.minecraft.vanilla;
 in
 {
-  imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
+  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
 
   options.myFeatures.services.servers.minecraft.vanilla = {
     enable = lib.mkEnableOption "Minecraft Vanilla+ (Terralith/Distant Horizons)";
     port = lib.mkOption { type = lib.types.port; default = 25565; };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
     services.minecraft-servers = {
@@ -29,5 +29,5 @@ in
     };
 
     networking.firewall.allowedTCPPorts = [ cfg.port ];
-  };
+  });
 }

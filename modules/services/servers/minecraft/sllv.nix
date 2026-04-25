@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.services.servers.minecraft.sllv;
@@ -228,8 +228,7 @@ let
   };
 in
 {
-  imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
-
+  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
   options.myFeatures.services.servers.minecraft.sllv = {
     enable = lib.mkEnableOption "Minecraft MCA Fabric Server (1.21.1)";
     port = lib.mkOption {
@@ -238,7 +237,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
     services.haveged.enable = true;
@@ -303,5 +302,5 @@ in
 
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
-  };
+  });
 }

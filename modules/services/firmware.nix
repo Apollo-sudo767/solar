@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, isDarwin, ... }: # Added isDarwin
 
 let
   cfg = config.myFeatures.services.firmware;
@@ -9,8 +9,8 @@ in
   };
 
   # --- CONFIG ---
-  # This is the "payload" that only runs if 'enable' is true
-  config = lib.mkIf cfg.enable {
+  # Shield the Linux-only firmware service from the macOS evaluator
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     services.fwupd.enable = true;
-  };
+  });
 }

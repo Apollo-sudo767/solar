@@ -1,5 +1,5 @@
 # modules/default.nix
-{ lib, isDarwin ? false, ... }:
+{ lib, isDarwin, ... }:
 
 let
   getNixFiles = dir:
@@ -10,7 +10,8 @@ let
       let path = "${toString dir}/${name}"; in
       if type == "directory" then
         if name == "hosts" then []
-        else if name == "darwin" && !isDarwin then []
+        else if name == "darwin" && !isDarwin then [] 
+        else if name == "nixos" && isDarwin then []
         else getNixFiles path
       else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
         path
@@ -19,7 +20,7 @@ let
 in
 {
   imports = getNixFiles ./.;
-
-  # This ensures isDarwin is available to the 'config' block of every sub-module
-  _module.args = { inherit isDarwin; }; 
+  
+  # CRITICAL: This passes the boolean flag to every single imported file
+  _module.args = { inherit isDarwin; };
 }

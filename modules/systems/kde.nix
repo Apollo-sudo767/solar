@@ -1,17 +1,15 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
 
 let
   cfg = config.myFeatures.systems.kde;
 in
 {
-  options.myFeatures.systems.kde = {
-    enable = lib.mkEnableOption "KDE Plasma 6 Desktop";
-  };
+  options.myFeatures.systems.kde.enable = lib.mkEnableOption "KDE Plasma 6 Desktop";
 
-  config = lib.mkIf cfg.enable {
+  # Shield everything
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     services.xserver.enable = true; 
     services.desktopManager.plasma6.enable = true;
-
     programs.kde-pim.enable = false;
 
     environment.systemPackages = with pkgs; [
@@ -24,7 +22,6 @@ in
       kdePackages.qtstyleplugin-kvantum
     ]; 
 
-    # Ensure Plasma uses its specific portal
     xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ]; 
-  };
+  });
 }

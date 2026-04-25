@@ -1,22 +1,25 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.core.ssh;
-  # Points to your assets folder relative to this file
-  wallpaper = ../../assets/wallpapers/limine-bg.png;
 in
 {
   options.myFeatures.core.ssh = {
-    enable = lib.mkEnableOption "Limine Bootloader";
+    enable = lib.mkEnableOption "SSH Service";
   };
 
-  config = lib.mkIf cfg.enable {
-    services.openssh = {
-      enable = true;
-      settings = {
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # 1. Common configuration for both Mac and Linux
+    {
+      services.openssh.enable = true;
+    }
+
+    # 2. Linux-only configuration (Shielded from the Mac Evaluator)
+    (lib.optionalAttrs (!isDarwin) {
+      services.openssh.settings = {
         PermitRootLogin = "no";
         PasswordAuthentication = true;
       };
-    };
-  };
+    })
+  ]);
 }

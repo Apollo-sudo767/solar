@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, isDarwin, ... }: # Added isDarwin
 
 let
   cfg = config.myFeatures.services.networking;
@@ -8,9 +8,8 @@ in
     enable = lib.mkEnableOption "Core Networking Suite";
   };
 
-  # This base file can also hold general networking tweaks (DNS, etc.) 
-  # if you decide to add them later.
-  config = lib.mkIf cfg.enable {
+  # Shield the Linux-only NetworkManager from macOS
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     networking.networkmanager.enable = lib.mkDefault true;
-  };
+  });
 }

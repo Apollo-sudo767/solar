@@ -1,4 +1,5 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
+
 let
   cfg = config.myFeatures.hardware.wifi;
 in
@@ -7,9 +8,10 @@ in
     enable = lib.mkEnableOption "Enables Wifi Services";
   };
 
-  config = lib.mkIf cfg.enable {  
+  # Shield everything
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {  
     networking.networkmanager = {
       enable = true;
      };
-   };
+   });
 }

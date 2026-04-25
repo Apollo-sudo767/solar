@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, isDarwin, ... }: # Added isDarwin
 
 let
   cfg = config.myFeatures.services.networking.cloudflare;
@@ -12,7 +12,6 @@ in
     };
     credentialsFile = lib.mkOption {
       type = lib.types.path;
-      # Recommended to use a path that sops-nix can provide
       default = "/var/lib/cloudflare/tunnel-creds.json"; 
       description = "Local path to the tunnel JSON credentials";
     };
@@ -23,16 +22,16 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  # Shield the NixOS-only service from the macOS evaluator
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     services.cloudflared = {
       enable = true;
       tunnels."${cfg.tunnelId}" = {
         inherit (cfg) credentialsFile;
-        # Map your domains attribute set into the list format cloudflared expects
         ingress = (lib.mapAttrsToList (hostname: service: {
           inherit hostname service;
         }) cfg.domains) ++ [ { default = "http_status:404"; } ];
       };
     };
-  };
+  });
 }

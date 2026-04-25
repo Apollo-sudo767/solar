@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.hardware.nvidia;
@@ -11,7 +11,7 @@ in
     legacy = lib.mkEnableOption "Use Legacy Driver Branch (for P2000/Pascal)";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     myFeatures.hardware.graphics.enable = true;
     services.xserver.videoDrivers = lib.mkBefore [ "nvidia" ];
 
@@ -57,5 +57,5 @@ in
       WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONE_WL = "1";
     };
-  };
+  });
 }

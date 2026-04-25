@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.core.secureboot;
@@ -8,7 +8,7 @@ in
     enable = lib.mkEnableOption "Native Limine Secure Boot";
   };
 
-  config = lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) {
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     # 1. Enable native Limine signing during rebuilds
     boot.loader.limine.secureBoot.enable = true;
 
@@ -18,5 +18,5 @@ in
 
     # 3. Add management tools
     environment.systemPackages = [ pkgs.sbctl ];
-  };
+  });
 }

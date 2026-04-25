@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.core.cli;
@@ -8,6 +8,7 @@ in
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
+      # --- Cross-Platform Tools (Mac & Linux) ---
       git
       helix
       btop
@@ -17,14 +18,16 @@ in
       ripgrep
       wget
       curl
-      sysstat
-      lm_sensors
       fastfetch
       tree
       jq
       nurl
       comma
-    ];
+    ] ++ (lib.optionals (!isDarwin) [
+      # --- Linux-Only Tools ---
+      lm_sensors
+      sysstat
+    ]);
 
     environment.variables.EDITOR = "hx";
     environment.variables.VISUAL = "hx";

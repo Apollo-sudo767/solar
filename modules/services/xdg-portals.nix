@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.services.xdgPortals;
@@ -8,7 +8,7 @@ in
     enable = lib.mkEnableOption "XDG Portals for Wayland/Desktop";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     xdg = {
       autostart.enable = true; 
       portal = {
@@ -27,5 +27,5 @@ in
         };
       };
     };
-  };
+  });
 }

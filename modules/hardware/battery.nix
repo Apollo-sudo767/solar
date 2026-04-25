@@ -1,18 +1,13 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }: # <-- ADDED isDarwin
 
 let
   cfg = config.myFeatures.hardware.battery;
   
-  # Define thresholds as strings to ensure clean interpolation
   startThreshold = if cfg.fullCharge then "95" else "75";
   stopThreshold = if cfg.fullCharge then "100" else "80";
 
-  # Battery threshold script for T14 Gen 2 hardware registers
   set-battery-thresholds = pkgs.writeShellScriptBin "set-battery-thresholds" ''
-    # Wait a moment for acpi_call to be fully initialized
     sleep 2
-    # BAT0 is the internal battery
-    # -s ST (Start Threshold), -s SP (Stop Threshold)
     ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s ST 0 ${startThreshold}
     ${pkgs.tpacpi-bat}/bin/tpacpi-bat -s SP 0 ${stopThreshold}
   '';
@@ -41,26 +36,20 @@ in
   };
 
   # --- CONFIG ---
-  config = lib.mkIf cfg.enable {
+  # SHIELDED: This entire block vanishes when building for macOS
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     # 0. Kernel Requirements
-    # Required backend for tpacpi-bat to talk to ThinkPad hardware registers
     boot.kernelModules = [ "acpi_call" ];
     boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
 
     # 1. CPU Management
     services.auto-cpufreq.enable = true;
     services.auto-cpufreq.settings = {
-      charger = {
-        governor = "performance";
-        turbo = "always";
-      };
-      battery = {
-        governor = "powersave";
-        turbo = "never";
-      };
+      charger = { governor = "performance"; turbo = "always"; };
+      battery = { governor = "powersave"; turbo = "never"; };
     };
 
-    # 2. Battery Thresholds (Manual hardware sets)
+    # 2. Battery Thresholds
     systemd.services.battery-thresholds = {
       description = "Set ThinkPad battery charge thresholds";
       after = [ "multi-user.target" ];
@@ -116,5 +105,5 @@ in
       iw
       bluez
     ];
-  };
+  });
 }

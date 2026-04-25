@@ -30,8 +30,6 @@ in
       userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
     in lib.genAttrs userList (name: {
 
-      home.stateVersion = dynamicVersion;
-
       programs.niri.settings = {
         layout = {
           gaps = 0;

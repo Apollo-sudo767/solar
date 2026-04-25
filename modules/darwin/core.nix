@@ -5,15 +5,16 @@
     enable = lib.mkEnableOption "Core macOS System Settings";
   };
 
-  # The 'isDarwin' variable comes directly from our host loader!
   config = lib.mkIf (config.myFeatures.darwin.core.enable && isDarwin) {
     
+    # CRITICAL: Tell nix-darwin to let Determinate handle the Nix daemon
+    nix.enable = false;
+
     # --- Security ---
-    security.pam.enableSudoTouchIdAuth = true;
+    security.pam.services.sudo_local.touchIdAuth = true;
 
     # --- System Defaults ---
     system.defaults = {
-      # Dock settings
       dock = {
         autohide = true;
         show-recents = false;
@@ -21,17 +22,15 @@
         orientation = "bottom";
       };
 
-      # Finder settings
       finder = {
         AppleShowAllExtensions = true;
         ShowPathbar = true;
-        FXPreferredViewStyle = "clmv"; # Column view
+        FXPreferredViewStyle = "clmv"; 
       };
 
-      # Global macOS UI settings
       NSGlobalDomain = {
-        AppleInterfaceStyle = "Dark"; # Force Dark Mode
-        KeyRepeat = 2; # Fast key repeat
+        AppleInterfaceStyle = "Dark"; 
+        KeyRepeat = 2; 
         InitialKeyRepeat = 15;
       };
     };

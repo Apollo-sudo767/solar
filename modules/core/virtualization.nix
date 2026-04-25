@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.core.virtualization;
@@ -10,7 +10,7 @@ in
     libvirt = lib.mkEnableOption "Libvirt/Virt-Manager";
   };
 
-  config = lib.mkIf ( cfg.enable && pkgs.stdenv.isLinux ) {
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     virtualisation = {
       docker.enable = cfg.docker;
       libvirtd.enable = cfg.libvirt;
@@ -22,5 +22,5 @@ in
         (lib.optional cfg.docker "docker") ++ 
         (lib.optional cfg.libvirt "libvirtd");
     });
-  };
+  });
 }

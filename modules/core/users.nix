@@ -1,8 +1,9 @@
-{ config, lib, pkgs, inputs, isStable ? true, ... }: # Note the ? true fallback here
+{ config, lib, pkgs, inputs, isStable ? true, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.core.users;
-  # Set a definite default if isStable is not passed correctly
+  
+  # Standardize on your new version targets
   dynamicVersion = if isStable then "25.11" else "26.05";
 in
 {
@@ -11,6 +12,7 @@ in
     usernames = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ "apollo" ];
+      description = "List of users to initialize on this host";
     };
   };
 
@@ -23,16 +25,33 @@ in
       backupFileExtension = "hm-backup";
       extraSpecialArgs = { inherit inputs; };
 
-      # Assign the mandatory stateVersion to every user
       users = lib.genAttrs cfg.usernames (name: {
         home.stateVersion = dynamicVersion;
       });
     };
-    users.users = lib.genAttrs cfg.usernames (name: {
-      isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "lp" ];
-      shell = pkgs.zsh;
-    });
 
+    # System-level user definitions
+    users.users = lib.genAttrs cfg.usernames (name: 
+      lib.mkMerge [
+        # 1. Attributes safe for BOTH macOS and Linux
+        {
+          shell = pkgs.zsh;
+          home = if isDarwin then "/Users/${name}" else "/home/${name}";
+        }
+
+        # 2. Attributes ONLY for Linux (Physically removed on Mac)
+        (lib.optionalAttrs (!isDarwin) {
+          isNormalUser = true;
+          extraGroups = [ 
+            "wheel" 
+            "networkmanager" 
+            "video" 
+            "audio" 
+            "docker" 
+            "lp" 
+          ];
+        })
+      ]
+    );
   };
 }

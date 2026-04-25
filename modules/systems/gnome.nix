@@ -1,23 +1,21 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
 
 let
   cfg = config.myFeatures.systems.gnome;
 in
 {
-  options.myFeatures.systems.gnome = {
-    enable = lib.mkEnableOption "GNOME Desktop Environment";
-  };
+  options.myFeatures.systems.gnome.enable = lib.mkEnableOption "GNOME Desktop Environment";
 
-  config = lib.mkIf cfg.enable {
+  # Shield everything
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     services.xserver = {
       enable = true;
       desktopManager.gnome.enable = true;
     };
     
-    # Exclude bloat to keep the system lean
     environment.gnome.excludePackages = with pkgs; [
       gnome-tour
       epiphany 
     ];
-  };
+  });
 }

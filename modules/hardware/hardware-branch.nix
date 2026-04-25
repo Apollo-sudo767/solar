@@ -1,12 +1,11 @@
-{ lib, config, ... }:
+{ lib, config, isDarwin, ... }: # Added isDarwin [cite: 12]
 
 {
-  # We leave options empty here to avoid the "already declared" error.
   options.myFeatures.hardware = {};
 
-  config = {
-    # This logic just ensures that if ANY GPU is enabled, the 
-    # base graphics.nix module is also triggered.
+  # Wrap configuration in optionalAttrs to prevent reading 
+  # hardware attributes on macOS [cite: 13]
+  config = lib.optionalAttrs (!isDarwin) {
     myFeatures.hardware.graphics.enable = lib.mkIf (
       config.myFeatures.hardware.amd.gpu || 
       config.myFeatures.hardware.nvidia.enable || 

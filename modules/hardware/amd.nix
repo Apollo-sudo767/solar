@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.hardware.amd;
@@ -18,15 +18,17 @@ in
     };
   };
 
+  # mkMerge takes a LIST of sets.
   config = lib.mkMerge [
-    # CPU Logic (For your 7800X3D)
-    (lib.mkIf cfg.enable {
+    
+    # 1. CPU Logic (Shielded for Linux only)
+    (lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
       hardware.cpu.amd.updateMicrocode = true;
       boot.kernelParams = [ "amd_pstate=active" ];
-    })
+    }))
 
-    # GPU Logic (Only for AMD Cards)
-    (lib.mkIf cfg.gpu {
+    # 2. GPU Logic (Shielded for Linux only)
+    (lib.mkIf cfg.gpu (lib.optionalAttrs (!isDarwin) {
       myFeatures.hardware.graphics.enable = true;
       boot.initrd.kernelModules = [ "amdgpu" ];
       services.xserver.videoDrivers = [ "amdgpu" ];
@@ -38,6 +40,7 @@ in
       ];
 
       environment.variables.AMD_VULKAN_ICD = "RADV";
-    })
+    }))
+    
   ];
 }

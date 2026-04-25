@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.services.streaming.sunshine;
@@ -14,13 +14,16 @@ in
   };
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
-    # 1. Platform-agnostic settings
+    # Cross-platform safe part
     {
-      environment.systemPackages = with pkgs; [ sunshine miniupnpc ];
+      environment.systemPackages = with pkgs; [
+        sunshine
+        miniupnpc
+      ];
     }
 
-    # 2. Linux-only settings (Guarded to prevent macOS from seeing 'boot')
-    (lib.mkIf pkgs.stdenv.isLinux {
+    # Linux-only part: HIDDEN from macOS evaluator to prevent 'boot' errors
+    (lib.optionalAttrs (!isDarwin) {
       services.sunshine = {
         enable = true;
         autoStart = true;
@@ -45,7 +48,10 @@ in
 
       services.avahi = {
         enable = true;
-        publish = { enable = true; userServices = true; };
+        publish = {
+          enable = true;
+          userServices = true;
+        };
       };
     })
   ]);

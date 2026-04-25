@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }: # <-- Add isDarwin
 
 let
   cfg = config.myFeatures.hardware.nvidia.prime;
@@ -10,8 +10,8 @@ in
     nvidiaBusId = lib.mkOption { type = lib.types.str; default = "PCI:1:0:0"; };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Ensure Nvidia is enabled if PRIME is enabled
+  # Shield everything
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
     myFeatures.hardware.nvidia.enable = lib.mkDefault true;
 
     hardware.nvidia.prime = {
@@ -33,5 +33,5 @@ in
         exec "$@"
       '')
     ];
-  };
+  });
 }

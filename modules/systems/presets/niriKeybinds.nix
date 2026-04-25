@@ -10,8 +10,7 @@ in
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: { config, ... }: {
       imports = [ inputs.niri.homeModules.niri ];
-      home.stateVersion = dynamicVersion;
-
+      
       programs.niri = {
         enable = true;
         package = pkgs.niri;

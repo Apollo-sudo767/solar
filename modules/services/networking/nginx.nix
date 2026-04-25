@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isDarwin, ... }:
 
 let
   cfg = config.myFeatures.services.nginx;
@@ -7,29 +7,26 @@ in {
     enable = lib.mkEnableOption "Nginx Reverse Proxy";
     domain = lib.mkOption {
       type = lib.types.str;
-      default = "pluto.local"; # Change this to your actual domain
+      default = "pluto.local";
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Open standard web ports in the firewall
-    networking.firewall.allowedTCPPorts = [ 80 443 ];
-
+  config = lib.mkIf cfg.enable (lib.optionalAttrs (!isDarwin) {
+    # ALL Linux-specific services must be inside this shield
     services.nginx = {
       enable = true;
       virtualHosts."${cfg.domain}" = {
         enableACME = true;
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://127.0.0.1:8080"; # Points to your Anytype Sync port
-          proxyWebsockets = true; # Needed for many modern sync services
+          proxyPass = "http://127.0.0.1:8080";
+          proxyWebsockets = true;
         };
       };
     };
 
-    # Automatically handle SSL certificate renewal
-    security.acme = {
-      acceptTerms = true;
-    };
-  };
+    security.acme.acceptTerms = true;
+
+    networking.firewall.allowedTCPPorts = [ 80 443 ];
+  });
 }

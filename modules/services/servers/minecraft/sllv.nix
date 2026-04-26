@@ -302,9 +302,9 @@ in
     };
 
     # Backups
-    services.borgbackup.jobs.minecraft = {
+    services.borgbackup.jobs.minecraft-sllv = {
       paths = [ "/srv/minecraft/sllv" ];
-      repo = "/mnt/backups/minecraft";
+      repo = "/mnt/backups/minecraft/sllv";
       encryption = {
         mode = "none";
       };

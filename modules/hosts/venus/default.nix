@@ -50,7 +50,7 @@
                 enable = true;
                 port = 25565;
               };
-              better-mc = {
+              texkit = {
                 enable = true;
                 port = 19132;
               };

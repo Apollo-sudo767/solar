@@ -40,16 +40,16 @@ in
         jvmOpts = "-Xmx8G -Xms4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
 
         symlinks = {
+          # Only 'mods' remains a symlink as it is never written to by the server
           "mods" = "${modpack}/mods";
-          # Removed "config" from here so it remains writable
-          "defaultconfigs" = "${modpack}/defaultconfigs";
-          "kubejs" = "${modpack}/kubejs";
         };
 
-        # Declaratively copy modpack configs into the writable directory
+        # Use 'files' to copy contents so the directories remain writable for NeoForge
         files = {
           "server-icon.png" = iconFile;
           "config" = "${modpack}/config";
+          "defaultconfigs" = "${modpack}/defaultconfigs";
+          "kubejs" = "${modpack}/kubejs";
         };
 
         serverProperties = {
@@ -61,7 +61,6 @@ in
       };
     };
 
-    # Systemd reliability
     systemd.services.minecraft-server-ftb-unstable = {
       unitConfig.StartLimitIntervalSec = lib.mkForce 0;
       serviceConfig = {
@@ -71,9 +70,9 @@ in
       };
     };
 
-    # Networking & Backups
     networking.firewall.allowedTCPPorts = [ cfg.port ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
+
     services.borgbackup.jobs.minecraft-ftb-unstable = {
       paths = [ "/srv/minecraft/ftb-unstable" ];
       repo = "/mnt/backups/minecraft/ftb-unstable";

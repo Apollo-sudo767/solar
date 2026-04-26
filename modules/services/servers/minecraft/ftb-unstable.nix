@@ -11,8 +11,7 @@ let
   iconFile = ../../../../assets/icons/ftb.png;
 
   modpack = pkgs.fetchzip {
-    url = "https://github.com/Apollo-sudo767/solar-modpacks/releases/download/ModPack/ftb-unstable-1.21.zip";
-    stripRoot = false;
+    url = "https://github.com/Apollo-sudo767/solar-modpacks/releases/download/ModPack/ftb-unstable-1.21-structured.zip";
     hash = "sha256-NM885zTCnSjZk33g5ybzM1+m3g/Et2llaB0txqLGVas=";
   };
 in
@@ -40,16 +39,13 @@ in
         jvmOpts = "-Xmx8G -Xms4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
 
         symlinks = {
-          # Only 'mods' remains a symlink as it is never written to by the server
           "mods" = "${modpack}/mods";
         };
 
-        # Use 'files' to copy contents so the directories remain writable for NeoForge
         files = {
           "server-icon.png" = iconFile;
           "config" = "${modpack}/config";
-          "defaultconfigs" = "${modpack}/defaultconfigs";
-          "kubejs" = "${modpack}/kubejs";
+          # defaultconfigs and kubejs removed as they are not in the source zip
         };
 
         serverProperties = {

@@ -50,7 +50,7 @@
                 enable = true;
                 port = 25565;
               };
-              texkit = {
+              ftb-unstable = {
                 enable = true;
                 port = 19132;
               };
@@ -60,7 +60,7 @@
             enable = true;
             domains = [
               "sllv.apollan.cc"
-              "survival.apollan.cc"
+              "ftb.apollan.cc"
               "factorio.apollan.cc"
               "terraria.apollan.cc"
             ];

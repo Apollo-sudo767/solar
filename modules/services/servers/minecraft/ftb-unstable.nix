@@ -7,19 +7,20 @@
 }:
 
 let
-  cfg = config.myFeatures.services.servers.minecraft.texkit;
-  iconFile = ../../../../assets/icons/texkit.png;
-
+  cfg = config.myFeatures.services.servers.minecraft.ftb-unstable;
+  iconFile = ../../../../assets/icons/ftb.png;
   modpack = pkgs.fetchzip {
-    url = "https://tekxit.lol/downloads/tekxit4/16.8.4Tekxit4Server.zip";
-    hash = "sha256-pzDFm5uejOKDDoEWbhQ3vdpV/WFlDpODi5j4gdkhIG4=";
+    url = "https://github.com/Apollo-sudo767/solar-modpacks/releases/download/ModPack/ftb-unstable-1.21.zip";
+    stripRoot = false;
+    # Updated with the 'got' hash from your console output
+    hash = "sha256-NM885zTCnSjZk33g5ybzM1+m3g/Et2llaB0txqLGVas=";
   };
 in
 {
   imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
-  options.myFeatures.services.servers.minecraft.texkit = {
-    enable = lib.mkEnableOption "Texkit 4 Fabric Server";
+  options.myFeatures.services.servers.minecraft.ftb-unstable = {
+    enable = lib.mkEnableOption "FTB Unstable 1.21 NeoForge Server";
     port = lib.mkOption {
       type = lib.types.port;
       default = 25565;
@@ -40,12 +41,12 @@ in
         systemd-socket.enable = true;
       };
 
-      servers.texkit = {
+      servers.ftb-unstable = {
         enable = true;
-        package = pkgs.minecraftServers.fabric-1_19_2;
+        package = pkgs.minecraftServers.neoforge-1_21;
 
-        # Solar Performance Tuning: Forge BMC4 needs ~10GB minimum
-        jvmOpts = "-Xmx2G -Xms6G -XX:+UseG1GC";
+        # Solar Performance Tuning for 1.21 NeoForge
+        jvmOpts = "-Xmx8G -Xms4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
 
         symlinks = {
           "mods" = "${modpack}/mods";
@@ -63,13 +64,13 @@ in
           online-mode = true;
           enforce-secure-profile = false;
           max-players = 10;
-          motd = "Solar | Texkit 4";
+          motd = "Solar | FTB Unstable 1.21";
         };
       };
     };
 
     # Systemd reliability overrides
-    systemd.services.minecraft-server-better-mc = {
+    systemd.services.minecraft-server-ftb-unstable = {
       unitConfig.StartLimitIntervalSec = lib.mkForce 0;
       serviceConfig = {
         Restart = "always";
@@ -80,13 +81,12 @@ in
       };
     };
 
-    services.borgbackup.jobs.minecraft-texkit = {
-      paths = [ "/srv/minecraft/texkit" ];
-      repo = "/mnt/backups/minecraft/texkit";
-      encryption = {
-        mode = "none";
-      };
-      compression = "auto,zstd"; # High compression, great for Tectonic world files
+    # Automated Borg Backups
+    services.borgbackup.jobs.minecraft-ftb-unstable = {
+      paths = [ "/srv/minecraft/ftb-unstable" ];
+      repo = "/mnt/backups/minecraft/ftb-unstable";
+      encryption.mode = "none";
+      compression = "auto,zstd";
       startAt = "daily";
     };
 

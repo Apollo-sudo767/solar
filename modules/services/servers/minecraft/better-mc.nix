@@ -11,7 +11,7 @@ let
 
   # Better MC 1.20.1 (Forge) - Example URL/Hash
   # Note: You should find the direct server-pack download URL from CurseForge/Modrinth
-  modpack = pkgs.fetchzip {
+  modpack = pkgs.fetchPackwizModpack {
     url = "https://cdn.modrinth.com/data/shFhR8Vx/versions/Ur9uoHH5/Better%20MC%20%5BFABRIC%5D%20-%20BMC2%20v26.5.mrpack";
     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Replace with actual hash
   };

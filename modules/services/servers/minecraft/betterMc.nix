@@ -37,7 +37,7 @@ in
       servers.better-mc = {
         enable = true;
         # Better MC 1.20.1 typically uses Forge
-        package = pkgs.forgeServers.forge-1_20_1;
+        package = pkgs.minecraftServers.fabric-1_20_1;
 
         # Standard Performance Flags for heavy modpacks
         jvmOpts = "-Xmx8G -Xms8G -XX:+UseG1GC -Djava.net.preferIPv4Stack=true";

@@ -44,7 +44,10 @@
         };
 
         platforms = {
-          styling.gruvboxNiri.enable = true;
+          styling = {
+            stylix.enable = true;
+            gruvboxNiri.enable = true;
+          };
           addons.displayManager.manager = "tuigreet";
         };
 

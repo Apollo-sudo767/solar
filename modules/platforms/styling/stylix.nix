@@ -9,7 +9,7 @@
 }:
 
 let
-  cfg = config.myFeatures.platforms.addons.stylix;
+  cfg = config.myFeatures.platforms.styling.stylix;
 in
 {
   imports = [
@@ -21,7 +21,7 @@ in
     )
   ];
 
-  options.myFeatures.platforms.addons.stylix = {
+  options.myFeatures.platforms.styling.stylix = {
     enable = lib.mkEnableOption "Universal Stylix Styling";
 
     scheme = lib.mkOption {

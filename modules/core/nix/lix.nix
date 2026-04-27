@@ -16,7 +16,9 @@ in
   # --- OPTIONS ---
   # This defines the "switches" you flip in your /hosts files
   options.myFeatures.core.nix.lix = {
-    enable = lib.mkEnableOption "Enables Lix in systems";
+    enable = lib.mkEnableOption "Enables Lix in systems" // {
+      default = lib.mkDefault true;
+    };
   };
 
   # --- CONFIG ---
@@ -33,6 +35,6 @@ in
       })
     ];
 
-    nix.package = pkgs.lixPackageSets.stable.lix;
+    nix.package = pkgs.lix;
   };
 }

@@ -22,11 +22,11 @@
       };
       platforms = {
         desktops.kde.enable = true;
-        addons = {
-          displayManager.manager = "sddm";
+        styling = {
           stylix.enable = true;
+          themes.forest.enable = true;
         };
-        styling.forest.enable = true;
+        addons.displayManager.manager = "sddm";
       };
       programs = {
         terminal = {

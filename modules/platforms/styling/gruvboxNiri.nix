@@ -13,7 +13,7 @@ in
       addons.waybar.enable = true;
       addons.swaybg.enable = true;
       addons.idle.enable = true;
-      styling.gruvbox.enable = true;
+      styling.themes.gruvbox.enable = true;
       styling.niriKeybinds.enable = true;
       addons.fuzzel.enable = true;
       addons.swaylock.enable = true;

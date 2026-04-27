@@ -18,6 +18,7 @@
           users.usernames = [ "hephaestus" ];
         };
         nix.lix.enable = true;
+        shell.shell-branch.enable = true;
       };
       platforms = {
         desktops.kde.enable = true;

@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isTotal,
+  isDarwin,
   ...
 }:
 
@@ -16,7 +18,7 @@ in
       enable = true;
       # Using mkDefault allows the base engine fallbacks to stay at lower priority
       scheme = lib.mkDefault "${pkgs.base16-schemes}/share/themes/nord.yaml";
-      wallpaper = lib.mkDefault ../../../../assets/wallpapers/forest.jpg;
+      wallpaper = lib.mkDefault ../../../assets/wallpapers/forest.jpg;
     };
   };
 }

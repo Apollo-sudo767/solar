@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.myFeatures.platforms.addons.waybar;
-  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.system.users.usernames;
 in {
   options.myFeatures.platforms.addons.waybar.enable = lib.mkEnableOption "waybar status bar";
 

@@ -11,7 +11,7 @@ in
   options.myFeatures.platforms.addons.swaybg.enable = lib.mkEnableOption "swaybg service";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
       systemd.user.services.swaybg = {
         Unit = {
           Description = "Wallpaper";

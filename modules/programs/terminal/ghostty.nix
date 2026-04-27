@@ -3,6 +3,8 @@
   lib,
   pkgs,
   inputs,
+  isTotal,
+  isDarwin,
   ...
 }:
 
@@ -16,7 +18,7 @@ in
     environment.systemPackages = [ pkgs.ghostty ];
 
     # FIX: Only map over the list of strings in .usernames
-    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
       programs.ghostty = {
         enable = true;
         enableZshIntegration = true;

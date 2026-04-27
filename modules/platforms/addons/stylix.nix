@@ -25,7 +25,7 @@ in
     enable = lib.mkEnableOption "Universal Stylix Styling";
 
     scheme = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
+      type = lib.types.nullOr (lib.types.either lib.types.str lib.types.path); # Allow both types
       default = null;
     };
 
@@ -47,8 +47,9 @@ in
             else
               pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
 
+          # FIX: Removed quotes and ${} to pass the path literal directly
           base16Scheme =
-            if (cfg.scheme != null) then cfg.scheme else "${pkgs.base16-schemes}/share/themes/nord.yaml";
+            if (cfg.scheme != null) then cfg.scheme else pkgs.base16-schemes + "/share/themes/nord.yaml";
 
           polarity = "dark";
 
@@ -59,7 +60,7 @@ in
             plymouth = {
               enable = true;
               logoAnimated = true;
-              logo = "${pkgs.nixos-icons}/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
+              logo = pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
             };
           };
         };

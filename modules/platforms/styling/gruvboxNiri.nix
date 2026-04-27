@@ -13,31 +13,27 @@ in
       addons.waybar.enable = true;
       addons.swaybg.enable = true;
       addons.idle.enable = true;
-      # This triggers the automatic theme preset
       styling.gruvbox.enable = true;
       styling.niriKeybinds.enable = true;
       addons.fuzzel.enable = true;
       addons.swaylock.enable = true;
     };
 
-    home-manager.users =
-      let
-        userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.system.users.usernames;
-      in
-      lib.genAttrs userList (name: {
-        programs.niri.settings = {
-          layout = {
-            gaps = 0;
-            focus-ring = {
-              enable = true;
-              width = 2;
-              # AUTOMATIC: Pulls from Stylix colors
-              active.color = "#${config.lib.stylix.colors.base0D}";
-              inactive.color = "#${config.lib.stylix.colors.base02}";
-            };
-            border.enable = false;
+    # Simplify the user generation logic
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+      programs.niri.settings = {
+        layout = {
+          gaps = 0;
+          focus-ring = {
+            enable = true;
+            width = 2;
+            # These only evaluate correctly once Stylix is enabled
+            active.color = "#${config.lib.stylix.colors.base0D}";
+            inactive.color = "#${config.lib.stylix.colors.base02}";
           };
+          border.enable = false;
         };
-      });
+      };
+    });
   };
 }

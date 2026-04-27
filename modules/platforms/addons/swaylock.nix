@@ -13,7 +13,7 @@ in
   options.myFeatures.platforms.addons.swaylock.enable = lib.mkEnableOption "swaylock screen locker";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
       programs.swaylock = {
         enable = true;
         package = pkgs.swaylock-effects;

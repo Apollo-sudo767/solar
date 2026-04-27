@@ -3,7 +3,7 @@
 let
   cfg = config.myFeatures.core.boot.boot;
   # Points to your assets folder relative to this file
-  wallpaperPath = ../../assets/wallpapers/limine-bg.png;
+  wallpaperPath = ../../../assets/wallpapers/limine-bg.png;
 in
 {
   options.myFeatures.core.boot.boot = {

@@ -14,7 +14,8 @@
     myFeatures.platforms.addons.stylix = {
       enable = true;
       scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
-      wallpaper = ../../../../assets/wallpapers/gruvbox.jpg;
+      # Correct Path Literal
+      wallpaper = ../../../assets/wallpapers/gruvbox.jpg;
     };
   };
 }

@@ -3,13 +3,14 @@
   lib,
   pkgs,
   isTotal,
+  isDarwin,
   ...
 }:
 
 let
   cfg = config.myFeatures.programs.terminal.fastfetch;
   # Filter to ensure we only target actual usernames
-  userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.users.usernames;
+  userList = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.system.users.usernames;
 in
 {
   options.myFeatures.programs.terminal.fastfetch = {

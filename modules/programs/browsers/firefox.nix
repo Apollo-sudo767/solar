@@ -69,7 +69,7 @@ in
     };
 
     # User-specific Home Manager configuration
-    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
       # FORCE the Stylix Home Manager module to load for this specific user
       stylix.targets.firefox.profileNames = [ name ];
 

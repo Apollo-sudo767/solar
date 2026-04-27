@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  isDarwin,
   ...
 }:
 
@@ -13,7 +12,7 @@ in
 {
   options.myFeatures.platforms.addons.noctalia-shell.enable = lib.mkEnableOption "Noctalia Shell (Wayland Shell)";
 
-  config = lib.mkIf (cfg.enable && !isDarwin) {
+  config = lib.mkIf cfg.enable {
     # Install the package globally
     environment.systemPackages = [ pkgs.noctalia-shell ];
 

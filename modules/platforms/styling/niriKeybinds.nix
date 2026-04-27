@@ -8,7 +8,7 @@ in
   options.myFeatures.platforms.styling.niriKeybinds.enable = lib.mkEnableOption "Apollo's Niri Keybinds";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: { config, ... }: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: { ... }: {
       imports = [ inputs.niri.homeModules.niri ];
       
       programs.niri = {

@@ -12,57 +12,71 @@
     system.stateVersion = "26.05";
     
     myFeatures = {
-      core.enable = true;
-      shell.enable = true;
-      core.secureboot.enable = true;
-      core.security = {
-        enable = true;
-        useAppArmor = true;
-      };
-      core.lix.enable = true;
-      hardware = {
-        amd.enable = true;
-        nvidia = {
+      core = {
+        system.core-branch.enable = true;
+        shell.shell-branch.enable = true;
+        boot.secureboot.enable = true;
+        security.security = {
           enable = true;
-          open = false;
-          beta = true;
+          useAppArmor = true;
         };
-        dualboot.enable = true;
-        bluetooth.enable = true;
+        nix.lix.enable = true;
       };
-      systems = {
-        presets.gruvboxNiri.enable = true;
-        displayManager.manager = "tuigreet";
+      hardware = {
+        cpu-gpu = {
+          amd.enable = true;
+          nvidia = {
+            enable = true;
+            open = false;
+            beta = true;
+          };
+        };
+        system.dualboot.enable = true;
+        peripherals.bluetooth.enable = true;
+      };
+      platforms = {
+        styling.gruvboxNiri.enable = true;
+        addons.displayManager.manager = "tuigreet";
       };
       programs = {
-        ghostty.enable = true;
-        gaming.enable = true;
-        firefox.enable = true;
-        fastfetch.enable = true;
-        helix.enable = true;
-        media.enable = true;
-        social.enable = true;
-        obs.enable = true;
-        stylePackages.enable = true;
-        bitwarden.enable = true;
-        davinci.enable = true;
-        anytype.enable = true;
+        terminal = {
+          ghostty.enable = true;
+          fastfetch.enable = true;
+          helix.enable = true;
+        };
+        media = {
+          gaming.enable = true;
+          media.enable = true;
+          obs.enable = true;
+          davinci.enable = true;
+        };
+        browsers.firefox.enable = true;
+        utilities = {
+          stylePackages.enable = true;
+          bitwarden.enable = true;
+          anytype.enable = true;
+          social.enable = true;
+        };
       };
       services = {
-        audio.enable = true;
-        flatpak.enable = true;
-        printing.enable = true;
-        xdgPortals.enable = true;
-        udisks2.enable = true;
-        networking = {
-          enable = true;
-          tailscale.enable = true;
-        };
-        streaming = {
+        multimedia = {
+          audio.enable = true;
           sunshine = {
             enable = true;
             port = 48000;
           };
+        };
+        system = {
+          flatpak.enable = true;
+          xdgPortals.enable = true;
+        };
+        hardware = {
+          printing.enable = true;
+          udisks2.enable = true;
+        };
+        networking = {
+          enable = true;
+          tailscale.enable = true;
         };
       };
     };

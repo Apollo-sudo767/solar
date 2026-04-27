@@ -14,30 +14,35 @@
 
       myFeatures = {
         core = {
-          enable = true;
-          lix.enable = true;
-          nix-settings.enable = true;
-          ssh.enable = true;
-          users = {
-            enable = true;
-            usernames = [ "apollo" ];
+          system = {
+            core-branch.enable = true;
+            users = {
+              enable = true;
+              usernames = [ "apollo" ];
+            };
           };
+          nix = {
+            lix.enable = true;
+            nix-settings.enable = true;
+          };
+          security.ssh.enable = true;
+          shell.shell-branch.enable = true;
         };
         darwin = {
-          core.enable = true;
-          homebrew.enable = true;
-        };
-        shell.enable = true;
-        programs = {
-          fastfetch.enable = true;
-          helix.enable = true;
-          gemini.enable = true;
-        };
-        systems = {
-          stylix = {
-            enable = true;
-            gruvbox.enable = true;
+          system = {
+            core.enable = true;
+            homebrew.enable = true;
           };
+        };
+        programs = {
+          terminal = {
+            fastfetch.enable = true;
+            helix.enable = true;
+            gemini.enable = true;
+          };
+        };
+        platforms = {
+          styling.gruvbox.enable = true;
         };
         services.networking.tailscale.enable = true;
       };

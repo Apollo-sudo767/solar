@@ -15,60 +15,74 @@
 
       myFeatures = {
         core = {
-          enable = true;
-          secureboot.enable = true;
-          security = {
+          system.core-branch.enable = true;
+          shell.shell-branch.enable = true;
+          boot.secureboot.enable = true;
+          security.security = {
             enable = true;
             useAppArmor = true;
           };
-          lix.enable = true;
+          nix.lix.enable = true;
         };
-        shell.enable = true;
 
         hardware = {
-          graphics.enable = true;
-          battery = {
-            enable = true;
-            fullCharge = false;
+          system.graphics.enable = true;
+          peripherals = {
+            battery = {
+              enable = true;
+              fullCharge = false;
+              bluetooth.enable = true;
+              aggressive = true;
+            };
             bluetooth.enable = true;
-            aggressive = true;
+            wifi.enable = true;
           };
-          bluetooth.enable = true;
-          controllers.enable = true;
-          trackpad.enable = true;
-          wifi.enable = true;
+          input = {
+            controllers.enable = true;
+            trackpad.enable = true;
+          };
         };
 
-        systems = {
-          presets.gruvboxNiri.enable = true;
-          displayManager.manager = "tuigreet";
+        platforms = {
+          styling.gruvboxNiri.enable = true;
+          addons.displayManager.manager = "tuigreet";
         };
 
         programs = {
-          ghostty.enable = true;
-          firefox.enable = true;
-          gaming.enable = true;
-          fastfetch = {
-            enable = true;
-            showBattery = true;
+          terminal = {
+            ghostty.enable = true;
+            fastfetch = {
+              enable = true;
+              showBattery = true;
+            };
+            helix.enable = true;
+            gemini.enable = true;
           };
-          helix.enable = true;
-          media.enable = true;
-          social.enable = true;
-          obs.enable = true;
-          bitwarden.enable = true;
-          stylePackages.enable = true;
-          anytype.enable = true;
-          gemini.enable = true;
+          browsers.firefox.enable = true;
+          media = {
+            gaming.enable = true;
+            media.enable = true;
+            obs.enable = true;
+          };
+          utilities = {
+            bitwarden.enable = true;
+            stylePackages.enable = true;
+            anytype.enable = true;
+            social.enable = true;
+          };
         };
 
         services = {
-          audio.enable = true;
-          flatpak.enable = true;
-          xdgPortals.enable = true;
-          printing.enable = true;
-          udisks2.enable = true;
-          firmware.enable = true;
+          multimedia.audio.enable = true;
+          system = {
+            flatpak.enable = true;
+            xdgPortals.enable = true;
+          };
+          hardware = {
+            printing.enable = true;
+            udisks2.enable = true;
+            firmware.enable = true;
+          };
           networking = {
             tailscale.enable = true;
           };

@@ -2,8 +2,6 @@
   config,
   lib,
   pkgs,
-  isTotal,
-  isDarwin,
   ...
 }:
 
@@ -11,28 +9,18 @@ let
   cfg = config.myFeatures.programs.terminal.gemini;
 in
 {
-  options.myFeatures.programs.terminal.gemini = {
-    enable = lib.mkEnableOption "Enables gemini-cli";
-
-    package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.gemini-cli;
-      description = "The gemini-cli package to install.";
-    };
-  };
+  options.myFeatures.programs.terminal.gemini.enable = lib.mkEnableOption "Gemini CLI AI Agent";
 
   config = lib.mkIf cfg.enable {
-    # Install the package system-wide
-    environment.systemPackages = [
-      cfg.package
-    ];
+    # Install the package globally for NixOS or MacOS (nix-darwin)
+    environment.systemPackages = [ pkgs.gemini-cli ];
 
-    # Example of persistent configuration via Home Manager if needed
-    # This mirrors your firefox.nix logic for multi-user setups
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
-      # You can add user-specific shell aliases or config files here
-      home.shellAliases = {
-        gemini = "gemini-cli";
+    # Home-manager configuration for user-specific settings
+    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
+      # The tool uses ~/.gemini/settings.json for user-level configuration
+      # You can manage session variables or aliases here
+      home.sessionVariables = {
+        GEMINI_EDITOR = "hx";
       };
     });
   };

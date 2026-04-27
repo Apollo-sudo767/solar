@@ -14,27 +14,40 @@
       system.stateVersion = "26.05";
 
       myFeatures = {
-        core.enable = true;
-        core.lix.enable = true;
-        shell.enable = true;
-        core.secureboot.enable = true;
-        core.security = {
-          enable = true;
-          useAppArmor = true;
+        core = {
+          system.core-branch.enable = true;
+          shell.shell-branch.enable = true;
+          boot.secureboot.enable = true;
+          security.security = {
+            enable = true;
+            useAppArmor = true;
+          };
+          nix.lix.enable = true;
         };
         hardware = {
-          amd.enable = true;
+          cpu-gpu.amd.enable = true;
         };
         programs = {
-          ghostty.enable = true;
-          fastfetch.enable = true;
-          helix.enable = true;
+          terminal = {
+            ghostty.enable = true;
+            fastfetch.enable = true;
+            helix.enable = true;
+          };
         };
         services = {
-          udisks2.enable = true;
+          hardware.udisks2.enable = true;
           networking = {
             enable = true;
             tailscale.enable = true;
+            ddns = {
+              enable = true;
+              domains = [
+                "sllv.apollan.cc"
+                "ftb.apollan.cc"
+                "factorio.apollan.cc"
+                "terraria.apollan.cc"
+              ];
+            };
           };
           servers = {
             factorio = {
@@ -55,15 +68,6 @@
                 port = 19132;
               };
             };
-          };
-          ddns = {
-            enable = true;
-            domains = [
-              "sllv.apollan.cc"
-              "ftb.apollan.cc"
-              "factorio.apollan.cc"
-              "terraria.apollan.cc"
-            ];
           };
         };
       };

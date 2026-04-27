@@ -31,7 +31,13 @@
             beta = true;
           };
         };
-        system.dualboot.enable = true;
+        system = {
+          dualboot.enable = true;
+          ttyResolution = {
+            enable = true;
+            resolution = "2560x1440";
+          };
+        };
         peripherals.bluetooth.enable = true;
       };
       platforms = {

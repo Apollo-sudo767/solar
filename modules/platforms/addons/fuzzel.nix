@@ -2,7 +2,7 @@
 
 let
   cfg = config.myFeatures.platforms.addons.fuzzel;
-  usernames = lib.filter (n: n != "enable" && n != "usernames") config.myFeatures.core.system.users.usernames;
+  usernames = config.myFeatures.core.system.users.usernames;
 in
 {
   options.myFeatures.platforms.addons.fuzzel = {

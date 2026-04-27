@@ -26,7 +26,13 @@
         };
 
         hardware = {
-          system.graphics.enable = true;
+          system = {
+            graphics.enable = true;
+            ttyResolution = {
+              enable = true;
+              resolution = "1920x1080";
+            };
+          };
           peripherals = {
             battery = {
               enable = true;

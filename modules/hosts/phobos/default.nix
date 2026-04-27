@@ -42,7 +42,10 @@
           };
         };
         platforms = {
-          styling.gruvbox.enable = true;
+          styling = {
+            stylix.enable = true;
+            themes.gruvbox.enable = true;
+          };
         };
         services.networking.tailscale.enable = true;
       };

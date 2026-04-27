@@ -15,6 +15,10 @@ in
         enable = true;
         package = pkgs.niri;
         settings = {
+          spawn-at-startup = [
+            { command = [ "dbus-update-activation-environment" "--systemd" "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" ]; }
+          ];
+
           input = {
             # --- Keybind Modifiers ---
             mod-key = "Alt";
@@ -50,7 +54,8 @@ in
             # --- Apps & System ---
             "Mod+Q".action.spawn = [ "ghostty" ];
             "Mod+Shift+Q".action.spawn = [ "firefox" ];
-            "Mod+D".action.spawn = [ "fuzzel" ];
+            "Mod+D".action.spawn = if config.myFeatures.platforms.addons.noctalia-shell.enable then [ "noctalia-shell" "--toggle-launcher" ] else [ "fuzzel" ];
+            "Mod+S".action.spawn = lib.mkIf config.myFeatures.platforms.addons.noctalia-shell.enable [ "noctalia-shell" "--toggle-dashboard" ];
             "Mod+O".action.toggle-overview = { }; #
             "Mod+C".action.close-window = { };
             "Mod+Shift+E".action.quit = { };

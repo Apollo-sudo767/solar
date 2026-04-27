@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isTotal,
+  isDarwin,
   ...
 }:
 
@@ -12,15 +14,20 @@ in
   options.myFeatures.programs.terminal.gemini.enable = lib.mkEnableOption "Gemini CLI AI Agent";
 
   config = lib.mkIf cfg.enable {
-    # Install the package globally for NixOS or MacOS (nix-darwin)
+    # 1. System-level install (NixOS/Darwin)
     environment.systemPackages = [ pkgs.gemini-cli ];
 
-    # Home-manager configuration for user-specific settings
-    home-manager.users = lib.genAttrs config.myFeatures.core.users.usernames (name: {
-      # The tool uses ~/.gemini/settings.json for user-level configuration
-      # You can manage session variables or aliases here
-      home.sessionVariables = {
-        GEMINI_EDITOR = "hx";
+    # 2. Ensure it's in the user's path via Home Manager
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+      home.packages = [ pkgs.gemini-cli ];
+
+      # Ensure the gemini settings directory exists
+      home.file.".gemini/.keep".text = "";
+
+      # Optional: Add an alias if you prefer 'gemini' over 'gemini-cli'
+      # (though the binary is usually named 'gemini')
+      programs.zsh.shellAliases = {
+        ai = "gemini";
       };
     });
   };

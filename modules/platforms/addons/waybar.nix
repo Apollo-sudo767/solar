@@ -5,7 +5,7 @@ let
 in {
   options.myFeatures.platforms.addons.waybar.enable = lib.mkEnableOption "waybar status bar";
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && !config.myFeatures.platforms.addons.noctalia-shell.enable) {
     home-manager.users = lib.genAttrs usernames (name: {
       programs.waybar = {
         enable = true;

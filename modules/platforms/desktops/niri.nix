@@ -19,17 +19,18 @@ in
     programs.niri.package = pkgs.niri;
 
     environment.systemPackages = with pkgs; [
-      fuzzel
       xwayland-satellite
-      mako
       swaybg
       swayidle
       swaylock
       networkmanagerapplet
       thunar
       awww
-      swaynotificationcenter
       brightnessctl
+    ] ++ lib.optionals (!config.myFeatures.platforms.addons.noctalia-shell.enable) [
+      fuzzel
+      mako
+      swaynotificationcenter
     ];
   };
 }

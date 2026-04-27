@@ -9,7 +9,7 @@ in
     enable = lib.mkEnableOption "Fuzzel according to stylix";
   };
   
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && !config.myFeatures.platforms.addons.noctalia-shell.enable) {
     home-manager.users = lib.genAttrs usernames (name: {
       # This allows Stylix to take over Fuzzel styling 
       programs.fuzzel = {

@@ -31,6 +31,7 @@
         programs = {
           fastfetch.enable = true;
           helix.enable = true;
+          gemini.enable = true;
         };
         systems = {
           stylix = {

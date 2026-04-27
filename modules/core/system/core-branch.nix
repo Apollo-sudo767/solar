@@ -40,8 +40,12 @@ in
       # Linux-Only Core Features (Completely erased from macOS view)
       (lib.optionalAttrs (!isDarwin) {
         myFeatures.core.boot.boot.enable = lib.mkDefault true;
-        myFeatures.core.system.virtualization.docker = lib.mkIf cfg.virtualization.docker (lib.mkDefault true);
-        myFeatures.core.system.virtualization.libvirt = lib.mkIf cfg.virtualization.libvirt (lib.mkDefault true);
+        myFeatures.core.system.virtualization.docker = lib.mkIf cfg.virtualization.docker (
+          lib.mkDefault true
+        );
+        myFeatures.core.system.virtualization.libvirt = lib.mkIf cfg.virtualization.libvirt (
+          lib.mkDefault true
+        );
       })
     ]
   );

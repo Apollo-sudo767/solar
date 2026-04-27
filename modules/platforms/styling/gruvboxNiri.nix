@@ -10,13 +10,16 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms = {
       desktops.niri.enable = true;
-      addons.waybar.enable = true;
-      addons.swaybg.enable = true;
-      addons.idle.enable = true;
+      addons = {
+        swaybg.enable = true;
+        noctalia-shell.enable = true;
+        # waybar.enable = true;
+        # idle.enable = true;
+        # fuzzel.enable = true;
+        # swaylock.enable = true;
+      };
       styling.themes.gruvbox.enable = true;
       styling.niriKeybinds.enable = true;
-      addons.fuzzel.enable = true;
-      addons.swaylock.enable = true;
     };
 
     # Simplify the user generation logic

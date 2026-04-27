@@ -55,12 +55,13 @@ in
             "Mod+Q".action.spawn = [ "ghostty" ];
             "Mod+Shift+Q".action.spawn = [ "firefox" ];
             "Mod+D".action.spawn = if config.myFeatures.platforms.addons.noctalia-shell.enable then [ "noctalia-shell" "--toggle-launcher" ] else [ "fuzzel" ];
-            "Mod+S".action.spawn = lib.mkIf config.myFeatures.platforms.addons.noctalia-shell.enable [ "noctalia-shell" "--toggle-dashboard" ];
             "Mod+O".action.toggle-overview = { }; #
             "Mod+C".action.close-window = { };
             "Mod+Shift+E".action.quit = { };
             "Mod+Super+L".action.spawn = [ "swaylock" ];
-
+          } // lib.optionalAttrs config.myFeatures.platforms.addons.noctalia-shell.enable {
+            "Mod+S".action.spawn = [ "noctalia-shell" "--toggle-dashboard" ];
+          } // {
             # --- Navigation ---
             "Mod+Left".action.focus-column-left = { };
             "Mod+Right".action.focus-column-right = { };

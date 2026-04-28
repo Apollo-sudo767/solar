@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.hardware.cpu-gpu.amd;
@@ -20,7 +25,7 @@ in
 
   # mkMerge takes a LIST of sets.
   config = lib.mkMerge [
-    
+
     # 1. CPU Logic (Shielded for Linux only)
     (lib.mkIf cfg.enable {
       hardware.cpu.amd.updateMicrocode = true;
@@ -41,6 +46,6 @@ in
 
       environment.variables.AMD_VULKAN_ICD = "RADV";
     })
-    
+
   ];
 }

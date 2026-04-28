@@ -3,11 +3,11 @@
   lib,
   pkgs,
   isTotal,
-  isDarwin,
   ...
 }:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.programs.terminal.gemini;
 in
 {
@@ -18,7 +18,7 @@ in
     environment.systemPackages = [ pkgs.gemini-cli ];
 
     # 2. Ensure it's in the user's path via Home Manager
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       home.packages = [ pkgs.gemini-cli ];
 
       # Ensure the gemini settings directory exists

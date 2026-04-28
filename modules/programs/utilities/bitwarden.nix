@@ -2,46 +2,34 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
-}: # Added pkgs.stdenv.isDarwin
+}:
 
 let
+  inherit isDarwin;
   cfg = config.myFeatures.programs.utilities.bitwarden;
 in
 {
-  options.myFeatures.programs.utilities.bitwarden.enable = lib.mkEnableOption "Bitwarden Stack";
+  options.myFeatures.programs.utilities.bitwarden = {
+    enable = lib.mkEnableOption "Bitwarden Client";
+  };
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
+      # 1. Universal Bitwarden (Desktop App)
       {
-        environment.systemPackages =
-          with pkgs;
-          [
-            bitwarden-desktop
-            bitwarden-cli
-            # pinentry-gnome3 is Linux-specific; on Mac, rbw can use native pinentry
-          ]
-          ++ lib.optional (!pkgs.stdenv.isDarwin) pinentry-gnome3;
+        environment.systemPackages = [ pkgs.bitwarden ];
+      }
 
-        # Home Manager configuration works on both macOS and NixOS
-        home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
-          programs.rbw = {
-            enable = true;
-            settings = {
-              email = "fireshifter767@gmail.com";
-              # Only use gnome3 pinentry if on Linux
-              pinentry = pkgs.pinentry-gnome3;
-            };
-          };
-          home.packages = [ pkgs.bitwarden-desktop ];
+      # 2. Linux-only (CLI Client & Secret handling)
+      (lib.optionalAttrs (!isDarwin) {
+        environment.systemPackages = [ pkgs.bitwarden-cli ];
+        home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+          # Home manager settings for bitwarden if any
         });
-      }
-
-      # Shield Linux-only system services
-      {
-        services.dbus.enable = true;
-        security.polkit.enable = true;
-      }
+      })
     ]
   );
 }

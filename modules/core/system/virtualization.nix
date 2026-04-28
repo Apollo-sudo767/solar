@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -22,7 +21,7 @@ in
     };
 
     # Automatically add users to the correct groups
-    users.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    users.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       extraGroups = (lib.optional cfg.docker "docker") ++ (lib.optional cfg.libvirt "libvirtd");
     });
   };

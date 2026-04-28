@@ -31,8 +31,8 @@ in
         enable = true;
         enableOffloadCmd = true;
       };
-      intelBusId = cfg.intelBusId;
-      nvidiaBusId = cfg.nvidiaBusId;
+      inherit (cfg) intelBusId;
+      inherit (cfg) nvidiaBusId;
     };
 
     environment.systemPackages = [

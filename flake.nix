@@ -52,11 +52,17 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Formatting & Linting
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
   };
 
   outputs =
     inputs@{
-      self,
       nixpkgs-unstable,
       flake-parts,
       ...
@@ -89,8 +95,8 @@
           };
         in
         {
-          nixosConfigurations = hostLoader.nixosConfigurations;
-          darwinConfigurations = hostLoader.darwinConfigurations;
+          inherit (hostLoader) nixosConfigurations;
+          inherit (hostLoader) darwinConfigurations;
         };
     };
 }

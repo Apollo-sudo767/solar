@@ -1,4 +1,4 @@
-{ config, lib, ... }: # Added pkgs.stdenv.isDarwin
+{ config, lib, ... }:
 
 let
   cfg = config.myFeatures.services.networking;

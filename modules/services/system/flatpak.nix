@@ -9,7 +9,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.flatpak.enable = true; 
+    services.flatpak.enable = true;
     xdg.portal.enable = true; # Required for Flatpak integration [cite: 32]
   };
 }

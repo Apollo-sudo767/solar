@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  isTotal,
   ...
 }:
 
@@ -13,7 +12,7 @@ in
   options.myFeatures.programs.media.obs.enable = lib.mkEnableOption "OBS Studio";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.obs-studio = {
         enable = true;
         # Only load Wayland/VAAPI plugins if on Linux

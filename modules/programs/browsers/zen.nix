@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.programs.browsers.zen;
@@ -23,7 +29,8 @@ let
   };
 in
 {
-  options.myFeatures.programs.browsers.zen.enable = lib.mkEnableOption "Zen Browser with Phanes Overrides";
+  options.myFeatures.programs.browsers.zen.enable =
+    lib.mkEnableOption "Zen Browser with Phanes Overrides";
 
   config = lib.mkIf cfg.enable {
     # Install your customized Zen package system-wide

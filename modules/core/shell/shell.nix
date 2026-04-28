@@ -7,6 +7,7 @@
 }:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.core.shell.shell;
   host = config.networking.hostName;
 in
@@ -22,9 +23,10 @@ in
 
     programs.zsh.enable = true;
 
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.starship = {
         enable = true;
+        package = pkgs.starship;
         enableZshIntegration = true;
         settings = {
           add_newline = false;
@@ -101,9 +103,6 @@ in
         };
 
         initContent = ''
-          # Ensure Starship initializes correctly
-          eval "$(starship init zsh)"
-
           # General Shell Prefs
           export EDITOR=helix
           # ... the rest of your init code

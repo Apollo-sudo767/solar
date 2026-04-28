@@ -1,4 +1,4 @@
-{ config, lib, ... }: # Added pkgs.stdenv.isDarwin
+{ config, lib, ... }:
 
 let
   cfg = config.myFeatures.services.networking.cloudflare;
@@ -12,13 +12,15 @@ in
     };
     credentialsFile = lib.mkOption {
       type = lib.types.path;
-      default = "/var/lib/cloudflare/tunnel-creds.json"; 
+      default = "/var/lib/cloudflare/tunnel-creds.json";
       description = "Local path to the tunnel JSON credentials";
     };
     domains = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
-      default = {};
-      example = { "git.example.com" = "http://localhost:3000"; };
+      default = { };
+      example = {
+        "git.example.com" = "http://localhost:3000";
+      };
     };
   };
 
@@ -28,9 +30,11 @@ in
       enable = true;
       tunnels."${cfg.tunnelId}" = {
         inherit (cfg) credentialsFile;
-        ingress = (lib.mapAttrsToList (hostname: service: {
-          inherit hostname service;
-        }) cfg.domains) ++ [ { default = "http_status:404"; } ];
+        ingress =
+          (lib.mapAttrsToList (hostname: service: {
+            inherit hostname service;
+          }) cfg.domains)
+          ++ [ { default = "http_status:404"; } ];
       };
     };
   };

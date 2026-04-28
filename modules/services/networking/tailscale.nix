@@ -1,9 +1,8 @@
 {
   config,
   lib,
-  pkgs,
-  isTotal,
   isDarwin,
+  isTotal,
   ...
 }:
 
@@ -12,17 +11,19 @@ let
 in
 {
   options.myFeatures.services.networking.tailscale = {
-    enable = lib.mkEnableOption "Tailscale Mesh VPN";
+    enable = lib.mkEnableOption "Tailscale VPN";
   };
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
-      { services.tailscale.enable = true; }
+      # 1. Common configuration for both Mac and Linux
+      {
+        services.tailscale.enable = true;
+      }
 
-      # ACTUALLY Shield firewall rules from macOS!
+      # 2. Linux-only configuration
       (lib.optionalAttrs (!isDarwin) {
-        networking.firewall.trustedInterfaces = [ "tailscale0" ];
-        networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+        # You could add things like --accept-dns=false here if needed
       })
     ]
   );

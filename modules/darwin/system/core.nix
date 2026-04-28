@@ -12,33 +12,32 @@
   };
 
   config = lib.mkIf (config.myFeatures.darwin.system.core.enable && pkgs.stdenv.isDarwin) {
-
-    # CRITICAL: Tell nix-darwin to let Determinate handle the Nix daemon
-    nix.enable = false;
-
-    # --- Security ---
-    security.pam.services.sudo_local.touchIdAuth = true;
-
-    # --- System Defaults ---
+    # 1. macOS Specific Performance & Behavior
     system.defaults = {
+      NSGlobalDomain = {
+        AppleInterfaceStyle = "Dark"; # Dark mode
+        "com.apple.mouse.tapBehavior" = 1; # Enable tap to click
+      };
       dock = {
         autohide = true;
-        show-recents = false;
-        mru-spaces = false;
-        orientation = "right";
+        show-recents = false; # Clean dock
       };
-
       finder = {
+        _FXShowPosixPathInTitle = true; # Show full path in finder
         AppleShowAllExtensions = true;
-        ShowPathbar = true;
-        FXPreferredViewStyle = "clmv";
-      };
-
-      NSGlobalDomain = {
-        AppleInterfaceStyle = "Dark";
-        KeyRepeat = 2;
-        InitialKeyRepeat = 15;
       };
     };
+
+    # 2. Keyboard & Input
+    system.keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToControl = true;
+    };
+
+    # 3. macOS Environment Packages
+    environment.systemPackages = with pkgs; [
+      iterm2
+      raycast
+    ];
   };
 }

@@ -1,8 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 let
   cfg = config.myFeatures.services.nginx;
-in {
+in
+{
   options.myFeatures.services.nginx = {
     enable = lib.mkEnableOption "Nginx Reverse Proxy";
     domain = lib.mkOption {
@@ -27,6 +28,9 @@ in {
 
     security.acme.acceptTerms = true;
 
-    networking.firewall.allowedTCPPorts = [ 80 443 ];
+    networking.firewall.allowedTCPPorts = [
+      80
+      443
+    ];
   };
 }

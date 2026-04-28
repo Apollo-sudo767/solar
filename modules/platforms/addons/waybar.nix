@@ -1,12 +1,13 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   cfg = config.myFeatures.platforms.addons.waybar;
-  usernames = config.myFeatures.core.system.users.usernames;
-in {
+  inherit (config.myFeatures.core.system.users) usernames;
+in
+{
   options.myFeatures.platforms.addons.waybar.enable = lib.mkEnableOption "waybar status bar";
 
   config = lib.mkIf (cfg.enable && !config.myFeatures.platforms.addons.noctalia-shell.enable) {
-    home-manager.users = lib.genAttrs usernames (name: {
+    home-manager.users = lib.genAttrs usernames (_name: {
       programs.waybar = {
         enable = true;
         systemd.enable = true;
@@ -15,11 +16,26 @@ in {
           layer = "top";
           position = "bottom";
           height = 30;
-          
-          modules-left = [ "custom/power" "niri/workspaces" "niri/window" ];
-          modules-center = [ "custom/branding" "mpris" ];
+
+          modules-left = [
+            "custom/power"
+            "niri/workspaces"
+            "niri/window"
+          ];
+          modules-center = [
+            "custom/branding"
+            "mpris"
+          ];
           # Added 'network' and 'battery' here
-          modules-right = [ "cpu" "memory" "network" "battery" "pulseaudio" "clock" "tray" ];
+          modules-right = [
+            "cpu"
+            "memory"
+            "network"
+            "battery"
+            "pulseaudio"
+            "clock"
+            "tray"
+          ];
 
           "custom/power" = {
             format = " ⏻ ";
@@ -60,8 +76,12 @@ in {
             max-length = 40;
           };
 
-          "cpu" = { format = " CPU: {usage}% "; };
-          "memory" = { format = " RAM: {}% "; };
+          "cpu" = {
+            format = " CPU: {usage}% ";
+          };
+          "memory" = {
+            format = " RAM: {}% ";
+          };
 
           # --- Network Module ---
           "network" = {
@@ -81,13 +101,28 @@ in {
             format = " {icon} {capacity}% ";
             format-charging = " 󱐋 {capacity}% ";
             format-plugged = "  {capacity}% ";
-            format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+            format-icons = [
+              "󰁺"
+              "󰁻"
+              "󰁼"
+              "󰁽"
+              "󰁾"
+              "󰁿"
+              "󰂀"
+              "󰂁"
+              "󰂂"
+              "󰁹"
+            ];
           };
 
           "pulseaudio" = {
             format = " {icon} {volume}% ";
             format-muted = " 󰝟 Muted ";
-            format-icons.default = [ "󰕿" "󰖀" "󰕾" ];
+            format-icons.default = [
+              "󰕿"
+              "󰖀"
+              "󰕾"
+            ];
             on-click = "pavucontrol";
           };
 

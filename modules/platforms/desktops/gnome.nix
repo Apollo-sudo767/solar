@@ -3,7 +3,7 @@
   lib,
   pkgs,
   ...
-}: # <-- Add pkgs.stdenv.isDarwin
+}:
 
 let
   cfg = config.myFeatures.platforms.desktops.gnome;

@@ -1,6 +1,13 @@
-{ config, lib, pkgs, ...  }:
+{
+  config,
+  lib,
+  pkgs,
+  isTotal,
+  ...
+}:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.programs.utilities.stylePackages;
 in
 {

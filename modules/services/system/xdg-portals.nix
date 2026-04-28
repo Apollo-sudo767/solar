@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.services.system.xdgPortals;
@@ -10,20 +15,26 @@ in
 
   config = lib.mkIf cfg.enable {
     xdg = {
-      autostart.enable = true; 
+      autostart.enable = true;
       portal = {
-        enable = true; 
-        xdgOpenUsePortal = true; 
+        enable = true;
+        xdgOpenUsePortal = true;
         extraPortals = with pkgs; [
-          xdg-desktop-portal-gnome 
-          xdg-desktop-portal-gtk 
-          kdePackages.xdg-desktop-portal-kde 
-          xdg-desktop-portal-wlr 
+          xdg-desktop-portal-gnome
+          xdg-desktop-portal-gtk
+          kdePackages.xdg-desktop-portal-kde
+          xdg-desktop-portal-wlr
         ];
         config = {
-          common.default = [ "gtk" ]; 
-          niri.default = [ "gnome" "gtk" ]; 
-          plasma.default = [ "kde" "gtk" ]; 
+          common.default = [ "gtk" ];
+          niri.default = [
+            "gnome"
+            "gtk"
+          ];
+          plasma.default = [
+            "kde"
+            "gtk"
+          ];
         };
       };
     };

@@ -2,13 +2,11 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
-}: # <-- Add pkgs.stdenv.isDarwin
+}:
 
 let
   cfg = config.myFeatures.platforms.desktops.niri;
-  system = pkgs.stdenv.hostPlatform.system;
 in
 {
   options.myFeatures.platforms.desktops.niri.enable = lib.mkEnableOption "Niri Window Manager";
@@ -18,19 +16,22 @@ in
     programs.niri.enable = true;
     programs.niri.package = pkgs.niri;
 
-    environment.systemPackages = with pkgs; [
-      xwayland-satellite
-      swaybg
-      swayidle
-      swaylock
-      networkmanagerapplet
-      thunar
-      awww
-      brightnessctl
-    ] ++ lib.optionals (!config.myFeatures.platforms.addons.noctalia-shell.enable) [
-      fuzzel
-      mako
-      swaynotificationcenter
-    ];
+    environment.systemPackages =
+      with pkgs;
+      [
+        xwayland-satellite
+        swaybg
+        swayidle
+        swaylock
+        networkmanagerapplet
+        thunar
+        awww
+        brightnessctl
+      ]
+      ++ lib.optionals (!config.myFeatures.platforms.addons.noctalia-shell.enable) [
+        fuzzel
+        mako
+        swaynotificationcenter
+      ];
   };
 }

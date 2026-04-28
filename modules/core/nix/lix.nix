@@ -2,12 +2,12 @@
   config,
   lib,
   pkgs,
-  inputs,
   isTotal,
   ...
 }:
 
 let
+  inherit isTotal;
   # 1. Setup a shortcut to your feature's config
   # Replace 'myFeature' with your actual feature name
   cfg = config.myFeatures.core.nix.lix;
@@ -25,7 +25,7 @@ in
   # This is the "payload" that only runs if 'enable' is true
   config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [
-      (final: prev: {
+      (_final: prev: {
         inherit (prev.lixPackageSets.stable)
           nixpkgs-review
           nix-eval-jobs

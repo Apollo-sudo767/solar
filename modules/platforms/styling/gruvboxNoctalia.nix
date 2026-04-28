@@ -13,7 +13,7 @@ in
       styling.themes.gruvbox.enable = true;
     };
 
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       # Noctalia settings for the rice
       programs.noctalia-shell = {
         # Any specific rice settings would go here

@@ -1,6 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  isDarwin,
+  isTotal,
+  ...
+}:
 
 let
+  inherit isDarwin isTotal;
   cfg = config.myFeatures.core.security.security;
 in
 {
@@ -10,36 +18,43 @@ in
     useOOMD = lib.mkEnableOption "Systemd-OOMD stability";
   };
 
-  config = lib.mkIf cfg.enable {
-    security = {
-      # 1. AppArmor Logic
-      apparmor = lib.mkIf cfg.useAppArmor {
-        enable = true;
-        enableCache = true;
-        killUnconfinedConfinables = true;
-        packages = with pkgs; [
-          apparmor-profiles
-          apparmor-utils
-        ];
-      };
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      # Common Settings
+      {
+        # Glibc & Memory Allocator Hardening
+        environment.variables.MALLOC_CHECK_ = "1";
+      }
 
-      # 2. Kernel & User-space Hardening
-      forcePageTableIsolation = true;
-      protectKernelImage = true;
-      
-      # Disabling unprivileged user namespaces
-      unprivilegedUsernsClone = true; 
-      
-      sudo.execWheelOnly = true;
-    };
+      # Linux-Only Settings
+      (lib.optionalAttrs (!isDarwin) {
+        security = {
+          # 1. AppArmor Logic
+          apparmor = lib.mkIf cfg.useAppArmor {
+            enable = true;
+            enableCache = true;
+            killUnconfinedConfinables = true;
+            packages = with pkgs; [
+              apparmor-profiles
+              apparmor-utils
+            ];
+          };
 
-    # 3. Systemd OOMD
-    systemd.oomd.enable = cfg.useOOMD;
+          # 2. Kernel & User-space Hardening
+          forcePageTableIsolation = true;
+          protectKernelImage = true;
 
-    # 4. Glibc & Memory Allocator Hardening
-    environment.variables.MALLOC_CHECK_ = "1";
+          # Disabling unprivileged user namespaces
+          unprivilegedUsernsClone = true;
 
+          sudo.execWheelOnly = true;
+        };
 
-    networking.firewall.enable = lib.mkDefault true;
-  };
+        # 3. Systemd OOMD
+        systemd.oomd.enable = cfg.useOOMD;
+
+        networking.firewall.enable = lib.mkDefault true;
+      })
+    ]
+  );
 }

@@ -39,21 +39,31 @@ let
           inherit inputs isStable isDarwin;
           isTotal = true;
         };
-        modules = globalModules ++ [
-          (hostData.module or { })
-          hmModule
-          {
-            networking.hostName = name;
-            nixpkgs.config.allowUnfree = true;
-          }
-        ];
+        modules =
+          globalModules
+          ++ [
+            (hostData.module or { })
+            hmModule
+            {
+              networking.hostName = name;
+              nixpkgs.config.allowUnfree = true;
+            }
+          ]
+          ++ lib.optional isDarwin {
+            # Determinate Nix installer manages the Nix daemon and nix.conf on macOS.
+            nix.enable = false;
+          };
       };
     };
 
-  allHosts = lib.genAttrs hostDirs (name: mkHost name);
+  allHosts = lib.genAttrs hostDirs mkHost;
 in
 {
-  nixosConfigurations = lib.mapAttrs (n: v: v.config) (lib.filterAttrs (n: v: !v.isDarwin) allHosts);
+  nixosConfigurations = lib.mapAttrs (_n: v: v.config) (
+    lib.filterAttrs (_n: v: !v.isDarwin) allHosts
+  );
 
-  darwinConfigurations = lib.mapAttrs (n: v: v.config) (lib.filterAttrs (n: v: v.isDarwin) allHosts);
+  darwinConfigurations = lib.mapAttrs (_n: v: v.config) (
+    lib.filterAttrs (_n: v: v.isDarwin) allHosts
+  );
 }

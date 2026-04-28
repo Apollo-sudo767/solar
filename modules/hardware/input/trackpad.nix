@@ -1,4 +1,4 @@
-{ config, lib, ... }: # <-- Add pkgs.stdenv.isDarwin
+{ config, lib, ... }:
 
 let
   cfg = config.myFeatures.hardware.input.trackpad;

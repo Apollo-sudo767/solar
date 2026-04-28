@@ -5,7 +5,7 @@
   };
 
   module =
-    { lib, inputs, ... }:
+    { ... }:
     {
       imports = [
         ./hardware-configuration.nix

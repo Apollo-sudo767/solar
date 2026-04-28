@@ -1,18 +1,18 @@
 {
   config,
   lib,
-  pkgs,
   inputs,
   ...
 }:
 
 let
   cfg = config.myFeatures.platforms.addons.noctalia-shell;
-  usernames = config.myFeatures.core.system.users.usernames;
+  inherit (config.myFeatures.core.system.users) usernames;
   stylixEnabled = config.myFeatures.platforms.styling.stylix.enable;
 in
 {
-  options.myFeatures.platforms.addons.noctalia-shell.enable = lib.mkEnableOption "Noctalia Shell (Wayland Shell)";
+  options.myFeatures.platforms.addons.noctalia-shell.enable =
+    lib.mkEnableOption "Noctalia Shell (Wayland Shell)";
 
   config = lib.mkIf cfg.enable {
     # Required services for Noctalia's status modules
@@ -267,8 +267,8 @@ in
             smoothScrollEnabled = true;
           };
           ui = {
-            fontDefault = "DejaVu Sans";
-            fontFixed = "DejaVu Sans Mono";
+            fontDefault = lib.mkDefault "DejaVu Sans";
+            fontFixed = lib.mkDefault "DejaVu Sans Mono";
             fontDefaultScale = 1;
             fontFixedScale = 1;
             tooltipsEnabled = true;

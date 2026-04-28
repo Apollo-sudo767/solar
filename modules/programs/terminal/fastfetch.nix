@@ -1,13 +1,12 @@
 {
   config,
   lib,
-  pkgs,
   isTotal,
-  isDarwin,
   ...
 }:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.programs.terminal.fastfetch;
   userList = config.myFeatures.core.system.users.usernames;
 in
@@ -102,9 +101,9 @@ in
             display = {
               separator = "  ";
               color = {
-                keys = p.keys;
-                title = p.title;
-                output = p.output;
+                inherit (p) keys;
+                inherit (p) title;
+                inherit (p) output;
               };
             };
 
@@ -227,7 +226,7 @@ in
               }
               (endGroup p.time)
 
-              (lib.optional (cfg.showBattery) {
+              (lib.optional cfg.showBattery {
                 type = "battery";
                 key = "󰁹 Battery";
                 keyColor = p.bat;

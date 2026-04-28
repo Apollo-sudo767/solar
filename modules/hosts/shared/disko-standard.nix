@@ -29,15 +29,24 @@
                 subvolumes = {
                   "/root" = {
                     mountpoint = "/mnt-root"; # This is your fallback root
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = [
+                      "compress=zstd"
+                      "noatime"
+                    ];
                   };
                   "/nix" = {
                     mountpoint = "/nix";
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = [
+                      "compress=zstd"
+                      "noatime"
+                    ];
                   };
                   "/persist" = {
                     mountpoint = "/persist";
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = [
+                      "compress=zstd"
+                      "noatime"
+                    ];
                   };
                 };
               };
@@ -48,7 +57,10 @@
     };
     nodev."/" = {
       fsType = "tmpfs";
-      mountOptions = [ "size=4G" "mode=755" ];
+      mountOptions = [
+        "size=4G"
+        "mode=755"
+      ];
     };
   };
 }

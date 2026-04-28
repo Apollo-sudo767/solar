@@ -3,12 +3,12 @@
   lib,
   pkgs,
   isTotal,
-  isDarwin,
   ...
 }:
 
 let
-  usernames = config.myFeatures.core.system.users.usernames;
+  inherit isTotal;
+  inherit (config.myFeatures.core.system.users) usernames;
 in
 {
   options.myFeatures.programs.terminal.helix.enable = lib.mkEnableOption "Helix Editor";
@@ -21,7 +21,7 @@ in
       nixfmt
     ];
 
-    home-manager.users = lib.genAttrs usernames (name: {
+    home-manager.users = lib.genAttrs usernames (_name: {
       programs.helix = {
         enable = true;
 

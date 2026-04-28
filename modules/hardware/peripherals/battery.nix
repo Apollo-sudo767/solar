@@ -3,7 +3,7 @@
   lib,
   pkgs,
   ...
-}: # <-- ADDED pkgs.stdenv.isDarwin
+}:
 
 let
   cfg = config.myFeatures.hardware.peripherals.battery;

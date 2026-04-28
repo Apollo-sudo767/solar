@@ -6,6 +6,7 @@
 }:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.core.nix.channels;
 in
 {

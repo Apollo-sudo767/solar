@@ -3,11 +3,11 @@
   lib,
   pkgs,
   isTotal,
-  isDarwin,
   ...
 }:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.platforms.styling.themes.forest;
 in
 {

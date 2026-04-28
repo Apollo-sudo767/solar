@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }: # <-- Added pkgs.stdenv.isDarwin here
+{ config, lib, ... }:
 
 let
   # 1. Setup a shortcut to your feature's config

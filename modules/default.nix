@@ -1,6 +1,7 @@
 { lib, isDarwin, ... }:
 
 let
+  inherit isDarwin;
   getNixFiles =
     dir:
     let

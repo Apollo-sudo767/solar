@@ -1,48 +1,29 @@
 {
-  config,
   lib,
   pkgs,
-  isTotal,
   isDarwin,
+  isTotal,
   ...
 }:
 
-let
-  cfg = config.myFeatures.core.system.fonts;
-in
 {
-  options.myFeatures.core.system.fonts.enable = lib.mkEnableOption "Apollo's Font Stack & Emoji Fallbacks";
+  options.myFeatures.core.system.fonts = {
+    enable = lib.mkEnableOption "Core System Fonts";
+  };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf isTotal (
     lib.mkMerge [
-      # 1. Cross-platform: Install the actual font files
+      # Universal Fonts (Loaded on both Mac and Linux)
       {
         fonts.packages = with pkgs; [
-          noto-fonts
-          noto-fonts-cjk-sans
-          noto-fonts-color-emoji
-          jetbrains-mono
           nerd-fonts.jetbrains-mono
+          nerd-fonts.fira-code
         ];
       }
 
-      # 2. Linux-only: Configure system default fonts and fallbacks
+      # Linux-Only Fonts Configuration
       (lib.optionalAttrs (!isDarwin) {
-        fonts.fontconfig.defaultFonts = {
-          serif = [
-            "Noto Serif"
-            "Noto Color Emoji"
-          ];
-          sansSerif = [
-            "Noto Sans"
-            "Noto Color Emoji"
-          ];
-          monospace = [
-            "JetBrainsMono Nerd Font"
-            "Noto Color Emoji"
-          ];
-          emoji = [ "Noto Color Emoji" ];
-        };
+        fonts.enableDefaultPackages = true;
       })
     ]
   );

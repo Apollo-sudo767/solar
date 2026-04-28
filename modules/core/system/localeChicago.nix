@@ -1,30 +1,25 @@
 {
-  config,
   lib,
-  isTotal,
   isDarwin,
+  isTotal,
   ...
 }:
 
-let
-  cfg = config.myFeatures.core.system.localeChicago;
-in
 {
-  options.myFeatures.core.system.localeChicago.enable =
-    lib.mkEnableOption "Missouri Locale & Timezone Settings";
+  options.myFeatures.core.system.localeChicago = {
+    enable = lib.mkEnableOption "Chicago Locale/Timezone";
+  };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf isTotal (
     lib.mkMerge [
-      # 1. Cross-platform settings
+      # 1. Common configuration for both Mac and Linux
       {
         time.timeZone = "America/Chicago";
       }
 
-      # 2. Linux-only settings (Shielded from macOS)
+      # 2. Linux-only configuration
       (lib.optionalAttrs (!isDarwin) {
         i18n.defaultLocale = "en_US.UTF-8";
-        console.keyMap = "us";
-        services.xserver.xkb.layout = "us";
       })
     ]
   );

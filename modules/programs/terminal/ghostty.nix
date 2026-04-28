@@ -2,23 +2,23 @@
   config,
   lib,
   pkgs,
-  inputs,
   isTotal,
-  isDarwin,
   ...
 }:
 
 let
+  inherit isTotal;
   cfg = config.myFeatures.programs.terminal.ghostty;
 in
 {
-  options.myFeatures.programs.terminal.ghostty.enable = lib.mkEnableOption "Ghostty Terminal Emulator";
+  options.myFeatures.programs.terminal.ghostty.enable =
+    lib.mkEnableOption "Ghostty Terminal Emulator";
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ pkgs.ghostty ];
 
     # FIX: Only map over the list of strings in .usernames
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.ghostty = {
         enable = true;
         enableZshIntegration = true;

@@ -11,7 +11,7 @@ in
   options.myFeatures.programs.media.davinci.enable = lib.mkEnableOption "Enable Davinci-resolve";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       home.packages = [
         pkgs.davinci-resolve
       ];

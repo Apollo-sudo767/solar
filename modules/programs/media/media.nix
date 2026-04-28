@@ -1,15 +1,23 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.programs.media.media;
-in {
+in
+{
   options.myFeatures.programs.media.media = {
     enable = lib.mkEnableOption "Apollo's Media Suite";
-    mpv.enable = lib.mkEnableOption "MPV with 1440p GPU acceleration" // { default = true; };
+    mpv.enable = lib.mkEnableOption "MPV with 1440p GPU acceleration" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       home.packages = with pkgs; [
         imv
       ];

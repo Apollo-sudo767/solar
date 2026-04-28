@@ -9,7 +9,6 @@
 
 let
   cfg = config.myFeatures.platforms.styling.niriKeybinds;
-  dynamicVersion = if isStable then "25.11" else "26.05";
 in
 {
   options.myFeatures.platforms.styling.niriKeybinds.enable =
@@ -17,7 +16,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (
-      name:
+      _name:
       { ... }:
       {
         imports = [ inputs.niri.homeModules.niri ];

@@ -3,12 +3,13 @@
   lib,
   pkgs,
   inputs,
-  isTotal,
   isDarwin,
+  isTotal,
   ...
 }:
 
 let
+  inherit isDarwin isTotal;
   cfg = config.myFeatures.platforms.styling.stylix;
 in
 {
@@ -22,62 +23,52 @@ in
   ];
 
   options.myFeatures.platforms.styling.stylix = {
-    enable = lib.mkEnableOption "Universal Stylix Styling";
-
+    enable = lib.mkEnableOption "Stylix Framework";
     scheme = lib.mkOption {
-      type = lib.types.nullOr (lib.types.either lib.types.str lib.types.path); # Allow both types
-      default = null;
+      type = lib.types.path;
+      default = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+      description = "Path to the base16 scheme file.";
     };
-
     wallpaper = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
+      type = lib.types.path;
+      description = "Path to the wallpaper image.";
     };
   };
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
+      # Universal Stylix (Base Theme & Common Targets)
       {
         stylix = {
           enable = true;
-
-          image =
-            if (cfg.wallpaper != null) then
-              cfg.wallpaper
-            else
-              pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
-
-          # FIX: Removed quotes and ${} to pass the path literal directly
-          base16Scheme =
-            if (cfg.scheme != null) then cfg.scheme else pkgs.base16-schemes + "/share/themes/nord.yaml";
-
-          polarity = "dark";
-
-          targets = {
-          }
-          // lib.optionalAttrs (!isDarwin) {
-            limine.enable = false;
-            plymouth = {
-              enable = true;
-              logoAnimated = true;
-              logo = pkgs.nixos-icons + "/share/icons/hicolor/48x48/apps/nix-snowflake-white.png";
+          image = cfg.wallpaper;
+          base16Scheme = cfg.scheme;
+        }
+        // lib.optionalAttrs (!isDarwin) {
+          cursor = {
+            package = pkgs.bibata-cursors;
+            name = "Bibata-Modern-Ice";
+            size = 24;
+          };
+        }
+        // {
+          fonts = {
+            monospace = {
+              package = pkgs.nerd-fonts.jetbrains-mono;
+              name = "JetBrainsMono Nerd Font Mono";
+            };
+            sansSerif = {
+              package = pkgs.dejavu_fonts;
+              name = "DejaVu Sans";
             };
           };
         };
       }
 
-      (lib.optionalAttrs (!isDarwin) {
-        qt = {
-          enable = true;
-          platformTheme = lib.mkForce "kde";
-          style = lib.mkForce "kvantum";
-        };
-
-        stylix.targets.qt = {
-          enable = true;
-          platform = lib.mkForce "qtct";
-        };
-      })
+      # Target Handling
+      {
+        stylix.targets = { };
+      }
     ]
   );
 }

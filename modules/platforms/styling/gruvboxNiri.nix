@@ -23,7 +23,7 @@ in
     };
 
     # Simplify the user generation logic
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
         layout = {
           gaps = 0;

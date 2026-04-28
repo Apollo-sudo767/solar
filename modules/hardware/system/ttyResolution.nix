@@ -1,5 +1,5 @@
-# This module allows setting the TTY resolution, which is particularly useful 
-# for fixing "stretched" or incorrect resolutions on boot and in TUI-based 
+# This module allows setting the TTY resolution, which is particularly useful
+# for fixing "stretched" or incorrect resolutions on boot and in TUI-based
 # display managers like tuigreet.
 { config, lib, ... }:
 

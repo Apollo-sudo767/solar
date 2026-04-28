@@ -6,6 +6,9 @@
   ...
 }:
 
+let
+  inherit isTotal;
+in
 {
   options.myFeatures.core.nix.nix-settings.enable =
     lib.mkEnableOption "Core Nix flake and optimization settings";

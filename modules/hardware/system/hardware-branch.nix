@@ -1,9 +1,8 @@
 {
   lib,
   config,
-  pkgs,
-  isTotal,
   isDarwin,
+  isTotal,
   ...
 }:
 

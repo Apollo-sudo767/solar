@@ -1,59 +1,90 @@
 # Solar ☀️
 ____
 
-## ❄️ Fully Automated Dendretic Flake   
-A NixOS configuration that is structured like a tree \| Modular, Automated, and purely nix declarative   
+## ❄️ Fully Automated Dendritic Flake   
+A hybrid NixOS & macOS configuration structured like a tree | Modular, Automated, and purely Nix declarative.
 
 ![limine-bg](assets/wallpapers/limine-bg.png)    
-## 🌲 The Dendretic Tree   
-New Features and Hosts are automatically discovered and integrated. This structure treats the fleet of machines it serves as a single unified module tree.
 
-````text
+## 🌲 The Dendritic Tree   
+New features and hosts are automatically discovered and integrated. This structure treats the fleet of machines it serves as a single unified module tree, using smart recursion to filter modules based on the target platform.
+
+```text
 Solar
-├── flake.nix               # Entry point (now generates both nixosConfigurations and darwinConfigurations)
+├── flake.nix               # Entry point (generates nixosConfigurations and darwinConfigurations)
 ├── flake.lock
-├── assets/
+├── assets/                 # Icons, wallpapers, and screenshots
 ├── modules/                # The Dendritic Core
-│   ├── default.nix         # UPDATED: Autoscanner that filters based on 'isDarwin' and 'isTotal'
-│   ├── core/               # Cross-platform system essentials (users, nix-settings, etc.)
-│   ├── darwin/             # NEW: macOS-exclusive settings (Homebrew, Mac defaults)
-│   ├── hardware/           # Linux-exclusive hardware logic (stays hidden from Mac)
-│   ├── programs/           # Feature modules (Fastfetch, Helix, etc. marked as 'isTotal')
-│   ├── services/           # System services (Nginx, Tailscale, etc.)
-│   ├── systems/            # Desktop & Style (Stylix, Niri, Waybar)
-│   └── hosts/              # The Terminal Leaves
-│       ├── default.nix     # UPDATED: Dual-purpose host loader for NixOS and Darwin
-│       ├── mars/           # NixOS Host
-│       ├── phobos/         # NEW: Darwin Host (MacBook)
-│       └── venus/          # NixOS Host
-├── parts/
-└── templates/
-````
+│   ├── default.nix         # Autoscanner (filters via 'isDarwin' and 'isTotal')
+│   ├── core/               # Cross-platform essentials (users, shell, nix-settings)
+│   ├── darwin/             # macOS-exclusive settings (Homebrew, system defaults)
+│   ├── hardware/           # Linux-exclusive hardware logic (AMD, Intel, Nvidia, etc.)
+│   ├── programs/           # Feature modules (Browsers, Terminals, Media)
+│   ├── services/           # System services (Networking, Game Servers, Utils)
+│   ├── platforms/          # Desktop Environments (GNOME, KDE, Niri)
+│   └── hosts/              # The Terminal Leaves (Individual Machine Configs)
+│       ├── default.nix     # Dual-purpose host loader
+│       ├── mars/           # NixOS Workstation
+│       ├── phobos/         # macOS (MacBook)
+│       └── venus/          # NixOS Server/Workstation
+├── parts/                  # Flake-parts organization
+└── templates/              # Blueprints for new hosts and features
+```
    
 ## 🎨 Visual Styling   
-Managed via **Stylix**. Wallpapers and themes are centralized in the `assets/` folder.   
-![Screenshot from 2026-04-06 23-29-40](assets/screenshots/ss1.png)    
-![Screenshot from 2026-04-06 23-30-15](assets/screenshots/ss2.png)    
-![Screenshot from 2026-04-06 23-30-27](assets/screenshots/ss3.png)    
+Managed via **Stylix**. Wallpapers and themes are centralized in the `assets/` folder, ensuring a consistent look (like Gruvbox or Forest) across all managed machines.
+
+![Screenshot 1](assets/screenshots/ss1.png)    
+![Screenshot 2](assets/screenshots/ss2.png)    
+![Screenshot 3](assets/screenshots/ss3.png)    
    
 ## 🚀 Enabling Features   
-Every module in the /modules directory can be enabled through (with the Niri feature module as an example)
-```
+Every module in the `/modules` directory can be enabled via a simple toggle in your host configuration:
+
+```nix
 # Inside modules/hosts/<hostname>/default.nix
-myFeatures.systems.niri.enable = true;
+myFeatures.programs.helix.enable = true;
+myFeatures.platforms.niri.enable = true;
 ```
-## ⚒️Deployment Instructions   
-To apply a configuration to a machine for the first time run   
+
+## ⚙️ Prerequisites
+Before deploying, ensure the target machine has Nix installed with experimental features enabled in `nix.conf`:
+```conf
+experimental-features = nix-command flakes
 ```
+
+## ⚒️ Deployment Instructions   
+
+### Initial Bootstrap
+To apply a configuration to a new machine for the first time:
+
+**NixOS:**
+```bash
 sudo nixos-rebuild boot --flake .#<hostname>
 ```
-To update a machine enter   
+
+**macOS:**
+```bash
+nix run nix-darwin -- switch --flake .#phobos
 ```
-# First to Update Flake Inputs (This puts you on the latest version)
-nix flake update
-# And then to do a live update to the system
-nrs
-# Or, if you'd like to update system that only applies changes after a reboot
-nrb
+
+### Regular Updates
+Once bootstrapped, use the built-in aliases for efficiency:
+
+```bash
+# Update flake inputs
+nfu  # (nix flake update)
+
+# Apply changes (NixOS)
+nrs  # (nixos-rebuild switch)
+nrb  # (nixos-rebuild boot - apply on next reboot)
+
+# Apply changes (macOS)
+drs  # (darwin-rebuild switch)
 ```
-   
+
+## 🍼 Creating New Hosts
+Use the provided templates to quickly spin up new configurations:
+```bash
+cp -r templates/hosts.nix modules/hosts/<new-host>/default.nix
+```

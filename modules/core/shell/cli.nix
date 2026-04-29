@@ -24,6 +24,8 @@ in
       htop
       jq
       tree
+      git
+      helix
     ];
   };
 }

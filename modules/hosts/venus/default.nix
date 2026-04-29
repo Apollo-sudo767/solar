@@ -45,7 +45,7 @@
               domains = [
                 "anytype.apollan.cc"
                 "sllv.apollan.cc"
-                "ftb.apollan.cc"
+                "darkrpg.apollan.cc"
                 "factorio.apollan.cc"
                 "terraria.apollan.cc"
               ];
@@ -74,7 +74,7 @@
                 enable = true;
                 port = 25565;
               };
-              ftb-unstable = {
+              darkRPG = {
                 enable = true;
                 port = 19132;
               };

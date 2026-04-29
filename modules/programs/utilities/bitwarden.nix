@@ -20,7 +20,7 @@ in
     lib.mkMerge [
       # 1. Universal Bitwarden (Desktop App)
       {
-        environment.systemPackages = [ pkgs.bitwarden ];
+        environment.systemPackages = [ pkgs.bitwarden-desktop ];
       }
 
       # 2. Linux-only (CLI Client & Secret handling)

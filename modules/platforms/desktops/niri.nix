@@ -14,7 +14,10 @@ in
   # Shield everything
   config = lib.mkIf cfg.enable {
     programs.niri.enable = true;
-    programs.niri.package = pkgs.niri;
+    nix.settings = {
+      substituters = [ "https://niri.cachix.org" ];
+      trusted-public-keys = [ "niri.cachix.org-1:Wv0Om607Z5X0CQy+/J67p4H6at0S0p6+H46M06+mErc=" ];
+    };
 
     environment.systemPackages =
       with pkgs;

@@ -40,7 +40,6 @@ in
     ];
 
     boot.plymouth.enable = true;
-    # Essential system packages
     environment.systemPackages = with pkgs; [
       limine
       efibootmgr

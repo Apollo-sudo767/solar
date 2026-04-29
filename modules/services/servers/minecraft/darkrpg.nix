@@ -12,7 +12,8 @@ let
 
   modpack = pkgs.fetchzip {
     url = "https://github.com/Apollo-sudo767/solar-modpacks/releases/download/DarkRPG/DarkRPG.Fabric.Server.Pack-8.9.5.zip";
-    hash = "sha256-NM885zTCnSjZk33g5ybzM1+m3g/Et2llaB0txqLGVas=";
+    hash = "sha256-8Gftg1C1aVkSDKw2S3XCKKMEOWV2AKFZ347uhZcd+Y0=";
+    stripRoot = false;
   };
 in
 {
@@ -35,7 +36,7 @@ in
 
       servers.darkRPG = {
         enable = true;
-        package = pkgs.minecraftServers.fabric-1_21;
+        package = pkgs.minecraftServers.fabric-1_21_1;
         jvmOpts = "-Xmx8G -Xms4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
 
         symlinks = {
@@ -70,7 +71,7 @@ in
     networking.firewall.allowedUDPPorts = [ cfg.port ];
 
     services.borgbackup.jobs.minecraft-darkRPG = {
-      paths = [ "/srv/minecraft/dark-rpg" ];
+      paths = [ "/srv/minecraft/darkRPG" ];
       repo = "/mnt/backups/minecraft/dark-rpg";
       encryption.mode = "none";
       compression = "auto,zstd";

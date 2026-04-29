@@ -70,7 +70,7 @@ in
         stylix.targets = {
           gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
           qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
-          plymouth.enable = config.boot.plymouth.enable or false;
+          plymouth.enable = config.boot.boot.nix or false;
         };
       })
     ]

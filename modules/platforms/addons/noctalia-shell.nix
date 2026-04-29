@@ -20,6 +20,11 @@ in
     # Required services for Noctalia's status modules
     services.upower.enable = lib.mkDefault true;
 
+    nix.settings = {
+      substituters = [ "https://noctalia.cachix.org" ];
+      trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+    };
+
     # Disable standalone alternatives to let Noctalia handle them
     myFeatures.platforms.addons = {
       swaybg.enable = lib.mkForce false;
@@ -34,6 +39,29 @@ in
         package = pkgs.noctalia-shell;
 
         settings = {
+          window-rules = [
+            {
+              # Apply Xray blur to Ghostty
+              matches = [ { app-id = "com.mitchellh.ghostty"; } ];
+              background-effect = {
+                blur = true;
+                xray = true;
+                # Optional: adjust the strength
+                # blur-sigma = 20;
+              };
+            }
+          ];
+
+          layer-rules = [
+            {
+              # Apply Xray blur to Noctalia Shell
+              matches = [ { namespace = "^noctalia.*"; } ];
+              background-effect = {
+                blur = true;
+                xray = true;
+              };
+            }
+          ];
           bar = {
             barType = "simple";
             position = "top";

@@ -52,6 +52,9 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Anytype Sync Bundle
+    any-sync-bundle.url = "github:grishy/any-sync-bundle";
+
     # Formatting & Linting
     treefmt-nix.url = "github:numtide/treefmt-nix";
     pre-commit-hooks = {

@@ -8,12 +8,13 @@
 
 let
   inherit isTotal;
+  cfg = config.myFeatures.core.nix.nix-settings;
 in
 {
   options.myFeatures.core.nix.nix-settings.enable =
     lib.mkEnableOption "Core Nix flake and optimization settings";
 
-  config = lib.mkIf config.myFeatures.core.nix.nix-settings.enable {
+  config = lib.mkIf cfg.enable {
     nix = {
       settings = {
         experimental-features = [

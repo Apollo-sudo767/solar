@@ -35,6 +35,7 @@
           };
         };
         services = {
+          nginx.enable = true;
           hardware.udisks2.enable = true;
           networking = {
             enable = true;
@@ -42,6 +43,7 @@
             ddns = {
               enable = true;
               domains = [
+                "anytype.apollan.cc"
                 "sllv.apollan.cc"
                 "ftb.apollan.cc"
                 "factorio.apollan.cc"
@@ -50,6 +52,15 @@
             };
           };
           servers = {
+            anytype = {
+              enable = true;
+              port = 33010;
+              quicPort = 33020;
+              website = {
+                enable = true;
+                domain = "anytype.apollan.cc";
+              };
+            };
             factorio = {
               enable = true;
               port = 34197;

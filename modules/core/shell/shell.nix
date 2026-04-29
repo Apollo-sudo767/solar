@@ -102,7 +102,7 @@ in
           ff = "fastfetch";
         };
 
-        initContent = ''
+        initExtra = ''
           # General Shell Prefs
           export EDITOR=helix
           # ... the rest of your init code

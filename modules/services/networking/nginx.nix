@@ -13,7 +13,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # ALL Linux-specific services must be inside this shield
     services.nginx = {
       enable = true;
       virtualHosts."${cfg.domain}" = {
@@ -26,7 +25,10 @@ in
       };
     };
 
-    security.acme.acceptTerms = true;
+    security.acme = {
+      acceptTerms = true;
+      defaults.email = "apollo@apollan.cc"; # Reasonable default
+    };
 
     networking.firewall.allowedTCPPorts = [
       80

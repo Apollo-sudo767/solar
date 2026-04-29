@@ -41,11 +41,11 @@ in
 
         symlinks = {
           "mods" = "${modpack}/mods";
+          "config" = "${modpack}/config";
         };
 
         files = {
           "server-icon.png" = iconFile;
-          "config" = "${modpack}/config";
           # defaultconfigs and kubejs removed as they are not in the source zip
         };
 

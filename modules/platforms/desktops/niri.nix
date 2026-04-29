@@ -20,9 +20,6 @@ in
       with pkgs;
       [
         xwayland-satellite
-        swaybg
-        swayidle
-        swaylock
         networkmanagerapplet
         thunar
         awww
@@ -32,6 +29,9 @@ in
         fuzzel
         mako
         swaynotificationcenter
+        swaybg
+        swayidle
+        swalock
       ];
   };
 }

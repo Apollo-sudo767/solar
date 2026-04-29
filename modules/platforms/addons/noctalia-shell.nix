@@ -2,6 +2,7 @@
   config,
   lib,
   inputs,
+  pkgs,
   ...
 }:
 
@@ -9,6 +10,7 @@ let
   cfg = config.myFeatures.platforms.addons.noctalia-shell;
   inherit (config.myFeatures.core.system.users) usernames;
   stylixEnabled = config.myFeatures.platforms.styling.stylix.enable;
+  iconFile = ../../../assets/icons/Apollo.jpg;
 in
 {
   options.myFeatures.platforms.addons.noctalia-shell.enable =
@@ -29,6 +31,7 @@ in
 
       programs.noctalia-shell = {
         enable = true;
+        package = pkgs.noctalia-shell;
 
         settings = {
           bar = {
@@ -215,7 +218,7 @@ in
             screenOverrides = [ ];
           };
           general = {
-            avatarImage = "/home/${name}/src/solar/assets/icons/Apollo.jpg";
+            avatarImage = iconFile;
             dimmerOpacity = 0.2;
             showScreenCorners = false;
             forceBlackScreenCorners = false;

@@ -26,6 +26,10 @@ in
       tree
       git
       helix
+      comma
+      btop
+      curl
+      wget
     ];
   };
 }

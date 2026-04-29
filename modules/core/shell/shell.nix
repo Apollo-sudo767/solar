@@ -18,7 +18,6 @@ in
     environment.systemPackages = [
       pkgs.eza
       pkgs.fzf
-      pkgs.starship
     ];
 
     programs.zsh.enable = true;

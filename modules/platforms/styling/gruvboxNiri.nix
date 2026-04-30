@@ -25,6 +25,14 @@ in
     # Simplify the user generation logic
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
+        window-rules = [
+          {
+            matches = [ { app-id = "com.mitchellh.ghostty"; } ];
+
+            draw-border-with-background = false;
+            focus-ring.enable = false;
+          }
+        ];
         layout = {
           gaps = 0;
           focus-ring = {

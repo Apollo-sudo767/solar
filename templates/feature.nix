@@ -57,7 +57,7 @@
         # DARWIN-SPECIFIC CONFIGURATION
         # -----------------------------
         # This block only executes on Phobos.
-        system.defaults = lib.mkIf isDarwin {
+        stdenv.hostPlatform.system.defaults = lib.mkIf isDarwin {
           dock.autohide = true;
         };
 

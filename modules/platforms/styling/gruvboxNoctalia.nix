@@ -2,7 +2,7 @@
 
 let
   cfg = config.myFeatures.platforms.styling.gruvboxNoctalia;
-  stylixEnabled = config.myFeatures.platfroms.styling.stylix.enable;
+  stylixEnabled = config.myFeatures.platforms.styling.stylix.enable;
   inherit (config.myFeatures.core.system.users) usernames;
 in
 {

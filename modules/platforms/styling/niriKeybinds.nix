@@ -64,6 +64,14 @@ in
               touch = {
                 map-to-output = "eDP-1";
               };
+
+              tablet = {
+                map-to-output = "eDP-1";
+              };
+            };
+
+            gestures = {
+              dnd-edge-workspace-switch = { };
             };
 
             outputs = {

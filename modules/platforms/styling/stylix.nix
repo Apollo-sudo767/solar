@@ -66,13 +66,18 @@ in
       }
 
       # Target Handling
-      (lib.mkIf (!isDarwin) {
-        stylix.targets = {
-          gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
-          qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
-          plymouth.enable = config.boot.boot.nix or false;
-        };
-      })
+      (
+        if isDarwin then
+          { }
+        else
+          {
+            stylix.targets = {
+              gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
+              qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
+              plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
+            };
+          }
+      )
     ]
   );
 }

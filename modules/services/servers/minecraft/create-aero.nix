@@ -10,9 +10,9 @@ let
   cfg = config.myFeatures.services.servers.minecraft.create-aero;
   iconFile = ../../../../assets/icons/create-aero.png;
 
-  modpack = pkgs.fetchzip {
+  modpack = pkgs.fetchModrinthModpack {
     url = "https://cdn.modrinth.com/data/TnPYNGac/versions/33RJhLcA/Aeronautics-%20Cogs%20%26%20Clouds.mrpack";
-    hash = "sha256-8Gftg1C1aVkSDKw2S3XCKKMEOWV2AKFZ347uhZcd+Y0=";
+    hash = "sha256-6JRYxzCwJcUAAZJ4f9Bt+217QCZE/e3emD0zkXGSk7A=";
   };
 in
 {

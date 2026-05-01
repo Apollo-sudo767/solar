@@ -52,15 +52,6 @@
             };
           };
           servers = {
-            anytype = {
-              enable = true;
-              port = 33010;
-              quicPort = 33020;
-              website = {
-                enable = true;
-                domain = "anytype.apollan.cc";
-              };
-            };
             factorio = {
               enable = true;
               port = 34197;

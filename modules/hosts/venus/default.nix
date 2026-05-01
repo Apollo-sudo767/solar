@@ -74,7 +74,7 @@
                 enable = true;
                 port = 25565;
               };
-              darkRPG = {
+              create-aero = {
                 enable = true;
                 port = 19132;
               };

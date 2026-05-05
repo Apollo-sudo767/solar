@@ -39,15 +39,15 @@ in
         package = pkgs.minecraftServers.neoforge-1_21_1;
         jvmOpts = "-Xmx12G -Xms4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
 
-        # Fixed paths by adding 'pack-src'
         symlinks = {
-          "defaultconfigs" = "${modpack}/pack-src/overrides/defaultconfigs";
+          # Mods can remain symlinked as they are read-only jars
           "mods" = "${modpack}/mods";
         };
 
-        # Fixed paths by adding 'pack-src'
         files = {
           "server-icon.png" = iconFile;
+          # MOVED: defaultconfigs must be a writable copy, not a symlink
+          "defaultconfigs" = "${modpack}/pack-src/overrides/defaultconfigs";
           "config" = "${modpack}/pack-src/overrides/config";
         };
 

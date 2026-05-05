@@ -46,7 +46,6 @@ in
         files = {
           "server-icon.png" = iconFile;
           "config" = "${modpack}/pack-src/overrides/config";
-          # REMOVED: "defaultconfigs" because it does not exist in this modpack
         };
 
         serverProperties = {

@@ -8,6 +8,7 @@
 
 let
   cfg = config.myFeatures.services.servers.anytype;
+  # Use the bundle from inputs for the specific logic
   anySyncPackage = inputs.any-sync-bundle.packages.${pkgs.system}.default;
 in
 {
@@ -34,13 +35,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # MongoDB is required for Anytype
+    # MongoDB 7.0 is pulled from nixpkgs-unstable binaries
     services.mongodb = {
       enable = true;
       package = pkgs.mongodb-7_0;
     };
 
-    # Redis is required for Anytype
+    # Redis is pulled from standard nixpkgs binaries
     services.redis.servers."any-sync" = {
       enable = true;
       port = 6379;
@@ -62,9 +63,11 @@ in
         Group = "any-sync";
         StateDirectory = "any-sync";
         WorkingDirectory = "/var/lib/any-sync";
+        # Security hardening
+        NoNewPrivileges = true;
+        ProtectSystem = "full";
       };
 
-      # Initial setup to generate config if it doesn't exist
       preStart = ''
         if [ ! -f /var/lib/any-sync/config.yml ]; then
           ${anySyncPackage}/bin/any-sync-bundle --config /var/lib/any-sync/config.yml || true
@@ -81,8 +84,8 @@ in
     users.groups.any-sync = { };
 
     services.nginx.virtualHosts."${cfg.website.domain}" = lib.mkIf cfg.website.enable {
-      enableACME = true;
-      forceSSL = true;
+      enableACME = lib.mkDefault false;
+      forceSSL = lib.mkDefault false;
       locations."/" = {
         root = pkgs.writeTextDir "index.html" ''
           <html>

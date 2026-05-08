@@ -12,7 +12,7 @@ let
 
   modpack = pkgs.fetchModrinthModpack {
     url = "https://cdn.modrinth.com/data/TnPYNGac/versions/c8jq0J3n/Aeronautics-%20Cogs%20%26%20Clouds.mrpack?mr_download_reason=standalone";
-    packHash = lib.fakeSha256;
+    packHash = "sha256-gJ1VCdVTMtFe9FcoiaL7/LrVEFNWuUYLP2NtjmalPtw=";
     side = "server";
   };
 in

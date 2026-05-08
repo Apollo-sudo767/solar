@@ -11,7 +11,7 @@ let
   iconFile = ../../../../assets/icons/create-aero.png;
 
   modpack = pkgs.fetchModrinthModpack {
-    url = "https://cdn.modrinth.com/data/TnPYNGac/versions/phttB0Fp/Aeronautics-%20Cogs%20%26%20Clouds.mrpack?mr_download_reason=standalone";
+    url = "https://cdn.modrinth.com/data/TnPYNGac/versions/H2EzqU28/Aeronautics-%20Cogs%20%26%20Clouds.mrpack?mr_download_reason=standalone";
     packHash = "sha256-C2iR2fWWm0aJ82yzyU9++MhrQ9KvY77qALe33HSyFkM=";
     side = "server";
   };
@@ -24,6 +24,11 @@ in
     port = lib.mkOption {
       type = lib.types.port;
       default = 25565;
+    };
+    mapPort = lib.mkOption {
+      type = lib.types.port;
+      default = 8100;
+      description = "The port for the BlueMap web interface.";
     };
   };
 
@@ -46,6 +51,18 @@ in
         files = {
           "server-icon.png" = iconFile;
           "config" = "${modpack}/pack-src/overrides/config";
+
+          "config/bluemap/core.conf" = pkgs.writeText "bluemap-core.conf" ''
+            accept-download: true
+            render-thread-count: 2
+          '';
+
+          "config/bluemap/webserver.conf" = pkgs.writeText "bluemap-webserver.conf" ''
+            enabled: true
+            webroot: "bluemap/web"
+            port: ${toString cfg.mapPort}
+            ip: "0.0.0.0"
+          '';
         };
 
         serverProperties = {
@@ -66,7 +83,10 @@ in
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ cfg.port ];
+    networking.firewall.allowedTCPPorts = [
+      cfg.port
+      cfg.mapPort
+    ];
     networking.firewall.allowedUDPPorts = [ cfg.port ];
 
     services.borgbackup.jobs.minecraft-create-aero = {

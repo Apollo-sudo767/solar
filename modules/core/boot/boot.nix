@@ -27,7 +27,7 @@ in
 
       # FIX: Wrap the path in a list [ ] and remove the attribute name
       style = {
-        wallpapers = [ wallpaperPath ];
+        wallpapers = lib.mkForce [ wallpaperPath ];
         wallpaperStyle = "stretched";
       };
     };

@@ -268,7 +268,7 @@ in
         package = pkgs.minecraftServers.fabric-1_21_1;
 
         # Debug Mode: Simplified JVM options to ensure startup
-        jvmOpts = "-Xmx8G -Xms8G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
+        jvmOpts = "-Xmx4G -Xms4G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
 
         symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 

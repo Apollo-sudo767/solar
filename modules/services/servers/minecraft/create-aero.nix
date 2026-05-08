@@ -11,8 +11,8 @@ let
   iconFile = ../../../../assets/icons/create-aero.png;
 
   modpack = pkgs.fetchModrinthModpack {
-    url = "https://cdn.modrinth.com/data/TnPYNGac/versions/c8jq0J3n/Aeronautics-%20Cogs%20%26%20Clouds.mrpack?mr_download_reason=standalone";
-    packHash = "sha256-gJ1VCdVTMtFe9FcoiaL7/LrVEFNWuUYLP2NtjmalPtw=";
+    url = "https://cdn.modrinth.com/data/TnPYNGac/versions/jeow6uiA/Aeronautics-%20Cogs%20%26%20Clouds.mrpack?mr_download_reason=standalone";
+    packHash = "sha256-+mUy8XuOQttBcEGifGFfBNIIPvyt+C/0klE2BcYUyQM=";
     side = "server";
   };
 in

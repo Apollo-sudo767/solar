@@ -70,7 +70,11 @@
             helix.enable = true;
             gemini.enable = true;
           };
-          browsers.firefox.enable = true;
+          browsers.firefox = {
+            enable = true;
+            nightly.enable = true;
+            extensions.enable = true;
+          };
           media = {
             gaming.enable = true;
             media.enable = true;

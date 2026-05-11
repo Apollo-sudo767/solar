@@ -61,7 +61,11 @@
             obs.enable = true;
             davinci.enable = true;
           };
-          browsers.firefox.enable = true;
+          browsers.firefox = {
+            enable = true;
+            nightly.enable = true;
+            extensions.enable = true;
+          };
           utilities = {
             stylePackages.enable = true;
             bitwarden.enable = true;

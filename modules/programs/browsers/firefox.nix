@@ -1,20 +1,37 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.myFeatures.programs.browsers.firefox;
 in
 {
   options.myFeatures.programs.browsers.firefox = {
-    enable = lib.mkEnableOption "Enables Firefox";
+    enable = lib.mkEnableOption "Enables Firefox browser";
+
+    nightly = {
+      enable = lib.mkEnableOption "Use Firefox Nightly binary";
+    };
+
+    extensions = {
+      enable = lib.mkEnableOption "Declarative force-installed extensions";
+    };
   };
 
   config = lib.mkIf cfg.enable {
-    # System-wide Firefox configuration and declarative extensions
+    # System-wide Firefox configuration
     programs.firefox = {
       enable = true;
+
+      # Swaps the default Firefox package for Nightly if the submodule toggle is enabled
+      package = lib.mkIf cfg.nightly.enable (lib.mkForce pkgs.firefox-nightly-bin);
+
       policies = {
-        # Force install requested extensions
-        ExtensionSettings = {
+        # Conditional extension handling based on your new extension toggle
+        ExtensionSettings = lib.mkIf cfg.extensions.enable {
           "uBlock0@raymondhill.net" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
             installation_mode = "force_installed";
@@ -68,9 +85,8 @@ in
       };
     };
 
-    # User-specific Home Manager configuration
+    # User-specific Home Manager configuration via Solar's username generator
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
-      # FORCE the Stylix Home Manager module to load for this specific user
       stylix.targets.firefox.profileNames = [ name ];
 
       programs.firefox = {
@@ -84,6 +100,8 @@ in
             "browser.topsites.contile.enabled" = false;
             "browser.newtabpage.activity-stream.showSponsored" = false;
             "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+            # UI Debugging for Nova redesign monitoring - active only when Nightly binary is used
+            "browser.uiCustomization.debug" = lib.mkIf cfg.nightly.enable true;
           };
         };
       };

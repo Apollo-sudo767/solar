@@ -44,6 +44,9 @@
           stylix.enable = true;
           themes.gruvbox.enable = true;
         };
+        desktops = {
+          paneru.enable = true;
+        };
       };
       services.networking.tailscale.enable = true;
     };

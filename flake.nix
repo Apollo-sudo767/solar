@@ -33,6 +33,11 @@
     # Niri
     niri.url = "github:sodiboo/niri-flake";
 
+    # Paneru
+    paneru = {
+      url = "github:karinushka/paneru";
+    };
+
     # Disko & Impermance
     disko.url = "github:nix-community/disko";
     impermanence.url = "github:nix-community/impermanence";

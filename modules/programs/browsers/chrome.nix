@@ -22,20 +22,24 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # System-wide configuration for Chromium-based browsers
-    programs.chromium = {
-      enable = true;
-
-      # Select the package based on the enabled submodule
-      package =
+    # Select the package based on the enabled submodule and add to system path
+    environment.systemPackages = [
+      (
         if cfg.ungoogled.enable then
           pkgs.ungoogled-chromium
         else if cfg.googleChrome.enable then
           pkgs.google-chrome
         else
-          pkgs.chromium;
+          pkgs.chromium
+      )
+    ];
+
+    # System-wide configuration for Chromium-based browsers
+    programs.chromium = {
+      enable = true;
 
       # Global policies for all Chromium-based instances
+      # Note: 'package' is not a valid option here, so it was removed.
       extraOpts = {
         "BrowserSignin" = 0; # Disable browser sign-in
         "SyncDisabled" = true;

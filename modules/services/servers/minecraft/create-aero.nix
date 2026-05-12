@@ -8,6 +8,10 @@
 
 let
   cfg = config.myFeatures.services.servers.minecraft.create-aero;
+  serverPath = "/srv/minecraft/create-aero";
+  worldPath = "${serverPath}/world";
+  # We move the configs to a dedicated folder to stop Nix/BlueMap permission wars
+  externalConfigDir = "${serverPath}/bluemap-configs";
   iconFile = ../../../../assets/icons/create-aero.png;
 
   modpack = pkgs.fetchModrinthModpack {
@@ -20,7 +24,7 @@ in
   imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
   options.myFeatures.services.servers.minecraft.create-aero = {
-    enable = lib.mkEnableOption "Create Aeronautics Minecraft 1.21.1 Neoforge Modpack";
+    enable = lib.mkEnableOption "Create Aeronautics Minecraft 1.21.1";
     port = lib.mkOption {
       type = lib.types.port;
       default = 25565;
@@ -28,7 +32,6 @@ in
     mapPort = lib.mkOption {
       type = lib.types.port;
       default = 8100;
-      description = "The port for the BlueMap web interface.";
     };
   };
 
@@ -42,47 +45,17 @@ in
       servers.create-aero = {
         enable = true;
         package = pkgs.minecraftServers.neoforge-1_21_1;
-        # Updated to Generational ZGC for better physics entity performance and consistent 12GB heap
         jvmOpts = "-Xmx12G -Xms12G -XX:+UseZGC -XX:+ZGenerational -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:+PerfDisableSharedMem";
 
         symlinks = {
           "mods" = "${modpack}/mods";
+          # Direct BlueMap to look at our externally managed config folder
+          "config/bluemap" = externalConfigDir;
         };
 
         files = {
           "server-icon.png" = iconFile;
           "config" = "${modpack}/pack-src/overrides/config";
-
-          "config/bluemap/core.conf" = pkgs.writeText "bluemap-core.conf" ''
-            accept-download: true
-            render-thread-count: 2
-          '';
-
-          "config/bluemap/webserver.conf" = pkgs.writeText "bluemap-webserver.conf" ''
-            enabled: true
-            webroot: "bluemap/web"
-            port: ${toString cfg.mapPort}
-            ip: "0.0.0.0"
-          '';
-
-          # Explicit Map Definitions to fix the "New World" loading error
-          "config/bluemap/maps/overworld.conf" = pkgs.writeText "overworld.conf" ''
-            name: "Overworld"
-            world: "../../world"
-            sorting: 0
-          '';
-
-          "config/bluemap/maps/nether.conf" = pkgs.writeText "nether.conf" ''
-            name: "Nether"
-            world: "../../world/DIM-1"
-            sorting: 10
-          '';
-
-          "config/bluemap/maps/end.conf" = pkgs.writeText "end.conf" ''
-            name: "The End"
-            world: "../../world/DIM1"
-            sorting: 20
-          '';
         };
 
         serverProperties = {
@@ -99,9 +72,57 @@ in
       serviceConfig = {
         Restart = "always";
         RestartSec = "10s";
-        TimeoutStopSec = lib.mkForce "120s";
+        # DISCOVERY SCRIPT RUNS AS ROOT
+        ExecStartPre = lib.mkBefore [
+          (pkgs.writeShellScript "bluemap-discovery" ''
+                        set -eu
+                        # Ensure paths exist
+                        mkdir -p "${externalConfigDir}/maps"
+                        
+                        # Write core config
+                        cat <<EOF > "${externalConfigDir}/core.conf"
+            accept-download: true
+            render-thread-count: 2
+            data: "bluemap"
+            EOF
+
+                        # Write webserver config
+                        cat <<EOF > "${externalConfigDir}/webserver.conf"
+            enabled: true
+            webroot: "bluemap/web"
+            port: ${toString cfg.mapPort}
+            ip: "0.0.0.0"
+            EOF
+
+                        # Auto-discover dimensions
+                        if [ -d "${worldPath}" ]; then
+                          find "${worldPath}" -name "level.dat" | while read -r levelPath; do
+                            dimPath=$(dirname "$levelPath")
+                            id=$(echo "$dimPath" | sed 's|${worldPath}||' | sed 's|^/||' | tr '/' '-' || echo "overworld")
+                            [ -z "$id" ] && id="overworld"
+                            name=$(basename "$dimPath" | sed 's/_/ /g' | sed -e 's/\b\(.\)/\u\1/g')
+                            [ "$id" = "overworld" ] && name="Overworld"
+                            
+                            cat <<MAP > "${externalConfigDir}/maps/$id.conf"
+            name: "$name"
+            world: "$dimPath"
+            sorting: 10
+            MAP
+                          done
+                        fi
+
+                        # Clean up permissions
+                        chown -R minecraft:minecraft "${externalConfigDir}"
+                        chown -R minecraft:minecraft "${serverPath}"
+          '')
+        ];
       };
     };
+
+    systemd.tmpfiles.rules = [
+      "d ${serverPath}/saves 0770 minecraft minecraft -"
+      "d ${externalConfigDir} 0770 minecraft minecraft -"
+    ];
 
     networking.firewall.allowedTCPPorts = [
       cfg.port
@@ -110,7 +131,7 @@ in
     networking.firewall.allowedUDPPorts = [ cfg.port ];
 
     services.borgbackup.jobs.minecraft-create-aero = {
-      paths = [ "/srv/minecraft/create-aero" ];
+      paths = [ serverPath ];
       repo = "/mnt/backups/minecraft/create-aero";
       encryption.mode = "none";
       compression = "auto,zstd";

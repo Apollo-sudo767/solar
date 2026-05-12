@@ -42,7 +42,8 @@ in
       servers.create-aero = {
         enable = true;
         package = pkgs.minecraftServers.neoforge-1_21_1;
-        jvmOpts = "-Xmx12G -Xms4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
+        # Updated to Generational ZGC for better physics entity performance and consistent 12GB heap
+        jvmOpts = "-Xmx12G -Xms12G -XX:+UseZGC -XX:+ZGenerational -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:+PerfDisableSharedMem";
 
         symlinks = {
           "mods" = "${modpack}/mods";
@@ -62,6 +63,25 @@ in
             webroot: "bluemap/web"
             port: ${toString cfg.mapPort}
             ip: "0.0.0.0"
+          '';
+
+          # Explicit Map Definitions to fix the "New World" loading error
+          "config/bluemap/maps/overworld.conf" = pkgs.writeText "overworld.conf" ''
+            name: "Overworld"
+            world: "../../world"
+            sorting: 0
+          '';
+
+          "config/bluemap/maps/nether.conf" = pkgs.writeText "nether.conf" ''
+            name: "Nether"
+            world: "../../world/DIM-1"
+            sorting: 10
+          '';
+
+          "config/bluemap/maps/end.conf" = pkgs.writeText "end.conf" ''
+            name: "The End"
+            world: "../../world/DIM1"
+            sorting: 20
           '';
         };
 

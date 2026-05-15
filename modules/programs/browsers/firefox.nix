@@ -2,11 +2,13 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
 let
   cfg = config.myFeatures.programs.browsers.firefox;
+  firefox-nightly = inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin;
 in
 {
   options.myFeatures.programs.browsers.firefox = {
@@ -27,7 +29,7 @@ in
       enable = true;
 
       # Swaps the default Firefox package for Nightly if the submodule toggle is enabled
-      package = lib.mkIf cfg.nightly.enable (lib.mkForce pkgs.firefox-nightly-bin);
+      package = lib.mkIf cfg.nightly.enable (lib.mkForce firefox-nightly);
 
       policies = {
         # Conditional extension handling based on your new extension toggle

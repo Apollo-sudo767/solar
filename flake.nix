@@ -51,6 +51,9 @@
     # Nix Minecraft
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
 
+    # Firefox Nightly
+    firefox.url = "github:nix-community/flake-firefox-nightly";
+
     # Noctalia
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";

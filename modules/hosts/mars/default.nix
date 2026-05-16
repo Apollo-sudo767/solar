@@ -47,7 +47,10 @@
             stylix.enable = true;
             gruvboxNiri.enable = true;
           };
-          addons.displayManager.manager = "tuigreet";
+          addons = {
+            displayManager.manager = "gdm";
+            noctalia-shell.enable = true;
+          };
         };
         programs = {
           terminal = {

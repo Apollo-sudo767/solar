@@ -103,7 +103,7 @@ in
 
         initContent = ''
           # General Shell Prefs
-          export EDITOR=helix
+          export EDITOR=hx
           # ... the rest of your init code
         '';
       };

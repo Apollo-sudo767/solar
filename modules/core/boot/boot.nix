@@ -65,5 +65,8 @@ in
       limine
       efibootmgr
     ];
+
+    hardware.enableAllFirmware = true;
+    hardware.firmware = [ pkgs.linux-firmware ];
   };
 }

@@ -41,6 +41,12 @@
             };
           };
           peripherals.bluetooth.enable = true;
+          input = {
+            controllers = {
+              enable = true;
+              xbox = true;
+            };
+          };
         };
         platforms = {
           styling = {

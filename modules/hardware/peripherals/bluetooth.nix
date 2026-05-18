@@ -16,8 +16,24 @@ in
   config = lib.mkIf cfg.enable {
     hardware.bluetooth = {
       enable = true;
+      powerOnBoot = lib.mkDefault true;
+      settings = {
+        General = {
+          # Required for accurate gamepad battery tracking and peripheral profiles
+          Experimental = true;
+          # Ensures predictable hands-shaking with modern devices
+          Privacy = "device";
+        };
+      };
     };
+
     services.blueman.enable = true;
-    environment.systemPackages = [ pkgs.bluez ];
+
+    environment.systemPackages = with pkgs; [
+      bluez
+      bluez-tools
+      usbutils # Injects 'lsusb' natively into your deployment environment
+      pciutils # Injects 'lspci' natively into your deployment environment
+    ];
   };
 }

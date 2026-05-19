@@ -6,14 +6,10 @@
 }:
 
 let
-  cfg = config.myFeatures.core.boot.secureboot;
+  cfg = config.myFeatures.core.boot;
 in
 {
-  options.myFeatures.core.boot.secureboot = {
-    enable = lib.mkEnableOption "Native Limine Secure Boot";
-  };
-
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && cfg.secureBoot.enable) {
     # 1. Enable native Limine signing during rebuilds
     boot.loader.limine.secureBoot.enable = true;
 

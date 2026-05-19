@@ -34,7 +34,7 @@ in
         })
       ];
     };
-    services.xserver.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true;
+    services.displayManager.gdm.enable = lib.mkIf (cfg.manager == "gdm") true;
     services.displayManager.sddm.wayland.enable = lib.mkIf (cfg.manager == "sddm") true;
   };
 }

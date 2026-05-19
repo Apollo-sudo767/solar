@@ -6,30 +6,28 @@
 }:
 
 let
-  cfg = config.myFeatures.core.boot.boot;
-  # Points to your assets folder relative to this file
-  wallpaperPath = ../../../assets/wallpapers/limine-bg.png;
+  cfg = config.myFeatures.core.boot;
 in
 {
-  options.myFeatures.core.boot.boot = {
-    enable = lib.mkEnableOption "Limine Bootloader";
+  options.myFeatures.core.boot = {
+    boot.enable = lib.mkEnableOption "Common Bootloader configuration";
+    loader = lib.mkOption {
+      type = lib.types.enum [
+        "limine"
+        "grub"
+        "systemd"
+      ];
+      default = "limine";
+      description = "The bootloader to use.";
+    };
+    secureBoot = {
+      enable = lib.mkEnableOption "Native Bootloader Secure Boot";
+    };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Disable the default systemd-boot to make room for Limine
-    boot.loader.systemd-boot.enable = false;
-
+  config = lib.mkIf (cfg.enable && cfg.boot.enable) {
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;
-
-    boot.loader.limine = {
-      enable = true;
-
-      style = {
-        wallpapers = lib.mkForce [ wallpaperPath ];
-        wallpaperStyle = "stretched";
-      };
-    };
 
     # The native "Nix-Way" to pass compression properties to the initrd builder engine
     boot.initrd.compressor = "zstd";
@@ -60,11 +58,6 @@ in
       dates = lib.mkDefault "weekly";
       options = lib.mkDefault "--delete-older-than 7d";
     };
-
-    environment.systemPackages = with pkgs; [
-      limine
-      efibootmgr
-    ];
 
     hardware.enableAllFirmware = true;
     hardware.firmware = [ pkgs.linux-firmware ];

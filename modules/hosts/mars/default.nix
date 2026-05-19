@@ -17,7 +17,10 @@
         core = {
           system.core-branch.enable = true;
           shell.shell-branch.enable = true;
-          boot.secureboot.enable = true;
+          boot = {
+            enable = true;
+            secureBoot.enable = true;
+          };
           security.security = {
             enable = true;
             useAppArmor = true;
@@ -63,6 +66,7 @@
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;
+            gemini.enable = true;
           };
           media = {
             gaming.enable = true;

@@ -21,6 +21,7 @@
           };
           nix.lix.enable = true;
           shell.shell-branch.enable = true;
+          boot.enable = true;
         };
         platforms = {
           desktops.kde.enable = true;

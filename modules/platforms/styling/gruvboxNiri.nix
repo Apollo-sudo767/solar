@@ -25,6 +25,7 @@ in
     # Simplify the user generation logic
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
+        prefer-no-csd = true;
         window-rules = [
           {
             matches = [ { app-id = "com.mitchellh.ghostty"; } ];
@@ -42,7 +43,10 @@ in
             active.color = "#${config.lib.stylix.colors.base0D}";
             inactive.color = "#${config.lib.stylix.colors.base02}";
           };
-          border.enable = false;
+          border = {
+            enable = false;
+            width = 0;
+          };
         };
       };
     });

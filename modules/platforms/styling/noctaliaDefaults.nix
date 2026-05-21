@@ -306,7 +306,7 @@ in
           };
           wallpaper = {
             enabled = true;
-            overviewEnabled = false;
+            overviewEnabled = true;
             directory =
               if stylixEnabled then
                 "${builtins.dirOf (toString config.stylix.image)}"

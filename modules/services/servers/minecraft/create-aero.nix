@@ -98,6 +98,7 @@ in
           online-mode = true;
           enforce-secure-profile = false;
           motd = "PhasMC Create Aero 1.21.1";
+          allow-flight = true;
         };
       };
     };

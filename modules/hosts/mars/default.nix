@@ -57,7 +57,7 @@
             gruvboxNiri.enable = true;
           };
           addons = {
-            displayManager.manager = "gdm";
+            displayManager.manager = "regreet";
             noctalia-shell.enable = true;
           };
         };

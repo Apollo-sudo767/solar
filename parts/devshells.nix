@@ -64,8 +64,8 @@ _:
         web = pkgs.mkShell {
           name = "web-env";
           packages = with pkgs; [
-            nodejs_20
-            corepack_20
+            nodejs_22
+            corepack_22
             typescript-language-server
           ];
           shellHook = ''echo "🌐 Web/JS environment active"'';

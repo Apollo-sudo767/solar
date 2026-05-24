@@ -45,7 +45,7 @@ in
                 swayConfig = pkgs.writeText "greetd-sway-config" ''
                   output "DP-1" mode 2560x1440@180Hz position 0 0
                   output "DP-2" disable
-                  exec "${pkgs.greetd-regreet}/bin/re-greeter; swaymsg exit"
+                  exec "${pkgs.regreet}/bin/regreet; swaymsg exit"
                 '';
               in
               "${pkgs.sway}/bin/sway --config ${swayConfig} --unsupported-gpu";

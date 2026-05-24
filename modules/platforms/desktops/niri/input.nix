@@ -29,7 +29,7 @@ in
       };
 
       gestures = {
-        dnd-edge-workspace-switch = true;
+        dnd-edge-workspace-switch = { };
       };
     };
   };

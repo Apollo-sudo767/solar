@@ -16,11 +16,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (
-      _name:
-      { ... }:
-      {
-        imports = [ inputs.niri.homeModules.niri ];
-
+      _name: _: {
         programs.niri = {
           settings = {
             spawn-at-startup = [
@@ -45,59 +41,6 @@ in
             ++ lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
               { command = [ "noctalia-shell" ]; }
             ];
-
-            input = {
-              # --- Keybind Modifiers ---
-              mod-key = "Alt";
-              mod-key-nested = "Super";
-
-              # --- Trackpad Settings ---
-              touchpad = {
-                tap = true;
-                dwt = false;
-                natural-scroll = true;
-                accel-speed = 0.2;
-                accel-profile = "adaptive";
-                click-method = "clickfinger";
-              };
-
-              touch = {
-                map-to-output = "eDP-1";
-              };
-
-              tablet = {
-                map-to-output = "eDP-1";
-              };
-            };
-
-            gestures = {
-              dnd-edge-workspace-switch = { };
-            };
-
-            outputs = {
-              "DP-1" = {
-                mode = {
-                  width = 2560;
-                  height = 1440;
-                  refresh = 180.0;
-                };
-                position = {
-                  x = 0;
-                  y = 0;
-                };
-              };
-              "DP-2" = {
-                mode = {
-                  width = 1920;
-                  height = 1080;
-                  refresh = 165.0;
-                };
-                position = {
-                  x = 2560;
-                  y = 0;
-                };
-              };
-            };
 
             binds = {
               # --- Apps & System ---

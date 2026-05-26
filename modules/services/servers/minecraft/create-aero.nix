@@ -120,10 +120,17 @@ in
 
     services.borgbackup.jobs.minecraft-create-aero = {
       paths = [ "/srv/minecraft/create-aero" ];
+      exclude = [ "/srv/minecraft/create-aero/bluemap" ];
       repo = "/mnt/backups/minecraft/create-aero";
       encryption.mode = "none";
       compression = "auto,zstd";
-      startAt = "daily";
+      startAt = "0/4:00:00";
+      prune.keep = {
+        within = "1d"; # Keep all 4-hourly backups for the last 24h
+        daily = 7;
+        weekly = 4;
+        monthly = 6;
+      };
     };
   };
 }

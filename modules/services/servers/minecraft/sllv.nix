@@ -309,7 +309,13 @@ in
         mode = "none";
       };
       compression = "auto,zstd"; # High compression, great for Tectonic world files
-      startAt = "daily";
+      startAt = "0/4:00:00";
+      prune.keep = {
+        within = "1d";
+        daily = 7;
+        weekly = 4;
+        monthly = 6;
+      };
     };
 
     networking.firewall.allowedTCPPorts = [ cfg.port ];

@@ -42,10 +42,7 @@
       platforms = {
         styling = {
           stylix.enable = true;
-          themes.gruvbox.enable = true;
-        };
-        desktops = {
-          paneru.enable = true;
+          themes.sky.enable = true;
         };
       };
       services.networking.tailscale.enable = true;

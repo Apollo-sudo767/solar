@@ -8,10 +8,10 @@
 
 let
   inherit isTotal;
-  cfg = config.myFeatures.platforms.styling.themes.gruvbox;
+  cfg = config.myFeatures.platforms.styling.themes.sky;
 in
 {
-  options.myFeatures.platforms.styling.themes.gruvbox.enable = lib.mkEnableOption "Gruvbox Theme";
+  options.myFeatures.platforms.styling.themes.sky.enable = lib.mkEnableOption "Gruvbox Theme";
 
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.styling.stylix = {

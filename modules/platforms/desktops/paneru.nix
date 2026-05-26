@@ -11,18 +11,14 @@ let
 in
 {
   imports = [
-    # Use the darwinModule instead of the homeModule
     inputs.paneru.darwinModules.paneru
   ];
 
-  options.myFeatures = {
-    platforms.desktops.paneru = {
-      enable = lib.mkEnableOption "Paneru scrollable tiling window manager for macOS";
-    };
+  options.myFeatures.platforms.desktops.paneru = {
+    enable = lib.mkEnableOption "Paneru scrollable tiling window manager for macOS";
   };
 
   config = lib.mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
-    # This now uses the nix-darwin service provided by the flake
     services.paneru = {
       enable = true;
       package = inputs.paneru.packages.${pkgs.stdenv.system}.default;
@@ -31,8 +27,8 @@ in
         options = {
           focus_follows_mouse = true;
           mouse_follows_focus = true;
-          horizontal_mouse_warp = true;
-          # Adding the preset widths from the docs for a better experience
+          # Fixed: Changed from 'true' to '1' to satisfy the i16 requirement
+          horizontal_mouse_warp = 1;
           preset_column_widths = [
             0.25
             0.33
@@ -49,15 +45,10 @@ in
           window_center = "alt - c";
           quit = "ctrl + alt - q";
         };
-
-        # Note: nix-darwin doesn't have a direct 'source' option in the service
-        # like the HM one might, but you can keep your assets mapped here:
-        # (This assumes you manage your home directory separately)
       };
     };
 
-    # System-level requirement for Paneru to work correctly
     system.defaults.dock.mru-spaces = false;
-    system.defaults.spaces.spans-displays = false; # Required for "Separate Spaces"
+    system.defaults.spaces.spans-displays = false;
   };
 }

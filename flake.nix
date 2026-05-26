@@ -60,6 +60,12 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Iron Bar
+    iron-bar = {
+      url = "github:JakeStanger/ironbar";
+      inputs.nixpkgs.follows = "nixpkgs-unstable"
+    };
+
     # Anytype Sync Bundle
     any-sync-bundle.url = "github:grishy/any-sync-bundle";
 

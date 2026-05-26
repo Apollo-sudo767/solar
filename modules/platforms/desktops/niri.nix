@@ -29,7 +29,7 @@ in
     programs.niri.enable = true;
     nix.settings = {
       substituters = [ "https://niri.cachix.org" ];
-      trusted-public-keys = [ "niri.cachix.org-1:Wv0Om607Z5X0CQy+/J67p4H6at0S0p6+H46M06+mErc=" ];
+      trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
     };
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
@@ -52,7 +52,7 @@ in
         swaynotificationcenter
         swaybg
         swayidle
-        swalock
+        swaylock
       ];
   };
 }

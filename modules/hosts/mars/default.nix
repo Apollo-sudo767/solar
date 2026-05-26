@@ -54,11 +54,10 @@
         platforms = {
           styling = {
             stylix.enable = true;
-            gruvboxNiri.enable = true;
+            spaceNiri.enable = true;
           };
           addons = {
             displayManager.manager = "regreet";
-            noctalia-shell.enable = true;
           };
         };
         programs = {

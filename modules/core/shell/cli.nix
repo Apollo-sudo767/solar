@@ -30,6 +30,7 @@ in
       btop
       curl
       wget
+      cachix
     ];
   };
 }

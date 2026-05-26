@@ -15,6 +15,7 @@ in
   };
 
   config = lib.mkIf (cfg.enable && !config.myFeatures.platforms.addons.noctalia-shell.enable) {
+    environment.systemPackages = [ pkgs.fuzzel ];
     home-manager.users = lib.genAttrs usernames (_name: {
       # This allows Stylix to take over Fuzzel styling
       programs.fuzzel = {
@@ -23,10 +24,16 @@ in
           main = {
             terminal = "${pkgs.ghostty}/bin/ghostty";
             layer = "overlay";
-            # Force the font and radius to match your flush look
-            font = lib.mkForce "JetBrainsMono Nerd Font:size=11";
+            font = lib.mkForce "JetBrainsMono Nerd Font:size=12";
+            prompt = "'❯ '";
+            icons-enabled = true;
+            width = 40;
+            horizontal-pad = 20;
+            vertical-pad = 20;
+            inner-pad = 10;
           };
           border.radius = lib.mkForce 0;
+          border.width = 2;
         };
       };
     });

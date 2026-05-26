@@ -11,12 +11,10 @@ in
     myFeatures.platforms = {
       desktops.niri.enable = true;
       addons = {
-        swaybg.enable = true;
-        noctalia-shell.enable = true;
-        # waybar.enable = true;
-        # idle.enable = true;
-        # fuzzel.enable = true;
-        # swaylock.enable = true;
+        # noctalia-shell.enable = false;
+        #idle.enable = true;
+        #fuzzel.enable = true;
+        #swaylock.enable = true;
       };
       styling.themes.gruvbox.enable = true;
       styling.niriKeybinds.enable = true;

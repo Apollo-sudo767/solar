@@ -63,7 +63,7 @@
     # Iron Bar
     ironbar = {
       url = "github:JakeStanger/ironbar";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Anytype Sync Bundle

@@ -16,29 +16,10 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (
-      _name: _: {
+      _name: {
         programs.niri = {
           settings = {
-            spawn-at-startup = [
-              {
-                command = [
-                  "dbus-update-activation-environment"
-                  "--systemd"
-                  "DISPLAY"
-                  "WAYLAND_DISPLAY"
-                  "XDG_CURRENT_DESKTOP"
-                ];
-              }
-              {
-                command = [
-                  "systemctl"
-                  "--user"
-                  "start"
-                  "graphical-session.target"
-                ];
-              }
-            ]
-            ++ lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
+            spawn-at-startup = lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
               { command = [ "noctalia-shell" ]; }
             ];
 

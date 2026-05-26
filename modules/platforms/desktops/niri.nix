@@ -32,10 +32,17 @@ in
       trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
     };
 
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      imports = [ inputs.niri.homeModules.niri ];
-      programs.niri.settings = cfg.settings;
-    });
+    myFeatures.platforms.desktops.niri.settings = {
+      spawn-at-startup = [
+        {
+          command = [
+            "sh"
+            "-c"
+            "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP && systemctl --user start graphical-session.target"
+          ];
+        }
+      ];
+    };
 
     environment.systemPackages =
       with pkgs;
@@ -54,5 +61,10 @@ in
         swayidle
         swaylock
       ];
+
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+      imports = [ inputs.niri.homeModules.niri ];
+      programs.niri.settings = cfg.settings;
+    });
   };
 }

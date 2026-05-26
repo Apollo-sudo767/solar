@@ -60,7 +60,7 @@ in
           };
 
           "custom/branding" = {
-            format = " Apollo - Gruvbox ";
+            format = " Apollo - Space ";
           };
 
           "mpris" = {

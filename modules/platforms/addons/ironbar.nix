@@ -21,58 +21,124 @@ in
       programs.ironbar = {
         enable = true;
         package = inputs.ironbar.packages.${pkgs.system}.default;
+        systemd = true;
         config = {
+          icon_theme = "Paper";
           position = "bottom";
-          anchor = "bottom";
           height = 34;
-          margin.bottom = 0;
-          margin.top = 0;
-          margin.left = 0;
-          margin.right = 0;
+          anchor_to_edges = true;
+          layer = "top";
+          exclusive_zone = true;
+
+          monitors = {
+            "all" = {
+              position = "bottom";
+            };
+          };
+
+          margin = {
+            bottom = 0;
+            top = 0;
+            left = 0;
+            right = 0;
+          };
 
           start = [
             {
-              type = "custom";
-              name = "power";
-              class = "power";
-              format = " ⏻ ";
-              on_click_left = "systemctl suspend";
-              on_click_right = "systemctl poweroff";
-            }
-            {
               type = "workspaces";
-              all_outputs = true;
             }
           ];
 
           center = [
             {
-              type = "mpris";
-              format = "{icon} {artist} - {title}";
-              max_length = 40;
+              type = "music";
+              player_type = "mpd";
+            }
+            {
+              type = "focused";
+              icon_size = 16;
             }
           ];
 
           end = [
             {
+              type = "battery";
+              show_if = "ls /sys/class/power_supply/ | grep --quiet '^BAT'";
+            }
+            {
               type = "sys_info";
-              interval.cpu = 2;
-              interval.memory = 5;
               format = [
-                " CPU: {cpu_usage}% "
-                " RAM: {memory_usage}% "
+                "{cpu_percent}% "
+                "{memory_percent}% "
               ];
+              interval = {
+                cpu = 1;
+              };
+            }
+            {
+              type = "clipboard";
+              max_items = 5;
+              truncate = {
+                mode = "end";
+                length = 30;
+              };
             }
             {
               type = "volume";
-              format = " {icon} {volume}% ";
             }
             {
-              type = "clock";
-              format = " %H:%M %a, %b %e ";
+              type = "custom";
+              name = "power-menu";
+              class = "power-menu";
+              bar = [
+                {
+                  type = "button";
+                  name = "power-btn";
+                  label = "󰐥";
+                  on_click = "popup:toggle";
+                }
+              ];
+              popup = [
+                {
+                  type = "box";
+                  orientation = "vertical";
+                  widgets = [
+                    {
+                      type = "label";
+                      name = "header";
+                      label = "Power menu";
+                    }
+                    {
+                      type = "box";
+                      name = "buttons";
+                      widgets = [
+                        {
+                          type = "button";
+                          class = "power-btn";
+                          label = "<span>󰐥</span>";
+                          on_click = "!shutdown now";
+                        }
+                        {
+                          type = "button";
+                          class = "power-btn";
+                          label = "<span>󰜉</span>";
+                          on_click = "!reboot";
+                        }
+                      ];
+                    }
+                  ];
+                }
+              ];
             }
             {
               type = "tray";
+            }
+            {
+              type = "clock";
+            }
+            {
+              type = "notifications";
+              show_if = "pgrep -x swaync";
             }
           ];
         };
@@ -100,7 +166,7 @@ in
             border-top: 2px solid @blue;
           }
 
-          .power {
+          .power-menu {
             background-color: @red;
             color: @bg0;
             padding: 0 10px;
@@ -121,7 +187,12 @@ in
             color: @bg0;
           }
 
-          .mpris {
+          .music {
+            color: @blue;
+            padding: 0 10px;
+          }
+
+          .focused {
             color: @blue;
             padding: 0 10px;
           }
@@ -140,10 +211,19 @@ in
             padding: 0 10px;
           }
 
+          .menu, .launcher, .clipboard, .notifications, .battery {
+            padding: 0 10px;
+          }
+
           .tray {
             padding: 0 5px;
           }
         '';
+      };
+
+      systemd.user.services.ironbar = {
+        Unit.After = [ "niri-session.target" ];
+        Install.WantedBy = [ "niri-session.target" ];
       };
     });
   };

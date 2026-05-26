@@ -18,13 +18,12 @@ in
 
       # Enable all the addons for this rice
       addons = {
-        ironbar.enable = true;
+        waybar.enable = true;
         swaync.enable = true;
         swayosd.enable = true;
         swww.enable = true;
         fuzzel.enable = true;
         swaylock.enable = true;
-        waybar.enable = lib.mkForce false;
         swaybg.enable = lib.mkForce false;
       };
 
@@ -45,7 +44,6 @@ in
       };
     });
 
-    # Ensure swww handles wallpaper instead of stylix's default swaybg
-    stylix.targets.swaybg.enable = false;
+    # Ensure swww handles wallpaper instead of stylix's default behavior
   };
 }

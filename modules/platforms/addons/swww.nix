@@ -13,19 +13,19 @@ in
   options.myFeatures.platforms.addons.swww.enable = lib.mkEnableOption "swww wallpaper daemon";
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ pkgs.swww ];
+    environment.systemPackages = [ pkgs.awww ];
 
     home-manager.users = lib.genAttrs usernames (_name: {
-      # swww doesn't have a direct home-manager module in nixpkgs yet, 
+      # swww (now awww) doesn't have a direct home-manager module in nixpkgs yet, 
       # but we can manage its service or just let it be started by the WM.
       systemd.user.services.swww = {
         Unit = {
-          Description = "swww wallpaper daemon";
+          Description = "awww wallpaper daemon";
           After = [ "graphical-session.target" ];
         };
         Service = {
-          ExecStart = "${pkgs.swww}/bin/swww-daemon";
-          ExecStartPost = "${pkgs.swww}/bin/swww img ${config.stylix.image}";
+          ExecStart = "${pkgs.awww}/bin/awww-daemon";
+          ExecStartPost = "${pkgs.awww}/bin/awww img ${config.stylix.image}";
           Restart = "on-failure";
         };
         Install = {

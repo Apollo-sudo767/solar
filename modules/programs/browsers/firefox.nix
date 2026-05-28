@@ -89,7 +89,7 @@ in
 
     # User-specific Home Manager configuration via Solar's username generator
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
-      stylix.targets.firefox.profileNames = [ name ];
+      stylix.targets.firefox.profileNames = lib.mkIf config.stylix.enable [ name ];
 
       programs.firefox = {
         enable = true;

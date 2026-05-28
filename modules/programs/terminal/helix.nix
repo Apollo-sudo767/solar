@@ -26,7 +26,7 @@ in
         enable = true;
 
         # Define a custom theme using Stylix colors
-        themes = {
+        themes = lib.mkIf config.stylix.enable {
           stylix =
             let
               c = config.lib.stylix.colors;
@@ -131,7 +131,7 @@ in
 
         # Your existing settings
         settings = {
-          theme = "stylix";
+          theme = lib.mkIf config.stylix.enable "stylix";
           editor = {
             line-number = "relative";
             cursor-shape = {

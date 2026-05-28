@@ -19,7 +19,7 @@ in
 
     # FIX: Only map over the list of strings in .usernames
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      stylix.targets.ghostty.enable = true;
+      stylix.targets.ghostty.enable = lib.mkIf config.stylix.enable true;
       programs.ghostty = {
         enable = true;
         enableZshIntegration = true;

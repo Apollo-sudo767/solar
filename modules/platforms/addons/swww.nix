@@ -16,7 +16,7 @@ in
     environment.systemPackages = [ pkgs.awww ];
 
     home-manager.users = lib.genAttrs usernames (_name: {
-      # swww (now awww) doesn't have a direct home-manager module in nixpkgs yet, 
+      # swww (now awww) doesn't have a direct home-manager module in nixpkgs yet,
       # but we can manage its service or just let it be started by the WM.
       systemd.user.services.swww = {
         Unit = {

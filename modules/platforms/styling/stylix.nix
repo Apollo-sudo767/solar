@@ -35,51 +35,58 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (
-    lib.mkMerge [
-      # Universal Stylix (Base Theme & Common Targets)
-      {
-        stylix = {
-          enable = true;
-          image = cfg.wallpaper;
-          base16Scheme = cfg.scheme;
-          polarity = "dark";
-        }
-        // lib.optionalAttrs (!isDarwin) {
-          cursor = {
-            package = pkgs.bibata-cursors;
-            name = "Bibata-Modern-Ice";
-            size = 24;
-          };
-        }
-        // {
-          fonts = {
-            monospace = {
-              package = pkgs.nerd-fonts.jetbrains-mono;
-              name = "JetBrainsMono Nerd Font Mono";
-            };
-            sansSerif = {
-              package = pkgs.dejavu_fonts;
-              name = "DejaVu Sans";
-            };
-          };
+  config = lib.mkMerge [
+    # Ensure Stylix Home Manager module is always available if home-manager is used
+    # We only import it manually if Stylix is NOT enabled, because Stylix's NixOS/Darwin
+    # module will automatically import it if it IS enabled.
+    {
+      home-manager.sharedModules = lib.optional (
+        !config.stylix.enable
+      ) inputs.stylix-unstable.homeManagerModules.stylix;
+    }
+
+    # Universal Stylix (Base Theme & Common Targets)
+    (lib.mkIf cfg.enable {
+      stylix = {
+        enable = true;
+        image = cfg.wallpaper;
+        base16Scheme = cfg.scheme;
+        polarity = "dark";
+      }
+      // lib.optionalAttrs (!isDarwin) {
+        cursor = {
+          package = pkgs.bibata-cursors;
+          name = "Bibata-Modern-Ice";
+          size = 24;
         };
       }
+      // {
+        fonts = {
+          monospace = {
+            package = pkgs.nerd-fonts.jetbrains-mono;
+            name = "JetBrainsMono Nerd Font Mono";
+          };
+          sansSerif = {
+            package = pkgs.dejavu_fonts;
+            name = "DejaVu Sans";
+          };
+        };
+      };
+    })
 
-      # Target Handling
-      (
-        if isDarwin then
-          { }
-        else
-          {
-            stylix.targets = {
-              gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
-              qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
-              plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
-              limine.enable = false;
-            };
-          }
-      )
-    ]
-  );
+    # Target Handling
+    (
+      if isDarwin then
+        { }
+      else
+        lib.mkIf cfg.enable {
+          stylix.targets = {
+            gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
+            qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
+            plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
+            limine.enable = false;
+          };
+        }
+    )
+  ];
 }

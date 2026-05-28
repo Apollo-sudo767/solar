@@ -77,7 +77,7 @@
         # HOME MANAGER (Cross-Platform via Stylix)
         # ----------------------------------------
         # Stylix automatically bridges the gap between NixOS and Darwin apps.
-        stylix.targets.helix.enable = true;
+        stylix.targets.helix.enable = lib.mkIf config.stylix.enable true;
       };
     };
 }

@@ -51,7 +51,7 @@ in
     # User-specific configuration via Solar's username generator
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
       # Integration with Stylix for consistent system-wide theming
-      stylix.targets.chromium.enable = true;
+      stylix.targets.chromium.enable = lib.mkIf config.stylix.enable true;
 
       programs.chromium = {
         enable = true;

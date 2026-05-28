@@ -9,7 +9,6 @@
 let
   cfg = config.myFeatures.platforms.addons.ironbar;
   inherit (config.myFeatures.core.system.users) usernames;
-  c = config.lib.stylix.colors;
 in
 {
   options.myFeatures.platforms.addons.ironbar.enable = lib.mkEnableOption "Ironbar status bar";
@@ -143,82 +142,98 @@ in
           ];
         };
 
-        style = ''
-          @define-color bg0 #${c.base00};
-          @define-color bg1 #${c.base01};
-          @define-color fg #${c.base05};
-          @define-color blue #${c.base0D};
-          @define-color red #${c.base08};
-          @define-color green #${c.base0B};
-          @define-color yellow #${c.base0A};
+        style =
+          let
+            c =
+              if config.stylix.enable then
+                config.lib.stylix.colors
+              else
+                {
+                  base00 = "282828";
+                  base01 = "3c3836";
+                  base05 = "ebdbb2";
+                  base0D = "83a598";
+                  base08 = "fb4934";
+                  base0B = "b8bb26";
+                  base0A = "fabd2f";
+                };
+          in
+          ''
+              @define-color bg0 #${c.base00};
+              @define-color bg1 #${c.base01};
+              @define-color fg #${c.base05};
+              @define-color blue #${c.base0D};
+              @define-color red #${c.base08};
+              @define-color green #${c.base0B};
+              @define-color yellow #${c.base0A};
 
-          * {
-            font-family: "JetBrainsMono Nerd Font";
-            font-size: 11px;
-            transition: none;
-            border-radius: 0;
-            border: none;
-          }
+            * {
+              font-family: "JetBrainsMono Nerd Font";
+              font-size: 11px;
+              transition: none;
+              border-radius: 0;
+              border: none;
+            }
 
-          .background {
-            background-color: @bg0;
-            color: @fg;
-            border-top: 2px solid @blue;
-          }
+            .background {
+              background-color: @bg0;
+              color: @fg;
+              border-top: 2px solid @blue;
+            }
 
-          .power-menu {
-            background-color: @red;
-            color: @bg0;
-            padding: 0 10px;
-          }
+            .power-menu {
+              background-color: @red;
+              color: @bg0;
+              padding: 0 10px;
+            }
 
-          .workspaces button {
-            padding: 0 10px;
-            color: @fg;
-          }
+            .workspaces button {
+              padding: 0 10px;
+              color: @fg;
+            }
 
-          .workspaces button.focused {
-            background-color: @blue;
-            color: @bg0;
-          }
+            .workspaces button.focused {
+              background-color: @blue;
+              color: @bg0;
+            }
 
-          .workspaces button.urgent {
-            background-color: @red;
-            color: @bg0;
-          }
+            .workspaces button.urgent {
+              background-color: @red;
+              color: @bg0;
+            }
 
-          .music {
-            color: @blue;
-            padding: 0 10px;
-          }
+            .music {
+              color: @blue;
+              padding: 0 10px;
+            }
 
-          .focused {
-            color: @blue;
-            padding: 0 10px;
-          }
+            .focused {
+              color: @blue;
+              padding: 0 10px;
+            }
 
-          .sys_info {
-            padding: 0 10px;
-          }
+            .sys_info {
+              padding: 0 10px;
+            }
 
-          .volume {
-            color: @yellow;
-            padding: 0 10px;
-          }
+            .volume {
+              color: @yellow;
+              padding: 0 10px;
+            }
 
-          .clock {
-            color: @fg;
-            padding: 0 10px;
-          }
+            .clock {
+              color: @fg;
+              padding: 0 10px;
+            }
 
-          .menu, .launcher, .clipboard, .notifications, .battery {
-            padding: 0 10px;
-          }
+            .menu, .launcher, .clipboard, .notifications, .battery {
+              padding: 0 10px;
+            }
 
-          .tray {
-            padding: 0 5px;
-          }
-        '';
+            .tray {
+              padding: 0 5px;
+            }
+          '';
       };
 
       systemd.user.services.ironbar = {

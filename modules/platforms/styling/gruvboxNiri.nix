@@ -38,10 +38,10 @@ in
             enable = false;
             width = 0;
             # These only evaluate correctly once Stylix is enabled
-            active.color = "#${config.lib.stylix.colors.base0D}";
-            inactive.color = "#${config.lib.stylix.colors.base02}";
+            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
           };
-          border = {
+          border = lib.mkForce {
             enable = false;
             width = 0;
           };

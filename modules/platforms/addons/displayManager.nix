@@ -58,8 +58,6 @@ in
     services.displayManager.sddm.wayland.enable = lib.mkIf (cfg.manager == "sddm") true;
 
     # Stylix integration
-    stylix.targets.regreet.enable = lib.mkIf (
-      cfg.manager == "regreet" && config.myFeatures.platforms.styling.stylix.enable
-    ) true;
+    stylix.targets.regreet.enable = lib.mkIf (cfg.manager == "regreet" && config.stylix.enable) true;
   };
 }

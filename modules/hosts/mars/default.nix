@@ -15,7 +15,9 @@
 
       myFeatures = {
         core = {
-          system.core-branch.enable = true;
+          system = {
+            core-branch.enable = true;
+          };
           shell.shell-branch.enable = true;
           boot = {
             enable = true;

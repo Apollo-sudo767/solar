@@ -5,7 +5,7 @@
   };
 
   module =
-    { ... }:
+    { pkgs, lib, ... }:
     {
       imports = [
         ./hardware-configuration.nix
@@ -16,6 +16,10 @@
       myFeatures = {
         core = {
           system.core-branch.enable = true;
+          system.users.usernames = [
+            "apollo"
+            "mcadmin"
+          ];
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
@@ -76,5 +80,19 @@
           };
         };
       };
+
+      # Server User Configuration for friends
+      users.users.mcadmin = {
+        description = "Minecraft Server Admin";
+        extraGroups = lib.mkForce [
+          "minecraft"
+          "networkmanager"
+        ];
+      };
+
+      # Ensure /srv/minecraft is accessible to the mcadmin user via the minecraft group
+      systemd.tmpfiles.rules = [
+        "d /srv/minecraft 0775 minecraft minecraft - -"
+      ];
     };
 }

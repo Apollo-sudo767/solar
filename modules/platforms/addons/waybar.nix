@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.myFeatures.platforms.addons.waybar;
   inherit (config.myFeatures.core.system.users) usernames;
@@ -7,6 +12,14 @@ in
   options.myFeatures.platforms.addons.waybar.enable = lib.mkEnableOption "waybar status bar";
 
   config = lib.mkIf (cfg.enable && !config.myFeatures.platforms.addons.noctalia-shell.enable) {
+    # Ensure necessary packages are available for waybar modules
+    environment.systemPackages = with pkgs; [
+      brightnessctl
+      networkmanagerapplet
+      playerctl
+      curl
+    ];
+
     home-manager.users = lib.genAttrs usernames (_name: {
       programs.waybar = {
         enable = true;
@@ -15,21 +28,27 @@ in
         settings.mainBar = {
           layer = "top";
           position = "bottom";
-          height = 30;
+          height = 36;
+          margin-bottom = 8;
+          margin-left = 10;
+          margin-right = 10;
+          spacing = 8;
 
           modules-left = [
-            "custom/power"
+            "group/power"
             "niri/workspaces"
             "niri/window"
           ];
           modules-center = [
             "custom/branding"
-            "mpris"
+            "group/music"
           ];
-          # Added 'network' and 'battery' here
           modules-right = [
+            "idle_inhibitor"
+            "backlight"
             "cpu"
             "memory"
+            "disk"
             "network"
             "battery"
             "pulseaudio"
@@ -37,15 +56,53 @@ in
             "tray"
           ];
 
+          "group/power" = {
+            orientation = "horizontal";
+            drawer = {
+              transition-duration = 500;
+              children-class = "not-power";
+              transition-left-to-right = true;
+            };
+            modules = [
+              "custom/power"
+              "custom/lock"
+              "custom/suspend"
+              "custom/reboot"
+              "custom/exit"
+            ];
+          };
+
           "custom/power" = {
-            format = " ⏻ ";
-            on-click = "systemctl suspend";
-            on-click-right = "systemctl poweroff";
-            on-click-middle = "systemctl reboot";
+            format = "";
+            tooltip = false;
+          };
+
+          "custom/lock" = {
+            format = "󰌾";
+            tooltip = false;
+            on-click = "swaylock";
+          };
+
+          "custom/suspend" = {
+            format = "󰤄";
+            tooltip = false;
+            on-click = "swaylock & systemctl suspend";
+          };
+
+          "custom/reboot" = {
+            format = "󰜉";
+            tooltip = false;
+            on-click = "systemctl reboot";
+          };
+
+          "custom/exit" = {
+            format = "󰗼";
+            tooltip = false;
+            on-click = "systemctl poweroff";
           };
 
           "niri/workspaces" = {
-            format = "{index}: {icon}";
+            format = "{icon}";
             on-click = "activate";
             format-icons = {
               default = "";
@@ -55,52 +112,122 @@ in
           };
 
           "niri/window" = {
-            format = "{title}";
+            format = "󰖲 {title}";
             icon-size = 18;
+            max-length = 30;
+            separate-outputs = true;
           };
 
           "custom/branding" = {
-            format = " Apollo - Space ";
+            format = "󱄅 Apollo";
+            tooltip = false;
+          };
+
+          "group/music" = {
+            orientation = "horizontal";
+            modules = [
+              "custom/media-prev"
+              "mpris"
+              "custom/media-next"
+            ];
           };
 
           "mpris" = {
-            format = " {player_icon} {artist} - {title} ";
+            format = "{artist} - {title}";
             player-icons = {
-              default = "▶";
-              spotify = " ";
+              default = "󰎆";
+              spotify = "";
+              firefox = "󰈹";
             };
             status-icons = {
-              playing = " ";
-              paused = " ";
+              playing = "󰐊";
+              paused = "󰏤";
             };
-            max-length = 40;
+            on-click = "playerctl play-pause";
+            max-length = 35;
+          };
+
+          "custom/media-play-pause" = {
+            format = "{icon}";
+            format-icons = {
+              "Playing" = "󰏤";
+              "Paused" = "󰐊";
+              "Stopped" = "󰐊";
+            };
+            exec = "playerctl status";
+            on-click = "playerctl play-pause";
+            interval = 1;
+            tooltip = false;
+          };
+
+          "custom/media-prev" = {
+            format = "󰒮";
+            on-click = "playerctl previous";
+            tooltip = false;
+          };
+
+          "custom/media-next" = {
+            format = "󰒭";
+            on-click = "playerctl next";
+            tooltip = false;
+          };
+
+          "idle_inhibitor" = {
+            format = "{icon}";
+            format-icons = {
+              activated = "󰈈";
+              deactivated = "󰈉";
+            };
+            tooltip = true;
+            tooltip-format-activated = "Presentation Mode Active";
+            tooltip-format-deactivated = "Presentation Mode Inactive";
+          };
+
+          "backlight" = {
+            format = "{icon} {percent}%";
+            format-icons = [
+              "󰃞"
+              "󰃟"
+              "󰃠"
+            ];
+            on-scroll-up = "brightnessctl set 1%+";
+            on-scroll-down = "brightnessctl set 1%-";
           };
 
           "cpu" = {
-            format = " CPU: {usage}% ";
-          };
-          "memory" = {
-            format = " RAM: {}% ";
+            format = "󰻠 {usage}%";
+            interval = 2;
           };
 
-          # --- Network Module ---
+          "memory" = {
+            format = "󰍛 {percentage}%";
+            interval = 2;
+            tooltip-format = "RAM: {used:0.1f}GiB / {total:0.1f}GiB\nSwap: {swapUsed:0.1f}GiB / {swapTotal:0.1f}GiB";
+          };
+
+          "disk" = {
+            format = "󰋊 {percentage_used}%";
+            interval = 30;
+            path = "/";
+            tooltip-format = "{used} / {total} ({percentage_used}%)";
+          };
+
           "network" = {
-            format-wifi = "   {essid} ";
-            format-ethernet = " 󰈀  {ifname} ";
-            format-disconnected = " 󰖪  Disconnected ";
-            tooltip-format = "{ifname} via {gwaddr}";
+            format-wifi = "󰤨 {essid}";
+            format-ethernet = "󰈀 {ifname}";
+            format-disconnected = "󰖪 Disconnected";
+            tooltip-format = "{ifname} via {gwaddr}\nIP: {ipaddr}\nStrength: {signalStrength}%";
             on-click = "nm-connection-editor";
           };
 
-          # --- Battery Module ---
           "battery" = {
             states = {
               warning = 30;
               critical = 15;
             };
-            format = " {icon} {capacity}% ";
-            format-charging = " 󱐋 {capacity}% ";
-            format-plugged = "  {capacity}% ";
+            format = "{icon} {capacity}%";
+            format-charging = "󱐋 {capacity}%";
+            format-plugged = " {capacity}%";
             format-icons = [
               "󰁺"
               "󰁻"
@@ -116,85 +243,215 @@ in
           };
 
           "pulseaudio" = {
-            format = " {icon} {volume}% ";
-            format-muted = " 󰝟 Muted ";
-            format-icons.default = [
-              "󰕿"
-              "󰖀"
-              "󰕾"
-            ];
+            format = "{icon} {volume}%";
+            format-muted = "󰝟 Muted";
+            format-icons = {
+              headphone = "󰋋";
+              hands-free = "󰋋";
+              headset = "󰋋";
+              phone = "";
+              portable = "";
+              car = "";
+              default = [
+                "󰕿"
+                "󰖀"
+                "󰕾"
+              ];
+            };
             on-click = "pavucontrol";
+            on-scroll-up = "pamixer -i 1";
+            on-scroll-down = "pamixer -d 1";
           };
 
           "clock" = {
-            format = " 󰥔  {:%H:%M  %a, %b %e} ";
+            format = "󰥔 {:%H:%M}";
+            format-alt = "󰃭 {:%Y-%m-%d}";
+            tooltip-format = "<tt><small>{calendar}</small></tt>";
+            calendar = {
+              mode = "year";
+              mode-mon-col = 3;
+              weeks-pos = "right";
+              on-scroll = 1;
+              format = {
+                months = "<span color='#${config.lib.stylix.colors.base0D}'><b>{}</b></span>";
+                days = "<span color='#${config.lib.stylix.colors.base05}'><b>{}</b></span>";
+                weeks = "<span color='#${config.lib.stylix.colors.base0C}'><b>W{}</b></span>";
+                weekdays = "<span color='#${config.lib.stylix.colors.base0A}'><b>{}</b></span>";
+                today = "<span color='#${config.lib.stylix.colors.base08}'><b><u>{}</u></b></span>";
+              };
+            };
+            actions = {
+              on-click-right = "mode";
+              on-click-forward = "tz_up";
+              on-click-backward = "tz_down";
+              on-scroll-up = "shift_up";
+              on-scroll-down = "shift_down";
+            };
           };
 
           "tray" = {
-            icon-size = 16;
-            spacing = 8;
+            icon-size = 18;
+            spacing = 10;
           };
         };
 
         style = lib.mkForce ''
+          /* Waybar Styles */
           @define-color bg0 #${config.lib.stylix.colors.base00};
           @define-color bg1 #${config.lib.stylix.colors.base01};
-          @define-color fg1 #${config.lib.stylix.colors.base05};
+          @define-color bg2 #${config.lib.stylix.colors.base02};
+          @define-color fg0 #${config.lib.stylix.colors.base05};
           @define-color blue #${config.lib.stylix.colors.base0D};
           @define-color red #${config.lib.stylix.colors.base08};
           @define-color green #${config.lib.stylix.colors.base0B};
           @define-color yellow #${config.lib.stylix.colors.base0A};
+          @define-color purple #${config.lib.stylix.colors.base0E};
+          @define-color aqua #${config.lib.stylix.colors.base0C};
 
           * {
-            font-family: "JetBrainsMono Nerd Font", monospace;
-            border: none;
-            border-radius: 0;
-            font-size: 11px;
-            margin: 0;
-            padding: 0;
+            font-family: "${config.stylix.fonts.monospace.name}", "JetBrainsMono Nerd Font", monospace;
+            font-size: 13px;
+            font-weight: bold;
             min-height: 0;
+            border: none;
+            box-shadow: none;
           }
 
           window#waybar {
-            background-color: @bg0;
-            color: @fg1;
-            border-top: 2px solid @blue;
+            background: transparent;
+            color: @fg0;
           }
 
-          /* Added #network and #battery to the padding list */
-          #custom-power, #workspaces button, #window, #custom-branding, #mpris, 
-          #cpu, #memory, #network, #battery, #pulseaudio, #clock, #tray {
-            padding: 0 10px;
+          #custom-power,
+          #custom-lock,
+          #custom-suspend,
+          #custom-reboot,
+          #custom-exit,
+          #workspaces,
+          #window,
+          #custom-branding,
+          #mpris,
+          #idle_inhibitor,
+          #backlight,
+          #cpu,
+          #memory,
+          #disk,
+          #network,
+          #battery,
+          #pulseaudio,
+          #clock,
+          #tray {
+            background-color: alpha(@bg0, 0.7);
+            padding: 0 12px;
+            margin: 4px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            min-height: 28px;
+          }
+
+          #custom-media-prev, #custom-media-next {
+            font-size: 0;
+            padding: 0;
             margin: 0;
-            background-color: transparent;
+            background: transparent;
+            border: none;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 0;
+          }
+
+          #music:hover #custom-media-prev,
+          #music:hover #custom-media-next {
+            font-size: 13px;
+            opacity: 1;
+            padding: 0 12px;
+            margin: 4px 5px;
+            min-width: 20px;
+            background-color: alpha(@bg0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+          }
+
+          /* Interactive Children in Drawers */
+          #custom-lock, #custom-suspend, #custom-reboot, #custom-exit,
+          #custom-media-prev, #custom-media-play-pause, #custom-media-next {
+            margin-left: 5px;
+          }
+
+          #custom-power:hover,
+          #custom-lock:hover,
+          #custom-suspend:hover,
+          #custom-reboot:hover,
+          #custom-exit:hover,
+          #workspaces button:hover,
+          #idle_inhibitor:hover,
+          #network:hover,
+          #battery:hover,
+          #pulseaudio:hover,
+          #clock:hover {
+            background-color: @bg2;
+            border: 1px solid @blue;
           }
 
           #custom-power {
-            background-color: @red;
-            color: @bg0;
-          }
-
-          #workspaces button.focused {
-            background-color: @blue;
-            color: @bg0;
-          }
-
-          #workspaces button.urgent {
-            background-color: @red;
-          }
-
-          #battery.critical:not(.charging) {
             color: @red;
           }
 
-          #battery.warning:not(.charging) {
-            color: @yellow;
+          #workspaces {
+            padding: 0 5px;
           }
 
-          #window { color: @green; }
-          #mpris { color: @blue; }
-          #network { color: @yellow; }
-          #tray { margin-right: 5px; }
+          #workspaces button {
+            color: @fg0;
+            padding: 0 6px;
+            margin: 0 2px;
+            border-radius: 6px;
+            min-height: 20px;
+            background: transparent;
+          }
+
+          #workspaces button.focused {
+            color: @blue;
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+
+          #workspaces button.urgent {
+            color: @red;
+          }
+
+          #window {
+            color: @aqua;
+          }
+
+          #custom-branding {
+            color: @purple;
+          }
+
+          #mpris {
+            color: @blue;
+          }
+
+          #cpu { color: @green; }
+          #memory { color: @yellow; }
+          #disk { color: @aqua; }
+          #network { color: @purple; }
+          #battery { color: @green; }
+          #battery.warning { color: @yellow; }
+          #battery.critical { color: @red; }
+          #pulseaudio { color: @blue; }
+          #clock { color: @fg0; }
+
+          tooltip {
+            background: @bg1;
+            border-radius: 10px;
+            border: 2px solid @blue;
+          }
+
+          tooltip label {
+            color: @fg0;
+            padding: 8px;
+          }
         '';
       };
     });

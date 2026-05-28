@@ -36,7 +36,7 @@ in
           gaps = 0;
           focus-ring = {
             enable = false;
-            width = 2;
+            width = 0;
             # These only evaluate correctly once Stylix is enabled
             active.color = "#${config.lib.stylix.colors.base0D}";
             inactive.color = "#${config.lib.stylix.colors.base02}";

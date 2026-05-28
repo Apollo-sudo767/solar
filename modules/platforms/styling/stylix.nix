@@ -43,6 +43,7 @@ in
           enable = true;
           image = cfg.wallpaper;
           base16Scheme = cfg.scheme;
+          polarity = "dark";
         }
         // lib.optionalAttrs (!isDarwin) {
           cursor = {

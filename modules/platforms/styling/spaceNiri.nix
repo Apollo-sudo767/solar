@@ -36,14 +36,33 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
         prefer-no-csd = true;
-        layout = {
-          gaps = 0;
-          focus-ring.enable = false;
-          border.enable = false;
+        window-rules = [
+          {
+            geometry-corner-radius = {
+              top-left = 10.0;
+              top-right = 10.0;
+              bottom-left = 10.0;
+              bottom-right = 10.0;
+            };
+            clip-to-geometry = true;
+            focus-ring.enable = false;
+          }
+        ];
+        layout = lib.mkForce {
+          gaps = 8;
+          focus-ring = {
+            enable = false;
+            width = 0;
+          };
+          border = {
+            enable = true;
+            width = 2;
+            # active.color = "#${config.lib.stylix.colors.base0D}";
+            inactive.color = "#${config.lib.stylix.colors.base02}";
+          };
         };
       };
     });
 
-    # Ensure swww handles wallpaper instead of stylix's default behavior
   };
 }

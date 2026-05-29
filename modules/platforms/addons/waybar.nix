@@ -111,10 +111,14 @@ in
             };
 
             "niri/window" = {
-              format = "󰖲 {title}";
+              format = "{title}";
               icon-size = 18;
-              max-length = 30;
               separate-outputs = true;
+              hide-empty-text = true;
+              rewrite = {
+                "^$" = "";
+                "^(.+)$" = "󰖲 $1";
+              };
             };
 
             "custom/branding" = {
@@ -149,12 +153,16 @@ in
             "custom/media-prev" = {
               format = "󰒮";
               on-click = "playerctl previous";
+              exec = "playerctl status 2>/dev/null | grep -qv 'Stopped' && echo 󰒮";
+              interval = 2;
               tooltip = false;
             };
 
             "custom/media-next" = {
               format = "󰒭";
               on-click = "playerctl next";
+              exec = "playerctl status 2>/dev/null | grep -qv 'Stopped' && echo 󰒭";
+              interval = 2;
               tooltip = false;
             };
 
@@ -286,6 +294,45 @@ in
 
             window#waybar {
               background: transparent;
+            }
+
+            #window,
+            #niri-window {
+              margin: 0;
+              padding: 0;
+            }
+
+            window#waybar.empty #window,
+            window#waybar.empty #niri-window,
+            #window.empty,
+            #niri-window.empty {
+              font-size: 0;
+              background: transparent;
+              margin: 0;
+              padding: 0;
+              border: none;
+            }
+
+            #custom-branding {
+            }
+
+            #music {
+            }
+
+            #custom-media-prev,
+            #custom-media-next {
+              font-size: 0;
+              opacity: 0;
+              margin: 0;
+              padding: 0;
+              transition: all 0.3s ease;
+            }
+
+            #music:hover #custom-media-prev,
+            #music:hover #custom-media-next {
+              font-size: 13px;
+              opacity: 1;
+              margin: 0 10px;
             }
           '';
         };

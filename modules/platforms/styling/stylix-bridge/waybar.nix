@@ -45,7 +45,8 @@ in
 
             #custom-power, #custom-lock, #custom-suspend, #custom-reboot, #custom-exit,
             #workspaces, #window, #custom-branding, #mpris, #idle_inhibitor,
-            #backlight, #cpu, #memory, #disk, #network, #battery, #pulseaudio, #clock, #tray {
+            #backlight, #cpu, #memory, #disk, #network, #battery, #pulseaudio, #clock, #tray,
+            #custom-media-prev, #custom-media-next {
               background-color: alpha(@bg0, 0.7);
               padding: 0 12px;
               margin: 4px 0;
@@ -55,10 +56,20 @@ in
               min-height: 28px;
             }
 
+            #window.empty,
+            #mpris.empty,
+            #custom-media-prev.empty,
+            #custom-media-next.empty {
+              padding: 0;
+              margin: 0;
+              border: none;
+              background: transparent;
+            }
+
             #custom-power:hover, #custom-lock:hover, #custom-suspend:hover,
             #custom-reboot:hover, #custom-exit:hover, #workspaces button:hover,
             #idle_inhibitor:hover, #network:hover, #battery:hover,
-            #pulseaudio:hover, #clock:hover {
+            #pulseaudio:hover, #clock:hover, #custom-media-prev:hover, #custom-media-next:hover {
               background-color: @bg2;
               border: 1px solid @blue;
             }

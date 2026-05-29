@@ -29,6 +29,7 @@ in
       {
         myFeatures.core = {
           nix.nix-settings.enable = lib.mkDefault true;
+          nix.cachix.enable = lib.mkDefault true;
           system.fonts.enable = lib.mkDefault true;
           system.localeChicago.enable = lib.mkDefault true;
           security.ssh.enable = lib.mkDefault true;

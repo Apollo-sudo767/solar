@@ -55,7 +55,7 @@
         platforms = {
           styling = {
             stylix.enable = true;
-            gruvboxNiri.enable = true;
+            spaceNiri.enable = true;
           };
           addons = {
             displayManager.manager = "tuigreet";

@@ -21,7 +21,8 @@
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
-            secureBoot.enable = true;
+            # secureBoot.enable = true;
+            kernel = "zen";
           };
           security.security = {
             enable = true;
@@ -34,7 +35,7 @@
             amd.enable = true;
             nvidia = {
               enable = true;
-              open = false;
+              open = true;
               beta = true;
             };
           };

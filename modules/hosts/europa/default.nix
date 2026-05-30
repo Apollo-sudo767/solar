@@ -21,7 +21,10 @@
           };
           nix.lix.enable = true;
           shell.shell-branch.enable = true;
-          boot.enable = true;
+          boot = {
+            enable = true;
+            kernel = "latest";
+          };
         };
         platforms = {
           desktops.kde.enable = true;

@@ -11,12 +11,10 @@ in
       substituters = [
         "https://niri.cachix.org"
         "https://nix-community.cachix.org"
-        "https://cache.garnix.io"
       ];
       trusted-public-keys = [
         "niri.cachix.org-1:Wv0Om607ZpInis2ExGh+4CKddPU1ot9dnG3v9L+N/X0="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "cache.garnix.io:CTfPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       ];
     };
   };

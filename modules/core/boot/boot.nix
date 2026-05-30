@@ -23,9 +23,30 @@ in
     secureBoot = {
       enable = lib.mkEnableOption "Native Bootloader Secure Boot";
     };
+    kernel = lib.mkOption {
+      type = lib.types.enum [
+        "default"
+        "latest"
+        "zen"
+        "xanmod"
+      ];
+      default = "default";
+      description = "The kernel package to use.";
+    };
   };
 
   config = lib.mkIf (cfg.enable && cfg.boot.enable) {
+    # Kernel Selection
+    boot.kernelPackages =
+      if cfg.kernel == "latest" then
+        pkgs.linuxPackages_latest
+      else if cfg.kernel == "zen" then
+        pkgs.linuxPackages_zen
+      else if cfg.kernel == "xanmod" then
+        pkgs.linuxPackages_xanmod
+      else
+        pkgs.linuxPackages;
+
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;
 

@@ -20,6 +20,7 @@
           boot = {
             enable = true;
             secureBoot.enable = true;
+            kernel = "latest";
           };
           security.security = {
             enable = true;

@@ -84,6 +84,7 @@ in
             gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
             qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
             plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
+            spicetify.enable = config.myFeatures.programs.utilities.spicetify.enable or false;
             limine.enable = false;
           };
         }

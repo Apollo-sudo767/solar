@@ -27,6 +27,15 @@ in
       };
     };
 
+    boot.kernelParams = [
+      "usbcore.autosuspend=-1"
+      "iommu=pt"
+      "pcie_aspm=off"
+    ];
+    boot.extraModprobeConfig = ''
+      options btusb enable_autosuspend=n reset=1
+    '';
+
     services.blueman.enable = true;
 
     environment.systemPackages = with pkgs; [

@@ -1280,6 +1280,7 @@
         "paneru": "paneru",
         "pre-commit-hooks": "pre-commit-hooks",
         "solar-secrets": "solar-secrets",
+        "spicetify-nix": "spicetify-nix",
         "stylix-stable": "stylix-stable",
         "stylix-unstable": "stylix-unstable",
         "treefmt-nix": "treefmt-nix_2",
@@ -1319,6 +1320,27 @@
         "url": "ssh://git@github.com/apollo-sudo767/solar-secrets.git"
       }
     },
+    "spicetify-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ],
+        "systems": "systems_4"
+      },
+      "locked": {
+        "lastModified": 1779824049,
+        "narHash": "sha256-dWHVUjP03KSVG1PaLKA6j9EdxWSxSQvipMUIcSyuA/U=",
+        "owner": "Gerg-L",
+        "repo": "spicetify-nix",
+        "rev": "1362178e5f5f7a848c49fe9dee004ef8824f100a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Gerg-L",
+        "repo": "spicetify-nix",
+        "type": "github"
+      }
+    },
     "stylix-stable": {
       "inputs": {
         "base16": "base16",
@@ -1330,7 +1352,7 @@
         "gnome-shell": "gnome-shell",
         "nixpkgs": "nixpkgs_10",
         "nur": "nur",
-        "systems": "systems_4",
+        "systems": "systems_5",
         "tinted-foot": "tinted-foot",
         "tinted-kitty": "tinted-kitty",
         "tinted-schemes": "tinted-schemes",
@@ -1363,7 +1385,7 @@
         "gnome-shell": "gnome-shell_2",
         "nixpkgs": "nixpkgs_11",
         "nur": "nur_2",
-        "systems": "systems_5",
+        "systems": "systems_6",
         "tinted-kitty": "tinted-kitty_2",
         "tinted-schemes": "tinted-schemes_2",
         "tinted-tmux": "tinted-tmux_2",
@@ -1444,6 +1466,21 @@
       }
     },
     "systems_5": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_6": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",

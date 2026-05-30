@@ -91,16 +91,16 @@ in
     hardware.bluetooth.powerOnBoot = lib.mkIf cfg.bluetooth.enable false;
 
     services.udev.extraRules = ''
-      # ON AC: Max performance, Bluetooth ON
+      # ON AC: Max performance, Radio ON
       SUBSYSTEM=="power_supply", ATTR{online}=="1", \
         RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save off", \
-        RUN+="${pkgs.bluez}/bin/bluetoothctl power on", \
+        ${lib.optionalString cfg.bluetooth.enable "RUN+=\"${pkgs.bluez}/bin/bluetoothctl power on\", \\"}
         RUN+="${pkgs.networkmanager}/bin/nmcli radio wifi on"
 
-      # ON BATTERY: Power save Wifi, Bluetooth OFF
+      # ON BATTERY: Power save Radio
       SUBSYSTEM=="power_supply", ATTR{online}=="0", \
-        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save on", \
-        RUN+="${pkgs.bluez}/bin/bluetoothctl power off"
+        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save on" ${lib.optionalString cfg.bluetooth.enable ", \\"}
+        ${lib.optionalString cfg.bluetooth.enable "RUN+=\"${pkgs.bluez}/bin/bluetoothctl power off\""}
     '';
 
     # 5. Sleep Stability

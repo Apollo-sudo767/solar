@@ -48,6 +48,12 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Spicetify
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # Nix Minecraft
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
 

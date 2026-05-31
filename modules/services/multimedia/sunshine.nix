@@ -63,7 +63,7 @@ in
 
         boot.kernelModules = [ "uinput" ];
         hardware.uinput.enable = true;
-        users.users.apollo.extraGroups = [ "uinput" ];
+        users.users.${config.myFeatures.core.system.users.mainUser}.extraGroups = [ "uinput" ];
 
         environment.systemPackages = [ pkgs.vpl-gpu-rt ];
 

@@ -37,6 +37,6 @@ in
     environment.systemPackages = [ myZen ];
 
     # Optional: Set as default browser if desired
-    # home-manager.users.apollo.home.sessionVariables.BROWSER = "zen";
+    # home-manager.users.${config.myFeatures.core.system.users.mainUser}.home.sessionVariables.BROWSER = "zen";
   };
 }

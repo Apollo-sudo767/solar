@@ -19,6 +19,17 @@ in
       default = [ "apollo" ];
       description = "List of users to configure.";
     };
+    mainUser = lib.mkOption {
+      type = lib.types.str;
+      default = lib.head cfg.usernames;
+      description = "The primary user of the system.";
+    };
+    mainHome = lib.mkOption {
+      type = lib.types.path;
+      readOnly = true;
+      default = config.users.users.${cfg.mainUser}.home;
+      description = "The home directory of the primary user.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -47,7 +58,8 @@ in
     home-manager.users = lib.genAttrs cfg.usernames (name: {
       home.stateVersion = "26.11";
       home.username = name;
-      home.homeDirectory = if isDarwin then "/Users/${name}" else "/home/${name}";
+      home.homeDirectory = config.users.users.${name}.home;
     });
   };
 }
+

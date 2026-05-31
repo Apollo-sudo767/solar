@@ -9,6 +9,7 @@
 
 let
   cfg = config.myFeatures.services.networking.syncthing;
+  userCfg = config.myFeatures.core.system.users;
 in
 {
   options.myFeatures.services.networking.syncthing = {
@@ -21,16 +22,15 @@ in
       (lib.optionalAttrs (!isDarwin) {
         services.syncthing = {
           enable = true;
-          user = "apollo";
-          dataDir = "/home/apollo/Documents";
-          configDir = "/home/apollo/.config/syncthing";
+          user = userCfg.mainUser;
+          dataDir = "${userCfg.mainHome}/Documents";
+          configDir = "${userCfg.mainHome}/.config/syncthing";
 
           # We'll let the user configure devices/folders manually or via a central config
-          # For a truly automated setup, we'd need the device IDs.
           settings = {
             gui = {
               address = "127.0.0.1:8384"; # Only accessible via SSH tunnel or Tailscale
-              user = "apollo";
+              user = userCfg.mainUser;
               # NO PASSWORD HERE: Set it once in the Web UI.
               # It will be saved to configDir and persist across rebuilds.
             };
@@ -45,11 +45,16 @@ in
         ];
       })
 
-      # Darwin-specific Syncthing configuration
+      # Darwin-specific Syncthing configuration (using Homebrew)
       (lib.optionalAttrs isDarwin {
-        # On Darwin, we'll use Homebrew to manage the Syncthing service
-        homebrew.services."syncthing" = "started";
-        homebrew.brews = [ "syncthing" ];
+        homebrew.enable = true;
+        homebrew.brews = [
+          {
+            name = "syncthing";
+            start_service = true;
+            restart_service = "changed";
+          }
+        ];
       })
     ]
   );

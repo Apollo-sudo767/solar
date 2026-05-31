@@ -27,8 +27,12 @@ in
     services.silverbullet = {
       enable = true;
       listenPort = cfg.port;
+      listenAddress = "0.0.0.0";
       spaceDir = "/var/lib/silverbullet";
     };
+
+    systemd.services.silverbullet.serviceConfig.Environment =
+      "SB_CHROME_PATH=${pkgs.chromium}/bin/chromium";
 
     services.nginx.virtualHosts."${cfg.domain}" = {
       enableACME = lib.mkDefault true;

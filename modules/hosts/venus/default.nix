@@ -39,6 +39,7 @@
             fastfetch.enable = true;
             helix.enable = true;
           };
+          utilities.lego.enable = true;
         };
         services = {
           nginx.enable = true;

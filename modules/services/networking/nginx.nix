@@ -32,7 +32,7 @@ in
         dnsProvider = "cloudflare";
         # Use the same token file as DDNS
         credentialFiles = {
-          "CLOUDFLARE_DNS_API_TOKEN" = "/var/lib/secrets/cloudflare-token";
+          "CLOUDFLARE_DNS_API_TOKEN_FILE" = "/var/lib/secrets/cloudflare-token";
         };
       };
     };

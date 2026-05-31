@@ -16,8 +16,8 @@ in
     services.nginx = {
       enable = true;
       virtualHosts."${cfg.domain}" = {
-        enableACME = true;
-        forceSSL = true;
+        enableACME = lib.mkDefault (!lib.hasSuffix ".local" cfg.domain);
+        forceSSL = lib.mkDefault (!lib.hasSuffix ".local" cfg.domain);
         locations."/" = {
           proxyPass = "http://127.0.0.1:8080";
           proxyWebsockets = true;

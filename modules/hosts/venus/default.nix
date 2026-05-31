@@ -49,8 +49,7 @@
             ddns = {
               enable = true;
               domains = [
-                "anytype.apollan.cc"
-                "sllv.apollan.cc"
+                "sb.apollan.cc"
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
                 "terraria.apollan.cc"

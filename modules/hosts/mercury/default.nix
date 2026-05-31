@@ -11,7 +11,7 @@
         ./hardware-configuration.nix
       ];
 
-      system.stateVersion = "26.05";
+      system.stateVersion = "26.11";
 
       myFeatures = {
         core = {
@@ -69,7 +69,6 @@
             ghostty.enable = true;
             fastfetch = {
               enable = true;
-              showBattery = true;
             };
             helix.enable = true;
             gemini.enable = true;
@@ -89,6 +88,7 @@
             stylePackages.enable = true;
             anytype.enable = true;
             social.enable = true;
+            silverbullet.enable = true;
           };
         };
 

@@ -21,11 +21,11 @@ in
     # Helper strings for stateVersion references
     stableVersion = lib.mkOption {
       type = lib.types.str;
-      default = "25.11";
+      default = "26.05";
     };
     unstableVersion = lib.mkOption {
       type = lib.types.str;
-      default = "26.05";
+      default = "26.11";
     };
 
     # This provides a clean way to get the version string anywhere in your config

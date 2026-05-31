@@ -5,14 +5,14 @@
   inputs = {
     # Core nixpkgs channels
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     # Flake Parts
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     # Home Manager
     home-manager-unstable.url = "github:nix-community/home-manager/master";
-    home-manager-stable.url = "github:nix-community/home-manager/release-25.11";
+    home-manager-stable.url = "github:nix-community/home-manager/release-26.05";
 
     # Darwin
     nix-darwin = {

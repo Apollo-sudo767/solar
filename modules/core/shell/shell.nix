@@ -98,7 +98,7 @@ in
           ga = "git add";
           gc = "git commit";
           v = "hx"; # Short for Helix
-          ff = "fastfetch";
+          ff = "fastfetch --config examples/24.jsonc";
         };
 
         initContent = ''

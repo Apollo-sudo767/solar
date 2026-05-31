@@ -45,7 +45,7 @@ in
 
     # 2. Home Manager Default Settings for all users
     home-manager.users = lib.genAttrs cfg.usernames (name: {
-      home.stateVersion = "26.05";
+      home.stateVersion = "26.11";
       home.username = name;
       home.homeDirectory = if isDarwin then "/Users/${name}" else "/home/${name}";
     });

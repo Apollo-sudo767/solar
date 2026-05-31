@@ -11,7 +11,7 @@
         ./hardware-configuration.nix
       ];
 
-      system.stateVersion = "26.05";
+      system.stateVersion = "26.11";
 
       myFeatures = {
         core = {
@@ -21,7 +21,7 @@
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
-            # secureBoot.enable = true;
+            secureBoot.enable = true;
             kernel = "zen";
           };
           security.security = {
@@ -86,6 +86,7 @@
             bitwarden.enable = true;
             anytype.enable = true;
             social.enable = true;
+            silverbullet.enable = true;
           };
         };
         services = {

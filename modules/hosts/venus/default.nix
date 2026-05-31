@@ -11,7 +11,7 @@
         ./hardware-configuration.nix
       ];
 
-      system.stateVersion = "26.05";
+      system.stateVersion = "26.11";
 
       myFeatures = {
         core = {
@@ -58,6 +58,7 @@
             };
           };
           servers = {
+            silverbullet.enable = true;
             factorio = {
               enable = true;
               port = 34197;

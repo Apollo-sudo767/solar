@@ -11,7 +11,7 @@
       imports = [ ./hardware-configuration.nix ];
 
       # OS-Aware State Version
-      system.stateVersion = if lib.hasInfix "darwin" builtins.currentSystem then 5 else "26.05";
+      system.stateVersion = if lib.hasInfix "darwin" builtins.currentSystem then 5 else "26.11";
 
       myFeatures = {
         # Use Composed Templates here

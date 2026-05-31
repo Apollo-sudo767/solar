@@ -38,6 +38,9 @@
           helix.enable = true;
           gemini.enable = true;
         };
+        utilities = {
+          silverbullet.enable = true;
+        };
       };
       platforms = {
         styling = {

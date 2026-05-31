@@ -37,7 +37,7 @@ in
             folders = {
               "Vault" = {
                 path = "${userCfg.mainHome}/Documents/vault";
-                # All Linux machines share their Vault with venus
+                # All machines share their Vault with venus by default
                 devices = lib.optional (config.networking.hostName != "venus") "venus";
               };
             };

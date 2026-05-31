@@ -27,7 +27,14 @@ in
 
     security.acme = {
       acceptTerms = true;
-      defaults.email = "apollo@apollan.cc"; # Reasonable default
+      defaults = {
+        email = "apollo@apollan.cc";
+        dnsProvider = "cloudflare";
+        # Use the same token file as DDNS
+        credentialFiles = {
+          "CLOUDFLARE_DNS_API_TOKEN" = "/var/lib/secrets/cloudflare-token";
+        };
+      };
     };
 
     networking.firewall.allowedTCPPorts = [

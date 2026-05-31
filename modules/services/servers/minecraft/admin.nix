@@ -14,7 +14,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # Ensure mcadmin is included in the usernames list for home-manager and basic config
-    myFeatures.core.system.users.usernames = [ "mcadmin" ];
+    myFeatures.core.system.users.usernames = lib.mkAfter [ "mcadmin" ];
 
     # Server User Configuration for friends
     users.users.mcadmin = {

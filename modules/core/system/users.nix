@@ -21,7 +21,7 @@ in
     };
     mainUser = lib.mkOption {
       type = lib.types.str;
-      default = lib.head cfg.usernames;
+      default = if lib.elem "apollo" cfg.usernames then "apollo" else lib.head cfg.usernames;
       description = "The primary user of the system.";
     };
     mainHome = lib.mkOption {

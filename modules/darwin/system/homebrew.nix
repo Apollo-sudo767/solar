@@ -25,7 +25,7 @@ in
       onActivation.cleanup = "zap"; # Automatically uninstall apps you remove from this list!
       casks = [
         # Add your Mac-only GUI apps here
-        "anytype"
+        "logseq"
         "ghostty"
       ];
     };

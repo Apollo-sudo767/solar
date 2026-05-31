@@ -39,7 +39,7 @@
           gemini.enable = true;
         };
         utilities = {
-          silverbullet.enable = true;
+          logseq.enable = true;
         };
       };
       platforms = {
@@ -48,7 +48,10 @@
           themes.sky.enable = true;
         };
       };
-      services.networking.tailscale.enable = true;
+      services.networking = {
+        tailscale.enable = true;
+        syncthing.enable = true;
+      };
     };
   };
 }

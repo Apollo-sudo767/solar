@@ -86,9 +86,8 @@
           utilities = {
             bitwarden.enable = true;
             stylePackages.enable = true;
-            anytype.enable = true;
+            logseq.enable = true;
             social.enable = true;
-            silverbullet.enable = true;
           };
         };
 
@@ -105,6 +104,7 @@
           };
           networking = {
             tailscale.enable = true;
+            syncthing.enable = true;
           };
         };
       };

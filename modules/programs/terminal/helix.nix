@@ -47,6 +47,11 @@ in
                 formatter.command = lib.getExe pkgs.nixfmt;
                 language-servers = [ "nixd" ];
               }
+              {
+                name = "markdown";
+                soft-wrap.enable = true;
+                text-width = 80;
+              }
             ];
           };
         };

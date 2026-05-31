@@ -47,11 +47,10 @@
           networking = {
             enable = true;
             tailscale.enable = true;
+            syncthing.enable = true;
             ddns = {
               enable = true;
               domains = [
-                "sb.apollan.cc"
-                "sllv.apollan.cc"
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
                 "terraria.apollan.cc"
@@ -59,7 +58,6 @@
             };
           };
           servers = {
-            silverbullet.enable = true;
             factorio = {
               enable = true;
               port = 34197;

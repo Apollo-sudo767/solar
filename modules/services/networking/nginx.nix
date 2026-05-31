@@ -7,20 +7,23 @@ in
   options.myFeatures.services.nginx = {
     enable = lib.mkEnableOption "Nginx Reverse Proxy";
     domain = lib.mkOption {
-      type = lib.types.str;
-      default = "pluto.local";
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Default domain for Nginx (optional).";
     };
   };
 
   config = lib.mkIf cfg.enable {
     services.nginx = {
       enable = true;
-      virtualHosts."${cfg.domain}" = {
-        enableACME = lib.mkDefault (!lib.hasSuffix ".local" cfg.domain);
-        forceSSL = lib.mkDefault (!lib.hasSuffix ".local" cfg.domain);
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:8080";
-          proxyWebsockets = true;
+      virtualHosts = lib.mkIf (cfg.domain != null) {
+        "${cfg.domain}" = {
+          enableACME = lib.mkDefault (!lib.hasSuffix ".local" cfg.domain);
+          forceSSL = lib.mkDefault (!lib.hasSuffix ".local" cfg.domain);
+          locations."/" = {
+            proxyPass = "http://127.0.0.1:8080";
+            proxyWebsockets = true;
+          };
         };
       };
     };

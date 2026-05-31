@@ -13,6 +13,8 @@ in
     lib.mkEnableOption "SilverBullet Client";
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ pkgs.silverbullet ];
+    environment.systemPackages = with pkgs; [
+      silverbullet
+    ];
   };
 }

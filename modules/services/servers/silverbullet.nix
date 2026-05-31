@@ -18,7 +18,7 @@ in
     };
     domain = lib.mkOption {
       type = lib.types.str;
-      default = "sllv.apollan.cc";
+      default = "sb.apollan.cc";
       description = "Domain for SilverBullet.";
     };
   };

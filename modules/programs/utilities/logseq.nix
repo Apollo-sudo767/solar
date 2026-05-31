@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  isDarwin,
   ...
 }:
 
@@ -15,6 +14,6 @@ in
   config = lib.mkIf cfg.enable {
     # On Darwin, we usually use Homebrew for GUI apps like Logseq
     # unless we want to use the Nix version.
-    environment.systemPackages = lib.optional (!isDarwin) pkgs.logseq;
+    environment.systemPackages = lib.optional (!pkgs.stdenv.isDarwin) pkgs.logseq;
   };
 }

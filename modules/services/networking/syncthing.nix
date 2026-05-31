@@ -23,16 +23,27 @@ in
         services.syncthing = {
           enable = true;
           user = userCfg.mainUser;
-          dataDir = "${userCfg.mainHome}/Documents";
+          dataDir = "${userCfg.mainHome}/Documents/vault";
           configDir = "${userCfg.mainHome}/.config/syncthing";
 
-          # We'll let the user configure devices/folders manually or via a central config
           settings = {
+            devices = {
+              "venus" = {
+                id = "3MHFG6M-DDG7OMR-PYTAMSQ-WSCFMAM-BR54N3O-36KAJVE-M22S5O7-ZHKZFQH";
+                # Tell other machines to trust venus to introduce them to the rest of the fleet
+                introducer = true;
+              };
+            };
+            folders = {
+              "Vault" = {
+                path = "${userCfg.mainHome}/Documents/vault";
+                # All Linux machines share their Vault with venus
+                devices = lib.optional (config.networking.hostName != "venus") "venus";
+              };
+            };
             gui = {
-              address = "127.0.0.1:8384"; # Only accessible via SSH tunnel or Tailscale
+              address = "127.0.0.1:8384";
               user = userCfg.mainUser;
-              # NO PASSWORD HERE: Set it once in the Web UI.
-              # It will be saved to configDir and persist across rebuilds.
             };
           };
         };
@@ -55,6 +66,8 @@ in
             restart_service = "changed";
           }
         ];
+        # Note: nix-darwin doesn't support declarative 'settings' for Homebrew-installed syncthing.
+        # You will just need to add the Venus ID (3MHFG6M-...) once in the Mac Web UI (8384).
       })
     ]
   );

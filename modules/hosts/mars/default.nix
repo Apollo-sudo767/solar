@@ -104,6 +104,7 @@
           hardware = {
             printing.enable = true;
             udisks2.enable = true;
+            openrgb.enable = true;
           };
           networking = {
             enable = true;

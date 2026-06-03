@@ -29,6 +29,15 @@ let
       hmInput = if isStable then inputs.home-manager-stable else inputs.home-manager-unstable;
       hmModule =
         if isDarwin then hmInput.darwinModules.home-manager else hmInput.nixosModules.home-manager;
+
+      agenixModule =
+        if isDarwin then inputs.agenix.darwinModules.default else inputs.agenix.nixosModules.default;
+
+      agenixRekeyModule =
+        if isDarwin then
+          inputs.agenix-rekey.darwinModules.default
+        else
+          inputs.agenix-rekey.nixosModules.default;
     in
     {
       inherit isDarwin;
@@ -44,6 +53,8 @@ let
           ++ [
             (hostData.module or { })
             hmModule
+            agenixModule
+            agenixRekeyModule
             {
               networking.hostName = name;
               nixpkgs.config.allowUnfree = true;

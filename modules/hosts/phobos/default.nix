@@ -23,9 +23,13 @@
           lix.enable = true;
           nix-settings.enable = true;
         };
-        security.ssh.enable = true;
+        security = {
+          ssh.enable = true;
+          agenix.enable = true;
+        };
         shell.shell-branch.enable = true;
       };
+      
       darwin = {
         system = {
           core.enable = true;

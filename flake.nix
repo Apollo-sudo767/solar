@@ -25,6 +25,14 @@
     stylix-stable.url = "github:danth/stylix/release-25.11";
 
     # Secrets Management
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    agenix-rekey = {
+      url = "github:oddlama/agenix-rekey";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     solar-secrets = {
       url = "git+ssh://git@github.com/apollo-sudo767/solar-secrets.git";
       flake = false;
@@ -88,7 +96,10 @@
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ ./parts ];
+      imports = [
+        ./parts
+        inputs.agenix-rekey.flakeModule
+      ];
 
       # Add MacBook (Darwin) support alongside Linux
       systems = [

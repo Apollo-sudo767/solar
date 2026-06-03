@@ -26,6 +26,7 @@
             enable = true;
             useAppArmor = true;
           };
+          security.agenix.enable = true;
           nix.lix.enable = true;
         };
 

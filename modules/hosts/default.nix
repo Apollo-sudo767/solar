@@ -60,6 +60,12 @@ let
               nixpkgs.config.allowUnfree = true;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+
+              # Set defaults for agenix-rekey so evaluation doesn't fail
+              age.rekey = {
+                storageMode = "local";
+                localStorageDir = inputs.self + "/secrets/rekeyed/${name}";
+              };
             }
           ]
           ++ lib.optional isDarwin {

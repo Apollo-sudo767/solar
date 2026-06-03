@@ -91,43 +91,54 @@
 
   outputs =
     inputs@{
+      self,
       nixpkgs-unstable,
       flake-parts,
       ...
     }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        ./parts
-        inputs.agenix-rekey.flakeModule
-      ];
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { config, ... }:
+      {
+        imports = [
+          ./parts
+          inputs.agenix-rekey.flakeModule
+        ];
 
-      # Add MacBook (Darwin) support alongside Linux
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-      ];
+        # Add MacBook (Darwin) support alongside Linux
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+          "aarch64-darwin"
+        ];
 
-      perSystem =
-        { system, ... }:
-        {
-          _module.args.pkgs = import nixpkgs-unstable {
-            inherit system;
-            config.allowUnfree = true; # Required for things like sops or discord
+        perSystem =
+          { system, config, ... }:
+          {
+            agenix-rekey = {
+              # Tells agenix-rekey which nodes to scan for secrets
+              # We provide both Linux and Darwin configurations
+              nixosConfigurations = self.nixosConfigurations or { };
+              darwinConfigurations = self.darwinConfigurations or { };
+            };
+
+            _module.args.pkgs = import nixpkgs-unstable {
+              inherit system;
+              config.allowUnfree = true; # Required for things like sops or discord
+            };
           };
-        };
 
-      flake =
-        let
-          inherit (nixpkgs-unstable) lib;
-          hostLoader = import ./modules/hosts/default.nix {
-            inherit lib inputs;
-            globalModules = [ ./modules/default.nix ];
+        flake =
+          let
+            inherit (nixpkgs-unstable) lib;
+            hostLoader = import ./modules/hosts/default.nix {
+              inherit lib inputs;
+              globalModules = [ ./modules/default.nix ];
+            };
+          in
+          {
+            inherit (hostLoader) nixosConfigurations;
+            inherit (hostLoader) darwinConfigurations;
           };
-        in
-        {
-          inherit (hostLoader) nixosConfigurations;
-          inherit (hostLoader) darwinConfigurations;
-        };
-    };
+      }
+    );
 }

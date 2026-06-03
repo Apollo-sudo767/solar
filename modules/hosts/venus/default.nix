@@ -31,7 +31,7 @@
           security.agenix.enable = true;
           nix.lix.enable = true;
         };
-        
+
         hardware = {
           cpu-gpu.amd.enable = true;
         };

@@ -4,6 +4,7 @@
   pkgs,
   inputs,
   isDarwin,
+  isTotal,
   ...
 }:
 
@@ -22,46 +23,54 @@ in
 
   config = lib.mkIf cfg.enable {
     age.rekey = {
+      storageMode = "local";
+      # Storage for rekeyed (host-specific) secrets.
+      # This needs to be host-specific for the new local storage mode.
+      # Use a relative path from the flake root.
+      localStorageDir = ../../../secrets/rekeyed/${config.networking.hostName};
+
       # The public keys of the master identities.
-      # We use toString to ensure they are treated as paths/strings, not modules.
+      # We use toString and builtins.pathExists for the actual evaluation,
+      # but for the rekeying tool to work, it might need them to be discoverable.
       masterIdentities =
         let
-          yubikey = "${inputs.solar-secrets}/master/yubikey.pub";
-          se = "${inputs.solar-secrets}/master/se.pub";
+          yubikey = ../../../secrets/master/yubikey.pub;
+          se = ../../../secrets/master/se.pub;
         in
         (lib.optional (builtins.pathExists yubikey) yubikey)
         ++ (lib.optional (builtins.pathExists se) se)
-        # Fallback to an empty list if nothing exists yet
-        ++ (lib.optional (!(builtins.pathExists yubikey) && !(builtins.pathExists se)) (
-          toString (pkgs.writeText "dummy.pub" "age10000000000000000000000000000000000000000000000000000000000")
-        ));
-
-      # Storage for rekeyed (host-specific) secrets.
-      localStorageDir = ../../../secrets/rekeyed;
+        # Fallback to a dummy if nothing exists yet
+        ++ (lib.optional (
+          !(builtins.pathExists yubikey) && !(builtins.pathExists se)
+        ) "age10000000000000000000000000000000000000000000000000000000000");
 
       # Hardware plugins required for rekeying
       agePlugins = [
         pkgs.age-plugin-yubikey
-      ] ++ lib.optional isDarwin pkgs.age-plugin-se;
+      ]
+      ++ lib.optional isDarwin pkgs.age-plugin-se;
 
       # Identify the host's public key
       hostPubkey =
         let
-          se = "${inputs.solar-secrets}/master/se.pub";
-          host = "${inputs.solar-secrets}/hosts/${config.networking.hostName}.pub";
+          se = ../../../secrets/master/se.pub;
+          host = ../../../secrets/hosts/${config.networking.hostName}.pub;
         in
         if isDarwin then
-          if builtins.pathExists se then se else (toString (pkgs.writeText "dummy-se.pub" "age10000000000000000000000000000000000000000000000000000000000"))
+          if builtins.pathExists se then
+            se
+          else
+            "age10000000000000000000000000000000000000000000000000000000000"
         else if builtins.pathExists host then
           host
         else
-          (toString (pkgs.writeText "dummy-host.pub" "age10000000000000000000000000000000000000000000000000000000000"));
+          "age10000000000000000000000000000000000000000000000000000000000";
     };
 
     # Permanent, Master-Managed SSH Key (Linux Only)
     age.secrets.host-ssh-key = lib.mkIf (!isDarwin) {
       generator.script = "ssh-ed25519";
-      rekeyFile = inputs.solar-secrets + "/hosts/${config.networking.hostName}.age";
+      rekeyFile = ../../../secrets/hosts/${config.networking.hostName}.age;
       group = "root";
       mode = "600";
     };

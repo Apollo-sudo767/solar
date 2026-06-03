@@ -29,7 +29,7 @@
         };
         shell.shell-branch.enable = true;
       };
-      
+
       darwin = {
         system = {
           core.enable = true;

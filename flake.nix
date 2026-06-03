@@ -22,7 +22,7 @@
 
     # Stylix
     stylix-unstable.url = "github:danth/stylix";
-    stylix-stable.url = "github:danth/stylix/release-25.11";
+    stylix-stable.url = "github:danth/stylix/release-26.05";
 
     # Secrets Management
     agenix = {
@@ -34,7 +34,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     solar-secrets = {
-      url = "git+ssh://git@github.com/apollo-sudo767/solar-secrets.git";
+      url = "git+ssh://git@github.com/Apollo-sudo767/solar-secrets.git";
       flake = false;
     };
 

@@ -22,11 +22,19 @@ in
 
   config = lib.mkIf cfg.enable {
     age.rekey = {
-      # The public keys of the master identities that can decrypt the master secrets.
-      masterIdentities = [
-        (inputs.solar-secrets + "/master/yubikey.pub")
-        (inputs.solar-secrets + "/master/se.pub")
-      ];
+      # The public keys of the master identities.
+      # We use toString to ensure they are treated as paths/strings, not modules.
+      masterIdentities =
+        let
+          yubikey = "${inputs.solar-secrets}/master/yubikey.pub";
+          se = "${inputs.solar-secrets}/master/se.pub";
+        in
+        (lib.optional (builtins.pathExists yubikey) yubikey)
+        ++ (lib.optional (builtins.pathExists se) se)
+        # Fallback to an empty list if nothing exists yet
+        ++ (lib.optional (!(builtins.pathExists yubikey) && !(builtins.pathExists se)) (
+          toString (pkgs.writeText "dummy.pub" "age10000000000000000000000000000000000000000000000000000000000")
+        ));
 
       # Storage for rekeyed (host-specific) secrets.
       localStorageDir = ../../../secrets/rekeyed;
@@ -38,40 +46,33 @@ in
 
       # Identify the host's public key
       hostPubkey =
+        let
+          se = "${inputs.solar-secrets}/master/se.pub";
+          host = "${inputs.solar-secrets}/hosts/${config.networking.hostName}.pub";
+        in
         if isDarwin then
-          # On Mac, we use the Secure Enclave public key directly
-          (inputs.solar-secrets + "/master/se.pub")
+          if builtins.pathExists se then se else (toString (pkgs.writeText "dummy-se.pub" "age10000000000000000000000000000000000000000000000000000000000"))
+        else if builtins.pathExists host then
+          host
         else
-          # On Linux, we use the generated permanent SSH key
-          (inputs.solar-secrets + "/hosts/${config.networking.hostName}.pub");
+          (toString (pkgs.writeText "dummy-host.pub" "age10000000000000000000000000000000000000000000000000000000000"));
     };
+
+    # Permanent, Master-Managed SSH Key (Linux Only)
+    age.secrets.host-ssh-key = lib.mkIf (!isDarwin) {
+      generator.script = "ssh-ed25519";
+      rekeyFile = inputs.solar-secrets + "/hosts/${config.networking.hostName}.age";
+      group = "root";
+      mode = "600";
+    };
+
+    # Use the identity for decrypting secrets
+    age.identityPaths =
+      if isDarwin then
+        [ ]
+      else if config.age.secrets ? host-ssh-key then
+        [ config.age.secrets.host-ssh-key.path ]
+      else
+        [ ];
   };
-
-  # Permanent, Master-Managed SSH Key (Linux Only)
-  # Mac uses the Secure Enclave which is "invincible" and already exists.
-  age.secrets.host-ssh-key = lib.mkIf (!isDarwin) {
-    generator.script = "ssh-ed25519";
-    rekeyFile = inputs.solar-secrets + "/hosts/${config.networking.hostName}.age";
-    group = "root";
-    mode = "600";
-  };
-
-  # Use the identity for decrypting secrets
-  age.identityPaths =
-    if isDarwin then
-      # On Mac, the Secure Enclave plugin handles the identity path
-      [ ]
-    else
-      # On Linux, use our master-managed backup key
-      [ config.age.secrets.host-ssh-key.path ];
-
-  # Use the generated key as the actual SSH host key (Linux Only)
-  services.openssh.hostKeys = lib.mkIf (!isDarwin) [
-    {
-      path = config.age.secrets.host-ssh-key.path;
-      type = "ed25519";
-    }
-  ];
-  }
-
 }

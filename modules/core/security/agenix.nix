@@ -36,13 +36,18 @@ in
         let
           yubikey = ../../../secrets/master/yubikey.pub;
           se = ../../../secrets/master/se.pub;
+          dev = ../../../secrets/master/dev.pub;
         in
         (lib.optional (builtins.pathExists yubikey) yubikey)
         ++ (lib.optional (builtins.pathExists se) se)
+        ++ (lib.optional (builtins.pathExists dev) dev)
         # Fallback to a dummy if nothing exists yet
-        ++ (lib.optional (
-          !(builtins.pathExists yubikey) && !(builtins.pathExists se)
-        ) "age10000000000000000000000000000000000000000000000000000000000");
+        ++ (lib.optional
+          (!(builtins.pathExists yubikey) && !(builtins.pathExists se) && !(builtins.pathExists dev))
+          (
+            builtins.toFile "dummy.txt" "AGE-SECRET-KEY-1UYYT20446YSN3W8DR7GU46AD8H3JDDEL4N0PKAQ24JUQPSF3NTWSY32NRG"
+          )
+        );
 
       # Hardware plugins required for rekeying
       agePlugins = [
@@ -54,6 +59,7 @@ in
       hostPubkey =
         let
           se = ../../../secrets/master/se.pub;
+          dev = ../../../secrets/master/dev.pub;
           host = ../../../secrets/hosts/${config.networking.hostName}.pub;
         in
         if isDarwin then
@@ -61,6 +67,8 @@ in
             se
           else
             "age10000000000000000000000000000000000000000000000000000000000"
+        else if builtins.pathExists dev then
+          dev
         else if builtins.pathExists host then
           host
         else

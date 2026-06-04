@@ -42,7 +42,7 @@ in
     {
       home-manager.sharedModules = lib.optional (
         !config.stylix.enable
-      ) inputs.stylix-unstable.homeManagerModules.stylix;
+      ) inputs.stylix-unstable.homeModules.stylix;
     }
 
     # Universal Stylix (Base Theme & Common Targets)
@@ -85,6 +85,7 @@ in
             qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
             plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
             spicetify.enable = config.myFeatures.programs.utilities.spicetify.enable or false;
+            kmscon.enable = false;
             limine.enable = false;
           };
         }

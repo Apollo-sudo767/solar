@@ -74,6 +74,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    noctalia-v5 = {
+      url = "github:noctalia-dev/noctalia-shell/v5";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # Iron Bar
     ironbar = {
       url = "github:JakeStanger/ironbar";
@@ -112,13 +117,34 @@
         ];
 
         perSystem =
-          { system, config, ... }:
+          {
+            system,
+            config,
+            lib,
+            ...
+          }:
           {
             agenix-rekey = {
               # Tells agenix-rekey which nodes to scan for secrets
               # We provide both Linux and Darwin configurations
               nixosConfigurations = self.nixosConfigurations or { };
               darwinConfigurations = self.darwinConfigurations or { };
+            };
+
+            # Define apps for justfile compatibility
+            apps = {
+              agenix-rekey-generate = {
+                type = "app";
+                program = lib.getExe self.agenix-rekey.${system}.generate;
+              };
+              agenix-rekey-rekey = {
+                type = "app";
+                program = lib.getExe self.agenix-rekey.${system}.rekey;
+              };
+              agenix-rekey-edit = {
+                type = "app";
+                program = lib.getExe self.agenix-rekey.${system}.edit-view;
+              };
             };
 
             _module.args.pkgs = import nixpkgs-unstable {

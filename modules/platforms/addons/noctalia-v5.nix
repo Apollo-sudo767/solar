@@ -1,0 +1,41 @@
+{
+  config,
+  lib,
+  inputs,
+  pkgs,
+  ...
+}:
+
+let
+  cfg = config.myFeatures.platforms.addons.noctalia-v5;
+  inherit (config.myFeatures.core.system.users) usernames;
+in
+{
+  options.myFeatures.platforms.addons.noctalia-v5.enable =
+    lib.mkEnableOption "Noctalia Shell v5 (Wayland Shell)";
+
+  config = lib.mkIf cfg.enable {
+    # Required services for Noctalia's status modules
+    services.upower.enable = lib.mkDefault true;
+
+    nix.settings = {
+      substituters = [ "https://noctalia.cachix.org" ];
+      trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+    };
+
+    # Disable standalone alternatives to let Noctalia handle them
+    myFeatures.platforms.addons = {
+      swaybg.enable = lib.mkForce false;
+      idle.enable = lib.mkForce false;
+    };
+
+    home-manager.users = lib.genAttrs usernames (name: {
+      imports = [ inputs.noctalia-v5.homeModules.default ];
+
+      programs.noctalia = {
+        enable = true;
+        package = inputs.noctalia-v5.packages.${pkgs.system}.default;
+      };
+    });
+  };
+}

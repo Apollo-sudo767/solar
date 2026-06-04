@@ -5,23 +5,20 @@
 }:
 
 let
-  cfg = config.myFeatures.platforms.styling.spaceNiri;
+  cfg = config.myFeatures.platforms.styling.skyNiri;
 in
 {
-  options.myFeatures.platforms.styling.spaceNiri.enable =
-    lib.mkEnableOption "Apollo's Space Niri Rice (Centralized)";
+  options.myFeatures.platforms.styling.skyNiri.enable =
+    lib.mkEnableOption "Apollo's Sky Niri Rice (Centralized)";
 
   config = lib.mkIf cfg.enable {
     myFeatures.platforms = {
-      # Enable the Space Theme (Stylix settings)
-      styling.themes.space.enable = true;
+      # Enable the Sky Theme (Stylix settings)
+      styling.themes.sky.enable = true;
 
       # Enable all the addons for this rice
       addons = {
-        waybar.enable = true;
-        swaync.enable = true;
         swayosd.enable = true;
-        swww.enable = true;
         fuzzel.enable = true;
         swaylock.enable = true;
         swaybg.enable = lib.mkForce false;
@@ -30,9 +27,12 @@ in
       # Enable Niri and Keybinds
       desktops.niri.enable = true;
       styling.niriKeybinds.enable = true;
+
+      # Use the NEW Noctalia v5 Rice instead of defaults
+      styling.skyNoctalia.enable = true;
     };
 
-    # Niri-specific aesthetic tweaks for the "Space" look
+    # Niri-specific aesthetic tweaks for the "Sky" look
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
         prefer-no-csd = true;

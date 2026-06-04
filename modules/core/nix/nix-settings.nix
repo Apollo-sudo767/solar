@@ -34,8 +34,12 @@ in
     };
 
     # Allow unfree packages
-    nixpkgs.config.allowUnfree = true;
-
+    nixpkgs.config = {
+      allowUnfree = true;
+      permittedInsecurePackages = [
+        "electron-39.8.10"
+      ];
+    };
     # Disable javascript support in yt-dlp to avoid building deno (and rusty-v8) from source
     nixpkgs.overlays = [
       (final: prev: {

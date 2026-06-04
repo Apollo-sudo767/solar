@@ -57,7 +57,7 @@
         platforms = {
           styling = {
             stylix.enable = true;
-            spaceNiri.enable = true;
+            skyNiri.enable = true;
           };
           addons = {
             displayManager.manager = "tuigreet";

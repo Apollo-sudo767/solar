@@ -11,7 +11,7 @@ let
   cfg = config.myFeatures.platforms.styling.themes.sky;
 in
 {
-  options.myFeatures.platforms.styling.themes.sky.enable = lib.mkEnableOption "Gruvbox Theme";
+  options.myFeatures.platforms.styling.themes.sky.enable = lib.mkEnableOption "Sky Theme";
 
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.styling.stylix = {

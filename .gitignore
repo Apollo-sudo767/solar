@@ -1,2 +1,5 @@
 .DS_Store
-secrets/rekeyed/
+result
+result-*
+.direnv/
+

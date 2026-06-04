@@ -15,7 +15,7 @@ in
     vaultPath = lib.mkOption {
       type = lib.types.str;
       default = "Documents/Logseq";
-      description = "The path to your Logseq vault relative to home.";
+      description = "The relative path to your Logseq vault from home directory.";
     };
   };
 

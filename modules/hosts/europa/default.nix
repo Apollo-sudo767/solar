@@ -19,6 +19,10 @@
             core-branch.enable = true;
             users.usernames = [ "hephaestus" ];
           };
+          security.security = {
+            enable = true;
+          };
+          security.agenix.enable = true;
           nix.lix.enable = true;
           shell.shell-branch.enable = true;
           boot = {

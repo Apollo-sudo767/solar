@@ -50,7 +50,19 @@ in
           "networkmanager"
           "video"
         ];
-        initialPassword = "solar";
+        # Password Logic:
+        # 1. Use password-<username> if it exists
+        # 2. Otherwise, fall back to password-apollo as the default
+        # 3. If neither exists, use the hardcoded "solar"
+        hashedPasswordFile =
+          if (config.age.secrets ? "password-${name}") then
+            config.age.secrets."password-${name}".path
+          else if (config.age.secrets ? "password-apollo.age") then
+            config.age.secrets."password-apollo.age".path
+          else
+            null;
+
+        initialPassword = lib.mkIf (config.users.users.${name}.hashedPasswordFile == null) "solar";
       }
     );
 

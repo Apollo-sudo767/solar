@@ -19,11 +19,12 @@
 
       # --- CORE SYSTEM SECRETS ---
 
-      # Permanent, Master-Managed SSH Key
-      host-ssh-key = {
+      # Permanent, Master-Managed SSH Key (Darwin Only)
+      # Linux uses injected keys in /persist/etc/ssh to avoid circular dependency
+      host-ssh-key = lib.mkIf isDarwin {
         generator.script = "ssh-ed25519";
         rekeyFile = ../../../secrets/hosts/${config.networking.hostName}.age;
-        group = if isDarwin then "wheel" else "root";
+        group = "wheel";
         mode = "600";
       };
 

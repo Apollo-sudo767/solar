@@ -15,7 +15,7 @@ in
     usePersistence = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Switch from standard users to persistent SOPS-backed users.";
+      description = "Enable Wipe-on-Boot Preservation for this host.";
     };
     virtualization = {
       docker = lib.mkEnableOption "Docker Engine";
@@ -34,6 +34,7 @@ in
           system.localeChicago.enable = lib.mkDefault true;
           security.ssh.enable = lib.mkDefault true;
           system.users.enable = lib.mkDefault true;
+          system.preservation.enable = lib.mkIf cfg.usePersistence true;
         };
       }
 

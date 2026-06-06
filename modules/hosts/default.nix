@@ -38,6 +38,8 @@ let
           inputs.agenix-rekey.darwinModules.default
         else
           inputs.agenix-rekey.nixosModules.default;
+
+      preservationModule = if isDarwin then { } else inputs.preservation.nixosModules.default;
     in
     {
       inherit isDarwin;
@@ -47,6 +49,7 @@ let
         specialArgs = {
           inherit inputs isStable isDarwin;
           isTotal = true;
+          inherit (inputs) preservation;
         };
         modules =
           globalModules
@@ -55,6 +58,7 @@ let
             hmModule
             agenixModule
             agenixRekeyModule
+            preservationModule
             {
               networking.hostName = name;
               nixpkgs.config.allowUnfree = true;

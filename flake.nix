@@ -49,6 +49,7 @@
     # Disko & Impermance
     disko.url = "github:nix-community/disko";
     impermanence.url = "github:nix-community/impermanence";
+    preservation.url = "github:WilliButz/preservation";
 
     # Zen Browser
     zen-browser = {

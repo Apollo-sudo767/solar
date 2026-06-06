@@ -1405,6 +1405,21 @@
         "type": "github"
       }
     },
+    "preservation": {
+      "locked": {
+        "lastModified": 1757436102,
+        "narHash": "sha256-mMI9IanU+Xw+pVogD2oT0I2kTmvz2Un/Apc5+CwUpEY=",
+        "owner": "WilliButz",
+        "repo": "preservation",
+        "rev": "93416f4614ad2dfed5b0dcf12f27e57d27a5ab11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "WilliButz",
+        "repo": "preservation",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -1425,6 +1440,7 @@
         "noctalia-v5": "noctalia-v5",
         "paneru": "paneru",
         "pre-commit-hooks": "pre-commit-hooks_2",
+        "preservation": "preservation",
         "solar-secrets": "solar-secrets",
         "spicetify-nix": "spicetify-nix",
         "stylix-stable": "stylix-stable",

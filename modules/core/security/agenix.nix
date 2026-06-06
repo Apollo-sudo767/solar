@@ -61,6 +61,13 @@ in
     };
 
     # Use the identity for decrypting secrets
-    age.identityPaths = [ config.age.secrets.host-ssh-key.path ];
+    age.identityPaths =
+      if isDarwin then
+        [ config.age.secrets.host-ssh-key.path ]
+      else
+        [
+          "/persist/etc/ssh/ssh_host_ed25519_key"
+          "/etc/ssh/ssh_host_ed25519_key"
+        ];
   };
 }

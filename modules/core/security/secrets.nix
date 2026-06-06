@@ -49,9 +49,9 @@
 
       # --- NETWORKING & SERVICES ---
 
-      # "wifi.age" = {
-      #   rekeyFile = ../../../secrets/secrets/wifi.age;
-      # };
+      "wifi.age" = {
+        rekeyFile = ../../../secrets/secrets/wifi.age;
+      };
 
       # "tailscale.age" = {
       #   rekeyFile = ../../../secrets/secrets/tailscale.age;

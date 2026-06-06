@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  isTotal,
   ...
 }:
 
@@ -21,10 +20,10 @@ in
     home-manager.users = lib.genAttrs usernames (_name: {
       programs.noctalia = {
         settings = {
-          # v5 Specific Configuration
+          # v5 Specific Configuration - Matched EXACTLY to ~/.config/noctalia/config.toml
           bar = {
             enable = true;
-            position = "top";
+            position = "bottom";
             height = 36;
             barType = "simple";
             density = "default";
@@ -106,8 +105,8 @@ in
             };
           };
 
-          # Hardcoded Sky Theme Colors (v5)
-          # Specifically requested to be defined here.
+          dock.enabled = false;
+
           colors = {
             mPrimary = "#2471a3";
             mOnPrimary = "#050a18";
@@ -156,3 +155,5 @@ in
     });
   };
 }
+
+

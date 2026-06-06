@@ -14,9 +14,9 @@ in
     persistentPath = lib.mkOption {
       type = lib.types.str;
       default = "/persist";
-      description = "The root path for persistent storage.";
+      description = "The root path for persistent storage (Speed/NVMe).";
     };
-    bulkPath = lib.mkOption {
+    coldPath = lib.mkOption {
       type = lib.types.str;
       readOnly = true;
       default =
@@ -27,7 +27,7 @@ in
           "/persist/bulk"
         else
           config.myFeatures.core.system.preservation.persistentPath;
-      description = "The path for bulk storage (falls back to persistentPath if no bulk disks).";
+      description = "The path for cold storage/archives (HDD). Falls back to persistentPath if no HDDs.";
     };
   };
 
@@ -45,8 +45,8 @@ in
         ];
       };
 
-      # Bulk Tier
-      preserveAt."${cfg.bulkPath}" = {
+      # Cold Tier (HDD)
+      preserveAt."${cfg.coldPath}" = {
         directories = [ ];
       };
     };

@@ -38,7 +38,7 @@ in
           })
         ];
 
-        preservation.preserveAt."${config.myFeatures.core.system.preservation.bulkPath}" =
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {
               directories = lib.concatMap (name: [
@@ -62,7 +62,7 @@ in
           keyutils
         ];
 
-        preservation.preserveAt."${config.myFeatures.core.system.preservation.bulkPath}" =
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {
               directories = lib.concatMap (name: [

@@ -67,6 +67,14 @@ in
 
         environment.systemPackages = [ pkgs.vpl-gpu-rt ];
 
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = lib.concatMap (name: [
+                "/home/${name}/.config/sunshine"
+              ]) config.myFeatures.core.system.users.usernames;
+            };
+
         services.avahi = {
           enable = true;
           publish = {

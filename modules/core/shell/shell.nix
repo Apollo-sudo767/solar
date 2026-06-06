@@ -108,5 +108,13 @@ in
         '';
       };
     });
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
+        {
+          files = lib.concatMap (name: [
+            "/home/${name}/.zsh_history"
+          ]) config.myFeatures.core.system.users.usernames;
+        };
   };
 }

@@ -29,6 +29,14 @@ in
         home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
           # Home manager settings for bitwarden if any
         });
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = lib.concatMap (name: [
+                "/home/${name}/.config/Bitwarden"
+              ]) config.myFeatures.core.system.users.usernames;
+            };
       })
     ]
   );

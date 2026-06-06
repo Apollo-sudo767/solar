@@ -93,5 +93,13 @@ in
         };
       }
     ];
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = lib.concatMap (name: [
+            "/home/${name}/.mozilla/firefox"
+          ]) config.myFeatures.core.system.users.usernames;
+        };
   };
 }

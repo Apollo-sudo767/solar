@@ -23,5 +23,14 @@ in
     # On Darwin, we usually use Homebrew for GUI apps like Logseq
     # unless we want to use the Nix version.
     environment.systemPackages = lib.optional (!pkgs.stdenv.isDarwin) pkgs.logseq;
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
+        {
+          directories = lib.concatMap (name: [
+            "/home/${name}/.config/Logseq"
+            "/home/${name}/${cfg.vaultPath}"
+          ]) config.myFeatures.core.system.users.usernames;
+        };
   };
 }

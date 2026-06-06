@@ -72,5 +72,18 @@ in
       home.username = name;
       home.homeDirectory = config.users.users.${name}.home;
     });
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && !isDarwin)
+        {
+          directories = lib.concatMap (name: [
+            "/home/${name}/Documents"
+            "/home/${name}/Downloads"
+            "/home/${name}/Pictures"
+            "/home/${name}/Videos"
+            "/home/${name}/Desktop"
+            "/home/${name}/.local/share/direnv" # Persist direnv allow state
+          ]) cfg.usernames;
+        };
   };
 }

@@ -37,6 +37,15 @@ in
         };
 
         systemd.user.services.pipewire.wantedBy = [ "default.target" ];
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = lib.concatMap (name: [
+                "/home/${name}/.local/state/wireplumber"
+                "/home/${name}/.config/pulse"
+              ]) config.myFeatures.core.system.users.usernames;
+            };
       })
     ]
   );

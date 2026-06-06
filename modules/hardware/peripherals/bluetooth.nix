@@ -44,5 +44,13 @@ in
       usbutils # Injects 'lsusb' natively into your deployment environment
       pciutils # Injects 'lspci' natively into your deployment environment
     ];
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = [
+            "/var/lib/bluetooth"
+          ];
+        };
   };
 }

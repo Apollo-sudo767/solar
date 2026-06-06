@@ -24,6 +24,13 @@ in
       # 2. Linux-only configuration
       (lib.optionalAttrs (!isDarwin) {
         # You could add things like --accept-dns=false here if needed
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = [
+                "/var/lib/tailscale"
+              ];
+            };
       })
     ]
   );

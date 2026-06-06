@@ -24,5 +24,12 @@ in
     users.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       extraGroups = (lib.optional cfg.docker "docker") ++ (lib.optional cfg.libvirt "libvirtd");
     });
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories =
+            (lib.optional cfg.docker "/var/lib/docker") ++ (lib.optional cfg.libvirt "/var/lib/libvirt");
+        };
   };
 }

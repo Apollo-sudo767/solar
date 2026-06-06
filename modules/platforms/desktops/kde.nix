@@ -28,5 +28,19 @@ in
     ];
 
     xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = lib.concatMap (name: [
+            "/home/${name}/.config/kde.org"
+            "/home/${name}/.local/share/kwalletd"
+            "/home/${name}/.local/share/konsole"
+            "/home/${name}/.local/share/dolphin"
+          ]) config.myFeatures.core.system.users.usernames;
+          files = lib.concatMap (name: [
+            "/home/${name}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+          ]) config.myFeatures.core.system.users.usernames;
+        };
   };
 }

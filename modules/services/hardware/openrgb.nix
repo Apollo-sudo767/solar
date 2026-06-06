@@ -22,5 +22,13 @@ in
 
     # Add OpenRGB to system packages for GUI access
     environment.systemPackages = [ pkgs.openrgb-with-all-plugins ];
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = lib.concatMap (name: [
+            "/home/${name}/.config/OpenRGB"
+          ]) config.myFeatures.core.system.users.usernames;
+        };
   };
 }

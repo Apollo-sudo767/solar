@@ -13,5 +13,14 @@ in
       nssmdns4 = true;
       openFirewall = true;
     };
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = [
+            "/etc/cups"
+            "/var/lib/cups"
+          ];
+        };
   };
 }

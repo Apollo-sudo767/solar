@@ -19,11 +19,11 @@
 
       # --- CORE SYSTEM SECRETS ---
 
-      # Permanent, Master-Managed SSH Key (Linux Only)
-      host-ssh-key = lib.mkIf (!isDarwin) {
+      # Permanent, Master-Managed SSH Key
+      host-ssh-key = {
         generator.script = "ssh-ed25519";
         rekeyFile = ../../../secrets/hosts/${config.networking.hostName}.age;
-        group = "root";
+        group = if isDarwin then "wheel" else "root";
         mode = "600";
       };
 

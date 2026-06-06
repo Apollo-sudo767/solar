@@ -50,25 +50,14 @@ in
 
       # Identify the host's public key. We prefer the generated host-ssh-key.
       hostPubkey =
-        if config.age.secrets ? host-ssh-key && config.age.secrets.host-ssh-key ? pubkey then
-          config.age.secrets.host-ssh-key.pubkey
+        let
+          hostPub = ../../../secrets/hosts/${config.networking.hostName}.pub;
+        in
+        if builtins.pathExists hostPub then
+          hostPub
         else
-          let
-            host = ../../../secrets/hosts/${config.networking.hostName}.pub;
-          in
-          if builtins.pathExists host then
-            host
-          else
-            # Fallback to dummy if nothing exists yet, allowing initial generation
-            "age10000000000000000000000000000000000000000000000000000000000";
-    };
-
-    # Permanent, Master-Managed SSH Key
-    age.secrets.host-ssh-key = {
-      generator.script = "ssh-ed25519";
-      rekeyFile = ../../../secrets/hosts/${config.networking.hostName}.age;
-      group = if isDarwin then "wheel" else "root";
-      mode = "600";
+          config.age.secrets.host-ssh-key.pubkey
+            or "age10000000000000000000000000000000000000000000000000000000000";
     };
 
     # Use the identity for decrypting secrets

@@ -23,7 +23,6 @@
             enable = true;
             useAppArmor = true;
           };
-          security.agenix.enable = true;
           nix.lix.enable = true;
           shell.shell-branch.enable = true;
           boot = {

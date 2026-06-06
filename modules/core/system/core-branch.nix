@@ -35,6 +35,7 @@ in
           security.ssh.enable = lib.mkDefault true;
           system.users.enable = lib.mkDefault true;
           system.preservation.enable = lib.mkIf cfg.usePersistence true;
+          system.disko.enable = lib.mkDefault true;
         };
       }
 

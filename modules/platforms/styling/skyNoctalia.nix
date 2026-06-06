@@ -1,13 +1,14 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 let
   cfg = config.myFeatures.platforms.styling.skyNoctalia;
   inherit (config.myFeatures.core.system.users) usernames;
-  stylixEnabled = config.myFeatures.platforms.styling.stylix.enable;
+  iconFile = ../../../assets/icons/Apollo.jpg;
 in
 {
   options.myFeatures.platforms.styling.skyNoctalia.enable =
@@ -24,22 +25,135 @@ in
             enable = true;
             position = "top";
             height = 36;
+            barType = "simple";
+            density = "default";
+            showOutline = false;
+            showCapsule = true;
+            capsuleOpacity = 1.0;
+            capsuleColorKey = "none";
+            widgetSpacing = 6;
+            contentPadding = 2;
+            fontScale = 1;
+            enableExclusionZoneInset = true;
+            backgroundOpacity = 1.0;
+            useSeparateOpacity = false;
+            marginVertical = 4;
+            marginHorizontal = 4;
+            frameThickness = 8;
+            frameRadius = 12;
+            outerCorners = true;
+            hideOnOverview = false;
+            displayMode = "always_visible";
+
+            widgets = {
+              left = [
+                {
+                  id = "Launcher";
+                  icon = "rocket";
+                  useDistroLogo = false;
+                }
+                {
+                  id = "Clock";
+                  formatHorizontal = "HH:mm ddd, MMM dd";
+                }
+                {
+                  id = "SystemMonitor";
+                  compactMode = true;
+                  showCpuTemp = true;
+                  showCpuUsage = true;
+                  showMemoryUsage = true;
+                }
+                {
+                  id = "ActiveWindow";
+                  maxWidth = 145;
+                }
+              ];
+              center = [
+                {
+                  id = "Workspace";
+                  labelMode = "index";
+                  showBadge = true;
+                  showLabelsOnlyWhenOccupied = true;
+                }
+              ];
+              right = [
+                {
+                  id = "Tray";
+                  drawerEnabled = true;
+                }
+                {
+                  id = "NotificationHistory";
+                  showUnreadBadge = true;
+                }
+                {
+                  id = "Battery";
+                  displayMode = "graphic-clean";
+                }
+                {
+                  id = "Volume";
+                  displayMode = "onhover";
+                }
+                {
+                  id = "Brightness";
+                  displayMode = "onhover";
+                }
+                {
+                  id = "ControlCenter";
+                  icon = "noctalia";
+                }
+              ];
+            };
           };
 
-          # Material Design-ish Colors (v5)
-          colors = lib.mkIf stylixEnabled {
-            mPrimary = "#${config.lib.stylix.colors.base0D}";
-            mOnPrimary = "#${config.lib.stylix.colors.base00}";
-            mSecondary = "#${config.lib.stylix.colors.base09}";
-            mOnSecondary = "#${config.lib.stylix.colors.base00}";
-            mSurface = "#${config.lib.stylix.colors.base00}";
-            mOnSurface = "#${config.lib.stylix.colors.base05}";
-            mBackground = "#${config.lib.stylix.colors.base00}";
-            mOnBackground = "#${config.lib.stylix.colors.base05}";
-            mOutline = "#${config.lib.stylix.colors.base03}";
+          # Hardcoded Sky Theme Colors (v5)
+          # Specifically requested to be defined here.
+          colors = {
+            mPrimary = "#3498db";
+            mOnPrimary = "#0b1528";
+            mSecondary = "#ff9f43";
+            mOnSecondary = "#0b1528";
+            mSurface = "#0b1528";
+            mOnSurface = "#abb2bf";
+            mBackground = "#0b1528";
+            mOnBackground = "#abb2bf";
+            mOutline = "#244276";
+          };
+
+          general = {
+            avatarImage = iconFile;
+            animationSpeed = 1;
+            enableShadows = true;
+            enableBlurBehind = false;
+            radiusRatio = 1;
+            screenRadiusRatio = 1;
+          };
+
+          appLauncher = {
+            sortByMostUsed = true;
+            iconMode = "tabler";
+            showCategories = true;
+            position = "center";
+          };
+
+          controlCenter = {
+            position = "close_to_bar_button";
+            shortcuts = {
+              left = [
+                { id = "Network"; }
+                { id = "Bluetooth"; }
+                { id = "WallpaperSelector"; }
+              ];
+              right = [
+                { id = "Notifications"; }
+                { id = "PowerProfile"; }
+                { id = "KeepAwake"; }
+              ];
+            };
           };
         };
       };
     });
   };
 }
+
+

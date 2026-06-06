@@ -15,3 +15,7 @@ rekey-host host:
 # Edit a master secret
 edit secret:
     nix run .#agenix-rekey-edit -- {{secret}}
+
+# Bootstrap a new host by pushing its managed SSH key
+bootstrap host ip:
+    nix run .#agenix-rekey-edit -- secrets/hosts/{{host}}.age | ssh {{ip}} "sudo mkdir -p /etc/ssh && sudo tee /etc/ssh/ssh_host_ed25519_key > /dev/null && sudo chmod 600 /etc/ssh/ssh_host_ed25519_key && sudo systemctl restart sshd"

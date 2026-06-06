@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 
@@ -29,7 +31,7 @@ in
       }
 
       # Linux-only part: HIDDEN from macOS evaluator to prevent 'boot' errors
-      {
+      (lib.optionalAttrs (!isDarwin) {
         services.sunshine = {
           enable = true;
           autoStart = true;
@@ -82,7 +84,7 @@ in
             userServices = true;
           };
         };
-      }
+      })
     ]
   );
 }

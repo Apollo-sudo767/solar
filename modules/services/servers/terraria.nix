@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 
@@ -58,47 +60,49 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Port management via host default.nix logic
-    networking.firewall = lib.mkIf cfg.openFirewall {
-      allowedTCPPorts = [ cfg.port ];
-      allowedUDPPorts = [ cfg.port ];
-    };
-
-    systemd.services.terraria = {
-      description = "Terraria Server (Solar Managed)";
-      after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
-
-      serviceConfig = {
-        Type = "simple";
-        User = "terraria";
-        Group = "terraria";
-
-        # StateDirectory automatically handles /var/lib/terraria creation
-        StateDirectory = "terraria";
-        WorkingDirectory = "/var/lib/terraria";
-
-        # Direct execution bypassing the interactive menu
-        ExecStart = "${pkgs.terraria-server}/bin/TerrariaServer -config ${serverConfig}";
-
-        # Stability & Protection against CPU leaks
-        Restart = "always";
-        RestartSec = "10s";
-        CPUQuota = "20%"; # Hard cap to prevent the 12%+ hang from impacting venus
-        MemoryMax = "2G";
-
-        # Security Hardening
-        ProtectSystem = "full";
-        NoNewPrivileges = true;
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      # Port management via host default.nix logic
+      networking.firewall = lib.mkIf cfg.openFirewall {
+        allowedTCPPorts = [ cfg.port ];
+        allowedUDPPorts = [ cfg.port ];
       };
-    };
 
-    users.users.terraria = {
-      isSystemUser = true;
-      group = "terraria";
-      home = "/var/lib/terraria";
-    };
-    users.groups.terraria = { };
-  };
+      systemd.services.terraria = {
+        description = "Terraria Server (Solar Managed)";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        serviceConfig = {
+          Type = "simple";
+          User = "terraria";
+          Group = "terraria";
+
+          # StateDirectory automatically handles /var/lib/terraria creation
+          StateDirectory = "terraria";
+          WorkingDirectory = "/var/lib/terraria";
+
+          # Direct execution bypassing the interactive menu
+          ExecStart = "${pkgs.terraria-server}/bin/TerrariaServer -config ${serverConfig}";
+
+          # Stability & Protection against CPU leaks
+          Restart = "always";
+          RestartSec = "10s";
+          CPUQuota = "20%"; # Hard cap to prevent the 12%+ hang from impacting venus
+          MemoryMax = "2G";
+
+          # Security Hardening
+          ProtectSystem = "full";
+          NoNewPrivileges = true;
+        };
+      };
+
+      users.users.terraria = {
+        isSystemUser = true;
+        group = "terraria";
+        home = "/var/lib/terraria";
+      };
+      users.groups.terraria = { };
+    }
+  );
 }

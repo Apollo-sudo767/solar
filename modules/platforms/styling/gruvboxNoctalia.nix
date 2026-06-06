@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.platforms.styling.gruvboxNoctalia;

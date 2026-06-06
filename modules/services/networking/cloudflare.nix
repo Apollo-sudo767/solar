@@ -1,4 +1,10 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isDarwin,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.services.networking.cloudflare;
@@ -25,17 +31,19 @@ in
   };
 
   # Shield the NixOS-only service from the macOS evaluator
-  config = lib.mkIf cfg.enable {
-    services.cloudflared = {
-      enable = true;
-      tunnels."${cfg.tunnelId}" = {
-        inherit (cfg) credentialsFile;
-        ingress =
-          (lib.mapAttrsToList (hostname: service: {
-            inherit hostname service;
-          }) cfg.domains)
-          ++ [ { default = "http_status:404"; } ];
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      services.cloudflared = {
+        enable = true;
+        tunnels."${cfg.tunnelId}" = {
+          inherit (cfg) credentialsFile;
+          ingress =
+            (lib.mapAttrsToList (hostname: service: {
+              inherit hostname service;
+            }) cfg.domains)
+            ++ [ { default = "http_status:404"; } ];
+        };
       };
-    };
-  };
+    }
+  );
 }

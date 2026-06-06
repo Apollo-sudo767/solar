@@ -1,4 +1,10 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isDarwin,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.services.networking;
@@ -9,15 +15,19 @@ in
   };
 
   # Shield the Linux-only NetworkManager from macOS
-  config = lib.mkIf cfg.enable {
-    networking.networkmanager.enable = lib.mkDefault true;
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.optionalAttrs (!isDarwin) {
+        networking.networkmanager.enable = lib.mkDefault true;
 
-    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
-        {
-          directories = [
-            "/etc/NetworkManager/system-connections"
-          ];
-        };
-  };
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = [
+                "/etc/NetworkManager/system-connections"
+              ];
+            };
+      })
+    ]
+  );
 }

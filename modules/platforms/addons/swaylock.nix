@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 

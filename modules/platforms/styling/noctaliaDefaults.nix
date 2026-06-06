@@ -4,6 +4,7 @@
   pkgs,
   isStable,
   inputs,
+  isTotal,
   ...
 }:
 

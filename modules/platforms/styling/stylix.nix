@@ -48,9 +48,8 @@ in
             noctalia-shell.enable = config.myFeatures.platforms.addons.noctalia-shell.enable or false;
           };
         })
-      ] ++ lib.optional (
-        !config.stylix.enable
-      ) inputs.stylix-unstable.homeModules.stylix;
+      ]
+      ++ lib.optional (!config.stylix.enable) inputs.stylix-unstable.homeModules.stylix;
     }
 
     # Universal Stylix (Base Theme & Common Targets)

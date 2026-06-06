@@ -39,7 +39,20 @@ let
         else
           inputs.agenix-rekey.nixosModules.default;
 
-      preservationModule = if isDarwin then { } else inputs.preservation.nixosModules.default;
+      preservationModule =
+        if isDarwin then
+          { lib, ... }:
+          {
+            options.preservation = lib.mkOption {
+              type = lib.types.anything;
+              default = { };
+              description = "Mock preservation option for Darwin compatibility.";
+            };
+          }
+        else
+          inputs.preservation.nixosModules.default;
+
+      diskoModule = if isDarwin then { } else inputs.disko.nixosModules.disko;
     in
     {
       inherit isDarwin;
@@ -59,6 +72,7 @@ let
             agenixModule
             agenixRekeyModule
             preservationModule
+            diskoModule
             {
               networking.hostName = name;
               nixpkgs.config.allowUnfree = true;

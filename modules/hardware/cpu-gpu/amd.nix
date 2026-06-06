@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isTotal,
+  isDarwin,
   ...
 }:
 
@@ -27,25 +29,33 @@ in
   config = lib.mkMerge [
 
     # 1. CPU Logic (Shielded for Linux only)
-    (lib.mkIf cfg.enable {
-      hardware.cpu.amd.updateMicrocode = true;
-      boot.kernelParams = [ "amd_pstate=active" ];
-    })
+    (lib.mkIf cfg.enable (
+      lib.optionalAttrs (!isDarwin) {
+        hardware.cpu.amd.updateMicrocode = true;
+        boot.kernelParams = [ "amd_pstate=active" ];
+      }
+    ))
 
     # 2. GPU Logic (Shielded for Linux only)
-    (lib.mkIf cfg.gpu {
-      myFeatures.hardware.system.graphics.enable = true;
-      boot.initrd.kernelModules = [ "amdgpu" ];
-      services.xserver.videoDrivers = [ "amdgpu" ];
+    (lib.mkIf cfg.gpu (
+      lib.mkMerge [
+        {
+          myFeatures.hardware.system.graphics.enable = true;
+        }
+        (lib.optionalAttrs (!isDarwin) {
+          boot.initrd.kernelModules = [ "amdgpu" ];
+          services.xserver.videoDrivers = [ "amdgpu" ];
 
-      hardware.graphics.extraPackages = with pkgs; [
-        amdvlk
-        rocmPackages.clr
-        libva-utils
-      ];
+          hardware.graphics.extraPackages = with pkgs; [
+            amdvlk
+            rocmPackages.clr
+            libva-utils
+          ];
 
-      environment.variables.AMD_VULKAN_ICD = "RADV";
-    })
+          environment.variables.AMD_VULKAN_ICD = "RADV";
+        })
+      ]
+    ))
 
   ];
 }

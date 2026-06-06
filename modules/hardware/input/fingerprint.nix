@@ -1,4 +1,10 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isTotal,
+  isDarwin,
+  ...
+}:
 
 let
   cfg = config.myFeatures.hardware.input.fingerprint;
@@ -8,8 +14,10 @@ in
     lib.mkEnableOption "Fingerprint Sensor Support";
 
   # Shield everything
-  config = lib.mkIf cfg.enable {
-    services.fprintd.enable = true;
-    security.pam.services.sudo.fprintAuth = true;
-  };
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      services.fprintd.enable = true;
+      security.pam.services.sudo.fprintAuth = true;
+    }
+  );
 }

@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 let
@@ -29,7 +31,7 @@ in
           {
             programs.waybar = {
               enable = true;
-              systemd.enable = true;
+              systemd.enable = !isDarwin;
 
               settings.mainBar = {
                 layer = "top";

@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 
@@ -15,7 +17,7 @@ in
     environment.systemPackages = [ pkgs.swaynotificationcenter ];
 
     home-manager.sharedModules = [
-      {
+      (lib.optionalAttrs (!isDarwin) {
         services.swaync = {
           enable = true;
           settings = {
@@ -39,7 +41,7 @@ in
             }
           '';
         };
-      }
+      })
     ];
   };
 }

@@ -3,6 +3,8 @@
   lib,
   inputs,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 
@@ -14,31 +16,36 @@ in
   options.myFeatures.platforms.addons.noctalia-v5.enable =
     lib.mkEnableOption "Noctalia Shell v5 (Wayland Shell)";
 
-  config = lib.mkIf cfg.enable {
-    # Required services for Noctalia's status modules
-    services.upower.enable = lib.mkDefault true;
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.optionalAttrs (!isDarwin) {
+        # Required services for Noctalia's status modules
+        services.upower.enable = lib.mkDefault true;
+      })
+      {
+        nix.settings = {
+          substituters = [ "https://noctalia.cachix.org" ];
+          trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+        };
 
-    nix.settings = {
-      substituters = [ "https://noctalia.cachix.org" ];
-      trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
-    };
+        # Disable standalone alternatives to let Noctalia handle them
+        myFeatures.platforms.addons = {
+          waybar.enable = lib.mkForce false;
+          fuzzel.enable = lib.mkForce false;
+          swaync.enable = lib.mkForce false;
+          swaybg.enable = lib.mkForce false;
+          idle.enable = lib.mkForce false;
+        };
 
-    # Disable standalone alternatives to let Noctalia handle them
-    myFeatures.platforms.addons = {
-      waybar.enable = lib.mkForce false;
-      fuzzel.enable = lib.mkForce false;
-      swaync.enable = lib.mkForce false;
-      swaybg.enable = lib.mkForce false;
-      idle.enable = lib.mkForce false;
-    };
+        home-manager.users = lib.genAttrs usernames (name: {
+          imports = [ inputs.noctalia-v5.homeModules.default ];
 
-    home-manager.users = lib.genAttrs usernames (name: {
-      imports = [ inputs.noctalia-v5.homeModules.default ];
-
-      programs.noctalia = {
-        enable = true;
-        package = inputs.noctalia-v5.packages.${pkgs.system}.default;
-      };
-    });
-  };
+          programs.noctalia = {
+            enable = true;
+            package = inputs.noctalia-v5.packages.${pkgs.system}.default;
+          };
+        });
+      }
+    ]
+  );
 }

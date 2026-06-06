@@ -1,4 +1,10 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isDarwin,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.services.hardware.firmware;
@@ -10,7 +16,9 @@ in
 
   # --- CONFIG ---
   # Shield the Linux-only firmware service from the macOS evaluator
-  config = lib.mkIf cfg.enable {
-    services.fwupd.enable = true;
-  };
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      services.fwupd.enable = true;
+    }
+  );
 }

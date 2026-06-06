@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 let
@@ -11,18 +13,21 @@ in
   options.myFeatures.platforms.addons.swaybg.enable = lib.mkEnableOption "swaybg service";
 
   config = lib.mkIf cfg.enable {
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      systemd.user.services.swaybg = {
-        Unit = {
-          Description = "Wallpaper";
-          After = [ "graphical-session.target" ];
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (
+      _name:
+      (lib.optionalAttrs (!isDarwin) {
+        systemd.user.services.swaybg = {
+          Unit = {
+            Description = "Wallpaper";
+            After = [ "graphical-session.target" ];
+          };
+          Service = {
+            ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${config.stylix.image} -m fill";
+            Restart = "on-failure";
+          };
+          Install.WantedBy = [ "graphical-session.target" ];
         };
-        Service = {
-          ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${config.stylix.image} -m fill";
-          Restart = "on-failure";
-        };
-        Install.WantedBy = [ "graphical-session.target" ];
-      };
-    });
+      })
+    );
   };
 }

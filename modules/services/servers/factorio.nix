@@ -1,4 +1,10 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  isDarwin,
+  isTotal,
+  ...
+}:
 
 let
   cfg = config.myFeatures.services.servers.factorio;
@@ -13,14 +19,16 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.factorio = {
-      enable = true;
-      openFirewall = true;
-      # bind is not a standard option; port is.
-      inherit (cfg) port;
-    };
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      services.factorio = {
+        enable = true;
+        openFirewall = true;
+        # bind is not a standard option; port is.
+        inherit (cfg) port;
+      };
 
-    networking.firewall.allowedUDPPorts = [ cfg.port ];
-  };
+      networking.firewall.allowedUDPPorts = [ cfg.port ];
+    }
+  );
 }

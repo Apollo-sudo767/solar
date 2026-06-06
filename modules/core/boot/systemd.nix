@@ -1,6 +1,8 @@
 {
   config,
   lib,
+  isTotal,
+  isDarwin,
   ...
 }:
 
@@ -8,10 +10,14 @@ let
   cfg = config.myFeatures.core.boot;
 in
 {
-  config = lib.mkIf (cfg.enable && cfg.loader == "systemd") {
-    boot.loader.systemd-boot = {
-      enable = true;
-      consoleMode = "max";
-    };
-  };
+  config = lib.mkIf (cfg.enable && cfg.loader == "systemd") (
+    lib.mkMerge [
+      (lib.optionalAttrs (!isDarwin) {
+        boot.loader.systemd-boot = {
+          enable = true;
+          consoleMode = "max";
+        };
+      })
+    ]
+  );
 }

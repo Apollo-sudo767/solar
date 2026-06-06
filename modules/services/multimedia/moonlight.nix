@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isDarwin,
+  isTotal,
   ...
 }:
 
@@ -17,7 +19,7 @@ in
     lib.mkMerge [
       { environment.systemPackages = [ pkgs.moonlight-qt ]; }
 
-      {
+      (lib.optionalAttrs (!isDarwin) {
         networking.firewall = {
           allowedUDPPorts = [
             1900
@@ -34,7 +36,7 @@ in
           enable = true;
           nssmdns4 = true;
         };
-      }
+      })
     ]
   );
 }

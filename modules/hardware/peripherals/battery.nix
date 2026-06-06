@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isTotal,
+  isDarwin,
   ...
 }:
 
@@ -42,80 +44,82 @@ in
 
   # --- CONFIG ---
   # SHIELDED: This entire block vanishes when building for macOS
-  config = lib.mkIf cfg.enable {
-    # 0. Kernel Requirements
-    boot.kernelModules = [ "acpi_call" ];
-    boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
+  config = lib.mkIf cfg.enable (
+    lib.optionalAttrs (!isDarwin) {
+      # 0. Kernel Requirements
+      boot.kernelModules = [ "acpi_call" ];
+      boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
 
-    # 1. CPU Management
-    services.auto-cpufreq.enable = true;
-    services.auto-cpufreq.settings = {
-      charger = {
-        governor = "performance";
-        turbo = "always";
+      # 1. CPU Management
+      services.auto-cpufreq.enable = true;
+      services.auto-cpufreq.settings = {
+        charger = {
+          governor = "performance";
+          turbo = "always";
+        };
+        battery = {
+          governor = "powersave";
+          turbo = "never";
+        };
       };
-      battery = {
-        governor = "powersave";
-        turbo = "never";
+
+      # 2. Battery Thresholds
+      systemd.services.battery-thresholds = {
+        description = "Set ThinkPad battery charge thresholds";
+        after = [ "multi-user.target" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${set-battery-thresholds}/bin/set-battery-thresholds";
+          RemainAfterExit = true;
+        };
       };
-    };
 
-    # 2. Battery Thresholds
-    systemd.services.battery-thresholds = {
-      description = "Set ThinkPad battery charge thresholds";
-      after = [ "multi-user.target" ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${set-battery-thresholds}/bin/set-battery-thresholds";
-        RemainAfterExit = true;
+      # 3. Explicit Hardware Control & Conflict Resolution
+      services.tlp.enable = lib.mkForce false;
+      services.power-profiles-daemon.enable = lib.mkForce false;
+
+      boot.kernelParams = [
+        "mem_sleep_default=deep"
+        "usbcore.autosuspend=-1"
+      ]
+      ++ (lib.optionals cfg.aggressive [
+        "pcie_aspm=force"
+        "workqueue.power_efficient=Y"
+        "nvme.noacpi=1"
+      ]);
+
+      # 4. Radio & Networking
+      networking.networkmanager.wifi.powersave = true;
+      hardware.bluetooth.powerOnBoot = lib.mkIf cfg.bluetooth.enable false;
+
+      services.udev.extraRules = ''
+        # ON AC: Max performance, Radio ON
+        SUBSYSTEM=="power_supply", ATTR{online}=="1", \
+          RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save off", \
+          ${lib.optionalString cfg.bluetooth.enable "RUN+=\"${pkgs.bluez}/bin/bluetoothctl power on\", \\"}
+          RUN+="${pkgs.networkmanager}/bin/nmcli radio wifi on"
+
+        # ON BATTERY: Power save Radio
+        SUBSYSTEM=="power_supply", ATTR{online}=="0", \
+          RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save on" ${lib.optionalString cfg.bluetooth.enable ", \\"}
+          ${lib.optionalString cfg.bluetooth.enable "RUN+=\"${pkgs.bluez}/bin/bluetoothctl power off\""}
+      '';
+
+      # 5. Sleep Stability
+      services.logind = {
+        settings.Login.HandleLidSwitch = "suspend";
+        settings.Login.HandleLidSwitchExternalPower = "lock";
       };
-    };
 
-    # 3. Explicit Hardware Control & Conflict Resolution
-    services.tlp.enable = lib.mkForce false;
-    services.power-profiles-daemon.enable = lib.mkForce false;
-
-    boot.kernelParams = [
-      "mem_sleep_default=deep"
-      "usbcore.autosuspend=-1"
-    ]
-    ++ (lib.optionals cfg.aggressive [
-      "pcie_aspm=force"
-      "workqueue.power_efficient=Y"
-      "nvme.noacpi=1"
-    ]);
-
-    # 4. Radio & Networking
-    networking.networkmanager.wifi.powersave = true;
-    hardware.bluetooth.powerOnBoot = lib.mkIf cfg.bluetooth.enable false;
-
-    services.udev.extraRules = ''
-      # ON AC: Max performance, Radio ON
-      SUBSYSTEM=="power_supply", ATTR{online}=="1", \
-        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save off", \
-        ${lib.optionalString cfg.bluetooth.enable "RUN+=\"${pkgs.bluez}/bin/bluetoothctl power on\", \\"}
-        RUN+="${pkgs.networkmanager}/bin/nmcli radio wifi on"
-
-      # ON BATTERY: Power save Radio
-      SUBSYSTEM=="power_supply", ATTR{online}=="0", \
-        RUN+="${pkgs.iw}/bin/iw dev wlan0 set power_save on" ${lib.optionalString cfg.bluetooth.enable ", \\"}
-        ${lib.optionalString cfg.bluetooth.enable "RUN+=\"${pkgs.bluez}/bin/bluetoothctl power off\""}
-    '';
-
-    # 5. Sleep Stability
-    services.logind = {
-      settings.Login.HandleLidSwitch = "suspend";
-      settings.Login.HandleLidSwitchExternalPower = "lock";
-    };
-
-    # 6. System Packages
-    environment.systemPackages = with pkgs; [
-      tpacpi-bat
-      powertop
-      acpi
-      iw
-      bluez
-    ];
-  };
+      # 6. System Packages
+      environment.systemPackages = with pkgs; [
+        tpacpi-bat
+        powertop
+        acpi
+        iw
+        bluez
+      ];
+    }
+  );
 }

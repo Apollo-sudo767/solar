@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  isTotal,
   ...
 }:
 
@@ -155,5 +156,3 @@ in
     });
   };
 }
-
-

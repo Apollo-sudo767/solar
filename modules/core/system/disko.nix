@@ -1,4 +1,10 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  isDarwin,
+  isTotal,
+  ...
+}:
 let
   cfg = config.myFeatures.core.system.disko;
 
@@ -157,26 +163,30 @@ in
   config =
     lib.mkIf
       (config.myFeatures.core.system.core-branch.enable && config.myFeatures.core.system.disko.enable)
-      {
-        disko.devices = {
-          disk =
-            (lib.genAttrs [ mainDisk ] mkMainDisk)
-            // (lib.genAttrs otherSpeedDisks mkOtherSpeedDisk)
-            // (lib.genAttrs bulkDisks mkBulkDisk);
+      (
+        lib.mkMerge [
+          (lib.optionalAttrs (!isDarwin) {
+            disko.devices = {
+              disk =
+                (lib.genAttrs [ mainDisk ] mkMainDisk)
+                // (lib.genAttrs otherSpeedDisks mkOtherSpeedDisk)
+                // (lib.genAttrs bulkDisks mkBulkDisk);
 
-          nodev."/" = {
-            fsType = "tmpfs";
-            mountOptions = [
-              "size=4G"
-              "mode=755"
-            ];
-          };
-        };
+              nodev."/" = {
+                fsType = "tmpfs";
+                mountOptions = [
+                  "size=4G"
+                  "mode=755"
+                ];
+              };
+            };
 
-        # Ensure mounts are available for Preservation
-        fileSystems."/persist".neededForBoot = true;
-        fileSystems."/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
-          neededForBoot = true;
-        };
-      };
+            # Ensure mounts are available for Preservation
+            fileSystems."/persist".neededForBoot = true;
+            fileSystems."/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
+              neededForBoot = true;
+            };
+          })
+        ]
+      );
 }

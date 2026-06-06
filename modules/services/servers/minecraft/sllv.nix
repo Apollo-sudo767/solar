@@ -3,6 +3,8 @@
   lib,
   pkgs,
   inputs,
+  isDarwin,
+  isTotal,
   ...
 }:
 
@@ -240,7 +242,7 @@ let
   };
 in
 {
-  imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
+  imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
   options.myFeatures.services.servers.minecraft.sllv = {
     enable = lib.mkEnableOption "Minecraft MCA Fabric Server (1.21.1)";
     port = lib.mkOption {
@@ -249,76 +251,80 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.optionalAttrs (!isDarwin) {
+        nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
-    services.haveged.enable = true;
+        services.haveged.enable = true;
 
-    services.minecraft-servers = {
-      enable = true;
-      eula = true;
+        services.minecraft-servers = {
+          enable = true;
+          eula = true;
 
-      managementSystem = {
-        tmux.enable = lib.mkForce false;
-        systemd-socket.enable = true;
-      };
+          managementSystem = {
+            tmux.enable = lib.mkForce false;
+            systemd-socket.enable = true;
+          };
 
-      servers.sllv = {
-        enable = true;
-        package = pkgs.minecraftServers.fabric-1_21_1;
+          servers.sllv = {
+            enable = true;
+            package = pkgs.minecraftServers.fabric-1_21_1;
 
-        # Debug Mode: Simplified JVM options to ensure startup
-        jvmOpts = "-Xmx4G -Xms4G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
+            # Debug Mode: Simplified JVM options to ensure startup
+            jvmOpts = "-Xmx4G -Xms4G -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true";
 
-        symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
+            symlinks = lib.mapAttrs' (name: value: lib.nameValuePair "mods/${name}.jar" value) mods;
 
-        files = {
-          "server-icon.png" = iconFile;
+            files = {
+              "server-icon.png" = iconFile;
+            };
+
+            serverProperties = {
+              server-port = cfg.port;
+              online-mode = true;
+              enforce-secure-profile = false;
+              max-players = 4;
+              gamemode = "survival";
+              motd = "Solar MCA Server | 1.21.1 Fabric";
+            };
+          };
         };
 
-        serverProperties = {
-          server-port = cfg.port;
-          online-mode = true;
-          enforce-secure-profile = false;
-          max-players = 4;
-          gamemode = "survival";
-          motd = "Solar MCA Server | 1.21.1 Fabric";
+        systemd.services.minecraft-server-sllv = {
+          unitConfig = {
+            StartLimitIntervalSec = lib.mkForce 0;
+          };
+          serviceConfig = {
+            Restart = "always";
+            RestartSec = "10s";
+            StandardOutput = "journal";
+            StandardError = "journal";
+            # FIXED: Use lib.mkForce to override nix-minecraft's default timeout
+            TimeoutStopSec = lib.mkForce "120s";
+          };
         };
-      };
-    };
 
-    systemd.services.minecraft-server-sllv = {
-      unitConfig = {
-        StartLimitIntervalSec = lib.mkForce 0;
-      };
-      serviceConfig = {
-        Restart = "always";
-        RestartSec = "10s";
-        StandardOutput = "journal";
-        StandardError = "journal";
-        # FIXED: Use lib.mkForce to override nix-minecraft's default timeout
-        TimeoutStopSec = lib.mkForce "120s";
-      };
-    };
+        # Backups
+        services.borgbackup.jobs.minecraft-sllv = {
+          paths = [ "/srv/minecraft/sllv" ];
+          repo = "/mnt/backups/minecraft/sllv";
+          encryption = {
+            mode = "none";
+          };
+          compression = "auto,zstd"; # High compression, great for Tectonic world files
+          startAt = "0/4:00:00";
+          prune.keep = {
+            within = "1d";
+            daily = 7;
+            weekly = 4;
+            monthly = 6;
+          };
+        };
 
-    # Backups
-    services.borgbackup.jobs.minecraft-sllv = {
-      paths = [ "/srv/minecraft/sllv" ];
-      repo = "/mnt/backups/minecraft/sllv";
-      encryption = {
-        mode = "none";
-      };
-      compression = "auto,zstd"; # High compression, great for Tectonic world files
-      startAt = "0/4:00:00";
-      prune.keep = {
-        within = "1d";
-        daily = 7;
-        weekly = 4;
-        monthly = 6;
-      };
-    };
-
-    networking.firewall.allowedTCPPorts = [ cfg.port ];
-    networking.firewall.allowedUDPPorts = [ cfg.port ];
-  };
+        networking.firewall.allowedTCPPorts = [ cfg.port ];
+        networking.firewall.allowedUDPPorts = [ cfg.port ];
+      })
+    ]
+  );
 }

@@ -10,7 +10,14 @@ let
   cfg = config.myFeatures.programs.utilities.logseq;
 in
 {
-  options.myFeatures.programs.utilities.logseq.enable = lib.mkEnableOption "Logseq";
+  options.myFeatures.programs.utilities.logseq = {
+    enable = lib.mkEnableOption "Logseq";
+    vaultPath = lib.mkOption {
+      type = lib.types.str;
+      default = "Documents/Logseq";
+      description = "The path to your Logseq vault relative to home.";
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     # On Darwin, we usually use Homebrew for GUI apps like Logseq

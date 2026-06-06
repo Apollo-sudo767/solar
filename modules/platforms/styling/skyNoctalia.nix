@@ -30,7 +30,7 @@ in
           colors = lib.mkIf stylixEnabled {
             mPrimary = "#${config.lib.stylix.colors.base0D}";
             mOnPrimary = "#${config.lib.stylix.colors.base00}";
-            mSecondary = "#${config.lib.stylix.colors.base0E}";
+            mSecondary = "#${config.lib.stylix.colors.base09}";
             mOnSecondary = "#${config.lib.stylix.colors.base00}";
             mSurface = "#${config.lib.stylix.colors.base00}";
             mOnSurface = "#${config.lib.stylix.colors.base05}";

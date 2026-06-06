@@ -15,7 +15,6 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.styling.stylix = {
       enable = true;
-      scheme = lib.mkDefault (pkgs.base16-schemes + "/share/themes/ayu-dark.yaml");
       wallpaper = lib.mkDefault ../../../../assets/wallpapers/space.png;
     };
   };

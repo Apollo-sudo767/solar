@@ -16,9 +16,27 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.styling.stylix = {
       enable = true;
-      scheme = lib.mkDefault (pkgs.base16-schemes + "/share/themes/gruvbox-dark-medium.yaml");
-      # Correct Path Literal
       wallpaper = lib.mkDefault ../../../../assets/wallpapers/space.png;
+
+      scheme = {
+        base00 = "0b1528";
+        base01 = "101f3b";
+        base02 = "172e54";
+        base03 = "244276";
+        base04 = "61afef";
+        base05 = "abb2bf";
+        base06 = "c8ccd4";
+        base07 = "e06c75";
+
+        base08 = "e67e22";
+        base09 = "ff9f43";
+        base0A = "f1c40f";
+        base0B = "2ecc71";
+        base0C = "1abc9c";
+        base0D = "3498db";
+        base0E = "9b59b6";
+        base0F = "d35400";
+      };
     };
   };
 }

@@ -16,8 +16,7 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.styling.stylix = {
       enable = true;
-      scheme = lib.mkDefault (pkgs.base16-schemes + "/share/themes/gruvbox-dark-medium.yaml");
-      # Correct Path Literal
+      # Removed fixed scheme to allow Stylix auto-generation
       wallpaper = lib.mkDefault ../../../../assets/wallpapers/gruvbox.jpg;
     };
   };

@@ -18,16 +18,37 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri = {
         settings = {
-          spawn-at-startup = lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
-            { command = [ "noctalia-shell" ]; }
-          ];
-
           binds = {
             # --- Apps & System ---
             "Mod+Q".action.spawn = [ "ghostty" ];
             "Mod+Shift+Q".action.spawn = [ "firefox" ];
             "Mod+D".action.spawn =
-              if config.myFeatures.platforms.addons.noctalia-shell.enable then
+              if config.myFeatures.platforms.addons.noctalia-v5.enable then
+                [
+                  "noctalia"
+                  "msg"
+                  "panel-toggle"
+                  "launcher"
+                ]
+              else if config.myFeatures.platforms.addons.noctalia-shell.enable then
+                [
+                  "noctalia-shell"
+                  "ipc"
+                  "call"
+                  "launcher"
+                  "toggle"
+                ]
+              else
+                [ "fuzzel" ];
+            "Mod+Space".action.spawn =
+              if config.myFeatures.platforms.addons.noctalia-v5.enable then
+                [
+                  "noctalia"
+                  "msg"
+                  "panel-toggle"
+                  "launcher"
+                ]
+              else if config.myFeatures.platforms.addons.noctalia-shell.enable then
                 [
                   "noctalia-shell"
                   "ipc"
@@ -46,6 +67,14 @@ in
             "Mod+S".action.spawn = [
               "noctalia-shell"
               "--toggle-dashboard"
+            ];
+          }
+          // lib.optionalAttrs config.myFeatures.platforms.addons.noctalia-v5.enable {
+            "Mod+S".action.spawn = [
+              "noctalia"
+              "msg"
+              "panel-toggle"
+              "dashboard"
             ];
           }
           // {

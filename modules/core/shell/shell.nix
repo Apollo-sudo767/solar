@@ -33,7 +33,7 @@ in
 
           # Clean Gruvbox Directory
           directory = {
-            style = "bold fg:214"; # Gruvbox Orange
+            style = lib.mkDefault "bold fg:214"; # Gruvbox Orange
             truncation_length = 3;
             fish_style_pwd_dir_length = 1;
           };
@@ -41,17 +41,17 @@ in
           # Git Branch with the icon you were using
           git_branch = {
             symbol = " ";
-            style = "bold fg:142"; # Gruvbox Green
+            style = lib.mkDefault "bold fg:142"; # Gruvbox Green
           };
 
           # Character symbols (➜)
           character = {
-            success_symbol = "[➜](bold fg:108)"; # Gruvbox Aqua
-            error_symbol = "[➜](bold fg:167)"; # Gruvbox Red
+            success_symbol = lib.mkDefault "[➜](bold fg:108)"; # Gruvbox Aqua
+            error_symbol = lib.mkDefault "[➜](bold fg:167)"; # Gruvbox Red
           };
 
           # Fixed Palette (Underscores only, no hyphens)
-          palette = lib.mkForce "gruvbox_dark";
+          # palette = lib.mkDefault "gruvbox_dark"; # Stylix will handle this
           palettes.gruvbox_dark = {
             black = "#282828";
             bright_black = "#928374";

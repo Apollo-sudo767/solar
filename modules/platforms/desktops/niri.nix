@@ -41,7 +41,13 @@ in
             "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP && systemctl --user start graphical-session.target"
           ];
         }
-      ];
+      ]
+      ++ (lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
+        { command = [ "noctalia-shell" ]; }
+      ])
+      ++ (lib.optionals config.myFeatures.platforms.addons.noctalia-v5.enable [
+        { command = [ "noctalia" ]; }
+      ]);
     };
 
     environment.systemPackages =
@@ -53,14 +59,20 @@ in
         awww
         brightnessctl
       ]
-      ++ lib.optionals (!config.myFeatures.platforms.addons.noctalia-shell.enable) [
-        fuzzel
-        mako
-        swaynotificationcenter
-        swaybg
-        swayidle
-        swaylock
-      ];
+      ++
+        lib.optionals
+          (
+            !config.myFeatures.platforms.addons.noctalia-shell.enable
+            && !config.myFeatures.platforms.addons.noctalia-v5.enable
+          )
+          [
+            fuzzel
+            mako
+            swaynotificationcenter
+            swaybg
+            swayidle
+            swaylock
+          ];
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       imports = [ inputs.niri.homeModules.niri ];

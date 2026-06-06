@@ -25,9 +25,9 @@ in
   options.myFeatures.platforms.styling.stylix = {
     enable = lib.mkEnableOption "Stylix Framework";
     scheme = lib.mkOption {
-      type = lib.types.path;
-      default = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
-      description = "Path to the base16 scheme file.";
+      type = lib.types.nullOr (lib.types.either lib.types.path lib.types.attrs);
+      default = null;
+      description = "Path to the base16 scheme file or an attribute set. If null, Stylix generates colors from the wallpaper.";
     };
     wallpaper = lib.mkOption {
       type = lib.types.path;
@@ -50,8 +50,10 @@ in
       stylix = {
         enable = true;
         image = cfg.wallpaper;
-        base16Scheme = cfg.scheme;
         polarity = "dark";
+      }
+      // lib.optionalAttrs (cfg.scheme != null) {
+        base16Scheme = cfg.scheme;
       }
       // lib.optionalAttrs (!isDarwin) {
         cursor = {

@@ -25,6 +25,9 @@ in
 
     # Disable standalone alternatives to let Noctalia handle them
     myFeatures.platforms.addons = {
+      waybar.enable = lib.mkForce false;
+      fuzzel.enable = lib.mkForce false;
+      swaync.enable = lib.mkForce false;
       swaybg.enable = lib.mkForce false;
       idle.enable = lib.mkForce false;
     };

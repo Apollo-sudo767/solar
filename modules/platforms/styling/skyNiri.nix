@@ -18,10 +18,10 @@ in
 
       # Enable all the addons for this rice
       addons = {
-        swayosd.enable = true;
-        fuzzel.enable = true;
-        swaylock.enable = true;
-        swaybg.enable = lib.mkForce false;
+        # swayosd.enable = true;
+        # fuzzel.enable = true;
+        # swaylock.enable = true;
+        # swaybg.enable = lib.mkForce false;
       };
 
       # Enable Niri and Keybinds

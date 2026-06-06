@@ -23,7 +23,6 @@ in
           enable = true;
           enableZshIntegration = true;
           settings = {
-            theme = lib.mkDefault "Gruvbox Dark";
             font-size = lib.mkDefault 12;
             font-family = lib.mkDefault "JetBrainsMono Nerd Font";
             window-padding-x = 10;

@@ -40,7 +40,15 @@ in
     # We only import it manually if Stylix is NOT enabled, because Stylix's NixOS/Darwin
     # module will automatically import it if it IS enabled.
     {
-      home-manager.sharedModules = lib.optional (
+      home-manager.sharedModules = [
+        (lib.mkIf cfg.enable {
+          stylix.targets = {
+            helix.enable = config.myFeatures.programs.terminal.helix.enable or false;
+            ghostty.enable = config.myFeatures.programs.terminal.ghostty.enable or false;
+            noctalia-shell.enable = config.myFeatures.platforms.addons.noctalia-shell.enable or false;
+          };
+        })
+      ] ++ lib.optional (
         !config.stylix.enable
       ) inputs.stylix-unstable.homeModules.stylix;
     }

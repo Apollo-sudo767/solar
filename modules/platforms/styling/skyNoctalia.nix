@@ -108,15 +108,15 @@ in
           # Hardcoded Sky Theme Colors (v5)
           # Specifically requested to be defined here.
           colors = {
-            mPrimary = "#3498db";
-            mOnPrimary = "#0b1528";
+            mPrimary = "#2471a3";
+            mOnPrimary = "#050a18";
             mSecondary = "#ff9f43";
-            mOnSecondary = "#0b1528";
-            mSurface = "#0b1528";
+            mOnSecondary = "#050a18";
+            mSurface = "#050a18";
             mOnSurface = "#abb2bf";
-            mBackground = "#0b1528";
+            mBackground = "#050a18";
             mOnBackground = "#abb2bf";
-            mOutline = "#244276";
+            mOutline = "#101f3b";
           };
 
           general = {

@@ -29,9 +29,10 @@ in
       localStorageDir = ../../../rekeyed-secrets/${config.networking.hostName};
 
       # The public keys of the master identities.
+      # Sourced from the 'solar-secrets' input for cross-system stability.
       masterIdentities =
         let
-          s = ../../../secrets;
+          s = inputs.solar-secrets;
         in
         (lib.optional (builtins.pathExists (s + "/master/yubikey.pub")) (s + "/master/yubikey.pub"))
         ++ (lib.optional (builtins.pathExists (s + "/master/se.pub")) (s + "/master/se.pub"))
@@ -50,7 +51,7 @@ in
       # Identify the host's public key.
       hostPubkey =
         let
-          hostPub = ../../../secrets/hosts/${config.networking.hostName}.pub;
+          hostPub = inputs.solar-secrets + "/hosts/${config.networking.hostName}.pub";
         in
         if builtins.pathExists hostPub then
           lib.strings.trim (builtins.readFile hostPub)
@@ -58,7 +59,6 @@ in
           config.age.secrets.host-ssh-key.pubkey
             or "age10000000000000000000000000000000000000000000000000000000000";
     };
-
     # Use the identity for decrypting secrets
     age.identityPaths =
       if isDarwin then

@@ -53,10 +53,7 @@ in
           hostPub = ../../../secrets/hosts/${config.networking.hostName}.pub;
         in
         if builtins.pathExists hostPub then
-          builtins.path {
-            path = hostPub;
-            name = "${config.networking.hostName}.pub";
-          }
+          lib.strings.trim (builtins.readFile hostPub)
         else
           config.age.secrets.host-ssh-key.pubkey
             or "age10000000000000000000000000000000000000000000000000000000000";

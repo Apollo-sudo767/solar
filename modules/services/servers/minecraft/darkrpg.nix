@@ -4,6 +4,7 @@
   pkgs,
   inputs,
   isDarwin,
+  isTotal,
   ...
 }:
 

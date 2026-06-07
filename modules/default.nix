@@ -1,7 +1,11 @@
-{ lib, isDarwin, ... }:
+{
+  lib,
+  isDarwin ? false,
+  isTotal ? true,
+  ...
+}:
 
 let
-  inherit isDarwin;
   getNixFiles =
     dir:
     let
@@ -36,8 +40,10 @@ let
             # On Mac: Only import files that explicitly have the isDarwin or isTotal flag
             if hasDarwin || hasTotal then path else [ ]
           else
-          # On Linux: Import files that have the isTotal flag OR have no flags (Linux default)
-          if isLinuxDefault || hasTotal then
+          # On Linux: FORCE IMPORT EVERYTHING IN HARDWARE, or use standard logic elsewhere
+          if lib.hasInfix "/hardware/" (toString path) then
+            path
+          else if isLinuxDefault || hasTotal then
             path
           else
             [ ]

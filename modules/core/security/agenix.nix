@@ -29,17 +29,10 @@ in
       localStorageDir = ../../../rekeyed-secrets/${config.networking.hostName};
 
       # The public keys of the master identities.
-      masterIdentities =
-        let
-          s = ../../../secrets;
-        in
-        (lib.optional (builtins.pathExists (s + "/master/yubikey.pub")) (s + "/master/yubikey.pub"))
-        ++ (lib.optional (builtins.pathExists (s + "/master/se.pub")) (s + "/master/se.pub"))
-        ++ (lib.optional (builtins.pathExists (s + "/master/dev.txt")) (s + "/master/dev.txt"))
-        ++ (lib.optional (
-          builtins.pathExists (s + "/master/dev.pub") && !(builtins.pathExists (s + "/master/dev.txt"))
-        ) (s + "/master/dev.pub"))
-        ++ (lib.optional (builtins.pathExists (s + "/master/mac.pub")) (s + "/master/mac.pub"));
+      # Sourced from the 'secrets' submodule via absolute flake path.
+      masterIdentities = [
+        (inputs.self + "/secrets/master/se.pub")
+      ];
 
       # Hardware plugins required for rekeying
       agePlugins = [
@@ -50,7 +43,7 @@ in
       # Identify the host's public key.
       hostPubkey =
         let
-          path = ../../../secrets/hosts/${config.networking.hostName}.pub;
+          path = inputs.self + "/secrets/hosts/${config.networking.hostName}.pub";
         in
         if builtins.pathExists path then
           lib.strings.trim (builtins.readFile path)
@@ -58,6 +51,7 @@ in
           config.age.secrets.host-ssh-key.pubkey
             or "age10000000000000000000000000000000000000000000000000000000000";
     };
+
     # Use the identity for decrypting secrets
     age.identityPaths =
       if isDarwin then

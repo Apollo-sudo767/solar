@@ -34,7 +34,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     solar-secrets = {
-      url = "path:./secrets";
+      url = "git+ssh://git@github.com/Apollo-sudo767/solar-secrets.git";
       flake = false;
     };
 

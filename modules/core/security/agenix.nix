@@ -50,17 +50,10 @@ in
       # Identify the host's public key.
       hostPubkey =
         let
-          p = ../../../secrets/hosts/${config.networking.hostName}.pub;
+          path = ../../../secrets/hosts/${config.networking.hostName}.pub;
         in
-        if builtins.pathExists p then
-          let
-            # Stabilize the public key path by forcing it into the Nix store
-            stablePath = builtins.path {
-              path = p;
-              name = "${config.networking.hostName}.pub";
-            };
-          in
-          lib.strings.trim (builtins.readFile stablePath)
+        if builtins.pathExists path then
+          lib.strings.trim (builtins.readFile path)
         else
           config.age.secrets.host-ssh-key.pubkey
             or "age10000000000000000000000000000000000000000000000000000000000";

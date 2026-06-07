@@ -25,22 +25,21 @@ in
     age.rekey = {
       storageMode = "local";
       # Storage for rekeyed (host-specific) secrets.
-      localStorageDir = ../../../secrets/rekeyed/${config.networking.hostName};
+      # This MUST be a local path in the 'solar' repo.
+      localStorageDir = ../../../rekeyed-secrets/${config.networking.hostName};
 
       # The public keys of the master identities.
       masterIdentities =
         let
-          yubikey = ../../../secrets/master/yubikey.pub;
-          se = ../../../secrets/master/se.pub;
-          dev = ../../../secrets/master/dev.pub;
-          devTxt = ../../../secrets/master/dev.txt;
-          mac = ../../../secrets/master/mac.pub;
+          s = ../../../secrets;
         in
-        (lib.optional (builtins.pathExists yubikey) yubikey)
-        ++ (lib.optional (builtins.pathExists se) se)
-        ++ (lib.optional (builtins.pathExists devTxt) devTxt)
-        ++ (lib.optional (builtins.pathExists dev && !(builtins.pathExists devTxt)) dev)
-        ++ (lib.optional (builtins.pathExists mac) mac);
+        (lib.optional (builtins.pathExists (s + "/master/yubikey.pub")) (s + "/master/yubikey.pub"))
+        ++ (lib.optional (builtins.pathExists (s + "/master/se.pub")) (s + "/master/se.pub"))
+        ++ (lib.optional (builtins.pathExists (s + "/master/dev.txt")) (s + "/master/dev.txt"))
+        ++ (lib.optional (
+          builtins.pathExists (s + "/master/dev.pub") && !(builtins.pathExists (s + "/master/dev.txt"))
+        ) (s + "/master/dev.pub"))
+        ++ (lib.optional (builtins.pathExists (s + "/master/mac.pub")) (s + "/master/mac.pub"));
 
       # Hardware plugins required for rekeying
       agePlugins = [
@@ -48,13 +47,16 @@ in
       ]
       ++ lib.optional isDarwin pkgs.age-plugin-se;
 
-      # Identify the host's public key. We prefer the generated host-ssh-key.
+      # Identify the host's public key.
       hostPubkey =
         let
           hostPub = ../../../secrets/hosts/${config.networking.hostName}.pub;
         in
         if builtins.pathExists hostPub then
-          hostPub
+          builtins.path {
+            path = hostPub;
+            name = "${config.networking.hostName}.pub";
+          }
         else
           config.age.secrets.host-ssh-key.pubkey
             or "age10000000000000000000000000000000000000000000000000000000000";

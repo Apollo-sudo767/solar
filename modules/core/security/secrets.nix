@@ -36,24 +36,35 @@
       # The password-apollo secret acts as the GLOBAL DEFAULT for all users
       # unless they have their own specific password secret defined.
       "password-apollo.age" = {
-        rekeyFile = ../../../secrets/secrets/password-apollo.age;
+        rekeyFile = builtins.path {
+          path = ../../../secrets/secrets/password-apollo.age;
+          name = "password-apollo.age";
+        };
       };
 
       # Specific overrides (uncomment to give a user a different password)
       # "password-hephaestus.age" = {
-      #   rekeyFile = ../../../secrets/secrets/password-hephaestus.age;
+      #   rekeyFile = builtins.path {
+      #     path = ../../../secrets/secrets/password-hephaestus.age;
+      #     name = "password-hephaestus.age";
+      #   };
       # };
 
       # "password-root.age" = {
-      #   rekeyFile = ../../../secrets/secrets/password-root.age;
+      #   rekeyFile = builtins.path {
+      #     path = ../../../secrets/secrets/password-root.age;
+      #     name = "password-root.age";
+      #   };
       # };
 
       # --- NETWORKING & SERVICES ---
 
       # "wifi.age" = {
-      #   rekeyFile = ../../../secrets/secrets/wifi.age;
+      #   rekeyFile = builtins.path {
+      #     path = ../../../secrets/secrets/wifi.age;
+      #     name = "wifi.age";
+      #   };
       # };
-
     };
   };
 }

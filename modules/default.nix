@@ -1,7 +1,6 @@
 {
   lib,
-  isDarwin ? false,
-  isTotal ? true,
+  isDarwin,
   ...
 }:
 
@@ -28,25 +27,28 @@ let
             # 2. Extract its top-level arguments safely
             args = if builtins.isFunction imported then builtins.functionArgs imported else { };
 
-            # 3. Detect your flags
+            # 3. Detect flags
             hasDarwin = args ? isDarwin;
             hasTotal = args ? isTotal;
 
-            # 4. Implicit Linux Default
-            isLinuxDefault = !hasDarwin && !hasTotal;
+            # 4. Surgery: Explicit platform segregation
+            # Darwin modules are strictly in the darwin/ directory
+            isInDarwin = lib.hasInfix "/modules/darwin/" (toString path);
+
+            shouldImport =
+              if isDarwin then
+                # On Mac: Import if it has isDarwin OR isTotal flag
+                (hasDarwin || hasTotal)
+              else
+              # On Linux:
+              # - Never import anything from the darwin/ directory
+              # - Import if it has isTotal OR has no platform flags (Linux default)
+              if isInDarwin then
+                false
+              else
+                (hasTotal || (!hasDarwin && !hasTotal));
           in
-          # --- THE ROUTING LOGIC ---
-          if isDarwin then
-            # On Mac: Only import files that explicitly have the isDarwin or isTotal flag
-            if hasDarwin || hasTotal then path else [ ]
-          else
-          # On Linux: FORCE IMPORT EVERYTHING IN HARDWARE, or use standard logic elsewhere
-          if lib.hasInfix "/hardware/" (toString path) then
-            path
-          else if isLinuxDefault || hasTotal then
-            path
-          else
-            [ ]
+          if shouldImport then path else [ ]
         else
           [ ]
       ) contents

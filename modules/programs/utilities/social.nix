@@ -44,7 +44,7 @@ in
         ];
       };
 
-      programs.vesktop = {
+      programs.vesktop = lib.mkIf pkgs.stdenv.isLinux {
         enable = true;
         settings = {
           discordBranch = "stable";
@@ -60,7 +60,7 @@ in
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf config.myFeatures.core.system.preservation.enable
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
         {
           directories = lib.concatMap (name: [
             "/home/${name}/.config/spotify"

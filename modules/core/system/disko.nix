@@ -2,7 +2,6 @@
   lib,
   config,
   isDarwin,
-  isTotal,
   ...
 }:
 let

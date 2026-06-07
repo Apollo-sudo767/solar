@@ -3,12 +3,11 @@
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 
 let
-  inherit isDarwin isTotal;
+  inherit isDarwin;
   cfg = config.myFeatures.services.multimedia.audio;
 in
 {

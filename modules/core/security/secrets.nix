@@ -49,26 +49,8 @@
 
       # --- NETWORKING & SERVICES ---
 
-      "wifi.age" = {
-        rekeyFile = ../../../secrets/secrets/wifi.age;
-      };
-
-      # "tailscale.age" = {
-      #   rekeyFile = ../../../secrets/secrets/tailscale.age;
-      # };
-
-      # "cloudflare.age" = {
-      #   rekeyFile = ../../../secrets/secrets/cloudflare.age;
-      # };
-
-      # --- DEVELOPMENT ---
-
-      # "github-token.age" = {
-      #   rekeyFile = ../../../secrets/secrets/github-token.age;
-      # };
-
-      # "cachix.age" = {
-      #   rekeyFile = ../../../secrets/secrets/cachix.age;
+      # "wifi.age" = {
+      #   rekeyFile = ../../../secrets/secrets/wifi.age;
       # };
 
     };

@@ -2,8 +2,6 @@
   config,
   lib,
   pkgs,
-  isTotal,
-  isDarwin,
   ...
 }:
 
@@ -39,7 +37,7 @@ in
 
   config = lib.mkIf (cfg.enable && cfg.boot.enable) (
     lib.mkMerge [
-      (lib.optionalAttrs (!isDarwin) {
+      (lib.optionalAttrs {
         # Kernel Selection
         boot.kernelPackages =
           if cfg.kernel == "latest" then

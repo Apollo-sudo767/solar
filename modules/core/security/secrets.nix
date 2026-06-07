@@ -24,7 +24,7 @@
       # Linux uses injected keys in /persist/etc/ssh to avoid circular dependency
       host-ssh-key = lib.mkIf isDarwin {
         generator.script = "ssh-ed25519";
-        rekeyFile = inputs.self + "/secrets/hosts/${config.networking.hostName}.age";
+        rekeyFile = ../../../secrets/hosts/${config.networking.hostName}.age;
         group = "wheel";
         mode = "600";
       };
@@ -36,22 +36,22 @@
       # The password-apollo secret acts as the GLOBAL DEFAULT for all users
       # unless they have their own specific password secret defined.
       "password-apollo.age" = {
-        rekeyFile = inputs.self + "/secrets/secrets/password-apollo.age";
+        rekeyFile = ../../../secrets/secrets/password-apollo.age;
       };
 
       # Specific overrides (uncomment to give a user a different password)
       # "password-hephaestus.age" = {
-      #   rekeyFile = inputs.self + "/secrets/secrets/password-hephaestus.age";
+      #   rekeyFile = ../../../secrets/secrets/password-hephaestus.age;
       # };
 
       # "password-root.age" = {
-      #   rekeyFile = inputs.self + "/secrets/secrets/password-root.age";
+      #   rekeyFile = ../../../secrets/secrets/password-root.age;
       # };
 
       # --- NETWORKING & SERVICES ---
 
       # "wifi.age" = {
-      #   rekeyFile = inputs.self + "/secrets/secrets/wifi.age";
+      #   rekeyFile = ../../../secrets/secrets/wifi.age;
       # };
 
     };

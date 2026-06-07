@@ -25,16 +25,16 @@ in
     age.rekey = {
       storageMode = "local";
       # Storage for rekeyed (host-specific) secrets.
-      localStorageDir = inputs.self + "/secrets/rekeyed/${config.networking.hostName}";
+      localStorageDir = ../../../secrets/rekeyed/${config.networking.hostName};
 
       # The public keys of the master identities.
       masterIdentities =
         let
-          yubikey = inputs.self + "/secrets/master/yubikey.pub";
-          se = inputs.self + "/secrets/master/se.pub";
-          dev = inputs.self + "/secrets/master/dev.pub";
-          devTxt = inputs.self + "/secrets/master/dev.txt";
-          mac = inputs.self + "/secrets/master/mac.pub";
+          yubikey = ../../../secrets/master/yubikey.pub;
+          se = ../../../secrets/master/se.pub;
+          dev = ../../../secrets/master/dev.pub;
+          devTxt = ../../../secrets/master/dev.txt;
+          mac = ../../../secrets/master/mac.pub;
         in
         (lib.optional (builtins.pathExists yubikey) yubikey)
         ++ (lib.optional (builtins.pathExists se) se)
@@ -51,7 +51,7 @@ in
       # Identify the host's public key. We prefer the generated host-ssh-key.
       hostPubkey =
         let
-          hostPub = inputs.self + "/secrets/hosts/${config.networking.hostName}.pub";
+          hostPub = ../../../secrets/hosts/${config.networking.hostName}.pub;
         in
         if builtins.pathExists hostPub then
           hostPub

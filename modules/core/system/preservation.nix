@@ -43,6 +43,8 @@ in
           "/var/log"
           "/var/lib/nixos"
           "/var/lib/systemd/coredump"
+          "/var/lib/NetworkManager"
+          "/etc/NetworkManager/system-connections"
         ];
       };
 

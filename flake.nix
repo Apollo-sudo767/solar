@@ -33,8 +33,10 @@
       url = "github:oddlama/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    # Your private repo (Only fetched when building your specific hosts)
     solar-secrets = {
-      url = "path:./secrets";
+      url = "git+ssh://git@github.com/Apollo-sudo767/solar-secrets.git";
       flake = false;
     };
 
@@ -132,7 +134,7 @@
               darwinConfigurations = self.darwinConfigurations or { };
             };
 
-            # Define apps for justfile compatibility
+            # Define apps for convenience
             apps = {
               agenix-rekey-generate = {
                 type = "app";

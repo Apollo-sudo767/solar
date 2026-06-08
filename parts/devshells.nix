@@ -10,24 +10,24 @@
         default = pkgs.mkShell {
           name = "solar-core";
           packages =
-            with pkgs;
-            [
-              inputs.agenix.packages.${pkgs.system}.default
-              age
-              age-plugin-yubikey
-              nil
-              git
-              nh
-              just
-              comma
-              nix-index
-            ]
-            ++ lib.optional pkgs.stdenv.isDarwin age-plugin-se;
+          with pkgs;
+          [
+            inputs.agenix.packages.${pkgs.system}.default
+            age
+            age-plugin-yubikey
+            nil
+            git
+            nh
+            comma
+            nix-index
+          ]
+          ++ lib.optional pkgs.stdenv.isDarwin age-plugin-se;
 
           shellHook = ''
-            ${config.pre-commit.installationScript}
-            echo "☀️ Solar environment active. Type 'just' for available commands."
+          ${config.pre-commit.installationScript}
+          echo "☀️ Solar environment active."
           '';
+
         };
 
         # 2. PYTHON (Data Science / Scripting)

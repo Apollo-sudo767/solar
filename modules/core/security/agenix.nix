@@ -14,52 +14,54 @@ in
 {
   options.myFeatures.core.security.agenix = {
     enable = lib.mkEnableOption "agenix-rekey for secret management";
-    masterIdentities = lib.mkOption {
-      type = lib.types.listOf lib.types.path;
-      default = [ ];
-      description = "List of public keys for rekeying (master identities).";
+
+    usePrivateSecrets = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to look for secrets inside the private solar-secrets repository input.";
     };
   };
 
   config = lib.mkIf cfg.enable {
     age.rekey = {
       storageMode = "local";
-      # Storage for rekeyed (host-specific) secrets.
-      # This MUST be a local path in the 'solar' repo.
-      localStorageDir = ../../../rekeyed-secrets/${config.networking.hostName};
-
-      # The public keys of the master identities.
-      # Sourced from the 'secrets' submodule via absolute flake path.
+      localStorageDir = inputs.self + "/rekeyed/${config.networking.hostName}";
+      
       masterIdentities = [
-        (inputs.self + "/secrets/master/se.pub")
+        "/home/apollo/src/solar-secrets/master/today.txt"
+        "/home/apollo/.ssh/id_ed25519"
+        "/Users/apollo/.ssh/id_ed25519"
+        # Secure Enclave identity (generated on Mac)
+        "/Users/apollo/.ssh/mac_se.txt"
       ];
 
-      # Hardware plugins required for rekeying
       agePlugins = [
         pkgs.age-plugin-yubikey
-      ]
-      ++ lib.optional isDarwin pkgs.age-plugin-se;
+      ] ++ lib.optional isDarwin pkgs.age-plugin-se;
 
-      # Identify the host's public key.
       hostPubkey =
         let
-          path = inputs.self + "/secrets/hosts/${config.networking.hostName}.pub";
+          path =
+            if cfg.usePrivateSecrets && (builtins.hasAttr "solar-secrets" inputs) then
+              "${inputs.solar-secrets}/hosts/${config.networking.hostName}.pub"
+            else
+              inputs.self + "/secrets/hosts/${config.networking.hostName}.pub";
         in
         if builtins.pathExists path then
           lib.strings.trim (builtins.readFile path)
         else
-          config.age.secrets.host-ssh-key.pubkey
-            or "age10000000000000000000000000000000000000000000000000000000000";
+          "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34";
     };
 
-    # Use the identity for decrypting secrets
-    age.identityPaths =
-      if isDarwin then
-        [ config.age.secrets.host-ssh-key.path ]
-      else
-        [
-          "/persist/etc/ssh/ssh_host_ed25519_key"
-          "/etc/ssh/ssh_host_ed25519_key"
-        ];
+    age.identityPaths = [
+      "/persist/etc/ssh/ssh_host_ed25519_key"
+      "/etc/ssh/ssh_host_ed25519_key"
+    ];
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf (!isDarwin && config.myFeatures.core.system.preservation.enable) {
+        directories = [ { directory = "/etc/ssh"; mode = "0755"; } ];
+        files = [ "/etc/ssh/ssh_host_ed25519_key" "/etc/ssh/ssh_host_ed25519_key.pub" ];
+      };
   };
 }

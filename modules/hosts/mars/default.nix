@@ -28,7 +28,10 @@
             enable = true;
             useAppArmor = true;
           };
-          security.agenix.enable = true;
+          security.agenix = {
+            enable = true;
+            usePrivateSecrets = true;
+          };
           nix.lix.enable = true;
         };
 

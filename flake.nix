@@ -148,6 +148,10 @@
                 type = "app";
                 program = lib.getExe self.agenix-rekey.${system}.edit-view;
               };
+              agenix-rekey-update-masterkeys = {
+                type = "app";
+                program = lib.getExe self.agenix-rekey.${system}.update-masterkeys;
+              };
             };
 
             _module.args.pkgs = import nixpkgs-unstable {

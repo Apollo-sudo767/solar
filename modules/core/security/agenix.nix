@@ -39,6 +39,26 @@ in
         pkgs.age-plugin-yubikey
       ] ++ lib.optional isDarwin pkgs.age-plugin-se;
 
+      extraEncryptionPubkeys =
+        if cfg.usePrivateSecrets && (builtins.hasAttr "solar-secrets" inputs) then
+          let
+            masterDir = inputs.solar-secrets + "/master";
+          in
+          if builtins.pathExists masterDir then
+            builtins.concatLists (
+              lib.mapAttrsToList (
+                name: type:
+                if type == "regular" && lib.hasSuffix ".pub" name then
+                  [ (lib.strings.trim (builtins.readFile (masterDir + "/${name}"))) ]
+                else
+                  [ ]
+              ) (builtins.readDir masterDir)
+            )
+          else
+            [ ]
+        else
+          [ ];
+
       hostPubkey =
         let
           path =

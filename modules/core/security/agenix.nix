@@ -28,11 +28,12 @@ in
       localStorageDir = inputs.self + "/rekeyed/${config.networking.hostName}";
       
       masterIdentities = [
+        # YubiKey identity path (this is a constant string used by the plugin)
+        "yubikey" 
         "/home/apollo/src/solar-secrets/master/today.txt"
+        "/Users/apollo/src/solar-secrets/master/today.txt"
         "/home/apollo/.ssh/id_ed25519"
         "/Users/apollo/.ssh/id_ed25519"
-        # Secure Enclave identity (generated on Mac)
-        "/Users/apollo/.ssh/mac_se.txt"
       ];
 
       agePlugins = [
@@ -83,5 +84,8 @@ in
         directories = [ { directory = "/etc/ssh"; mode = "0755"; } ];
         files = [ "/etc/ssh/ssh_host_ed25519_key" "/etc/ssh/ssh_host_ed25519_key.pub" ];
       };
+
+    # Enable pcscd for YubiKey support on Linux
+    services.pcscd.enable = lib.mkIf (!isDarwin) true;
   };
 }

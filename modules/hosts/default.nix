@@ -82,7 +82,8 @@ let
               # Set defaults for agenix-rekey so evaluation doesn't fail
               age.rekey = {
                 storageMode = lib.mkDefault "local";
-                localStorageDir = lib.mkDefault (inputs.self + "/secrets/rekeyed/${name}");
+                localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
+                masterIdentities = lib.mkDefault [ "dummy" ];
               };
             }
           ]

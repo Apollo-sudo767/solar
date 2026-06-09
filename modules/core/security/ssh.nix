@@ -24,7 +24,7 @@ in
       # 2. Linux-only configuration (Shielded from the Mac Evaluator)
       (lib.optionalAttrs (!isDarwin) {
         services.openssh.settings = {
-          PermitRootLogin = "no";
+          PermitRootLogin = "prohibit-password";
           PasswordAuthentication = true;
         };
 

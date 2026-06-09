@@ -1422,11 +1422,11 @@
     "solar-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1780878382,
-        "narHash": "sha256-pSYT213/gnNFLRcJkFwQyous3Ezh97+5cWu+EFSCXLA=",
+        "lastModified": 1780966902,
+        "narHash": "sha256-1t4uETkK1gNsYKuK13mY2VEge8/D5HvZWETfXZThysg=",
         "ref": "refs/heads/main",
-        "rev": "92233fc66102f4665af44889cab65a01357f4039",
-        "revCount": 9,
+        "rev": "5e45c3f67c94b6cd981f2ac53705eb4921143ed2",
+        "revCount": 11,
         "type": "git",
         "url": "ssh://git@github.com/Apollo-sudo767/solar-secrets.git"
       },

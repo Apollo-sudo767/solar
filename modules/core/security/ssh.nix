@@ -19,6 +19,16 @@ in
       # 1. Common configuration for both Mac and Linux
       {
         services.openssh.enable = true;
+        programs.ssh.startAgent = true;
+        # Disable conflicting GCR agent to ensure OpenSSH agent works for hardware keys
+        services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
+
+        # Enable support for FIDO2/YubiKey SSH keys
+        programs.ssh.extraConfig = ''
+          Host github.com
+            IdentityFile ~/.ssh/id_yubikey
+            IdentityFile ~/.ssh/id_ed25519
+        '';
       }
 
       # 2. Linux-only configuration (Shielded from the Mac Evaluator)

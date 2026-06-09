@@ -83,7 +83,7 @@ let
               age.rekey = {
                 storageMode = lib.mkDefault "local";
                 localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
-                masterIdentities = lib.mkDefault [ "dummy" ];
+                masterIdentities = lib.mkDefault [ ];
               };
             }
           ]

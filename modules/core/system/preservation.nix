@@ -17,6 +17,7 @@ in
       default = "/persist";
       description = "The root path for persistent storage (Speed/NVMe).";
     };
+
     coldPath = lib.mkOption {
       type = lib.types.str;
       readOnly = true;
@@ -38,19 +39,22 @@ in
       enable = true;
 
       # Primary Speed Pool (NVMe/SSD)
-      preserveAt."${cfg.persistentPath}" = {
-        directories = [
-          "/var/log"
-          "/var/lib/nixos"
-          "/var/lib/systemd/coredump"
-          "/var/lib/NetworkManager"
-          "/etc/NetworkManager/system-connections"
-        ];
-      };
-
-      # Cold Tier (HDD)
-      preserveAt."${cfg.coldPath}" = {
-        directories = [ ];
+      preserveAt = {
+        "${cfg.persistentPath}" = {
+          directories = [
+            "/var/log"
+            "/var/lib/nixos"
+            "/var/lib/systemd/coredump"
+            "/var/lib/NetworkManager"
+            "/etc/NetworkManager/system-connections"
+          ];
+        };
+      }
+      // lib.optionalAttrs (cfg.coldPath != cfg.persistentPath) {
+        # Cold Tier (HDD) - Only merged if a distinct bulk storage path exists
+        "${cfg.coldPath}" = {
+          directories = [ ];
+        };
       };
     };
   };

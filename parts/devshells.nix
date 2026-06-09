@@ -15,6 +15,7 @@
             inputs.agenix.packages.${pkgs.system}.default
             age
             age-plugin-yubikey
+            ssh-to-age
             nil
             git
             nh

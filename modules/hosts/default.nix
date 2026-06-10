@@ -57,7 +57,6 @@ let
     {
       inherit isDarwin;
       config = builder {
-        inherit system;
         # Pass flags: isDarwin for Mac, isTotal for both
         specialArgs = {
           inherit inputs isStable isDarwin;
@@ -74,6 +73,7 @@ let
             preservationModule
             diskoModule
             {
+              nixpkgs.hostPlatform = system;
               networking.hostName = name;
               nixpkgs.config.allowUnfree = true;
               home-manager.useGlobalPkgs = true;
@@ -81,6 +81,14 @@ let
 
               # Set defaults for agenix-rekey so evaluation doesn't fail
               age.rekey = {
+                hostPubkey =
+                  let
+                    path = "${inputs.solar-secrets}/hosts/${name}.pub";
+                  in
+                  if (builtins.hasAttr "solar-secrets" inputs) && (builtins.pathExists path) then
+                    lib.strings.trim (builtins.readFile path)
+                  else
+                    "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34";
                 storageMode = lib.mkDefault "local";
                 localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
                 masterIdentities = lib.mkDefault [ ];

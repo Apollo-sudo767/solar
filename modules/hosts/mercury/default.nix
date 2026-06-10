@@ -13,6 +13,8 @@
 
       system.stateVersion = "26.11";
 
+      boot.initrd.systemd.enable = true;
+
       myFeatures = {
         core = {
           system.core-branch = {
@@ -64,8 +66,7 @@
             skyNiri.enable = true;
           };
           addons = {
-            displayManager.manager = "tuigreet";
-            noctalia-shell.enable = true;
+            displayManager.manager = "regreet";
           };
         };
 

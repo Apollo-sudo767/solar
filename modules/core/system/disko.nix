@@ -45,6 +45,8 @@ let
           content = {
             type = "luks";
             name = "crypted-speed-main";
+            # Enable TPM2 enrollment support
+            extraOpenArgs = [ "--allow-discards" ];
             content = {
               type = "btrfs";
               extraArgs = [

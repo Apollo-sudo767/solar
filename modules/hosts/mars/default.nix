@@ -13,8 +13,6 @@
 
       system.stateVersion = "26.11";
 
-      age.rekey.hostPubkey = "age15jjutm32rsyy35x4lf6p9t5nmsx5gmzqmhykz95dt22jrvphrpssdll0xe";
-
       myFeatures = {
         core = {
           system = {

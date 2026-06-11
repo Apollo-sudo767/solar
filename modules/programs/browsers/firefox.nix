@@ -8,7 +8,7 @@
 
 let
   cfg = config.myFeatures.programs.browsers.firefox;
-  firefox-nightly = inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin;
+  firefox-nightly = inputs.firefox.packages.${pkgs.stdenv.hostPlatform.system}.firefox-nightly-bin;
 in
 {
   options.myFeatures.programs.browsers.firefox = {

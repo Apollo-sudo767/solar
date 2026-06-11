@@ -10,7 +10,7 @@ let
   cfg = config.myFeatures.programs.browsers.zen;
   # Ported from Phanes desktop.nix
   # This uses the flake input to apply your specific security policies
-  myZen = inputs.zen-browser.packages."${pkgs.system}".default.override {
+  myZen = inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default.override {
     extraPolicies = {
       DisableTelemetry = true;
       ExtensionSettings = {

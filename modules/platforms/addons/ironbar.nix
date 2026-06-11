@@ -22,7 +22,7 @@ in
 
           programs.ironbar = {
             enable = true;
-            package = inputs.ironbar.packages.${pkgs.system}.default;
+            package = inputs.ironbar.packages.${pkgs.stdenv.hostPlatform.system}.default;
             systemd = !isDarwin;
             config = {
               icon_theme = "Paper";

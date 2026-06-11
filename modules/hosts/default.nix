@@ -85,10 +85,13 @@ let
                   let
                     path = "${inputs.solar-secrets}/hosts/${name}.pub";
                   in
-                  if (builtins.hasAttr "solar-secrets" inputs) && (builtins.pathExists path) then
-                    lib.strings.trim (builtins.readFile path)
-                  else
-                    "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34";
+                  lib.mkDefault (
+                    if (builtins.hasAttr "solar-secrets" inputs) && (builtins.pathExists path) then
+                      lib.strings.trim (builtins.readFile path)
+                    else
+                      # Fallback to a guaranteed valid age public key (for bootstrapping)
+                      "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34"
+                  );
                 storageMode = lib.mkDefault "local";
                 localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
                 masterIdentities = lib.mkDefault [ ];

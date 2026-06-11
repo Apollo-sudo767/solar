@@ -32,8 +32,8 @@ in
         masterIdentities =
           let
             allPaths = [
-              "${inputs.solar-secrets}/master/yubikey.id"
-              "${inputs.solar-secrets}/master/mac_se.id"
+              "${inputs.solar-secrets}/master/yubikey.id.pub"
+              "${inputs.solar-secrets}/master/mac_se.id.pub"
             ];
             # Only include if file exists, has AGE-PLUGIN, and is NOT a dummy
             validIdentities = builtins.filter (
@@ -74,31 +74,24 @@ in
 
       # Convenience Aliases for Secret Management
       environment.shellAliases = {
-        s-rekey = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-rekey && git -C $HOME/src/solar add rekeyed";
-        s-sync = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-update-masterkeys";
-        s-edit = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-edit --";
-        s-gen = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-generate --";
+        s-rekey = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-rekey && git -C $HOME/src/solar add rekeyed";
+        s-sync = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-update-masterkeys";
+        s-edit = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-edit --";
+        s-gen = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-generate --";
       };
     }
 
-    # 2. Target Host Specifics (Only if agenix.enable = true)
+    # Target Host Specifics (Only if agenix.enable = true)
     (lib.mkIf cfg.enable {
-      age.rekey.hostPubkey =
-        let
-          path = "${inputs.solar-secrets}/hosts/${config.networking.hostName}.pub";
-        in
-        if (builtins.hasAttr "solar-secrets" inputs) && (builtins.pathExists path) then
-          lib.strings.trim (builtins.readFile path)
-        else
-          # Fallback to a guaranteed valid age public key (for bootstrapping)
-          "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34";
-
       # Comprehensive identity paths for decryption
       age.identityPaths = [
+        (if isDarwin then "/Users/apollo/.ssh/id_ed25519" else "/home/apollo/.ssh/id_ed25519")
+      ]
+      ++ lib.optionals (!isDarwin) [
         "/etc/ssh/ssh_host_ed25519_key"
+      ]
+      ++ lib.optionals (!isDarwin && config.myFeatures.core.system.core-branch.usePersistence) [
         "/persist/etc/ssh/ssh_host_ed25519_key"
-        "/Users/apollo/.ssh/id_ed25519"
-        "/home/apollo/.ssh/id_ed25519"
       ];
 
       # Platform-specific configurations

@@ -37,7 +37,7 @@ in
 
       programs.noctalia = {
         enable = true;
-        package = inputs.noctalia-v5.packages.${pkgs.system}.default;
+        package = inputs.noctalia-v5.packages.${pkgs.stdenv.hostPlatform.system}.default;
       };
     });
   };

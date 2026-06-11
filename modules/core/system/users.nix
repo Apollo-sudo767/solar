@@ -83,7 +83,10 @@ in
             "/home/${name}/Videos"
             "/home/${name}/Desktop"
             "/home/${name}/src"
-            "/home/${name}/.local/share/direnv" # Persist direnv allow state
+            "/home/${name}/.local/share/keyrings"
+            "/home/${name}/.local/state" # Critical for wireplumber, etc.
+            "/home/${name}/.cache/nix" # Cache nix evaluations
+            "/home/${name}/.cache/fontconfig" # Avoid regenerating fonts
           ]) cfg.usernames;
         };
   };

@@ -24,6 +24,7 @@ in
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {
               directories = [
+                "/var/lib/NetworkManager"
                 "/etc/NetworkManager/system-connections"
               ];
             };

@@ -15,5 +15,16 @@ in
   config = lib.mkIf cfg.enable {
     services.flatpak.enable = true;
     xdg.portal.enable = true; # Required for Flatpak integration [cite: 32]
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = [
+            "/var/lib/flatpak"
+          ]
+          ++ (lib.concatMap (name: [
+            "/home/${name}/.local/share/flatpak"
+          ]) config.myFeatures.core.system.users.usernames);
+        };
   };
 }

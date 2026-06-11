@@ -35,8 +35,17 @@ in
           };
         };
 
-        # Stylix integration (Centralized target enablement)
-        stylix.targets.regreet.enable = lib.mkIf config.stylix.enable true;
+        # Stylix integration: Disabled to avoid warnings with custom sway command
+        stylix.targets.regreet.enable = false;
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = [
+                "/var/lib/greetd"
+                "/var/cache/regreet"
+              ];
+            };
       })
     ]
   );

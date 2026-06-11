@@ -44,9 +44,10 @@ in
           directories = [
             "/var/log"
             "/var/lib/nixos"
-            "/var/lib/systemd/coredump"
-            "/var/lib/NetworkManager"
-            "/etc/NetworkManager/system-connections"
+            "/var/lib/systemd" # Stores backlight, rfkill, timesync, etc.
+          ];
+          files = [
+            "/etc/machine-id"
           ];
         };
       }

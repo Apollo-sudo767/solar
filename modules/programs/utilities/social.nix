@@ -10,7 +10,7 @@ let
   inherit isTotal;
   cfg = config.myFeatures.programs.utilities.social;
   spicetifyCfg = config.myFeatures.programs.utilities.spicetify;
-  spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
+  spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   options.myFeatures.programs.utilities.social.enable = lib.mkEnableOption "Spotify and Vesktop";

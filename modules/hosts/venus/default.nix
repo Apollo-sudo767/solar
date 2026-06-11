@@ -18,9 +18,12 @@
       myFeatures = {
         core = {
           system.core-branch.enable = true;
-          system.users.usernames = [
-            "apollo"
-          ];
+          system.users = {
+            usernames = [
+              "apollo"
+            ];
+            agenixPassword = true;
+          };
           shell.shell-branch.enable = true;
           boot = {
             enable = true;

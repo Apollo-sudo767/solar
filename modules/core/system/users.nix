@@ -30,9 +30,13 @@ in
       default = config.users.users.${cfg.mainUser}.home;
       description = "The home directory of the primary user.";
     };
+    agenixPassword = lib.mkEnableOption "agenix-managed passwords for users";
   };
 
   config = lib.mkIf cfg.enable {
+    # Disable mutable users if agenixPassword is enabled to ensure strict management
+    users.mutableUsers = lib.mkDefault (!cfg.agenixPassword);
+
     # 1. Cross-Platform User Definitions
     users.users = lib.genAttrs cfg.usernames (
       name:
@@ -51,18 +55,27 @@ in
           "video"
         ];
         # Password Logic:
-        # 1. Use password-<username> if it exists
-        # 2. Otherwise, fall back to password-apollo as the default
-        # 3. If neither exists, use the hardcoded "solar"
-        hashedPasswordFile =
-          if (config.age.secrets ? "password-${name}") then
-            config.age.secrets."password-${name}".path
-          else if (config.age.secrets ? "password-apollo.age") then
-            config.age.secrets."password-apollo.age".path
+        # 1. Priority: Host-specific > User-specific > Global Fallback
+        # 2. If agenixPassword is disabled, use initialPassword "solar"
+        hashedPasswordFile = lib.mkIf cfg.agenixPassword (
+          let
+            hostSecret = "password-${config.networking.hostName}.age";
+            userSecret = "password-${name}.age";
+            fallback = "password-apollo.age";
+          in
+          if (config.age.secrets ? ${hostSecret}) then
+            config.age.secrets.${hostSecret}.path
+          else if (config.age.secrets ? ${userSecret}) then
+            config.age.secrets.${userSecret}.path
+          else if (config.age.secrets ? ${fallback}) then
+            config.age.secrets.${fallback}.path
           else
-            null;
+            null
+        );
 
-        initialPassword = lib.mkIf (config.users.users.${name}.hashedPasswordFile == null) "solar";
+        initialPassword = lib.mkIf (
+          !cfg.agenixPassword || config.users.users.${name}.hashedPasswordFile == null
+        ) "solar";
       }
     );
 

@@ -79,11 +79,8 @@ in
         s-edit = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-edit --";
         s-gen = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-generate --";
       };
-    }
 
-    # Target Host Specifics (Only if agenix.enable = true)
-    (lib.mkIf cfg.enable {
-      # Comprehensive identity paths for decryption
+      # Comprehensive identity paths for decryption (Available globally)
       age.identityPaths = [
         (if isDarwin then "/Users/apollo/.ssh/id_ed25519" else "/home/apollo/.ssh/id_ed25519")
       ]
@@ -93,7 +90,10 @@ in
       ++ lib.optionals (!isDarwin && config.myFeatures.core.system.core-branch.usePersistence) [
         "/persist/etc/ssh/ssh_host_ed25519_key"
       ];
+    }
 
+    # Target Host Specifics (Only if agenix.enable = true)
+    (lib.mkIf cfg.enable {
       # Platform-specific configurations
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
         lib.mkIf (!isDarwin && config.myFeatures.core.system.preservation.enable)

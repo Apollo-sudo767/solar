@@ -17,6 +17,7 @@
         core = {
           system = {
             core-branch.enable = true;
+            users.agenixPassword = true;
           };
           shell.shell-branch.enable = true;
           boot = {

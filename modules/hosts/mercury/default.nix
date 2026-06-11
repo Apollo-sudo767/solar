@@ -21,6 +21,7 @@
             enable = true;
             usePersistence = true;
           };
+          system.users.agenixPassword = true;
           system.disko.speedDisks = [ "/dev/nvme0n1" ]; # Adjust if necessary
           shell.shell-branch.enable = true;
           boot = {

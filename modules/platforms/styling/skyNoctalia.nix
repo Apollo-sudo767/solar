@@ -21,118 +21,100 @@ in
       programs.noctalia = {
         settings = {
           # v5 Specific Configuration - Matched EXACTLY to ~/.config/noctalia/config.toml
-          bar = {
-            enable = true;
-            position = "bottom";
-            height = 36;
-            barType = "simple";
-            density = "default";
-            showOutline = false;
-            showCapsule = true;
-            capsuleOpacity = 1.0;
-            capsuleColorKey = "none";
-            widgetSpacing = 6;
-            contentPadding = 2;
-            fontScale = 1;
-            enableExclusionZoneInset = true;
-            backgroundOpacity = 1.0;
-            useSeparateOpacity = false;
-            marginVertical = 4;
-            marginHorizontal = 4;
-            frameThickness = 8;
-            frameRadius = 12;
-            outerCorners = true;
-            hideOnOverview = false;
-            displayMode = "always_visible";
+          appLauncher = {
+            iconMode = "tabler";
+            position = "center";
+            showCategories = true;
+            sortByMostUsed = true;
+          };
 
-            widgets = {
-              left = [
-                {
-                  id = "Launcher";
-                  icon = "rocket";
-                  useDistroLogo = false;
-                }
-                {
-                  id = "Clock";
-                  formatHorizontal = "HH:mm ddd, MMM dd";
-                }
-                {
-                  id = "SystemMonitor";
-                  compactMode = true;
-                  showCpuTemp = true;
-                  showCpuUsage = true;
-                  showMemoryUsage = true;
-                }
-                {
-                  id = "ActiveWindow";
-                  maxWidth = 145;
-                }
+          bar = {
+            backgroundOpacity = 1.0;
+            barType = "simple";
+            capsuleColorKey = "none";
+            capsuleOpacity = 1.0;
+            contentPadding = 2;
+            density = "default";
+            displayMode = "always_visible";
+            enable = true;
+            enableExclusionZoneInset = true;
+            fontScale = 1;
+            frameRadius = 12;
+            frameThickness = 8;
+            height = 36;
+            hideOnOverview = false;
+            marginHorizontal = 4;
+            marginVertical = 4;
+            order = [
+              "default"
+              "widgets"
+            ];
+            outerCorners = true;
+            position = "bottom";
+            showCapsule = true;
+            showOutline = false;
+            useSeparateOpacity = false;
+            widgetSpacing = 6;
+
+            default = {
+              center = [ "group:g1" ];
+              contact_shadow = true;
+              end = [
+                "tray"
+                "notifications"
+                "clock"
+                "volume"
+                "brightness"
+                "battery"
               ];
-              center = [
-                {
-                  id = "Workspace";
-                  labelMode = "index";
-                  showBadge = true;
-                  showLabelsOnlyWhenOccupied = true;
-                }
+              margin_edge = 0;
+              margin_ends = 0;
+              position = "bottom";
+              shadow = false;
+              start = [
+                "group:g2"
+                "launcher"
+                "workspaces"
               ];
-              right = [
+
+              capsule_group = [
                 {
-                  id = "Tray";
-                  drawerEnabled = true;
+                  fill = "surface_variant";
+                  id = "g1";
+                  members = [
+                    "control-center"
+                    "media"
+                    "session"
+                  ];
+                  opacity = 1.0;
+                  padding = 6.0;
                 }
                 {
-                  id = "NotificationHistory";
-                  showUnreadBadge = true;
-                }
-                {
-                  id = "Battery";
-                  displayMode = "graphic-clean";
-                }
-                {
-                  id = "Volume";
-                  displayMode = "onhover";
-                }
-                {
-                  id = "Brightness";
-                  displayMode = "onhover";
-                }
-                {
-                  id = "ControlCenter";
-                  icon = "noctalia";
+                  fill = "surface_variant";
+                  id = "g2";
+                  members = [
+                    "network"
+                    "bluetooth"
+                  ];
+                  opacity = 1.0;
+                  padding = 6.0;
                 }
               ];
             };
-          };
 
-          dock.enabled = false;
+            widgets.enabled = false;
+          };
 
           colors = {
-            mPrimary = "#2471a3";
-            mOnPrimary = "#050a18";
-            mSecondary = "#ff9f43";
-            mOnSecondary = "#050a18";
-            mSurface = "#050a18";
-            mOnSurface = "#abb2bf";
             mBackground = "#050a18";
             mOnBackground = "#abb2bf";
+            mOnPrimary = "#050a18";
+            mOnSecondary = "#050a18";
+            mOnSurface = "#abb2bf";
             mOutline = "#101f3b";
-          };
-
-          general = {
-            avatarImage = iconFile;
-            animationSpeed = 1;
-            enableShadows = true;
-            enableBlurBehind = false;
-            radiusRatio = 1;
-            screenRadiusRatio = 1;
-          };
-
-          appLauncher = {
-            sortByMostUsed = true;
-            iconMode = "tabler";
-            showCategories = true;
-            position = "center";
+            mPrimary = "#2471a3";
+            mSecondary = "#ff9f43";
+            mSurface = "#050a18";
           };
 
           controlCenter = {
@@ -148,6 +130,83 @@ in
                 { id = "PowerProfile"; }
                 { id = "KeepAwake"; }
               ];
+            };
+          };
+
+          dock.enabled = false;
+
+          general = {
+            animationSpeed = 1;
+            avatarImage = iconFile;
+            enableBlurBehind = false;
+            enableShadows = true;
+            radiusRatio = 1;
+            screenRadiusRatio = 1;
+          };
+
+          idle = {
+            behavior_order = [
+              "lock"
+              "screen-off"
+              "lock-and-suspend"
+            ];
+            behavior = {
+              lock = {
+                action = "lock";
+                enabled = true;
+                timeout = 600;
+              };
+              lock-and-suspend = {
+                action = "lock_and_suspend";
+                enabled = true;
+                timeout = 900;
+              };
+              screen-off = {
+                action = "screen_off";
+                enabled = true;
+                timeout = 660;
+              };
+            };
+          };
+
+          lockscreen = {
+            blurred_desktop = true;
+            wallpaper_blur_intensity = 0.61999998614192009;
+          };
+
+          shell = {
+            niri_overview_type_to_launch_enabled = true;
+            polkit_agent = true;
+            panel.transparency_mode = "solid";
+          };
+
+          theme = {
+            community_palette = "m3-content";
+            source = "wallpaper";
+            wallpaper_scheme = "Noctalia";
+          };
+
+          wallpaper = {
+            directory = pkgs.runCommand "noctalia-sky-wallpapers" { } ''
+              mkdir -p $out
+              cp ${../../../assets/wallpapers/space.png} $out/space.png
+            '';
+            transition = [
+              "disc"
+              "fade"
+              "honeycomb"
+              "stripes"
+              "wipe"
+              "zoom"
+            ];
+            transition_on_startup = true;
+
+            default.path = ../../../assets/wallpapers/space.png;
+            last.path = ../../../assets/wallpapers/space.png;
+
+            monitors = {
+              DP-1.path = ../../../assets/wallpapers/space.png;
+              DP-2.path = ../../../assets/wallpapers/space.png;
             };
           };
         };

@@ -48,7 +48,8 @@ in
 
         agePlugins = [
           pkgs.age-plugin-yubikey
-        ] ++ lib.optional isDarwin pkgs.age-plugin-se;
+        ]
+        ++ lib.optional isDarwin pkgs.age-plugin-se;
 
         extraEncryptionPubkeys =
           if cfg.usePrivateSecrets && (builtins.hasAttr "solar-secrets" inputs) then
@@ -102,18 +103,19 @@ in
 
       # Platform-specific configurations
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-        lib.mkIf (!isDarwin && config.myFeatures.core.system.preservation.enable) {
-          directories = [
-            {
-              directory = "/etc/ssh";
-              mode = "0755";
-            }
-          ];
-          files = [
-            "/etc/ssh/ssh_host_ed25519_key"
-            "/etc/ssh/ssh_host_ed25519_key.pub"
-          ];
-        };
+        lib.mkIf (!isDarwin && config.myFeatures.core.system.preservation.enable)
+          {
+            directories = [
+              {
+                directory = "/etc/ssh";
+                mode = "0755";
+              }
+            ];
+            files = [
+              "/etc/ssh/ssh_host_ed25519_key"
+              "/etc/ssh/ssh_host_ed25519_key.pub"
+            ];
+          };
 
       # Linux-Only Services
       services = lib.optionalAttrs (!isDarwin) {

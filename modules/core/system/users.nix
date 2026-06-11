@@ -82,6 +82,7 @@ in
             "/home/${name}/Pictures"
             "/home/${name}/Videos"
             "/home/${name}/Desktop"
+            "/home/${name}/src"
             "/home/${name}/.local/share/direnv" # Persist direnv allow state
           ]) cfg.usernames;
         };

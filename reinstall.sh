@@ -43,8 +43,8 @@ if [[ "$KEY_CHOICE" == "1" ]]; then
     echo "🆕 Generating new SSH host key..."
     ssh-keygen -t ed25519 -f "$TEMP_DIR/ssh_host_ed25519_key" -N "" -C "root@$HOST"
     
-    echo "📝 Converting to age format and updating solar-secrets..."
-    nix run nixpkgs#ssh-to-age -- < "$TEMP_DIR/ssh_host_ed25519_key.pub" > "$SECRETS_DIR/hosts/$HOST.pub"
+    echo "📝 Updating solar-secrets with raw SSH public key..."
+    cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$SECRETS_DIR/hosts/$HOST.pub"
     
     echo "🔐 Rekeying secrets..."
     echo "I will now try to run the rekeying process. If it fails due to YubiKey/PIN issues,"
@@ -70,7 +70,7 @@ else
     ssh-keygen -y -f "$TEMP_DIR/ssh_host_ed25519_key" > "$TEMP_DIR/ssh_host_ed25519_key.pub"
     
     # Ensure solar-secrets is in sync with this existing key
-    nix run nixpkgs#ssh-to-age -- < "$TEMP_DIR/ssh_host_ed25519_key.pub" > "$SECRETS_DIR/hosts/$HOST.pub"
+    cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$SECRETS_DIR/hosts/$HOST.pub"
     echo "🔐 Ensuring secrets are rekeyed for this host..."
     AGENIX_REKEY_PRIMARY_FLAKE_ROOT="$FLAKE_DIR" nix run --override-input solar-secrets "path:$SECRETS_DIR" --no-write-lock-file "$FLAKE_DIR#agenix-rekey-rekey"
 

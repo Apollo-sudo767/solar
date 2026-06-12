@@ -27,6 +27,8 @@ in
             directories = [
               "/etc/cups"
               "/var/lib/cups"
+              "/var/spool/cups"
+              "/var/cache/cups"
             ];
           };
     }

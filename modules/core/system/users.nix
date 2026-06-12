@@ -55,20 +55,14 @@ in
           "video"
         ];
         # Password Logic:
-        # 1. Priority: Host-specific > User-specific > Global Fallback
-        # 2. If agenixPassword is disabled, use initialPassword "solar"
+        # 1. Use password-<username>.age if it exists
+        # 2. Otherwise, fall back to password-apollo.age
+        # 3. If neither exists and agenixPassword is off, use "solar"
         hashedPasswordFile = lib.mkIf cfg.agenixPassword (
-          let
-            hostSecret = "password-${config.networking.hostName}.age";
-            userSecret = "password-${name}.age";
-            fallback = "password-apollo.age";
-          in
-          if (config.age.secrets ? ${hostSecret}) then
-            config.age.secrets.${hostSecret}.path
-          else if (config.age.secrets ? ${userSecret}) then
-            config.age.secrets.${userSecret}.path
-          else if (config.age.secrets ? ${fallback}) then
-            config.age.secrets.${fallback}.path
+          if (config.age.secrets ? "password-${name}.age") then
+            config.age.secrets."password-${name}.age".path
+          else if (config.age.secrets ? "password-apollo.age") then
+            config.age.secrets."password-apollo.age".path
           else
             null
         );
@@ -85,6 +79,20 @@ in
       home.username = name;
       home.homeDirectory = config.users.users.${name}.home;
     });
+
+    # 3. Fix Ownership for Persistent Home Directories
+    # This script runs during activation and ensures that if folders were created as root
+    # (common with Preservation/Impermanence), they are handed back to the user.
+    system.activationScripts.fixUserHomeOwnership = {
+      deps = [ "users" ];
+      text = lib.concatMapStringsSep "\n" (name: ''
+        echo "Ensuring ownership for ${name} home directory..."
+        chown -R ${name}:users /home/${name}
+        if [ -d "/persist/home/${name}" ]; then
+          chown -R ${name}:users /persist/home/${name}
+        fi
+      '') cfg.usernames;
+    };
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !isDarwin)

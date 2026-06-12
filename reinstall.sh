@@ -82,11 +82,21 @@ fi
 # 3. Prepare nixos-anywhere extra-files
 echo "📦 Preparing extra-files payload..."
 PAYLOAD_DIR="$TEMP_DIR/payload"
+
+# Standard location
 mkdir -p "$PAYLOAD_DIR/etc/ssh"
 cp "$TEMP_DIR/ssh_host_ed25519_key" "$PAYLOAD_DIR/etc/ssh/"
 cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$PAYLOAD_DIR/etc/ssh/"
 chmod 600 "$PAYLOAD_DIR/etc/ssh/ssh_host_ed25519_key"
 chmod 644 "$PAYLOAD_DIR/etc/ssh/ssh_host_ed25519_key.pub"
+
+# Persistence location (Mirror keys so they survive reboot on tmpfs-root systems)
+echo "🔗 Mirroring keys to /persist/etc/ssh for persistence compatibility..."
+mkdir -p "$PAYLOAD_DIR/persist/etc/ssh"
+cp "$TEMP_DIR/ssh_host_ed25519_key" "$PAYLOAD_DIR/persist/etc/ssh/"
+cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$PAYLOAD_DIR/persist/etc/ssh/"
+chmod 600 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key"
+chmod 644 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key.pub"
 
 # 4. Build and Execute
 echo "🏗️ Building system and disko script locally with secrets override..."

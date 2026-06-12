@@ -81,29 +81,37 @@ in
     });
 
     # 3. Innate Ownership Management (systemd-tmpfiles)
-    # This ensures that home directories (and their persistent counterparts)
-    # are always owned by the correct user. This is a more "native" NixOS
-    # way to handle permissions than a custom script.
+    # Using 'Z' (recursive) instead of 'd' ensures that the entire directory
+    # tree is owned by the user, fixing issues with Firefox and other apps.
     systemd.tmpfiles.rules = lib.concatMap (name: [
-      "d /home/${name} 0700 ${name} users - -"
-      "d /persist/home/${name} 0700 ${name} users - -"
+      "Z /home/${name} 0700 ${name} users - -"
+      "Z /persist/home/${name} 0700 ${name} users - -"
     ]) cfg.usernames;
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !isDarwin)
         {
-          directories = lib.concatMap (name: [
-            "/home/${name}/Documents"
-            "/home/${name}/Downloads"
-            "/home/${name}/Pictures"
-            "/home/${name}/Videos"
-            "/home/${name}/Desktop"
-            "/home/${name}/src"
-            "/home/${name}/.local/share/keyrings"
-            "/home/${name}/.local/state" # Critical for wireplumber, etc.
-            "/home/${name}/.cache/nix" # Cache nix evaluations
-            "/home/${name}/.cache/fontconfig" # Avoid regenerating fonts
-          ]) cfg.usernames;
+          users = lib.genAttrs cfg.usernames (name: {
+            directories = [
+              "Documents"
+              "Downloads"
+              "Pictures"
+              "Videos"
+              "Desktop"
+              "src"
+              ".local/share/keyrings"
+              ".local/share/direnv"
+              ".local/share/niri" # Niri state
+              ".local/share/noctalia" # Noctalia state
+              ".local/state" # Critical for wireplumber, etc.
+              ".cache/nix" # Cache nix evaluations
+              ".cache/fontconfig" # Avoid regenerating fonts
+              ".cache/noctalia" # Noctalia cache
+              ".ssh" # User SSH keys
+              ".gnupg" # GPG keys
+              ".pki" # PKI certificates
+            ];
+          });
         };
   };
 }

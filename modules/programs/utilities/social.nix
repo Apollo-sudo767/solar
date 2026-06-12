@@ -62,10 +62,12 @@ in
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
         {
-          directories = lib.concatMap (name: [
-            "/home/${name}/.config/spotify"
-            "/home/${name}/.config/vesktop"
-          ]) config.myFeatures.core.system.users.usernames;
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".config/spotify"
+              ".config/vesktop"
+            ];
+          });
         };
   };
 }

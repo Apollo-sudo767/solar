@@ -38,6 +38,7 @@
         };
 
         hardware = {
+          cpu-gpu.intel.enable = true;
           system = {
             graphics.enable = true;
             ttyResolution = {

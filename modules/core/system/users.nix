@@ -80,19 +80,14 @@ in
       home.homeDirectory = config.users.users.${name}.home;
     });
 
-    # 3. Fix Ownership for Persistent Home Directories
-    # This script runs during activation and ensures that if folders were created as root
-    # (common with Preservation/Impermanence), they are handed back to the user.
-    system.activationScripts.fixUserHomeOwnership = {
-      deps = [ "users" ];
-      text = lib.concatMapStringsSep "\n" (name: ''
-        echo "Ensuring ownership for ${name} home directory..."
-        chown -R ${name}:users /home/${name}
-        if [ -d "/persist/home/${name}" ]; then
-          chown -R ${name}:users /persist/home/${name}
-        fi
-      '') cfg.usernames;
-    };
+    # 3. Innate Ownership Management (systemd-tmpfiles)
+    # This ensures that home directories (and their persistent counterparts)
+    # are always owned by the correct user. This is a more "native" NixOS
+    # way to handle permissions than a custom script.
+    systemd.tmpfiles.rules = lib.concatMap (name: [
+      "d /home/${name} 0700 ${name} users - -"
+      "d /persist/home/${name} 0700 ${name} users - -"
+    ]) cfg.usernames;
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !isDarwin)

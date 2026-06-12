@@ -94,22 +94,6 @@ in
 
     # Target Host Specifics (Only if agenix.enable = true)
     (lib.mkIf cfg.enable {
-      # Platform-specific configurations
-      preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-        lib.mkIf (!isDarwin && config.myFeatures.core.system.preservation.enable)
-          {
-            directories = [
-              {
-                directory = "/etc/ssh";
-                mode = "0755";
-              }
-            ];
-            files = [
-              "/etc/ssh/ssh_host_ed25519_key"
-              "/etc/ssh/ssh_host_ed25519_key.pub"
-            ];
-          };
-
       # Linux-Only Services
       services = lib.optionalAttrs (!isDarwin) {
         # Enable pcscd for YubiKey support

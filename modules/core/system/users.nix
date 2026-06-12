@@ -101,7 +101,6 @@ in
               "src"
               ".local/share/keyrings"
               ".local/share/direnv"
-              ".local/share/niri" # Niri state
               ".local/share/noctalia" # Noctalia state
               ".local/state" # Critical for wireplumber, etc.
               ".cache/nix" # Cache nix evaluations

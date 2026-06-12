@@ -82,11 +82,13 @@ in
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf config.myFeatures.core.system.preservation.enable
         {
-          directories = lib.concatMap (name: [
-            "/home/${name}/.local/share/niri"
-            "/home/${name}/.cache/mesa_shader_cache"
-            "/home/${name}/.config/dconf"
-          ]) config.myFeatures.core.system.users.usernames;
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".local/share/niri"
+              ".cache/mesa_shader_cache"
+              ".config/dconf"
+            ];
+          });
         };
   };
 }

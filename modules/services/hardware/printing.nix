@@ -25,7 +25,6 @@ in
         lib.mkIf config.myFeatures.core.system.preservation.enable
           {
             directories = [
-              "/etc/cups"
               "/var/lib/cups"
               "/var/spool/cups"
               "/var/cache/cups"

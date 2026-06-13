@@ -26,7 +26,7 @@
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
-            # secureBoot.enable = true;
+            secureBoot.enable = true;
             kernel = "latest";
           };
           security.security = {

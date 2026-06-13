@@ -47,7 +47,12 @@ in
           # Disabling unprivileged user namespaces
           unprivilegedUsernsClone = true;
 
-          sudo.execWheelOnly = true;
+          sudo = {
+            execWheelOnly = true;
+            extraConfig = ''
+              Defaults env_keep += "SSH_AUTH_SOCK"
+            '';
+          };
         };
 
         # 3. Systemd OOMD

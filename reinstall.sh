@@ -5,11 +5,13 @@ set -e
 
 # Configuration
 FLAKE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SECRETS_DIR="$(cd "$FLAKE_DIR/../solar-secrets" && pwd)"
+SECRETS_DIR="${SECRETS_DIR:-$(cd "$FLAKE_DIR/../solar-secrets" 2>/dev/null && pwd || echo "$HOME/.solar-secrets")}"
 TEMP_DIR=$(mktemp -d)
 
 # Ensure cleanup on exit
 trap 'rm -rf "$TEMP_DIR"' EXIT
+
+echo "☀️ Solar Reinstallation Script"
 
 # 0. Host Selection
 HOST=$1
@@ -33,7 +35,7 @@ if [[ -z "$TARGET_IP" ]]; then
     exit 1
 fi
 
-# 2. Key Selection
+# 2. SSH Key Selection
 echo "🔑 Host Key Setup:"
 echo "1) Generate a NEW SSH host key (Recommended for fresh install)"
 echo "2) Use EXISTING host key (Requires you to have the private key file ready)"
@@ -83,8 +85,17 @@ fi
 echo "📦 Preparing extra-files payload..."
 PAYLOAD_DIR="$TEMP_DIR/payload"
 
+mkpath() {
+    mkdir -p "$1"
+    chmod "$2" "$1"
+}
+
+# Base directories
+mkpath "$PAYLOAD_DIR" 755
+mkpath "$PAYLOAD_DIR/etc" 755
+mkpath "$PAYLOAD_DIR/etc/ssh" 755
+
 # Standard location
-mkdir -p "$PAYLOAD_DIR/etc/ssh"
 cp "$TEMP_DIR/ssh_host_ed25519_key" "$PAYLOAD_DIR/etc/ssh/"
 cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$PAYLOAD_DIR/etc/ssh/"
 chmod 600 "$PAYLOAD_DIR/etc/ssh/ssh_host_ed25519_key"
@@ -92,7 +103,9 @@ chmod 644 "$PAYLOAD_DIR/etc/ssh/ssh_host_ed25519_key.pub"
 
 # Persistence location (Mirror keys so they survive reboot on tmpfs-root systems)
 echo "🔗 Mirroring keys to /persist/etc/ssh for persistence compatibility..."
-mkdir -p "$PAYLOAD_DIR/persist/etc/ssh"
+mkpath "$PAYLOAD_DIR/persist" 755
+mkpath "$PAYLOAD_DIR/persist/etc" 755
+mkpath "$PAYLOAD_DIR/persist/etc/ssh" 755
 cp "$TEMP_DIR/ssh_host_ed25519_key" "$PAYLOAD_DIR/persist/etc/ssh/"
 cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$PAYLOAD_DIR/persist/etc/ssh/"
 chmod 600 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key"
@@ -100,7 +113,6 @@ chmod 644 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key.pub"
 
 # 4. Build and Execute
 echo "🏗️ Building system and disko script locally with secrets override..."
-# We use --no-link to avoid cluttering with result symlinks and --print-out-paths to get the store paths
 DISKO_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.diskoScript" --override-input solar-secrets "path:$SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
 SYSTEM_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" --override-input solar-secrets "path:$SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
 
@@ -111,4 +123,30 @@ nix run github:nix-community/nixos-anywhere -- \
     --extra-files "$PAYLOAD_DIR" \
     "root@$TARGET_IP"
 
-echo "✅ Reinstallation of $HOST initiated successfully!"
+echo ""
+echo "✅ Reinstallation of $HOST initiated!"
+echo "----------------------------------------------------------------------"
+echo "🛠️  MANUAL POST-INSTALL STEPS"
+echo "----------------------------------------------------------------------"
+echo "1. Wait for the machine to reboot and enter your LUKS passphrase."
+echo "2. Log in (via SSH or physically)."
+echo "3. If using Secure Boot, run the following commands as root:"
+echo ""
+echo "   # Create keys if they don't exist"
+echo "   sbctl create-keys"
+echo ""
+echo "   # Enroll keys (ensure machine is in UEFI Setup Mode)"
+echo "   sbctl enroll-keys --microsoft"
+echo ""
+echo "   # Sign boot files and kernels"
+echo "   find /boot -type f -name \"*.efi\" -exec sbctl sign -s {} +"
+echo "   find /boot -type f \( -name \"vmlinuz*\" -o -name \"bzImage*\" \) -exec sbctl sign -s {} +"
+echo ""
+echo "   # If using Limine, disable internal hash verification to avoid panics"
+echo "   sed -i \"s/hash_mismatch_panic: yes/hash_mismatch_panic: no/\" /boot/limine/limine.conf"
+echo "   sed -i \"s/#[a-f0-9]\{64\}//g\" /boot/limine/limine.conf"
+echo ""
+echo "   # Finalize"
+echo "   sync"
+echo "   reboot"
+echo "----------------------------------------------------------------------"

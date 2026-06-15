@@ -15,9 +15,20 @@
 
       myFeatures = {
         core = {
-          system = {
-            core-branch.enable = true;
-            users.agenixPassword = true;
+          system.core-branch = {
+            enable = true;
+            usePersistence = true;
+          };
+          system.users.agenixPassword = true;
+          system.disko = {
+            speedDisks = [
+              "/dev/nvme1n1"
+              "/dev/nvme0n1"
+            ];
+            bulkDisks = [
+              "/dev/sdb"
+              "/dev/sda"
+            ];
           };
           shell.shell-branch.enable = true;
           boot = {

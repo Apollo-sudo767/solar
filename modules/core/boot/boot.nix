@@ -63,11 +63,16 @@ in
       "sd_mod"
     ];
 
+    boot.initrd.systemd.enable = true;
+    boot.initrd.systemd.tpm2.enable = true;
+
     boot.kernelParams = [
       "quiet"
       "loglevel=3"
       "systemd.show_status=auto"
       "rd.udev.log_level=3"
+      # Allow systemd-cryptsetup to cache the password for multiple devices
+      "rd.luks.options=timeout=0"
     ];
 
     boot.plymouth.enable = true;

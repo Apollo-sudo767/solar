@@ -10,8 +10,8 @@ let
 
   # Helper to identify disk type from string
   isNVMe = dev: lib.strings.hasInfix "nvme" dev;
-  isSSD = dev: lib.strings.hasInfix "sd" dev && !(isHDD dev); # Simple heuristic
-  isHDD = dev: false; # User would need to flag these or we use a list
+  isSSD = dev: lib.strings.hasInfix "sd" dev && !(isHDD dev); 
+  isHDD = dev: (lib.strings.hasInfix "sda" dev); # /dev/sda is the HDD on mars
 
   # Better approach: User provides categorized lists, or we use a single list with a helper
   # Let's stick to the user providing the categories for maximum control
@@ -45,8 +45,10 @@ let
           content = {
             type = "luks";
             name = "crypted-speed-main";
-            # Enable TPM2 enrollment support
+            # Enable SSD trimming and allow for future keyfile integration
             extraOpenArgs = [ "--allow-discards" ];
+            settings.allowDiscards = true;
+            settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
             content = {
               type = "btrfs";
               extraArgs = [
@@ -97,6 +99,8 @@ let
           content = {
             type = "luks";
             name = "crypted-speed-${lib.strings.sanitizeDerivationName device}";
+            settings.allowDiscards = true;
+            settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
           };
         };
       };
@@ -115,6 +119,8 @@ let
           content = {
             type = "luks";
             name = "crypted-bulk-${lib.strings.sanitizeDerivationName device}";
+            settings.allowDiscards = !isHDD device;
+            settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
             # Only the first bulk disk initializes the Btrfs filesystem
             content =
               if device == (lib.head bulkDisks) then

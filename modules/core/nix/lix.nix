@@ -35,6 +35,6 @@ in
       })
     ];
 
-    nix.package = pkgs.lix;
+    nix.package = lib.mkForce pkgs.lix;
   };
 }

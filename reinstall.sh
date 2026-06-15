@@ -35,11 +35,27 @@ if [[ -z "$TARGET_IP" ]]; then
     exit 1
 fi
 
+read -p "Build on the target machine ($TARGET_IP)? (y/N): " REMOTE_BUILD_CHOICE
+if [[ "$REMOTE_BUILD_CHOICE" =~ ^[Yy]$ ]]; then
+    REMOTE_BUILD=true
+    echo "🖥️  Remote build enabled."
+else
+    REMOTE_BUILD=false
+    echo "💻 Local build enabled."
+fi
+
 # 2. SSH Key Selection
 echo "🔑 Host Key Setup:"
 echo "1) Generate a NEW SSH host key (Recommended for fresh install)"
 echo "2) Use EXISTING host key (Requires you to have the private key file ready)"
-read -p "Select [1-2]: " KEY_CHOICE
+
+while true; do
+    read -p "Select [1-2]: " KEY_CHOICE
+    case $KEY_CHOICE in
+        1|2) break ;;
+        *) echo "❌ Invalid selection. Please enter 1 or 2." ;;
+    esac
+done
 
 if [[ "$KEY_CHOICE" == "1" ]]; then
     echo "🆕 Generating new SSH host key..."
@@ -69,6 +85,9 @@ else
         exit 1
     fi
     cp "$PRIV_KEY_PATH" "$TEMP_DIR/ssh_host_ed25519_key"
+    # Strip \r in case the file came from a Windows environment, as some libcrypto versions are picky
+    sed -i 's/\r//g' "$TEMP_DIR/ssh_host_ed25519_key"
+    chmod 600 "$TEMP_DIR/ssh_host_ed25519_key"
     ssh-keygen -y -f "$TEMP_DIR/ssh_host_ed25519_key" > "$TEMP_DIR/ssh_host_ed25519_key.pub"
     
     # Ensure solar-secrets is in sync with this existing key
@@ -112,16 +131,66 @@ chmod 600 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key"
 chmod 644 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key.pub"
 
 # 4. Build and Execute
-echo "🏗️ Building system and disko script locally with secrets override..."
-DISKO_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.diskoScript" --override-input solar-secrets "path:$SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
-SYSTEM_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" --override-input solar-secrets "path:$SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
+echo "🏗️ Building system and disko script..."
 
-echo "📡 Executing nixos-anywhere..."
-echo "If you set a password on the live USB, nixos-anywhere will prompt for it now."
-nix run github:nix-community/nixos-anywhere -- \
-    --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
-    --extra-files "$PAYLOAD_DIR" \
-    "root@$TARGET_IP"
+if [[ "$REMOTE_BUILD" == "true" ]]; then
+    echo "📡 Phase 1: kexec into target to prepare build environment..."
+    # We use '.' since we are in the FLAKE_DIR
+    if ! nix run github:nix-community/nixos-anywhere -- --print-build-logs --flake ".#$HOST" --phases kexec "root@$TARGET_IP"; then
+        echo "❌ Phase 1 (kexec) failed. Please check the logs above."
+        exit 1
+    fi
+
+    echo "⏳ Waiting for target to become reachable again..."
+    # Use netcat with a 2-second timeout to check if the SSH port is open
+    while ! nc -z -w 2 "$TARGET_IP" 22 2>/dev/null; do
+        echo -n "."
+        sleep 2
+    done
+    echo " Online!"
+
+    echo "🔑 Authorizing your SSH key on the target installer for the build phase..."
+    echo "You may be prompted for the target's root password (usually 'nixos')."
+    ssh-copy-id -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@$TARGET_IP"
+
+    echo "🏗️ Phase 2: Building closures ON the target machine..."
+    # We use NIX_SSHOPTS to skip host key checks for the temporary kexec environment
+    export NIX_SSHOPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    
+    # Pre-populate known_hosts for root so the sudo nix build doesn't complain
+    sudo mkdir -p /root/.ssh
+    sudo ssh-keyscan -H "$TARGET_IP" | sudo tee /root/.ssh/known_hosts > /dev/null
+
+    # We use sudo to bypass the 'restricted setting' (builders) for non-trusted users.
+    # We use env to explicitly set NIX_SSHOPTS and HOME.
+    DISKO_PATH=$(sudo env NIX_SSHOPTS="$NIX_SSHOPTS" HOME=/root nix build ".#nixosConfigurations.$HOST.config.system.build.diskoScript" \
+        --override-input solar-secrets "path:$SECRETS_DIR" \
+        --builders "ssh://root@$TARGET_IP" --max-jobs 0 \
+        --no-link --print-out-paths --no-write-lock-file)
+    
+    SYSTEM_PATH=$(sudo env NIX_SSHOPTS="$NIX_SSHOPTS" HOME=/root nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" \
+        --override-input solar-secrets "path:$SECRETS_DIR" \
+        --builders "ssh://root@$TARGET_IP" --max-jobs 0 \
+        --no-link --print-out-paths --no-write-lock-file)
+
+    echo "📡 Phase 3: Executing disko and installation..."
+    nix run github:nix-community/nixos-anywhere -- \
+        --phases disko,install,reboot \
+        --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
+        --extra-files "$PAYLOAD_DIR" \
+        "root@$TARGET_IP"
+else
+    echo "🏗️ Building closures locally..."
+    DISKO_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.diskoScript" --override-input solar-secrets "path:$SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
+    SYSTEM_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" --override-input solar-secrets "path:$SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
+
+    echo "📡 Executing nixos-anywhere..."
+    echo "If you set a password on the live USB, nixos-anywhere will prompt for it now."
+    nix run github:nix-community/nixos-anywhere -- \
+        --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
+        --extra-files "$PAYLOAD_DIR" \
+        "root@$TARGET_IP"
+fi
 
 echo ""
 echo "✅ Reinstallation of $HOST initiated!"

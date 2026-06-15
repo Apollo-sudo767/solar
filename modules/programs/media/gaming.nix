@@ -62,28 +62,29 @@ in
           keyutils
         ];
 
-        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-          lib.mkIf config.myFeatures.core.system.preservation.enable
-            {
-              directories = lib.concatMap (name: [
-                "/home/${name}/.local/share/Steam"
-              ]) config.myFeatures.core.system.users.usernames;
-            };
-
-        # Declarative Bulk Storage for Steam
-        # This maps ~/.local/share/SteamBulk to the cold storage pool (HDD/SATA SSD)
-        preservation.preserveAt."${config.myFeatures.core.system.preservation.coldPath}" =
-          lib.mkIf (config.myFeatures.core.system.preservation.enable && (config.myFeatures.core.system.preservation.coldPath != config.myFeatures.core.system.preservation.persistentPath))
-            {
-              users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
-                directories = [
-                  {
-                    directory = ".local/share/SteamBulk";
-                    mode = "0700";
-                  }
-                ];
-              });
-            };
+        preservation.preserveAt =
+          let
+            pCfg = config.myFeatures.core.system.preservation;
+            users = config.myFeatures.core.system.users.usernames;
+          in
+          lib.mkIf pCfg.enable (
+            lib.recursiveUpdate
+              {
+                "${pCfg.persistentPath}".directories = lib.concatMap (name: [
+                  "/home/${name}/.local/share/Steam"
+                ]) users;
+              }
+              {
+                "${pCfg.coldPath}".users = lib.genAttrs users (name: {
+                  directories = [
+                    {
+                      directory = ".local/share/SteamBulk";
+                      mode = "0700";
+                    }
+                  ];
+                });
+              }
+          );
 
         # Ensure the directory exists with correct ownership on the bulk drive
         systemd.tmpfiles.rules = lib.concatMap (name: [

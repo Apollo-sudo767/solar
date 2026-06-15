@@ -57,7 +57,6 @@
             };
           };
           system = {
-            dualboot.enable = true;
             ttyResolution = {
               enable = true;
               resolution = "2560x1440";

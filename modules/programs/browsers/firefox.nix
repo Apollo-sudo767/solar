@@ -98,7 +98,10 @@ in
       lib.mkIf config.myFeatures.core.system.preservation.enable
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-            directories = [ ".mozilla" ];
+            directories = [
+              ".mozilla"
+              ".cache/mozilla"
+            ];
           });
         };
   };

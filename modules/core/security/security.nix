@@ -49,9 +49,6 @@ in
 
           sudo = {
             execWheelOnly = true;
-            extraConfig = ''
-              Defaults env_keep += "SSH_AUTH_SOCK"
-            '';
           };
         };
 

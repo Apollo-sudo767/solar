@@ -49,7 +49,7 @@
           peripherals = {
             battery = {
               enable = true;
-              fullCharge = false;
+              fullCharge = true;
               bluetooth.enable = true;
               aggressive = true;
             };

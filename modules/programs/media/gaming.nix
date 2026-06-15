@@ -69,6 +69,26 @@ in
                 "/home/${name}/.local/share/Steam"
               ]) config.myFeatures.core.system.users.usernames;
             };
+
+        # Declarative Bulk Storage for Steam
+        # This maps ~/.local/share/SteamBulk to the cold storage pool (HDD/SATA SSD)
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.coldPath}" =
+          lib.mkIf (config.myFeatures.core.system.preservation.enable && (config.myFeatures.core.system.preservation.coldPath != config.myFeatures.core.system.preservation.persistentPath))
+            {
+              users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+                directories = [
+                  {
+                    directory = ".local/share/SteamBulk";
+                    mode = "0700";
+                  }
+                ];
+              });
+            };
+
+        # Ensure the directory exists with correct ownership on the bulk drive
+        systemd.tmpfiles.rules = lib.concatMap (name: [
+          "d /home/${name}/.local/share/SteamBulk 0700 ${name} users - -"
+        ]) config.myFeatures.core.system.users.usernames;
       })
     ]
   );

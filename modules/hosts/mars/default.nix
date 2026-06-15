@@ -82,6 +82,7 @@
         };
         programs = {
           terminal = {
+            git.enable = true;
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;

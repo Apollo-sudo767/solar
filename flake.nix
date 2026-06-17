@@ -78,7 +78,7 @@
     };
 
     noctalia-v5 = {
-      url = "github:noctalia-dev/noctalia-shell/v5";
+      url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
@@ -129,9 +129,11 @@
           {
             agenix-rekey = {
               # Tells agenix-rekey which nodes to scan for secrets
-              # We provide both Linux and Darwin configurations
+              # We only include the relevant host types based on current platform
+              # to avoid identity mismatches with master keys.
               nixosConfigurations = self.nixosConfigurations or { };
-              darwinConfigurations = self.darwinConfigurations or { };
+              darwinConfigurations =
+                if lib.hasSuffix "-darwin" system then (self.darwinConfigurations or { }) else { };
             };
 
             # Define apps for convenience

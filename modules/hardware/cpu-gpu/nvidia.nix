@@ -45,7 +45,6 @@ in
           powerManagement.enable = true;
           inherit (cfg) open;
           nvidiaSettings = true;
-          forceFullCompositionPipeline = true;
 
           # Advanced package selection logic
           package =

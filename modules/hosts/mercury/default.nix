@@ -13,12 +13,15 @@
 
       system.stateVersion = "26.11";
 
+      boot.initrd.systemd.enable = true;
+
       myFeatures = {
         core = {
           system.core-branch = {
             enable = true;
             usePersistence = true;
           };
+          system.users.agenixPassword = true;
           system.disko.speedDisks = [ "/dev/nvme0n1" ]; # Adjust if necessary
           shell.shell-branch.enable = true;
           boot = {
@@ -35,6 +38,7 @@
         };
 
         hardware = {
+          cpu-gpu.intel.enable = true;
           system = {
             graphics.enable = true;
             ttyResolution = {
@@ -45,7 +49,7 @@
           peripherals = {
             battery = {
               enable = true;
-              fullCharge = false;
+              fullCharge = true;
               bluetooth.enable = true;
               aggressive = true;
             };
@@ -64,8 +68,7 @@
             skyNiri.enable = true;
           };
           addons = {
-            displayManager.manager = "tuigreet";
-            noctalia-shell.enable = true;
+            displayManager.manager = "regreet";
           };
         };
 

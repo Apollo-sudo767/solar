@@ -10,7 +10,7 @@ let
   cfg = config.myFeatures.programs.browsers.zen;
   # Ported from Phanes desktop.nix
   # This uses the flake input to apply your specific security policies
-  myZen = inputs.zen-browser.packages."${pkgs.system}".default.override {
+  myZen = inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default.override {
     extraPolicies = {
       DisableTelemetry = true;
       ExtensionSettings = {
@@ -38,5 +38,15 @@ in
 
     # Optional: Set as default browser if desired
     # home-manager.users.${config.myFeatures.core.system.users.mainUser}.home.sessionVariables.BROWSER = "zen";
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable {
+        users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+          directories = [
+            ".zen"
+            ".cache/zen"
+          ];
+        });
+      };
   };
 }

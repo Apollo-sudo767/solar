@@ -13,12 +13,17 @@
 
       system.stateVersion = "26.11";
 
+      age.rekey.hostPubkey = "age17au70tcp7jyyl9ln2wgdmef9tpt6ex6jy7qayezp44rsdhzrlqtqmg4ftz";
+
       myFeatures = {
         core = {
           system.core-branch.enable = true;
-          system.users.usernames = [
-            "apollo"
-          ];
+          system.users = {
+            usernames = [
+              "apollo"
+            ];
+            agenixPassword = true;
+          };
           shell.shell-branch.enable = true;
           boot = {
             enable = true;

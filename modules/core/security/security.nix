@@ -47,7 +47,12 @@ in
           # Disabling unprivileged user namespaces
           unprivilegedUsernsClone = true;
 
-          sudo.execWheelOnly = true;
+          sudo = {
+            execWheelOnly = true;
+            extraConfig = ''
+              Defaults lecture=never
+            '';
+          };
         };
 
         # 3. Systemd OOMD

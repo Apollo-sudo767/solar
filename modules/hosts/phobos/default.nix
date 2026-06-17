@@ -8,6 +8,9 @@
 
   module = _: {
     system.stateVersion = 5;
+
+    age.rekey.hostPubkey = "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34";
+
     system.primaryUser = "apollo";
 
     myFeatures = {
@@ -29,7 +32,7 @@
         };
         security = {
           ssh.enable = true;
-          agenix.enable = true;
+          agenix.enable = false;
         };
         shell.shell-branch.enable = true;
       };

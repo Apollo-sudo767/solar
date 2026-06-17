@@ -54,6 +54,19 @@ in
           22000
           21027
         ];
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = [
+                {
+                  directory = "/home/${userCfg.mainUser}/.config/syncthing";
+                  user = userCfg.mainUser;
+                  group = "users";
+                  mode = "0700";
+                }
+              ];
+            };
       })
 
       # Darwin-specific Syncthing configuration (using Homebrew)

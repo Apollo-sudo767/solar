@@ -23,6 +23,18 @@ in
 
         # 3. Add management tools
         environment.systemPackages = [ pkgs.sbctl ];
+
+        # 4. Persistence
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = [
+                {
+                  directory = "/var/lib/sbctl";
+                  mode = "0700";
+                }
+              ];
+            };
       })
     ]
   );

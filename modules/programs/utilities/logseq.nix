@@ -27,10 +27,12 @@ in
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
         {
-          directories = lib.concatMap (name: [
-            "/home/${name}/.config/Logseq"
-            "/home/${name}/${cfg.vaultPath}"
-          ]) config.myFeatures.core.system.users.usernames;
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".config/Logseq"
+              cfg.vaultPath
+            ];
+          });
         };
   };
 }

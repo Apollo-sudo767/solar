@@ -34,9 +34,9 @@ in
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
         {
-          directories = lib.concatMap (name: [
-            "/home/${name}/.gemini"
-          ]) config.myFeatures.core.system.users.usernames;
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [ ".gemini" ];
+          });
         };
   };
 }

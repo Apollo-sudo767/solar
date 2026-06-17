@@ -15,8 +15,20 @@
 
       myFeatures = {
         core = {
-          system = {
-            core-branch.enable = true;
+          system.core-branch = {
+            enable = true;
+            usePersistence = true;
+          };
+          system.users.agenixPassword = true;
+          system.disko = {
+            speedDisks = [
+              "/dev/nvme1n1"
+              "/dev/nvme0n1"
+            ];
+            bulkDisks = [
+              "/dev/sdb"
+              "/dev/sda"
+            ];
           };
           shell.shell-branch.enable = true;
           boot = {
@@ -45,7 +57,6 @@
             };
           };
           system = {
-            dualboot.enable = true;
             ttyResolution = {
               enable = true;
               resolution = "2560x1440";
@@ -70,6 +81,7 @@
         };
         programs = {
           terminal = {
+            git.enable = true;
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;

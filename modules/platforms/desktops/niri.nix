@@ -78,5 +78,17 @@ in
       imports = [ inputs.niri.homeModules.niri ];
       programs.niri.settings = cfg.settings;
     });
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".local/share/niri"
+              ".cache/mesa_shader_cache"
+              ".config/dconf"
+            ];
+          });
+        };
   };
 }

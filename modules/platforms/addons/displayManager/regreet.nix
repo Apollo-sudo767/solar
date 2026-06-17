@@ -21,11 +21,10 @@ in
             default_session = {
               command =
                 let
-                  # We use sway instead of cage to easily disable the secondary monitor
-                  # and prevent stretching/mirroring issues.
+                  # We use sway to launch regreet. Using 'output *' ensures it works on all hosts
+                  # regardless of their monitor names (DP-1 vs eDP-1).
                   swayConfig = pkgs.writeText "greetd-sway-config" ''
-                    output "DP-1" mode 2560x1440@180Hz position 0 0
-                    output "DP-2" disable
+                    output * bg #000000 solid_color
                     exec "${pkgs.regreet}/bin/regreet; swaymsg exit"
                   '';
                 in
@@ -35,8 +34,17 @@ in
           };
         };
 
-        # Stylix integration (Centralized target enablement)
-        stylix.targets.regreet.enable = lib.mkIf config.stylix.enable true;
+        # Stylix integration: Enabled to ensure a consistent theme (prevents white screen)
+        stylix.targets.regreet.enable = true;
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              directories = [
+                "/var/lib/greetd"
+                "/var/cache/regreet"
+              ];
+            };
       })
     ]
   );

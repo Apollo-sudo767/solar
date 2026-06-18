@@ -26,9 +26,11 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.git = {
         enable = true;
-        userName = cfg.userName;
-        userEmail = cfg.userEmail;
-        extraConfig = {
+        settings = {
+          user = {
+            name = cfg.userName;
+            email = cfg.userEmail;
+          };
           init.defaultBranch = "main";
           push.autoSetupRemote = true;
         };

@@ -78,7 +78,6 @@ in
       home.stateVersion = "26.11";
       home.username = name;
       home.homeDirectory = config.users.users.${name}.home;
-      xdg.enable = true;
     });
 
     # 3. Innate Ownership Management (systemd-tmpfiles)
@@ -102,8 +101,6 @@ in
               "src"
               ".local/share/keyrings"
               ".local/share/direnv"
-              ".local/share/applications" # Desktop shortcuts
-              ".local/share/icons" # User icons
               ".local/share/noctalia" # Noctalia state
               ".local/state" # Critical for wireplumber, etc.
               ".cache/nix" # Cache nix evaluations

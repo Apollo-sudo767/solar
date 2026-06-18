@@ -161,19 +161,6 @@
               config.allowUnfree = true; # Required for things like sops or discord
             };
           };
-
-        flake =
-          let
-            inherit (nixpkgs-unstable) lib;
-            hostLoader = import ./modules/hosts/default.nix {
-              inherit lib inputs;
-              globalModules = [ ./modules/default.nix ];
-            };
-          in
-          {
-            inherit (hostLoader) nixosConfigurations;
-            inherit (hostLoader) darwinConfigurations;
-          };
       }
     );
 }

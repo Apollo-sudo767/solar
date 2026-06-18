@@ -38,8 +38,6 @@ in
             "${pCfg.persistentPath}".users = lib.genAttrs users (name: {
               directories = [
                 ".local/share/Steam"
-                ".local/share/applications" # Steam game shortcuts
-                ".local/share/icons" # Steam game icons
                 ".steam" # Steam registry and config
               ];
             });

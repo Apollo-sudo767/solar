@@ -25,14 +25,32 @@ in
                   # regardless of their monitor names (DP-1 vs eDP-1).
                   swayConfig = pkgs.writeText "greetd-sway-config" ''
                     output * bg #000000 solid_color
-                    exec "${pkgs.regreet}/bin/regreet; swaymsg exit"
+                    exec "${pkgs.regreet}/bin/regreet; ${pkgs.sway}/bin/swaymsg exit"
+                  '';
+                  greetdSession = pkgs.writeShellScript "greetd-session" ''
+                    export WLR_NO_HARDWARE_CURSORS=1
+                    export WLR_RENDERER=pixman
+                    export WLR_DRM_NO_ATOMIC=1
+                    export WLR_DRM_NO_MODIFIERS=1
+                    export __GL_GSYNC_ALLOWED=0
+                    export __GL_VRR_ALLOWED=0
+                    export GTK_USE_PORTAL=0
+                    exec ${pkgs.dbus}/bin/dbus-run-session ${pkgs.sway}/bin/sway --config ${swayConfig} --unsupported-gpu
                   '';
                 in
-                "${pkgs.sway}/bin/sway --config ${swayConfig} --unsupported-gpu";
+                "${greetdSession}";
               user = "greeter";
             };
           };
         };
+
+        # Ensure correct permissions for the greeter user on persistent directories
+        systemd.tmpfiles.rules = [
+          "d /var/lib/greetd 0750 greeter greetd - -"
+          "d /var/cache/regreet 0750 greeter greetd - -"
+          "Z /var/lib/greetd 0750 greeter greetd - -"
+          "Z /var/cache/regreet 0750 greeter greetd - -"
+        ];
 
         # Stylix integration: Enabled to ensure a consistent theme (prevents white screen)
         stylix.targets.regreet.enable = true;

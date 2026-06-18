@@ -29,8 +29,8 @@ in
         boot = {
           kernelParams = [
             "nvidia-drm.modeset=1"
-            "nvidia.nvreg_preserve_video_memory_allocations=1"
-            "nvidia-drm.fbdev=1"
+            "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+            "nvidia.NVreg_TemporaryFilePath=/var/tmp"
           ];
           initrd.kernelModules = [
             "nvidia"
@@ -55,7 +55,7 @@ in
               pkgs-nvidia.legacy_580 # Explicitly for your P2000
             else if cfg.beta then
               pkgs-nvidia.beta
-            else if cfg.open then
+            else if cfg.open && (pkgs-nvidia ? open) then
               pkgs-nvidia.open
             else
               pkgs-nvidia.stable;
@@ -76,6 +76,11 @@ in
         environment.variables = {
           WLR_NO_HARDWARE_CURSORS = "1";
           NIXOS_OZONE_WL = "1";
+          __GL_GSYNC_ALLOWED = "0";
+          __GL_VRR_ALLOWED = "0";
+          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+          GBM_BACKEND = "nvidia-drm";
+          LIBVA_DRIVER_NAME = "nvidia";
         };
       })
     ]

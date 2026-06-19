@@ -10,6 +10,8 @@ let
   cfg = config.myFeatures.platforms.desktops.niri;
 in
 {
+  imports = [ inputs.niri.nixosModules.niri ];
+
   options.myFeatures.platforms.desktops.niri = {
     enable = lib.mkEnableOption "Niri Window Manager";
     settings = lib.mkOption {
@@ -26,10 +28,9 @@ in
 
   # Shield everything
   config = lib.mkIf cfg.enable {
-    programs.niri.enable = true;
-    nix.settings = {
-      substituters = [ "https://niri.cachix.org" ];
-      trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
+    programs.niri = {
+      enable = true;
+      package = inputs.niri.packages.${pkgs.system}.niri-unstable;
     };
 
     myFeatures.platforms.desktops.niri.settings = {
@@ -75,8 +76,10 @@ in
           ];
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      imports = [ inputs.niri.homeModules.niri ];
-      programs.niri.settings = cfg.settings;
+      programs.niri = {
+        settings = cfg.settings;
+        config = lib.mkIf (cfg.extraConfig != [ ]) (lib.concatStringsSep "\n" cfg.extraConfig);
+      };
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =

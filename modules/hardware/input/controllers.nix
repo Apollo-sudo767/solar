@@ -39,6 +39,9 @@ in
         hardware.uinput.enable = true;
         hardware.steam-hardware.enable = true;
 
+        # Background remapping daemon for user-space configs
+        services.input-remapper.enable = true;
+
         # Xbox specific controller drivers
         hardware.xone.enable = cfg.xbox;
         hardware.xpadneo.enable = cfg.xbox;
@@ -79,6 +82,7 @@ in
           [
             evtest
             jstest-gtk
+            input-remapper
           ]
           ++ lib.optional cfg.xbox pkgs.linuxConsoleTools;
       })

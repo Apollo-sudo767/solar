@@ -23,6 +23,9 @@ let
       # Determine platform
       isDarwin = lib.hasSuffix "-darwin" system;
 
+      # 1. Strict language-level check to verify if the secret repo input is actually present
+      hasPrivateSecrets = (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath);
+
       pkgs-input = getPkgInput isStable;
       builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
 
@@ -83,10 +86,12 @@ let
               age.rekey = {
                 hostPubkey =
                   let
-                    path = "${inputs.solar-secrets}/hosts/${name}.pub";
+                    # 2. Fix: Shield the string path interpolation entirely behind the presence check.
+                    # If hasPrivateSecrets is false, it points to a harmless dummy string instead of querying inputs.
+                    path = if hasPrivateSecrets then "${inputs.solar-secrets}/hosts/${name}.pub" else "";
                   in
                   lib.mkDefault (
-                    if (builtins.hasAttr "solar-secrets" inputs) && (builtins.pathExists path) then
+                    if hasPrivateSecrets && (builtins.pathExists path) then
                       lib.strings.trim (builtins.readFile path)
                     else
                       # Fallback to a guaranteed valid age public key (for bootstrapping)

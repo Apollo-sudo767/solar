@@ -58,12 +58,14 @@ in
         enable = true;
         image = cfg.wallpaper;
         polarity = "dark";
-        targets.qt.platform = lib.mkForce "qtct";
       }
       // lib.optionalAttrs (cfg.scheme != null) {
         base16Scheme = cfg.scheme;
       }
       // lib.optionalAttrs (!isDarwin) {
+        # Moved inside here because nix-darwin lacks QT system-level options
+        targets.qt.platform = lib.mkForce "qtct";
+
         cursor = {
           package = pkgs.bibata-cursors;
           name = "Bibata-Modern-Ice";

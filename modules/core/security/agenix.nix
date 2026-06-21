@@ -10,11 +10,14 @@
 
 let
   cfg = config.myFeatures.core.security.agenix;
+
+  # FIX: Look exclusively at 'inputs' to determine if the private repo exists.
+  # This breaks the infinite recursion because it doesn't read from 'config'.
+  hasPrivateSecrets = (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath);
 in
 {
   options.myFeatures.core.security.agenix = {
     enable = lib.mkEnableOption "agenix-rekey for secret management";
-
     usePrivateSecrets = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -23,8 +26,9 @@ in
   };
 
   config = lib.mkMerge [
-    # 1. Global Secret Management (Available on all hosts for apps/aliases)
-    {
+
+    # 1. Base agenix configuration (Completely omitted if the flake input isn't accessible)
+    (lib.optionalAttrs hasPrivateSecrets {
       age.rekey = {
         storageMode = "local";
         localStorageDir = inputs.self + "/rekeyed/${config.networking.hostName}";
@@ -35,7 +39,6 @@ in
               "${inputs.solar-secrets}/master/yubikey.id.pub"
               "${inputs.solar-secrets}/master/mac_se.id.pub"
             ];
-            # Only include if file exists, has AGE-PLUGIN, and is NOT a dummy
             validIdentities = builtins.filter (
               p:
               let
@@ -52,27 +55,26 @@ in
         ++ lib.optional isDarwin pkgs.age-plugin-se;
 
         extraEncryptionPubkeys =
-          if cfg.usePrivateSecrets && (builtins.hasAttr "solar-secrets" inputs) then
-            let
-              masterDir = inputs.solar-secrets + "/master";
-            in
-            if builtins.pathExists masterDir then
-              builtins.concatLists (
-                lib.mapAttrsToList (
-                  name: type:
-                  if type == "regular" && lib.hasSuffix ".pub" name then
-                    [ (lib.strings.trim (builtins.readFile (masterDir + "/${name}"))) ]
-                  else
-                    [ ]
-                ) (builtins.readDir masterDir)
-              )
-            else
-              [ ]
+          let
+            masterDir = inputs.solar-secrets + "/master";
+          in
+          if builtins.pathExists masterDir then
+            builtins.concatLists (
+              lib.mapAttrsToList (
+                name: type:
+                if type == "regular" && lib.hasSuffix ".pub" name then
+                  [ (lib.strings.trim (builtins.readFile (masterDir + "/${name}"))) ]
+                else
+                  [ ]
+              ) (builtins.readDir masterDir)
+            )
           else
             [ ];
       };
+    })
 
-      # Convenience Aliases for Secret Management
+    # 2. Cross-platform aliases and identities (Safe everywhere)
+    {
       environment.shellAliases = {
         s-rekey = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-rekey && git -C $HOME/src/solar add rekeyed";
         s-sync = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-update-masterkeys";
@@ -80,7 +82,6 @@ in
         s-gen = "AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-generate --";
       };
 
-      # Comprehensive identity paths for decryption (Available globally)
       age.identityPaths = [
         (if isDarwin then "/Users/apollo/.ssh/id_ed25519" else "/home/apollo/.ssh/id_ed25519")
       ]
@@ -92,11 +93,9 @@ in
       ];
     }
 
-    # Target Host Specifics (Only if agenix.enable = true)
+    # 3. Target Host specific service dependencies
     (lib.mkIf cfg.enable {
-      # Linux-Only Services
       services = lib.optionalAttrs (!isDarwin) {
-        # Enable pcscd for YubiKey support
         pcscd.enable = true;
       };
     })

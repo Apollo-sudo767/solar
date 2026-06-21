@@ -67,6 +67,7 @@
             controllers = {
               enable = true;
               xbox = true;
+              nintendo = true;
             };
           };
         };

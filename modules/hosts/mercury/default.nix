@@ -79,7 +79,7 @@
               enable = true;
             };
             helix.enable = true;
-            gemini.enable = true;
+            antigravity.enable = true;
           };
           browsers.firefox = {
             enable = true;

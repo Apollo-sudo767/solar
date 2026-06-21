@@ -85,7 +85,7 @@
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;
-            gemini.enable = true;
+            antigravity.enable = true;
           };
           media = {
             gaming.enable = true;

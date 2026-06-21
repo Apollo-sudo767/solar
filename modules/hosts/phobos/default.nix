@@ -47,7 +47,7 @@
         terminal = {
           fastfetch.enable = true;
           helix.enable = true;
-          gemini.enable = true;
+          antigravity.enable = true;
         };
         utilities = {
           logseq.enable = true;

@@ -8,34 +8,35 @@
 
 let
   inherit isTotal;
-  cfg = config.myFeatures.programs.terminal.gemini;
+  cfg = config.myFeatures.programs.terminal.antigravity;
 in
 {
-  options.myFeatures.programs.terminal.gemini.enable = lib.mkEnableOption "Gemini CLI AI Agent";
+  options.myFeatures.programs.terminal.antigravity.enable =
+    lib.mkEnableOption "Antigravity CLI Agent";
 
   config = lib.mkIf cfg.enable {
     # 1. System-level install (NixOS/Darwin)
-    environment.systemPackages = [ pkgs.gemini-cli ];
+    environment.systemPackages = [ pkgs.antigravity-cli ];
 
     # 2. Ensure it's in the user's path via Home Manager
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      home.packages = [ pkgs.gemini-cli ];
+      home.packages = [ pkgs.antigravity-cli ];
 
-      # Ensure the gemini settings directory exists
-      home.file.".gemini/.keep".text = "";
+      # Ensure the antigravity settings directory exists
+      home.file.".config/antigravity/.keep".text = "";
 
-      # Optional: Add an alias if you prefer 'gemini' over 'gemini-cli'
-      # (though the binary is usually named 'gemini')
+      # Shell alias for the new CLI
       programs.zsh.shellAliases = {
-        ai = "gemini";
+        float = "antigravity";
       };
     });
 
+    # 3. Persistence configuration for stateful data
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-            directories = [ ".gemini" ];
+            directories = [ ".config/antigravity" ];
           });
         };
   };

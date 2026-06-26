@@ -40,13 +40,14 @@ in
     # home-manager.users.${config.myFeatures.core.system.users.mainUser}.home.sessionVariables.BROWSER = "zen";
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf config.myFeatures.core.system.preservation.enable {
-        users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-          directories = [
-            ".zen"
-            ".cache/zen"
-          ];
-        });
-      };
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".zen"
+              ".cache/zen"
+            ];
+          });
+        };
   };
 }

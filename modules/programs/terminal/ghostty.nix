@@ -29,6 +29,9 @@ in
             window-padding-y = 10;
             window-decoration = false;
             confirm-close-surface = false;
+            background-opacity = lib.mkDefault 0.85;
+            background-blur = lib.mkDefault true;
+            background-blur-radius = lib.mkDefault 20;
           };
         };
       }

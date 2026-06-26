@@ -12,7 +12,7 @@
           packages =
             with pkgs;
             [
-              inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
+              config.agenix-rekey.package
               age
               age-plugin-yubikey
               ssh-to-age

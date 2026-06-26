@@ -57,15 +57,16 @@ in
     ];
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf config.myFeatures.core.system.preservation.enable {
-        users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-          directories = [
-            ".config/chromium"
-            ".config/google-chrome"
-            ".cache/chromium"
-            ".cache/google-chrome"
-          ];
-        });
-      };
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".config/chromium"
+              ".config/google-chrome"
+              ".cache/chromium"
+              ".cache/google-chrome"
+            ];
+          });
+        };
   };
 }

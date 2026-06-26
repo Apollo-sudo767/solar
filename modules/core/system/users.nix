@@ -10,6 +10,7 @@
 let
   inherit isDarwin isTotal;
   cfg = config.myFeatures.core.system.users;
+  useAgenixPassword = cfg.agenixPassword && (config.myFeatures.core.security.agenix.enable or false);
 in
 {
   options.myFeatures.core.system.users = {
@@ -54,7 +55,7 @@ in
             "video"
           ];
           # Password Logic
-          hashedPasswordFile = lib.mkIf cfg.agenixPassword (
+          hashedPasswordFile = lib.mkIf useAgenixPassword (
             if (config.age.secrets ? "password-${name}.age") then
               config.age.secrets."password-${name}.age".path
             else if (config.age.secrets ? "password-apollo.age") then
@@ -64,7 +65,7 @@ in
           );
 
           initialPassword = lib.mkIf (
-            !cfg.agenixPassword || config.users.users.${name}.hashedPasswordFile == null
+            !useAgenixPassword || config.users.users.${name}.hashedPasswordFile == null
           ) "solar";
         }
       );
@@ -82,7 +83,7 @@ in
     (lib.mkIf cfg.enable (
       lib.optionalAttrs (!isDarwin) {
         # Moved here because nix-darwin doesn't support changing account mutability
-        users.mutableUsers = lib.mkDefault (!cfg.agenixPassword);
+        users.mutableUsers = lib.mkDefault (!useAgenixPassword);
 
         # Using 'Z' (recursive) instead of 'd' ensures that the entire directory
         # tree is owned by the user, fixing issues with Firefox and other apps.
@@ -104,6 +105,7 @@ in
                   "src"
                   ".local/share/keyrings"
                   ".local/share/direnv"
+                  ".local/share/applications"
                   ".local/share/noctalia"
                   ".local/state"
                   ".cache/nix"

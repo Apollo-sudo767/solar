@@ -34,13 +34,32 @@ in
       idle.enable = lib.mkForce false;
     };
 
-    home-manager.users = lib.genAttrs usernames (name: {
+    home-manager.users = lib.genAttrs usernames (name: { config, ... }: {
       imports = [ inputs.noctalia.homeModules.default ];
 
       programs.noctalia-shell = {
         enable = true;
-        package = pkgs.noctalia-shell;
+        package = pkgs.symlinkJoin {
+          name = "noctalia-shell-wrapped";
+          paths = [ pkgs.noctalia-shell ];
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+          postBuild = ''
+            wrapProgram $out/bin/noctalia-shell \
+              --prefix XDG_DATA_DIRS : '/home/${name}/.local/share:/home/${name}/Desktop:/home/${name}/Desktops'
+          '';
+          meta.mainProgram = "noctalia-shell";
+        };
       };
+
+      home.file."Desktop/applications" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/${name}/Desktop";
+      };
+      home.file."Desktop/.hidden".text = "applications\n";
+
+      home.file."Desktops/applications" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/${name}/Desktops";
+      };
+      home.file."Desktops/.hidden".text = "applications\n";
     });
   };
 }

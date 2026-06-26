@@ -64,16 +64,20 @@ in
 
           # 8BitDo Pro 3 / Modern gamepads configuration
           ''
-            # Generic 8BitDo user-space access permissions
+            # Generic 8BitDo user-space access permissions (USB and Bluetooth)
             SUBSYSTEM=="usb", ATTRS{idVendor}=="2dc8", MODE="0666", TAG+="uaccess"
             SUBSYSTEM=="hidraw", ATTRS{idVendor}=="2dc8", MODE="0666", TAG+="uaccess"
+            KERNEL=="hidraw*", KERNELS=="*2DC8:*", MODE="0666", TAG+="uaccess"
+            KERNEL=="hidraw*", KERNELS=="*2dc8:*", MODE="0666", TAG+="uaccess"
           ''
 
           (lib.optionalString cfg.xbox ''
             # Force 8BitDo 2.4GHz Dongles and XInput modes to bind correctly to the kernel's xpad subsystem
             ACTION=="add", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="3106", RUN+="/sbin/modprobe xpad", RUN+="/bin/sh -c 'echo 2dc8 3106 > /sys/bus/usb/drivers/xpad/new_id'"
             ACTION=="add", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="301c", MODE="0666", RUN+="/sbin/modprobe xpad", RUN+="/bin/sh -c 'echo 2dc8 301c > /sys/bus/usb/drivers/xpad/new_id'"
+            ACTION=="add", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="3109", MODE="0666", RUN+="/sbin/modprobe xpad", RUN+="/bin/sh -c 'echo 2dc8 3109 > /sys/bus/usb/drivers/xpad/new_id'"
             ACTION=="add", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="310a", MODE="0666", RUN+="/sbin/modprobe xpad", RUN+="/bin/sh -c 'echo 2dc8 310a > /sys/bus/usb/drivers/xpad/new_id'"
+            ACTION=="add", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="310b", MODE="0666", RUN+="/sbin/modprobe xpad", RUN+="/bin/sh -c 'echo 2dc8 310b > /sys/bus/usb/drivers/xpad/new_id'"
           '')
         ];
 

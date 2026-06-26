@@ -62,7 +62,10 @@
               resolution = "2560x1440";
             };
           };
-          peripherals.bluetooth.enable = true;
+          peripherals.bluetooth = {
+            enable = true;
+            gaming.enable = true;
+          };
           input = {
             controllers = {
               enable = true;
@@ -93,11 +96,18 @@
             media.enable = true;
             obs.enable = true;
             davinci.enable = true;
+            vlc.enable = true;
           };
-          browsers.firefox = {
-            enable = true;
-            nightly.enable = true;
-            extensions.enable = true;
+          browsers = {
+            firefox = {
+              enable = true;
+              nightly.enable = true;
+              extensions.enable = true;
+            };
+            chrome = {
+              enable = true;
+              ungoogled.enable = true;
+            };
           };
           utilities = {
             stylePackages.enable = true;

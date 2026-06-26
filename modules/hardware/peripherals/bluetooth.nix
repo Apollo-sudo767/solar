@@ -9,13 +9,17 @@
 
 let
   cfg = config.myFeatures.hardware.peripherals.bluetooth;
+  enabled = cfg.enable || cfg.gaming.enable;
 in
 {
   options.myFeatures.hardware.peripherals.bluetooth = {
     enable = lib.mkEnableOption "Enables bluetooth services";
+    gaming = {
+      enable = lib.mkEnableOption "Force low-latency Bluetooth connection parameters for gaming";
+    };
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf enabled (
     lib.mkMerge [
       (lib.optionalAttrs (!isDarwin) {
         hardware.bluetooth = {
@@ -48,6 +52,11 @@ in
         '';
 
         services.blueman.enable = true;
+
+        systemd.tmpfiles.rules = lib.mkIf cfg.gaming.enable [
+          "w /sys/kernel/debug/bluetooth/hci0/conn_min_interval - - - - 6"
+          "w /sys/kernel/debug/bluetooth/hci0/conn_max_interval - - - - 6"
+        ];
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable

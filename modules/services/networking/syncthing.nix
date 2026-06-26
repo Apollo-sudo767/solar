@@ -25,6 +25,7 @@ in
           user = userCfg.mainUser;
           dataDir = "${userCfg.mainHome}/Documents/vault";
           configDir = "${userCfg.mainHome}/.config/syncthing";
+          extraFlags = [ "--allow-newer-config" ];
 
           settings = {
             devices = {

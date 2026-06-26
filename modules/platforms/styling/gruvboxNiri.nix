@@ -28,12 +28,30 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
         prefer-no-csd = true;
+        layer-rules = [
+          {
+            matches = [ { namespace = "noctalia-bar-default"; } ];
+            background-effect = {
+              blur = true;
+              xray = true;
+            };
+          }
+        ];
         window-rules = [
           {
             matches = [ { app-id = "com.mitchellh.ghostty"; } ];
-
+            background-effect = {
+              blur = true;
+              xray = true;
+            };
             draw-border-with-background = false;
-            focus-ring.enable = false;
+            border.enable = false;
+            focus-ring = {
+              enable = true;
+              width = 2;
+              active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+              inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+            };
           }
         ];
         layout = {

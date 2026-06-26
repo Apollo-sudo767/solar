@@ -21,10 +21,13 @@ in
         {
           directories = [
             "/var/lib/flatpak"
-          ]
-          ++ (lib.concatMap (name: [
-            "/home/${name}/.local/share/flatpak"
-          ]) config.myFeatures.core.system.users.usernames);
+          ];
+          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+            directories = [
+              ".local/share/flatpak"
+              ".var"
+            ];
+          });
         };
   };
 }

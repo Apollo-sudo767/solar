@@ -80,7 +80,9 @@ in
           __GL_VRR_ALLOWED = "0";
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
           GBM_BACKEND = "nvidia-drm";
-          LIBVA_DRIVER_NAME = "nvidia";
+          LIBVA_DRIVER_NAME = lib.mkForce (
+            if config.myFeatures.hardware.cpu-gpu.nvidia.prime.enable then "iHD" else "nvidia"
+          );
         };
       })
     ]

@@ -9,6 +9,7 @@
 let
   cfg = config.myFeatures.programs.browsers.firefox;
   firefox-nightly = inputs.firefox.packages.${pkgs.stdenv.hostPlatform.system}.firefox-nightly-bin;
+  enabled = cfg.enable || cfg.nightly.enable;
 in
 {
   options.myFeatures.programs.browsers.firefox = {
@@ -23,7 +24,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf enabled {
     programs.firefox = {
       enable = true;
       package = lib.mkIf cfg.nightly.enable (lib.mkForce firefox-nightly);

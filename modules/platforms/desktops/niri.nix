@@ -77,7 +77,7 @@ in
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri = {
-        settings = cfg.settings;
+        inherit (cfg) settings;
         config = lib.mkIf (cfg.extraConfig != [ ]) (lib.concatStringsSep "\n" cfg.extraConfig);
       };
     });

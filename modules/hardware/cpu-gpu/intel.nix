@@ -35,7 +35,7 @@ in
 
         environment.variables = {
           # Forces the use of the modern Intel Media Driver for VA-API
-          LIBVA_DRIVER_NAME = "iHD";
+          LIBVA_DRIVER_NAME = lib.mkDefault "iHD";
         };
       })
     ]

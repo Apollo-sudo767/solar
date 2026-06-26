@@ -47,8 +47,10 @@ in
         # Ensure correct permissions for the greeter user on persistent directories
         systemd.tmpfiles.rules = [
           "d /var/lib/greetd 0750 greeter greetd - -"
+          "d /var/lib/regreet 0755 greeter greeter - -"
           "d /var/cache/regreet 0750 greeter greetd - -"
           "Z /var/lib/greetd 0750 greeter greetd - -"
+          "Z /var/lib/regreet 0755 greeter greeter - -"
           "Z /var/cache/regreet 0750 greeter greetd - -"
         ];
 
@@ -60,6 +62,7 @@ in
             {
               directories = [
                 "/var/lib/greetd"
+                "/var/lib/regreet"
                 "/var/cache/regreet"
               ];
             };

@@ -2,31 +2,20 @@
   config,
   lib,
   pkgs,
-  isTotal,
   ...
 }:
 
 let
-  cfg = config.myFeatures.programs.media.obs;
+  cfg = config.myFeatures.programs.media.vlc;
 in
 {
-  options.myFeatures.programs.media.obs.enable = lib.mkEnableOption "OBS Studio";
+  options.myFeatures.programs.media.vlc.enable = lib.mkEnableOption "VLC Media Player";
 
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      programs.obs-studio = {
-        enable = true;
-        # Only load Wayland/VAAPI plugins if on Linux
-        plugins =
-          if pkgs.stdenv.isLinux then
-            (with pkgs.obs-studio-plugins; [
-              wlrobs
-              obs-vaapi
-              obs-pipewire-audio-capture
-            ])
-          else
-            [ ];
-      };
+      home.packages = with pkgs; [
+        vlc
+      ];
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
@@ -34,7 +23,7 @@ in
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [
-              ".config/obs-studio"
+              ".config/vlc"
             ];
           });
         };

@@ -31,6 +31,7 @@ in
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
             directories = [
               ".local/share/PrismLauncher"
+              ".config/PrismLauncher"
             ];
           });
         };

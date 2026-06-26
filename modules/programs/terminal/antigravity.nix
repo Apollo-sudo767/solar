@@ -2,12 +2,10 @@
   config,
   lib,
   pkgs,
-  isTotal,
   ...
 }:
 
 let
-  inherit isTotal;
   cfg = config.myFeatures.programs.terminal.antigravity;
 in
 {
@@ -15,28 +13,24 @@ in
     lib.mkEnableOption "Antigravity CLI Agent";
 
   config = lib.mkIf cfg.enable {
-    # 1. System-level install (NixOS/Darwin)
+    # 1. Install system-wide cleanly
     environment.systemPackages = [ pkgs.antigravity-cli ];
 
-    # 2. Ensure it's in the user's path via Home Manager
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      home.packages = [ pkgs.antigravity-cli ];
-
-      # Ensure the antigravity settings directory exists
-      home.file.".config/antigravity/.keep".text = "";
-
-      # Shell alias for the new CLI
-      programs.zsh.shellAliases = {
-        float = "antigravity";
-      };
-    });
+    # 2. Set the alias system-wide so it works regardless of HM state
+    environment.shellAliases = {
+      float = "antigravity";
+    };
 
     # 3. Persistence configuration for stateful data
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-            directories = [ ".config/antigravity" ];
+            directories = [
+              # No need for .keep files now, preservation will safely provision the directory structure
+              ".config/antigravity"
+              ".gemini"
+            ];
           });
         };
   };

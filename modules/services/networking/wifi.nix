@@ -28,9 +28,11 @@ in
         };
 
         # We use a simpler approach: have agenix place the file directly where NetworkManager looks
-        age.secrets."wifi.age" = {
-          path = "/etc/NetworkManager/system-connections/default-wifi.nmconnection";
-          mode = "600";
+        age.secrets = lib.mkIf (config.myFeatures.core.security.agenix.enable or false) {
+          "wifi.age" = {
+            path = "/etc/NetworkManager/system-connections/default-wifi.nmconnection";
+            mode = "600";
+          };
         };
       })
     ]

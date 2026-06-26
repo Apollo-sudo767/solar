@@ -8,7 +8,8 @@
 
 let
   cfg = config.myFeatures.core.security.agenix;
-  secretsDir = inputs.solar-secrets + "/secrets";
+  hasPrivateSecrets = (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath);
+  secretsDir = if hasPrivateSecrets then inputs.solar-secrets + "/secrets" else "";
 in
 {
   config = lib.mkMerge [
@@ -16,8 +17,9 @@ in
     (lib.mkIf
       (
         config.myFeatures.core.system.users.agenixPassword
+        && cfg.enable
         && cfg.usePrivateSecrets
-        && (builtins.hasAttr "solar-secrets" inputs)
+        && hasPrivateSecrets
       )
       {
         age.secrets."password-apollo.age".rekeyFile = "${secretsDir}/apollo-passwd.age";
@@ -28,7 +30,7 @@ in
     )
 
     # 2. Optional Secrets (Only if agenix feature is enabled)
-    (lib.mkIf (cfg.enable && cfg.usePrivateSecrets && (builtins.hasAttr "solar-secrets" inputs)) {
+    (lib.mkIf (cfg.enable && cfg.usePrivateSecrets && hasPrivateSecrets) {
       age.secrets."wifi.age".rekeyFile = "${secretsDir}/maximus-wifi.age";
     })
   ];

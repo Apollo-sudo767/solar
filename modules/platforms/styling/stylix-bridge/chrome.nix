@@ -9,10 +9,6 @@ let
 in
 {
   config = lib.mkIf (cfg.enable && config.stylix.enable) {
-    home-manager.sharedModules = [
-      {
-        stylix.targets.chromium.enable = true;
-      }
-    ];
+    stylix.targets.chromium.enable = true;
   };
 }

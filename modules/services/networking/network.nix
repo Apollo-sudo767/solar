@@ -22,7 +22,10 @@ in
 
         # Optimization: Prioritize IPv4 over IPv6 to avoid Steam CDN bottlenecks
         # and use Cloudflare DNS for faster lookups.
-        networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+        networking.nameservers = [
+          "1.1.1.1"
+          "1.0.0.1"
+        ];
         environment.etc."gai.conf".text = ''
           precedence ::ffff:0:0/96  100
         '';

@@ -36,7 +36,16 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.niri.settings = {
         prefer-no-csd = true;
-        window-rules = [
+        layer-rules = [
+          {
+            matches = [ { namespace = "noctalia-bar-default"; } ];
+            background-effect = {
+              blur = true;
+              xray = true;
+            };
+          }
+        ];
+        window-rules = lib.mkForce [
           {
             geometry-corner-radius = {
               top-left = 10.0;
@@ -46,6 +55,26 @@ in
             };
             clip-to-geometry = true;
             focus-ring.enable = false;
+          }
+          {
+            matches = [ { app-id = "firefox"; } ];
+            border.enable = false;
+            focus-ring.enable = false;
+          }
+          {
+            matches = [ { app-id = "com.mitchellh.ghostty"; } ];
+            background-effect = {
+              blur = true;
+              xray = true;
+            };
+            draw-border-with-background = false;
+            border.enable = false;
+            focus-ring = {
+              enable = true;
+              width = 2;
+              active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+              inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+            };
           }
         ];
         layout = lib.mkForce {

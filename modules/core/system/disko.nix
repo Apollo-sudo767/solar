@@ -10,7 +10,7 @@ let
 
   # Helper to identify disk type from string
   isNVMe = dev: lib.strings.hasInfix "nvme" dev;
-  isSSD = dev: lib.strings.hasInfix "sd" dev && !(isHDD dev); 
+  isSSD = dev: lib.strings.hasInfix "sd" dev && !(isHDD dev);
   isHDD = dev: (lib.strings.hasInfix "sda" dev); # /dev/sda is the HDD on mars
 
   # Better approach: User provides categorized lists, or we use a single list with a helper

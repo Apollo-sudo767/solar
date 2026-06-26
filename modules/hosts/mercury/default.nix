@@ -90,6 +90,7 @@
             gaming.enable = true;
             media.enable = true;
             obs.enable = true;
+            vlc.enable = true;
           };
           utilities = {
             bitwarden.enable = true;

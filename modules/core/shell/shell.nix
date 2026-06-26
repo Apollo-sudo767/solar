@@ -89,8 +89,8 @@ in
           ll = "ls -l";
           la = "eza -a";
           # Use your host variable for easy rebuilds
-          nrs = "sudo nixos-rebuild switch --flake .#${host}";
-          nrb = "sudo nixos-rebuild boot --flake .#${host}";
+          nrs = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild switch --flake .#${host}";
+          nrb = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild boot --flake .#${host}";
           drs = "sudo darwin-rebuild switch --flake .#${host}";
           nfu = "nix flake update";
           nfc = "nix flake check";

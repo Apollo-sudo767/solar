@@ -33,7 +33,7 @@ in
             };
           };
         };
-        secrets.entries = [
+        secrets.entries = lib.optionals (config.age.secrets ? "wifi.age") [
           {
             matchId = "Maximus";
             matchSetting = "802-11-wireless-security";

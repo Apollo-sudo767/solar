@@ -29,14 +29,12 @@ in
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
       }
 
-      # 2. Agenix-specific sudo preservation (Linux-only)
-      (lib.optionalAttrs (!isDarwin) (
-        lib.mkIf (config.myFeatures.core.security.agenix.enable or false) {
-          security.sudo.extraConfig = ''
-            Defaults env_keep += "SSH_AUTH_SOCK"
-          '';
-        }
-      ))
+      # 2. Sudo SSH agent socket preservation (Linux-only)
+      (lib.optionalAttrs (!isDarwin) {
+        security.sudo.extraConfig = ''
+          Defaults env_keep += "SSH_AUTH_SOCK"
+        '';
+      })
 
       # 3. Linux-only configuration (Shielded from the Mac Evaluator)
       (lib.optionalAttrs (!isDarwin) {

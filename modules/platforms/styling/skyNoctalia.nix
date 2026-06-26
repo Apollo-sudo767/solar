@@ -29,10 +29,10 @@ in
           };
 
           bar = {
-            backgroundOpacity = 1.0;
+            backgroundOpacity = 0.6;
             barType = "simple";
             capsuleColorKey = "none";
-            capsuleOpacity = 1.0;
+            capsuleOpacity = 0.6;
             contentPadding = 2;
             density = "default";
             displayMode = "always_visible";
@@ -47,7 +47,6 @@ in
             marginVertical = 4;
             order = [
               "default"
-              "widgets"
             ];
             outerCorners = true;
             position = "bottom";
@@ -86,7 +85,7 @@ in
                     "media"
                     "session"
                   ];
-                  opacity = 1.0;
+                  opacity = 0.6;
                   padding = 6.0;
                 }
                 {
@@ -96,7 +95,7 @@ in
                     "network"
                     "bluetooth"
                   ];
-                  opacity = 1.0;
+                  opacity = 0.6;
                   padding = 6.0;
                 }
               ];
@@ -138,7 +137,7 @@ in
           general = {
             animationSpeed = 1;
             avatarImage = iconFile;
-            enableBlurBehind = false;
+            enableBlurBehind = true;
             enableShadows = true;
             radiusRatio = 1;
             screenRadiusRatio = 1;
@@ -177,7 +176,7 @@ in
           shell = {
             niri_overview_type_to_launch_enabled = true;
             polkit_agent = true;
-            panel.transparency_mode = "solid";
+            panel.transparency_mode = "glass";
           };
 
           theme = {

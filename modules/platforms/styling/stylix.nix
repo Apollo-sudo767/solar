@@ -58,6 +58,7 @@ in
         enable = true;
         image = cfg.wallpaper;
         polarity = "dark";
+        opacity.terminal = 0.85;
       }
       // lib.optionalAttrs (cfg.scheme != null) {
         base16Scheme = cfg.scheme;

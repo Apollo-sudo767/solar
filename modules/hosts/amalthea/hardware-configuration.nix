@@ -38,9 +38,9 @@
   fileSystems."/mnt/games" = {
     device = "/dev/disk/by-label/GAMES";
     fsType = "auto";
-    options = [ 
-      "nofail" 
-      "x-systemd.automount" 
+    options = [
+      "nofail"
+      "x-systemd.automount"
       "x-systemd.idle-timeout=60" # Unmount if idle to save power/prevent corruption
     ];
   };

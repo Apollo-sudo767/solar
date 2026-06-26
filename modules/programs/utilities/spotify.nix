@@ -10,6 +10,12 @@ let
   cfg = config.myFeatures.programs.utilities.spotify;
   spicetifyCfg = config.myFeatures.programs.utilities.spicetify;
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  spotify-wrapped = pkgs.spotify.overrideAttrs (oldAttrs: {
+    postFixup = (oldAttrs.postFixup or "") + ''
+      # Edit the wrapper script to inject --password-store=basic
+      sed -i 's|exec -a "$0"|exec -a "$0" --password-store=basic|g' $out/share/spotify/spotify
+    '';
+  });
 in
 {
   options.myFeatures.programs.utilities.spotify.enable = lib.mkEnableOption "Spotify";
@@ -25,10 +31,11 @@ in
         inputs.spicetify-nix.homeManagerModules.default
       ];
 
-      home.packages = lib.optional (!spicetifyCfg.enable) pkgs.spotify;
+      home.packages = lib.optional (!spicetifyCfg.enable) spotify-wrapped;
 
       programs.spicetify = lib.mkIf spicetifyCfg.enable {
         enable = true;
+        spotifyPackage = spotify-wrapped;
         enabledExtensions = with spicePkgs.extensions; [
           adblockify
           hidePodcasts

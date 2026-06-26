@@ -5,7 +5,12 @@
   };
 
   module =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       imports = [
         ./hardware-configuration.nix
@@ -82,7 +87,7 @@
       # Specific Kernel Tweaks for Intel Atom z8350 Stability & Performance
       boot.kernelParams = [
         "intel_idle.max_cstate=1" # Prevents random freezes on some z8350 boards
-        "intel_pstate=disable"    # Use acpi_cpufreq for better control on low-end
+        "intel_pstate=disable" # Use acpi_cpufreq for better control on low-end
       ];
 
       # Small Install: Disable documentation and extra bloat
@@ -92,8 +97,8 @@
       documentation.info.enable = false;
       documentation.doc.enable = false;
 
-      # NOTE: To hide the KDE taskbar, it's recommended to right-click the panel 
-      # and set "Visibility" to "Auto Hide" or "Hidden". 
+      # NOTE: To hide the KDE taskbar, it's recommended to right-click the panel
+      # and set "Visibility" to "Auto Hide" or "Hidden".
       # Doing this purely via Nix is brittle due to dynamic applet IDs.
     };
 }

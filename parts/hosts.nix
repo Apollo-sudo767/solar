@@ -15,11 +15,5 @@
     {
       inherit (hostLoader) nixosConfigurations;
       inherit (hostLoader) darwinConfigurations;
-
-      # Safely attach nodes back into the global rekey scanning parameters
-      agenix-rekey = {
-        nixosConfigurations = self.nixosConfigurations or { };
-        darwinConfigurations = self.darwinConfigurations or { };
-      };
     };
 }

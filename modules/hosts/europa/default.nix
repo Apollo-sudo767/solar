@@ -51,6 +51,7 @@
             gaming.enable = true;
             media.enable = true;
             obs.enable = true;
+            vlc.enable = true;
           };
           utilities = {
             social.enable = true;

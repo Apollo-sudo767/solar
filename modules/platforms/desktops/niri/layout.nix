@@ -18,8 +18,21 @@ in
             xray = true;
           };
         }
+        {
+          matches = [ { namespace = "^wallpaper$"; } ];
+          place-within-backdrop = true;
+        }
+        {
+          matches = [ { namespace = "^noctalia-wallpaper$"; } ];
+          place-within-backdrop = true;
+        }
+        {
+          matches = [ { namespace = "^noctalia-overview$"; } ];
+          place-within-backdrop = true;
+        }
       ];
       layout = {
+        background-color = "transparent";
         gaps = 0;
         focus-ring = {
           enable = lib.mkForce false;

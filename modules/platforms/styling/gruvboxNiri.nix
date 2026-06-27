@@ -36,6 +36,18 @@ in
               xray = true;
             };
           }
+          {
+            matches = [ { namespace = "^wallpaper$"; } ];
+            place-within-backdrop = true;
+          }
+          {
+            matches = [ { namespace = "^noctalia-wallpaper$"; } ];
+            place-within-backdrop = true;
+          }
+          {
+            matches = [ { namespace = "^noctalia-overview$"; } ];
+            place-within-backdrop = true;
+          }
         ];
         window-rules = [
           {
@@ -55,6 +67,7 @@ in
           }
         ];
         layout = {
+          background-color = "transparent";
           gaps = 0;
           focus-ring = {
             enable = false;

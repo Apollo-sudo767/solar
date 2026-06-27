@@ -44,6 +44,18 @@ in
               xray = true;
             };
           }
+          {
+            matches = [ { namespace = "^wallpaper$"; } ];
+            place-within-backdrop = true;
+          }
+          {
+            matches = [ { namespace = "^noctalia-wallpaper$"; } ];
+            place-within-backdrop = true;
+          }
+          {
+            matches = [ { namespace = "^noctalia-overview$"; } ];
+            place-within-backdrop = true;
+          }
         ];
         window-rules = lib.mkForce [
           {
@@ -78,6 +90,7 @@ in
           }
         ];
         layout = lib.mkForce {
+          background-color = "transparent";
           gaps = 8;
           focus-ring = {
             enable = false;

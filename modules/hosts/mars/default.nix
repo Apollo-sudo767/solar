@@ -53,7 +53,6 @@
             nvidia = {
               enable = true;
               open = true;
-              beta = true;
             };
           };
           system = {
@@ -112,7 +111,6 @@
           utilities = {
             stylePackages.enable = true;
             bitwarden.enable = true;
-            logseq.enable = true;
             social.enable = true;
           };
         };

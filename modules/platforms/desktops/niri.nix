@@ -30,7 +30,7 @@ in
   config = lib.mkIf cfg.enable {
     programs.niri = {
       enable = true;
-      package = inputs.niri.packages.${pkgs.system}.niri-unstable;
+      package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri-unstable;
     };
 
     myFeatures.platforms.desktops.niri.settings = {

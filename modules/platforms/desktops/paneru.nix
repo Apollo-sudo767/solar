@@ -21,7 +21,7 @@ in
   config = lib.mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
     services.paneru = {
       enable = true;
-      package = inputs.paneru.packages.${pkgs.stdenv.system}.default;
+      package = inputs.paneru.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
       settings = {
         options = {

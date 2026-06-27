@@ -47,6 +47,15 @@ in
       else
         pkgs.linuxPackages;
 
+    system.boot.loader.kernelFile =
+      let
+        kernelDir = config.boot.kernelPackages.kernel;
+      in
+      if builtins.pathExists "${kernelDir}/vmlinuz" then
+        "vmlinuz"
+      else
+        kernelDir.target;
+
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;
 

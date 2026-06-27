@@ -11,6 +11,19 @@ in
 {
   options.myFeatures.programs.media.steam = {
     enable = lib.mkEnableOption "Steam";
+
+    protonInstaller = {
+      enable = lib.mkEnableOption "GUI Proton installer (protonup-qt or protonup-gtk/protonplus)";
+      flavor = lib.mkOption {
+        type = lib.types.enum [
+          "qt"
+          "gtk"
+          "auto"
+        ];
+        default = "auto";
+        description = "Which flavor of GUI proton installer to use (Qt/protonup-qt or GTK/protonplus). 'auto' selects based on compositor.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -20,12 +33,23 @@ in
       dedicatedServer.openFirewall = true; # Useful if you host local test servers
     };
 
-    environment.systemPackages = with pkgs; [
-      mangohud
-      gamemode
-      libkrb5
-      keyutils
-    ];
+    environment.systemPackages =
+      let
+        useGtk =
+          if cfg.protonInstaller.flavor == "auto" then
+            !(config.myFeatures.platforms.desktops.kde.enable or false)
+          else
+            cfg.protonInstaller.flavor == "gtk";
+        protonPackage = if useGtk then pkgs.protonplus else pkgs.protonup-qt;
+      in
+      with pkgs;
+      [
+        mangohud
+        gamemode
+        libkrb5
+        keyutils
+      ]
+      ++ lib.optional cfg.protonInstaller.enable protonPackage;
 
     preservation.preserveAt =
       let
@@ -39,6 +63,10 @@ in
               directories = [
                 ".local/share/Steam"
                 ".steam" # Steam registry and config
+              ]
+              ++ lib.optionals cfg.protonInstaller.enable [
+                ".config/pupgui"
+                ".config/protonplus"
               ];
             });
           }

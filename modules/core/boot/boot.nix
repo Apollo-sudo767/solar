@@ -51,10 +51,7 @@ in
       let
         kernelDir = config.boot.kernelPackages.kernel;
       in
-      if builtins.pathExists "${kernelDir}/vmlinuz" then
-        "vmlinuz"
-      else
-        kernelDir.target;
+      if builtins.pathExists "${kernelDir}/vmlinuz" then "vmlinuz" else kernelDir.target;
 
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;

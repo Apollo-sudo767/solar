@@ -92,6 +92,7 @@
           };
           media = {
             gaming.enable = true;
+            steam.protonInstaller.enable = true;
             media.enable = true;
             obs.enable = true;
             davinci.enable = true;

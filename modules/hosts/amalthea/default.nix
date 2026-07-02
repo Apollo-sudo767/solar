@@ -23,8 +23,7 @@
         core = {
           system.core-branch.enable = true;
           system.users = {
-            usernames = [ "apollo" ];
-            agenixPassword = true;
+            usernames = [ "hepheastus" ];
           };
           shell.shell-branch.enable = true;
           boot = {
@@ -33,7 +32,6 @@
             kernel = "zen"; # Zen kernel often has better responsiveness for gaming
           };
           security.security.enable = true;
-          security.agenix.enable = true;
           nix.lix.enable = true;
         };
 
@@ -50,7 +48,10 @@
         };
 
         programs = {
-          media.steam.enable = true;
+          media.steam = {
+            enable = true;
+            gamescope.enable = true;
+          };
           terminal = {
             git.enable = true;
             ghostty.enable = true;
@@ -72,6 +73,8 @@
         user = config.myFeatures.core.system.users.mainUser;
       };
 
+      services.displayManager.defaultSession = "steam";
+
       # Steam Autostart in Big Picture Mode
       home-manager.users.${config.myFeatures.core.system.users.mainUser} = {
         home.file.".config/autostart/steam.desktop".text = ''
@@ -81,6 +84,11 @@
           Terminal=false
           Type=Application
           Categories=Game;
+          Actions=Gamescope;
+
+          [Desktop Action Gamescope]
+          Name=Launch in Gamescope
+          Exec=steam-gamescope
         '';
       };
 

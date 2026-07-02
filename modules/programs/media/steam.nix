@@ -24,16 +24,65 @@ in
         description = "Which flavor of GUI proton installer to use (Qt/protonup-qt or GTK/protonplus). 'auto' selects based on compositor.";
       };
     };
+
+    gamescope = {
+      enable = lib.mkEnableOption "Gamescope session / wrapper";
+      args = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "Arguments to pass to Gamescope";
+      };
+      env = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = { };
+        description = "Environment variables for Gamescope";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
-      package = pkgs.steam.override {
-        extraArgs = "-cef-disable-gpu-compositing";
+      package = let
+        makeWrappedSteam = steamPkg: (pkgs.symlinkJoin {
+          name = "steam-wrapped";
+          paths = [ steamPkg ];
+          postBuild = ''
+            rm $out/bin/steam
+            cat <<'EOF' > $out/bin/steam
+            #!/bin/sh
+            if [ "$XDG_CURRENT_DESKTOP" = "niri" ] || [ -n "$NIRI_SOCKET" ]; then
+              if [ "$STEAM_GAMESCOPE_WRAPPED" != "1" ] && command -v steam-gamescope >/dev/null 2>&1; then
+                export STEAM_GAMESCOPE_WRAPPED=1
+                exec steam-gamescope "$@"
+              fi
+            fi
+            exec ${steamPkg}/bin/steam "$@"
+            EOF
+            chmod +x $out/bin/steam
+          '';
+        }) // {
+          inherit (steamPkg) run;
+        };
+        initialSteam = pkgs.steam.override {
+          extraArgs = "-cef-disable-gpu-compositing";
+        };
+        wrapped = makeWrappedSteam initialSteam;
+      in wrapped // {
+        override = f: makeWrappedSteam (initialSteam.override f);
       };
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true; # Useful if you host local test servers
+      gamescopeSession = {
+        enable = cfg.gamescope.enable;
+        args = cfg.gamescope.args;
+        env = cfg.gamescope.env;
+      };
+    };
+
+    programs.gamescope = {
+      enable = cfg.gamescope.enable;
+      capSysNice = cfg.gamescope.enable;
     };
 
     environment.systemPackages =
@@ -52,7 +101,24 @@ in
         libkrb5
         keyutils
       ]
-      ++ lib.optional cfg.protonInstaller.enable protonPackage;
+      ++ lib.optional cfg.protonInstaller.enable protonPackage
+      ++ lib.optional cfg.gamescope.enable (
+        pkgs.makeDesktopItem {
+          name = "steam-gamescope";
+          desktopName = "Steam (Gamescope)";
+          genericName = "Game 3D Engine";
+          comment = "Launch Steam inside Gamescope micro-compositor";
+          exec = "steam-gamescope";
+          icon = "steam";
+          terminal = false;
+          type = "Application";
+          categories = [
+            "Network"
+            "FileTransfer"
+            "Game"
+          ];
+        }
+      );
 
     preservation.preserveAt =
       let

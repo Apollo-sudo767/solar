@@ -77,6 +77,11 @@
 
         programs = {
           terminal = {
+            git = {
+              enable = true;
+              userName = "Apollo-sudo767";
+              userEmail = "fireshifter767@gmail.com";
+            };
             ghostty.enable = true;
             fastfetch = {
               enable = true;

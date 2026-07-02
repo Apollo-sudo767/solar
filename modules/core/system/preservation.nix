@@ -47,7 +47,10 @@ in
             "/var/lib/systemd" # Stores backlight, rfkill, timesync, etc.
           ];
           files = [
-            "/etc/machine-id"
+            {
+              file = "/etc/machine-id";
+              how = "symlink";
+            }
           ];
         };
       }

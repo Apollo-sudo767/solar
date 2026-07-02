@@ -53,6 +53,7 @@ in
                 {
                   directory = "/etc/ssh";
                   mode = "0755";
+                  how = "symlink";
                 }
               ];
             };

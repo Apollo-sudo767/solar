@@ -35,7 +35,10 @@ in
             {
               directories = [
                 "/var/lib/NetworkManager"
-                "/etc/NetworkManager/system-connections"
+                {
+                  directory = "/etc/NetworkManager/system-connections";
+                  how = "symlink";
+                }
               ];
             };
       })

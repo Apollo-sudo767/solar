@@ -84,7 +84,11 @@
         };
         programs = {
           terminal = {
-            git.enable = true;
+            git = {
+              enable = true;
+              userName = "Apollo-sudo767";
+              userEmail = "fireshifter767@gmail.com";
+            };
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;
@@ -92,7 +96,10 @@
           };
           media = {
             gaming.enable = true;
-            steam.protonInstaller.enable = true;
+            steam = {
+              protonInstaller.enable = true;
+              gamescope.enable = true;
+            };
             media.enable = true;
             obs.enable = true;
             davinci.enable = true;

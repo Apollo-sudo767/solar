@@ -9,6 +9,14 @@
 
 let
   cfg = config.myFeatures.services.multimedia.sunshine;
+  hasNvidia = !isDarwin && (config.myFeatures.hardware.cpu-gpu.nvidia.enable or false);
+  sunshinePkg =
+    if hasNvidia then
+      (pkgs.sunshine.override {
+        cudaSupport = true;
+      })
+    else
+      pkgs.sunshine;
 in
 {
   options.myFeatures.services.multimedia.sunshine = {
@@ -24,9 +32,9 @@ in
     lib.mkMerge [
       # Cross-platform safe part
       {
-        environment.systemPackages = with pkgs; [
-          sunshine
-          miniupnpc
+        environment.systemPackages = [
+          sunshinePkg
+          pkgs.miniupnpc
         ];
       }
 
@@ -37,35 +45,47 @@ in
           autoStart = true;
           capSysAdmin = true;
           openFirewall = false;
+          package = sunshinePkg;
+          settings = {
+            port = cfg.port - 1;
+          };
         };
 
-        networking.firewall = {
-          allowedTCPPorts = [
-            47984
-            47989
-            48010
-            cfg.port
-          ];
-          allowedUDPPorts = [
-            1900
-            5353
-            48010
-          ];
-          allowedUDPPortRanges = [
-            {
-              from = 47998;
-              to = 48000;
-            }
-            {
-              from = 8000;
-              to = 8010;
-            }
-          ];
-        };
+        networking.firewall =
+          let
+            basePort = cfg.port - 1;
+          in
+          {
+            allowedTCPPorts = [
+              (basePort - 5) # Sunshine discovery / control port (default 47984)
+              basePort # Sunshine base port (default 47989)
+              cfg.port # Sunshine Web UI port (default 47990)
+              (basePort + 21) # Sunshine RTSP port (default 48010)
+            ];
+            allowedUDPPorts = [
+              1900 # SSDP (discovery)
+              5353 # mDNS (discovery)
+              (basePort + 21) # Sunshine RTSP port (default 48010)
+            ];
+            allowedUDPPortRanges = [
+              {
+                from = basePort + 9;
+                to = basePort + 11; # Sunshine stream ports (default 47998-48000)
+              }
+              {
+                from = 8000;
+                to = 8010;
+              }
+            ];
+          };
 
         boot.kernelModules = [ "uinput" ];
         hardware.uinput.enable = true;
-        users.users.${config.myFeatures.core.system.users.mainUser}.extraGroups = [ "uinput" ];
+        users.users.${config.myFeatures.core.system.users.mainUser}.extraGroups = [
+          "uinput"
+          "input"
+          "render"
+        ];
 
         environment.systemPackages = [ pkgs.vpl-gpu-rt ];
 

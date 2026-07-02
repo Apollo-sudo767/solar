@@ -29,6 +29,9 @@ in
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
+      package = pkgs.steam.override {
+        extraArgs = "-cef-disable-gpu-compositing";
+      };
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true; # Useful if you host local test servers
     };
@@ -55,29 +58,35 @@ in
       let
         pCfg = config.myFeatures.core.system.preservation;
         users = config.myFeatures.core.system.users.usernames;
+        steamDirs = [
+          ".local/share/Steam"
+          ".steam" # Steam registry and config
+        ]
+        ++ lib.optionals cfg.protonInstaller.enable [
+          ".config/pupgui"
+          ".config/protonplus"
+        ];
+        bulkDirs = [
+          {
+            directory = ".local/share/SteamBulk";
+            mode = "0700";
+          }
+        ];
       in
       lib.mkIf pCfg.enable (
-        lib.recursiveUpdate
+        if pCfg.coldPath == pCfg.persistentPath then
           {
             "${pCfg.persistentPath}".users = lib.genAttrs users (name: {
-              directories = [
-                ".local/share/Steam"
-                ".steam" # Steam registry and config
-              ]
-              ++ lib.optionals cfg.protonInstaller.enable [
-                ".config/pupgui"
-                ".config/protonplus"
-              ];
+              directories = steamDirs ++ bulkDirs;
             });
           }
+        else
           {
+            "${pCfg.persistentPath}".users = lib.genAttrs users (name: {
+              directories = steamDirs;
+            });
             "${pCfg.coldPath}".users = lib.genAttrs users (name: {
-              directories = [
-                {
-                  directory = ".local/share/SteamBulk";
-                  mode = "0700";
-                }
-              ];
+              directories = bulkDirs;
             });
           }
       );

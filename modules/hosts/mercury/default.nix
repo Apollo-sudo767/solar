@@ -54,7 +54,10 @@
               aggressive = true;
             };
             bluetooth.enable = true;
-            wifi.enable = true;
+            wifi = {
+              enable = true;
+              persistence = true;
+            };
           };
           input = {
             controllers.enable = true;
@@ -95,7 +98,6 @@
           utilities = {
             bitwarden.enable = true;
             stylePackages.enable = true;
-            logseq.enable = true;
             social.enable = true;
           };
         };

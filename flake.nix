@@ -41,17 +41,29 @@
     };
 
     # Niri
-    niri.url = "github:epireyn/niri-flake";
+    niri = {
+      url = "github:epireyn/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     # Paneru
     paneru = {
       url = "github:karinushka/paneru";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Disko & Impermance
-    disko.url = "github:nix-community/disko";
-    impermanence.url = "github:nix-community/impermanence";
-    preservation.url = "github:WilliButz/preservation";
+    # Disko & Impermanence
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    preservation = {
+      url = "github:WilliButz/preservation";
+    };
 
     # Zen Browser
     zen-browser = {
@@ -66,10 +78,16 @@
     };
 
     # Nix Minecraft
-    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     # Firefox Nightly
-    firefox.url = "github:nix-community/flake-firefox-nightly";
+    firefox = {
+      url = "github:nix-community/flake-firefox-nightly";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     # Noctalia
     noctalia = {
@@ -89,7 +107,10 @@
     };
 
     # Formatting & Linting
-    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

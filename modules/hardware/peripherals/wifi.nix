@@ -10,6 +10,11 @@ in
 {
   options.myFeatures.hardware.peripherals.wifi = {
     enable = lib.mkEnableOption "Enables Wifi Services";
+    persistence = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Whether to persist WiFi network connections across reboots.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -43,5 +48,14 @@ in
         ];
       };
     };
+
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && cfg.persistence)
+        {
+          directories = [
+            "/var/lib/NetworkManager"
+            "/etc/NetworkManager/system-connections"
+          ];
+        };
   };
 }

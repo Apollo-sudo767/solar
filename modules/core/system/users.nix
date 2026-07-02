@@ -4,6 +4,7 @@
   pkgs,
   isDarwin,
   isTotal,
+  isStable ? false,
   ...
 }:
 
@@ -73,7 +74,11 @@ in
       # Home Manager Default Settings for all users
       home-manager.backupFileExtension = "backup";
       home-manager.users = lib.genAttrs cfg.usernames (name: {
-        home.stateVersion = "26.11";
+        home.stateVersion =
+          if isDarwin then
+            (if isStable then "26.05" else "26.11")
+          else
+            (config.system.stateVersion or "26.11");
         home.username = name;
         home.homeDirectory = config.users.users.${name}.home;
       });

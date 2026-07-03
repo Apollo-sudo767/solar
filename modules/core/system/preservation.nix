@@ -51,6 +51,10 @@ in
               file = "/etc/machine-id";
               how = "symlink";
             }
+            {
+              file = "/etc/user-password";
+              how = "symlink";
+            }
           ];
         };
       }

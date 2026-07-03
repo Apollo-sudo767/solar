@@ -98,7 +98,10 @@
             gaming.enable = true;
             steam = {
               protonInstaller.enable = true;
-              gamescope.enable = true;
+              gamescope = {
+                enable = true;
+                autoWrap = false;
+              };
             };
             media.enable = true;
             obs.enable = true;

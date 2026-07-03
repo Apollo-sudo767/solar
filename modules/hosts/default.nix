@@ -75,33 +75,42 @@ let
             agenixRekeyModule
             preservationModule
             diskoModule
-            {
-              nixpkgs.hostPlatform = system;
-              networking.hostName = name;
-              nixpkgs.config.allowUnfree = true;
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
+            (
+              { config, ... }:
+              {
+                nixpkgs.hostPlatform = system;
+                networking.hostName = name;
+                nixpkgs.config.allowUnfree = true;
+                home-manager.useGlobalPkgs = false;
+                home-manager.useUserPackages = true;
+                home-manager.sharedModules = [
+                  {
+                    nixpkgs.config = config.nixpkgs.config;
+                    nixpkgs.overlays = config.nixpkgs.overlays;
+                  }
+                ];
 
-              # Set defaults for agenix-rekey so evaluation doesn't fail
-              age.rekey = {
-                hostPubkey =
-                  let
-                    # 2. Fix: Shield the string path interpolation entirely behind the presence check.
-                    # If hasPrivateSecrets is false, it points to a harmless dummy string instead of querying inputs.
-                    path = if hasPrivateSecrets then "${inputs.solar-secrets}/hosts/${name}.pub" else "";
-                  in
-                  lib.mkDefault (
-                    if hasPrivateSecrets && (builtins.pathExists path) then
-                      lib.strings.trim (builtins.readFile path)
-                    else
-                      # Fallback to a guaranteed valid age public key (for bootstrapping)
-                      "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34"
-                  );
-                storageMode = lib.mkDefault "local";
-                localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
-                masterIdentities = lib.mkDefault [ ];
-              };
-            }
+                # Set defaults for agenix-rekey so evaluation doesn't fail
+                age.rekey = {
+                  hostPubkey =
+                    let
+                      # 2. Fix: Shield the string path interpolation entirely behind the presence check.
+                      # If hasPrivateSecrets is false, it points to a harmless dummy string instead of querying inputs.
+                      path = if hasPrivateSecrets then "${inputs.solar-secrets}/hosts/${name}.pub" else "";
+                    in
+                    lib.mkDefault (
+                      if hasPrivateSecrets && (builtins.pathExists path) then
+                        lib.strings.trim (builtins.readFile path)
+                      else
+                        # Fallback to a guaranteed valid age public key (for bootstrapping)
+                        "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34"
+                    );
+                  storageMode = lib.mkDefault "local";
+                  localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
+                  masterIdentities = lib.mkDefault [ ];
+                };
+              }
+            )
           ]
           ++ lib.optional isDarwin {
             # Determinate Nix installer manages the Nix daemon and nix.conf on macOS.

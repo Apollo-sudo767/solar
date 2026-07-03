@@ -180,7 +180,12 @@ in
               };
             })
             (lib.optionalAttrs
-              (config.stylix.enable && config.stylix.cursor != null && config.stylix.cursor.package != null)
+              (
+                config.stylix.enable
+                && (config.stylix ? cursor)
+                && config.stylix.cursor != null
+                && config.stylix.cursor.package != null
+              )
               {
                 cursorTheme = {
                   name = config.stylix.cursor.name;
@@ -189,7 +194,12 @@ in
               }
             )
             (lib.optionalAttrs
-              (config.stylix.enable && config.stylix.icons != null && config.stylix.icons.package != null)
+              (
+                config.stylix.enable
+                && (config.stylix ? icons)
+                && config.stylix.icons != null
+                && config.stylix.icons.package != null
+              )
               {
                 iconTheme = {
                   name =
@@ -198,20 +208,22 @@ in
                 };
               }
             )
-            (lib.optionalAttrs (config.stylix.enable && config.stylix.image != null) {
-              settings.background = {
-                path = config.stylix.image;
-                fit =
-                  if config.stylix.imageScalingMode == "fill" then
-                    "Cover"
-                  else if config.stylix.imageScalingMode == "fit" then
-                    "Contain"
-                  else if config.stylix.imageScalingMode == "stretch" then
-                    "Fill"
-                  else
-                    null;
-              };
-            })
+            (lib.optionalAttrs (config.stylix.enable && (config.stylix ? image) && config.stylix.image != null)
+              {
+                settings.background = {
+                  path = config.stylix.image;
+                  fit =
+                    if config.stylix.imageScalingMode == "fill" then
+                      "Cover"
+                    else if config.stylix.imageScalingMode == "fit" then
+                      "Contain"
+                    else if config.stylix.imageScalingMode == "stretch" then
+                      "Fill"
+                    else
+                      null;
+                };
+              }
+            )
           ]
         );
       }

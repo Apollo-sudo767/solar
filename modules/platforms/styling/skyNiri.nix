@@ -88,6 +88,13 @@ in
               inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
             };
           }
+          {
+            matches = [
+              { app-id = "^steam_app_"; }
+              { app-id = "^gamescope$"; }
+            ];
+            open-fullscreen = true;
+          }
         ];
         layout = lib.mkForce {
           background-color = "transparent";

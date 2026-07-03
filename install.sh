@@ -118,6 +118,12 @@ if [[ "$KEY_CHOICE" == "2" ]]; then
     done
 fi
 
+# 8. User Password Selection
+echo ""
+echo "👤 User Account Password:"
+read -s -p "Enter custom password for user accounts (leave empty to use default 'solar'): " IMPERATIVE_PASSWORD
+echo ""
+
 # Print configuration summary
 echo ""
 echo "📝 Configuration Summary:"
@@ -134,6 +140,7 @@ case "$KEY_CHOICE" in
     2) echo "  Host Key:      Use EXISTING SSH key ($PRIV_KEY_PATH)" ;;
     3) echo "  Host Key:      SKIP payload setup" ;;
 esac
+echo "  Password:      $( [ -n "$IMPERATIVE_PASSWORD" ] && echo "[CONFIDENTIAL]" || echo "Use default ('solar')" )"
 echo "-----------------------------------"
 echo ""
 
@@ -200,23 +207,39 @@ elif [[ "$KEY_CHOICE" == "2" ]]; then
     fi
 fi
 
-# Prepare nixos-anywhere extra-files if key is set up
-EXTRA_FILES_ARG=()
+# Hashing password
+if [[ -n "$IMPERATIVE_PASSWORD" ]]; then
+    echo "🔒 Hashing custom password..."
+    PASSWORD_HASH=$(nix run nixpkgs#mkpasswd -- -m sha-512 "$IMPERATIVE_PASSWORD")
+else
+    PASSWORD_HASH='$6$/Edi4zjoQYa81MQL$MD/BacUUKnb3jdHCnAzRG5s2Vh7KUIYh4s0h/5SQzMLVpbJ7T6XKCvYMuMZ2Sqt91quxmHATBEzkuyQKzQ/K5/'
+fi
+
+# Prepare nixos-anywhere extra-files
+echo "📦 Preparing extra-files payload..."
+PAYLOAD_DIR="$TEMP_DIR/payload"
+
+mkpath() {
+    mkdir -p "$1"
+    chmod "$2" "$1"
+}
+
+# Base directories
+mkpath "$PAYLOAD_DIR" 755
+mkpath "$PAYLOAD_DIR/etc" 755
+
+# Write password file
+echo "$PASSWORD_HASH" > "$PAYLOAD_DIR/etc/user-password"
+chmod 600 "$PAYLOAD_DIR/etc/user-password"
+
+# Mirror password file to /persist
+mkpath "$PAYLOAD_DIR/persist" 755
+mkpath "$PAYLOAD_DIR/persist/etc" 755
+echo "$PASSWORD_HASH" > "$PAYLOAD_DIR/persist/etc/user-password"
+chmod 600 "$PAYLOAD_DIR/persist/etc/user-password"
+
 if [[ "$HAS_KEY" == "true" ]]; then
-    echo "📦 Preparing extra-files payload..."
-    PAYLOAD_DIR="$TEMP_DIR/payload"
-    
-    mkpath() {
-        mkdir -p "$1"
-        chmod "$2" "$1"
-    }
-
-    # Base directories
-    mkpath "$PAYLOAD_DIR" 755
-    mkpath "$PAYLOAD_DIR/etc" 755
     mkpath "$PAYLOAD_DIR/etc/ssh" 755
-
-    # Standard location
     cp "$TEMP_DIR/ssh_host_ed25519_key" "$PAYLOAD_DIR/etc/ssh/"
     cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$PAYLOAD_DIR/etc/ssh/"
     chmod 600 "$PAYLOAD_DIR/etc/ssh/ssh_host_ed25519_key"
@@ -224,16 +247,14 @@ if [[ "$HAS_KEY" == "true" ]]; then
 
     # Persistence location (Mirror keys so they survive reboot on tmpfs-root systems)
     echo "🔗 Mirroring keys to /persist/etc/ssh for persistence compatibility..."
-    mkpath "$PAYLOAD_DIR/persist" 755
-    mkpath "$PAYLOAD_DIR/persist/etc" 755
     mkpath "$PAYLOAD_DIR/persist/etc/ssh" 755
     cp "$TEMP_DIR/ssh_host_ed25519_key" "$PAYLOAD_DIR/persist/etc/ssh/"
     cp "$TEMP_DIR/ssh_host_ed25519_key.pub" "$PAYLOAD_DIR/persist/etc/ssh/"
     chmod 600 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key"
     chmod 644 "$PAYLOAD_DIR/persist/etc/ssh/ssh_host_ed25519_key.pub"
-    
-    EXTRA_FILES_ARG=(--extra-files "$PAYLOAD_DIR")
 fi
+
+EXTRA_FILES_ARG=(--extra-files "$PAYLOAD_DIR")
 
 # Build and Execute
 echo "🏗️ Building system and disko script..."

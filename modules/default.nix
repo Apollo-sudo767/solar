@@ -34,11 +34,12 @@ let
             # 4. Surgery: Explicit platform segregation
             # Darwin modules are strictly in the darwin/ directory
             isInDarwin = lib.hasInfix "/modules/darwin/" (toString path);
+            isInDisplayManager = lib.hasInfix "/displayManager/" (toString path);
 
             shouldImport =
               if isDarwin then
-                # On Mac: Import if it has isDarwin OR isTotal flag
-                (hasDarwin || hasTotal)
+                # On Mac: Import if it has isDarwin OR isTotal flag, and never if it is a display manager
+                (hasDarwin || hasTotal) && !isInDisplayManager
               else
               # On Linux:
               # - Never import anything from the darwin/ directory

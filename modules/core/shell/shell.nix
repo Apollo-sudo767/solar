@@ -15,6 +15,8 @@ in
   options.myFeatures.core.shell.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
 
   config = lib.mkIf cfg.enable {
+    environment.enableAllTerminfo = true;
+
     environment.systemPackages = [
       pkgs.eza
       pkgs.fzf
@@ -91,7 +93,7 @@ in
           # Use your host variable for easy rebuilds
           nrs = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild switch --flake .#${host}";
           nrb = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild boot --flake .#${host}";
-          drs = "sudo darwin-rebuild switch --flake .#${host}";
+          drs = "sudo --preserve-env=SSH_AUTH_SOCK darwin-rebuild switch --flake .#${host}";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";

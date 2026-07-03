@@ -49,6 +49,26 @@ in
           settings = {
             port = cfg.port - 1;
           };
+          applications = {
+            apps = [
+              {
+                name = "Desktop";
+                image-path = "desktop.png";
+              }
+            ]
+            ++
+              lib.optionals
+                (
+                  config.myFeatures.programs.media.steam.enable or false
+                  && config.myFeatures.programs.media.steam.gamescope.enable or false
+                )
+                [
+                  {
+                    name = "Steam (Gamescope)";
+                    cmd = "gamescope-run steam -gamepadui";
+                  }
+                ];
+          };
         };
 
         networking.firewall =
@@ -87,7 +107,21 @@ in
           "render"
         ];
 
-        environment.systemPackages = [ pkgs.vpl-gpu-rt ];
+        environment.systemPackages = [
+          pkgs.vpl-gpu-rt
+        ]
+        ++
+          lib.optionals
+            (
+              config.myFeatures.programs.media.steam.enable or false
+              && config.myFeatures.programs.media.steam.gamescope.enable or false
+            )
+            [
+              (pkgs.writeShellScriptBin "gamescope-run" ''
+                export ENABLE_GAMESCOPE_WSI=0
+                exec ${pkgs.gamescope}/bin/gamescope -W 1920 -H 1080 -r 60 -f -- "$@"
+              '')
+            ];
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable

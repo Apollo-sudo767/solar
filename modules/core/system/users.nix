@@ -56,18 +56,18 @@ in
             "video"
           ];
           # Password Logic
-          hashedPasswordFile = lib.mkIf useAgenixPassword (
-            if (config.age.secrets ? "password-${name}.age") then
-              config.age.secrets."password-${name}.age".path
-            else if (config.age.secrets ? "password-apollo.age") then
-              config.age.secrets."password-apollo.age".path
+          hashedPasswordFile =
+            if useAgenixPassword then
+              (
+                if (config.age.secrets ? "password-${name}.age") then
+                  config.age.secrets."password-${name}.age".path
+                else if (config.age.secrets ? "password-apollo.age") then
+                  config.age.secrets."password-apollo.age".path
+                else
+                  null
+              )
             else
-              null
-          );
-
-          initialPassword = lib.mkIf (
-            !useAgenixPassword || config.users.users.${name}.hashedPasswordFile == null
-          ) "solar";
+              "/etc/user-password";
         }
       );
 
@@ -87,6 +87,17 @@ in
     # 2. Linux-only Configuration (Completely omitted from evaluation on Darwin)
     (lib.mkIf cfg.enable (
       lib.optionalAttrs (!isDarwin) {
+        # Initialize default user password if it doesn't exist
+        system.activationScripts.user-password-init = {
+          text = ''
+            if [ ! -f /etc/user-password ]; then
+              mkdir -p /etc
+              echo '$6$/Edi4zjoQYa81MQL$MD/BacUUKnb3jdHCnAzRG5s2Vh7KUIYh4s0h/5SQzMLVpbJ7T6XKCvYMuMZ2Sqt91quxmHATBEzkuyQKzQ/K5/' > /etc/user-password
+              chmod 600 /etc/user-password
+            fi
+          '';
+        };
+
         # Moved here because nix-darwin doesn't support changing account mutability
         users.mutableUsers = lib.mkDefault (!useAgenixPassword);
 

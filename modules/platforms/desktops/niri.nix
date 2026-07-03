@@ -52,6 +52,24 @@ in
       ]);
     };
 
+    systemd.user.services.noctalia-lock-on-suspend =
+      lib.mkIf
+        (
+          config.myFeatures.platforms.addons.noctalia-v5.enable
+          || config.myFeatures.platforms.addons.noctalia-shell.enable
+        )
+        {
+          description = "Lock Noctalia Shell on Suspend";
+          wantedBy = [ "graphical-session.target" ];
+          partOf = [ "graphical-session.target" ];
+          after = [ "graphical-session.target" ];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${pkgs.swayidle}/bin/swayidle -w before-sleep 'qs -c noctalia-shell ipc call lockScreen lock'";
+            Restart = "always";
+          };
+        };
+
     environment.systemPackages =
       with pkgs;
       [

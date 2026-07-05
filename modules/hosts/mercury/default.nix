@@ -91,6 +91,7 @@
           };
           browsers.firefox = {
             enable = true;
+            default = true;
             nightly.enable = true;
             extensions.enable = true;
           };

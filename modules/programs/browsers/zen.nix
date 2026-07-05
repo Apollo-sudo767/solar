@@ -29,15 +29,33 @@ let
   };
 in
 {
-  options.myFeatures.programs.browsers.zen.enable =
-    lib.mkEnableOption "Zen Browser with Phanes Overrides";
+  options.myFeatures.programs.browsers.zen = {
+    enable = lib.mkEnableOption "Zen Browser with Phanes Overrides";
+    default = lib.mkEnableOption "Set Zen Browser as the default browser";
+  };
 
   config = lib.mkIf cfg.enable {
     # Install your customized Zen package system-wide
     environment.systemPackages = [ myZen ];
 
-    # Optional: Set as default browser if desired
-    # home-manager.users.${config.myFeatures.core.system.users.mainUser}.home.sessionVariables.BROWSER = "zen";
+    home-manager.sharedModules = lib.mkIf cfg.default [
+      {
+        home.sessionVariables = {
+          BROWSER = "zen";
+        };
+
+        xdg.mimeApps = {
+          enable = true;
+          defaultApplications = {
+            "text/html" = [ "zen.desktop" ];
+            "x-scheme-handler/http" = [ "zen.desktop" ];
+            "x-scheme-handler/https" = [ "zen.desktop" ];
+            "x-scheme-handler/about" = [ "zen.desktop" ];
+            "x-scheme-handler/unknown" = [ "zen.desktop" ];
+          };
+        };
+      }
+    ];
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf config.myFeatures.core.system.preservation.enable

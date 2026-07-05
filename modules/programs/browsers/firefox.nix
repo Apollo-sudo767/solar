@@ -14,6 +14,7 @@ in
 {
   options.myFeatures.programs.browsers.firefox = {
     enable = lib.mkEnableOption "Enables Firefox browser";
+    default = lib.mkEnableOption "Set Firefox as the default browser";
 
     nightly = {
       enable = lib.mkEnableOption "Use Firefox Nightly binary";
@@ -76,23 +77,43 @@ in
     };
 
     home-manager.sharedModules = [
-      {
-        programs.firefox = {
-          enable = true;
-          profiles = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
-            isDefault = name == lib.head config.myFeatures.core.system.users.usernames;
-            settings = {
-              "browser.download.dir" = "/home/${name}/Downloads";
-              "browser.startup.page" = 3;
-              "datareporting.healthreport.uploadEnabled" = false;
-              "browser.topsites.contile.enabled" = false;
-              "browser.newtabpage.activity-stream.showSponsored" = false;
-              "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
-              "browser.uiCustomization.debug" = lib.mkIf cfg.nightly.enable true;
+      (
+        let
+          desktop = if cfg.nightly.enable then "firefox-nightly.desktop" else "firefox.desktop";
+        in
+        {
+          programs.firefox = {
+            enable = true;
+            profiles = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+              isDefault = name == lib.head config.myFeatures.core.system.users.usernames;
+              settings = {
+                "browser.download.dir" = "/home/${name}/Downloads";
+                "browser.startup.page" = 3;
+                "datareporting.healthreport.uploadEnabled" = false;
+                "browser.topsites.contile.enabled" = false;
+                "browser.newtabpage.activity-stream.showSponsored" = false;
+                "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+                "browser.uiCustomization.debug" = lib.mkIf cfg.nightly.enable true;
+              };
+            });
+          };
+
+          home.sessionVariables = lib.mkIf cfg.default {
+            BROWSER = if cfg.nightly.enable then "firefox-nightly" else "firefox";
+          };
+
+          xdg.mimeApps = lib.mkIf cfg.default {
+            enable = true;
+            defaultApplications = {
+              "text/html" = [ desktop ];
+              "x-scheme-handler/http" = [ desktop ];
+              "x-scheme-handler/https" = [ desktop ];
+              "x-scheme-handler/about" = [ desktop ];
+              "x-scheme-handler/unknown" = [ desktop ];
             };
-          });
-        };
-      }
+          };
+        }
+      )
     ];
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =

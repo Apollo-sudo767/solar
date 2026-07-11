@@ -71,6 +71,7 @@
               xbox = true;
               nintendo = true;
             };
+            wooting.enable = true;
           };
         };
         platforms = {

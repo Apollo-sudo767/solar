@@ -45,6 +45,9 @@
               enable = true;
             };
             helix.enable = true;
+            nh.enable = true;
+            direnv.enable = true;
+            nix-ld.enable = true;
           };
           browsers.firefox.enable = true;
           media = {

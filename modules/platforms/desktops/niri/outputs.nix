@@ -21,6 +21,7 @@ in
             x = 0;
             y = 0;
           };
+          variable-refresh-rate = true;
         };
         "DP-2" = {
           mode = {
@@ -32,6 +33,7 @@ in
             x = 2560;
             y = 0;
           };
+          variable-refresh-rate = true;
         };
       };
     };

@@ -95,6 +95,9 @@
             fastfetch.enable = true;
             helix.enable = true;
             antigravity.enable = true;
+            nh.enable = true;
+            direnv.enable = true;
+            nix-ld.enable = true;
           };
           media = {
             gaming.enable = true;

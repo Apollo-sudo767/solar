@@ -45,6 +45,9 @@
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;
+            nh.enable = true;
+            direnv.enable = true;
+            nix-ld.enable = true;
           };
           utilities.lego.enable = true;
         };

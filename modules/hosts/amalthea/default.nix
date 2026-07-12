@@ -57,6 +57,9 @@
             ghostty.enable = true;
             helix.enable = true;
             fastfetch.enable = true;
+            nh.enable = true;
+            direnv.enable = true;
+            nix-ld.enable = true;
           };
         };
 

@@ -103,6 +103,8 @@ in
       capSysNice = cfg.gamescope.capSysNice;
     };
 
+    programs.gamemode.enable = true;
+
     environment.systemPackages =
       let
         useGtk =

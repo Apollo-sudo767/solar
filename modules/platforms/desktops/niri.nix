@@ -25,7 +25,10 @@ in
       description = "Extra Niri configuration in KDL format";
     };
     modKey = lib.mkOption {
-      type = lib.types.enum [ "super" "left-alt" ];
+      type = lib.types.enum [
+        "super"
+        "left-alt"
+      ];
       default = "left-alt";
       description = "Modifier key for Niri bindings";
     };

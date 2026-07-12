@@ -38,6 +38,7 @@ in
       allowUnfree = true;
       permittedInsecurePackages = [
         "electron-39.8.10"
+        "pnpm-10.29.2"
       ];
     };
     # Disable javascript support in yt-dlp to avoid building deno (and rusty-v8) from source

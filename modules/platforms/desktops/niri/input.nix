@@ -11,8 +11,8 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.desktops.niri.settings = {
       input = {
-        mod-key = "Alt";
-        mod-key-nested = "Super";
+        mod-key = if cfg.modKey == "super" then "Super" else "Alt";
+        mod-key-nested = if cfg.modKey == "super" then "Alt" else "Super";
 
         touchpad = {
           tap = true;

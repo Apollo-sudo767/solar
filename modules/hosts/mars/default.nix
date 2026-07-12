@@ -75,6 +75,7 @@
           };
         };
         platforms = {
+          desktops.niri.modKey = "super";
           styling = {
             stylix.enable = true;
             skyNiri.enable = true;

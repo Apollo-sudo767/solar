@@ -2,6 +2,7 @@
   meta = {
     system = "x86_64-linux";
     stable = false;
+    useSecrets = false;
   };
 
   module =
@@ -22,7 +23,7 @@
             usernames = [
               "apollo"
             ];
-            agenixPassword = true;
+            agenixPassword = false;
           };
           shell.shell-branch.enable = true;
           boot = {
@@ -33,7 +34,7 @@
             enable = true;
             useAppArmor = true;
           };
-          security.agenix.enable = true;
+          security.agenix.enable = false;
           nix.lix.enable = true;
         };
 

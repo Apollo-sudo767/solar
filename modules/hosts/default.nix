@@ -24,7 +24,10 @@ let
       isDarwin = lib.hasSuffix "-darwin" system;
 
       # 1. Strict language-level check to verify if the secret repo input is actually present
-      hasPrivateSecrets = (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath);
+      hasPrivateSecrets =
+        (builtins.hasAttr "solar-secrets" inputs)
+        && (inputs.solar-secrets ? outPath)
+        && (hostData.meta.useSecrets or true);
 
       pkgs-input = getPkgInput isStable;
       builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
@@ -65,6 +68,7 @@ let
           inherit inputs isStable isDarwin;
           isTotal = true;
           inherit (inputs) preservation;
+          useSecrets = hostData.meta.useSecrets or true;
         };
         modules =
           globalModules

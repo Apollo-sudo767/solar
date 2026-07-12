@@ -3,12 +3,14 @@
   lib,
   inputs,
   isTotal,
+  useSecrets ? true,
   ...
 }:
 
 let
   cfg = config.myFeatures.core.security.agenix;
-  hasPrivateSecrets = (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath);
+  hasPrivateSecrets =
+    (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath) && useSecrets;
   secretsDir = if hasPrivateSecrets then inputs.solar-secrets + "/secrets" else "";
 in
 {

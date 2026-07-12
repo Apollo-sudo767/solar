@@ -60,9 +60,17 @@
           themes.sky.enable = true;
         };
       };
-      services.networking = {
-        tailscale.enable = true;
-        syncthing.enable = true;
+      services = {
+        networking = {
+          tailscale.enable = true;
+          syncthing.enable = true;
+        };
+        servers = {
+          trilium = {
+            enable = true;
+            type = "desktop";
+          };
+        };
       };
     };
   };

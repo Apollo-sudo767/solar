@@ -111,7 +111,7 @@ let
                     );
                   storageMode = lib.mkDefault "local";
                   localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
-                  masterIdentities = lib.mkDefault [ ];
+                  masterIdentities = lib.mkDefault [ "dummy" ];
                 };
               }
             )

@@ -10,6 +10,21 @@ let
   inherit isTotal;
   cfg = config.myFeatures.core.shell.shell;
   host = config.networking.hostName;
+  secretsOverride =
+    if
+      config.myFeatures.core.security.agenix.enable
+      && config.myFeatures.core.security.agenix.usePrivateSecrets
+    then
+      let
+        secretsPath =
+          if pkgs.stdenv.isDarwin then
+            "/Users/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets"
+          else
+            "/home/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets";
+      in
+      " --override-input solar-secrets path:${secretsPath}"
+    else
+      "";
 in
 {
   options.myFeatures.core.shell.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
@@ -91,9 +106,9 @@ in
           ll = "ls -l";
           la = "eza -a";
           # Use your host variable for easy rebuilds
-          nrs = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild switch --flake .#${host}";
-          nrb = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild boot --flake .#${host}";
-          drs = "sudo --preserve-env=SSH_AUTH_SOCK darwin-rebuild switch --flake .#${host}";
+          nrs = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild switch --flake .#${host}${secretsOverride}";
+          nrb = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild boot --flake .#${host}${secretsOverride}";
+          drs = "sudo --preserve-env=SSH_AUTH_SOCK darwin-rebuild switch --flake .#${host}${secretsOverride}";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";

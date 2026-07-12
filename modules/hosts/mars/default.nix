@@ -153,6 +153,12 @@
             tailscale.enable = true;
             syncthing.enable = true;
           };
+          servers = {
+            trilium = {
+              enable = true;
+              type = "desktop";
+            };
+          };
         };
       };
     };

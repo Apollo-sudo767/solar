@@ -54,19 +54,24 @@
         };
         services = {
           nginx = {
-            enable = true;
-            domain = "trilium.apollan.cc";
+            enable = false;
           };
           hardware.udisks2.enable = true;
           networking = {
             enable = true;
             tailscale.enable = true;
+            cloudflare = {
+              enable = true;
+              tunnelId = "YOUR_CLOUDFLARE_TUNNEL_UUID"; # Leave a placeholder for me to fill
+              domains = {
+                "trilium.apollan.cc" = "http://localhost:8080";
+              };
+            };
             ddns = {
               enable = true;
               domains = [
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
-                "trilium.apollan.cc"
               ];
             };
           };

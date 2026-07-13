@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   isDarwin,
   isTotal,
   isStable ? false,
@@ -11,7 +12,12 @@
 let
   inherit isDarwin isTotal;
   cfg = config.myFeatures.core.system.users;
-  useAgenixPassword = cfg.agenixPassword && (config.myFeatures.core.security.agenix.enable or false);
+  hasPrivateSecrets =
+    (builtins.hasAttr "solar-secrets" inputs)
+    && (inputs.solar-secrets ? outPath)
+    && (builtins.pathExists "${inputs.solar-secrets}/secrets");
+  useAgenixPassword =
+    cfg.agenixPassword && (config.myFeatures.core.security.agenix.enable or false) && hasPrivateSecrets;
 in
 {
   options.myFeatures.core.system.users = {

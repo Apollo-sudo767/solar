@@ -15,7 +15,10 @@ let
   # FIX: Look exclusively at 'inputs' to determine if the private repo exists.
   # This breaks the infinite recursion because it doesn't read from 'config'.
   hasPrivateSecrets =
-    (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath) && useSecrets;
+    (builtins.hasAttr "solar-secrets" inputs)
+    && (inputs.solar-secrets ? outPath)
+    && (builtins.pathExists "${inputs.solar-secrets}/secrets")
+    && useSecrets;
 in
 {
   options.myFeatures.core.security.agenix = {

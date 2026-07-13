@@ -23,10 +23,10 @@ let
       # Determine platform
       isDarwin = lib.hasSuffix "-darwin" system;
 
-      # 1. Strict language-level check to verify if the secret repo input is actually present
       hasPrivateSecrets =
         (builtins.hasAttr "solar-secrets" inputs)
         && (inputs.solar-secrets ? outPath)
+        && (builtins.pathExists "${inputs.solar-secrets}/secrets")
         && (hostData.meta.useSecrets or true);
 
       pkgs-input = getPkgInput isStable;

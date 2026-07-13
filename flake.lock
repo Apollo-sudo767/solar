@@ -1297,14 +1297,17 @@
     "solar-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-+DpZbeSxyDZXvplxfZGKsrk90fkJvMAO+XyIcw3R1Eg=",
-        "path": "./secrets-dummy",
-        "type": "path"
+        "lastModified": 1783900499,
+        "narHash": "sha256-iaxU+AA0Q9oUeIKfBSKDR7HoyMt7H5biP5VZxDhIPdg=",
+        "owner": "Apollo-sudo767",
+        "repo": "solar",
+        "rev": "292e3f4a2279c316d7f410719fb182576eebfb3e",
+        "type": "github"
       },
       "original": {
-        "path": "./secrets-dummy",
-        "type": "path"
+        "owner": "Apollo-sudo767",
+        "repo": "solar",
+        "type": "github"
       }
     },
     "spicetify-nix": {

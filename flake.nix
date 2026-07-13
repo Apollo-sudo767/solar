@@ -36,7 +36,7 @@
 
     # Your private repo (Only fetched when building your specific hosts)
     solar-secrets = {
-      url = "path:./secrets-dummy";
+      url = "github:Apollo-sudo767/solar";
       flake = false;
     };
 

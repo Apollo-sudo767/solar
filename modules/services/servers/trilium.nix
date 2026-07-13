@@ -34,6 +34,7 @@ in
         services.trilium-server = lib.mkIf (cfg.type == "server") {
           enable = true;
           inherit (cfg) port;
+          host = "0.0.0.0";
         };
 
         networking.firewall.allowedTCPPorts = lib.mkIf (cfg.type == "server") [ cfg.port ];

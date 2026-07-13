@@ -58,24 +58,24 @@
           networking = {
             enable = true;
             tailscale.enable = true;
-            syncthing.enable = true;
             ddns = {
               enable = true;
               domains = [
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
                 "terraria.apollan.cc"
+
               ];
             };
           };
           servers = {
+            trilium = {
+              enable = true;
+              type = "server";
+            };
             factorio = {
               enable = true;
               port = 34197;
-            };
-            terraria = {
-              enable = true;
-              worldSize = "large";
             };
             minecraft = {
               admin.enable = true;

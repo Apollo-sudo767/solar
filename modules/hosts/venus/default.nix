@@ -53,7 +53,10 @@
           utilities.lego.enable = true;
         };
         services = {
-          nginx.enable = true;
+          nginx = {
+            enable = true;
+            domain = "trilium.apollan.cc";
+          };
           hardware.udisks2.enable = true;
           networking = {
             enable = true;

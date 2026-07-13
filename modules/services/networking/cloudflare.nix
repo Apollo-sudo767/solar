@@ -17,7 +17,7 @@ in
       description = "The UUID of your Cloudflare tunnel";
     };
     credentialsFile = lib.mkOption {
-      type = lib.types.path;
+      type = lib.types.str;
       default = "/var/lib/cloudflare/tunnel-creds.json";
       description = "Local path to the tunnel JSON credentials";
     };
@@ -37,11 +37,8 @@ in
         enable = true;
         tunnels."${cfg.tunnelId}" = {
           inherit (cfg) credentialsFile;
-          ingress =
-            (lib.mapAttrsToList (hostname: service: {
-              inherit hostname service;
-            }) cfg.domains)
-            ++ [ { default = "http_status:404"; } ];
+          default = "http_status:404";
+          ingress = cfg.domains;
         };
       };
     }

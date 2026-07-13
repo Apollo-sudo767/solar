@@ -63,8 +63,7 @@
               domains = [
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
-                "terraria.apollan.cc"
-
+                "trilium.apollan.cc"
               ];
             };
           };

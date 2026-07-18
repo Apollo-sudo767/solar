@@ -2,6 +2,7 @@
   meta = {
     system = "x86_64-linux";
     stable = false;
+    useSolarSecrets = true;
   };
 
   module =

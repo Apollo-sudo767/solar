@@ -34,8 +34,17 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Your private repo (Only fetched when building your specific hosts)
     solar-secrets = {
+      url = "github:Apollo-sudo767/solar";
+      flake = false;
+    };
+
+    sacul-secrets = {
+      url = "github:Apollo-sudo767/solar";
+      flake = false;
+    };
+
+    nannyhead-secrets = {
       url = "github:Apollo-sudo767/solar";
       flake = false;
     };

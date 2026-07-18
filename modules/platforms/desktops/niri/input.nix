@@ -23,6 +23,10 @@ in
           click-method = "clickfinger";
         };
 
+        mouse = {
+          accel-profile = "flat";
+        };
+
         touch = {
           map-to-output = "eDP-1";
         };

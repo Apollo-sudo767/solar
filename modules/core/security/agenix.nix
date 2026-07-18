@@ -6,6 +6,7 @@
   isDarwin,
   isTotal,
   useSecrets ? true,
+  secretsInput ? null,
   ...
 }:
 
@@ -15,10 +16,10 @@ let
   # FIX: Look exclusively at 'inputs' to determine if the private repo exists.
   # This breaks the infinite recursion because it doesn't read from 'config'.
   hasPrivateSecrets =
-    (builtins.hasAttr "solar-secrets" inputs)
-    && (inputs.solar-secrets ? outPath)
-    && (builtins.pathExists "${inputs.solar-secrets}/secrets")
-    && useSecrets;
+    useSecrets
+    && (secretsInput != null)
+    && (secretsInput ? outPath)
+    && (builtins.pathExists "${secretsInput}/secrets");
 in
 {
   options.myFeatures.core.security.agenix = {
@@ -41,8 +42,8 @@ in
         masterIdentities =
           let
             allPaths = [
-              "${inputs.solar-secrets}/master/yubikey.id.pub"
-              "${inputs.solar-secrets}/master/mac_se.id.pub"
+              "${secretsInput}/master/yubikey.id.pub"
+              "${secretsInput}/master/mac_se.id.pub"
             ];
             validIdentities = builtins.filter (
               p:
@@ -61,7 +62,7 @@ in
 
         extraEncryptionPubkeys =
           let
-            masterDir = inputs.solar-secrets + "/master";
+            masterDir = secretsInput + "/master";
           in
           if builtins.pathExists masterDir then
             builtins.concatLists (

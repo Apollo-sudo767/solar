@@ -798,6 +798,22 @@
         "type": "github"
       }
     },
+    "nannyhead-secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783984570,
+        "narHash": "sha256-s1cYHApkLVZWCxH3qHq/kRLfaKN/OdrIGOeA+bqJj8o=",
+        "owner": "Apollo-sudo767",
+        "repo": "solar",
+        "rev": "fe194cac48680d1875ddf209ea2ee7a600e42c52",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Apollo-sudo767",
+        "repo": "solar",
+        "type": "github"
+      }
+    },
     "niri": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -1276,6 +1292,7 @@
         "home-manager-unstable": "home-manager-unstable",
         "impermanence": "impermanence",
         "ironbar": "ironbar",
+        "nannyhead-secrets": "nannyhead-secrets",
         "niri": "niri",
         "nix-darwin": "nix-darwin",
         "nix-minecraft": "nix-minecraft",
@@ -1286,12 +1303,29 @@
         "paneru": "paneru",
         "pre-commit-hooks": "pre-commit-hooks_2",
         "preservation": "preservation",
+        "sacul-secrets": "sacul-secrets",
         "solar-secrets": "solar-secrets",
         "spicetify-nix": "spicetify-nix",
         "stylix-stable": "stylix-stable",
         "stylix-unstable": "stylix-unstable",
         "treefmt-nix": "treefmt-nix_2",
         "zen-browser": "zen-browser"
+      }
+    },
+    "sacul-secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783984570,
+        "narHash": "sha256-s1cYHApkLVZWCxH3qHq/kRLfaKN/OdrIGOeA+bqJj8o=",
+        "owner": "Apollo-sudo767",
+        "repo": "solar",
+        "rev": "fe194cac48680d1875ddf209ea2ee7a600e42c52",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Apollo-sudo767",
+        "repo": "solar",
+        "type": "github"
       }
     },
     "solar-secrets": {

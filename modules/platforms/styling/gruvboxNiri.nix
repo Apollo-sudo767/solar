@@ -72,6 +72,21 @@ in
             ];
             open-fullscreen = true;
           }
+          {
+            matches = [
+              {
+                app-id = "^steam$";
+                title = "^notificationtoasts_[0-9]+_desktop$";
+              }
+            ];
+            default-floating-position = {
+              x = 16;
+              y = 16;
+              relative-to = "bottom-right";
+            };
+            open-floating = true;
+            open-focused = false;
+          }
         ];
         layout = {
           background-color = "transparent";

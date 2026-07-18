@@ -2,6 +2,7 @@
   meta = {
     system = "x86_64-linux";
     stable = false;
+    useSolarSecrets = true;
   };
 
   module =
@@ -101,6 +102,14 @@
           };
           media = {
             gaming.enable = true;
+            alvr = {
+              enable = true;
+              oculus.enable = true;
+              pico.enable = true;
+              vive.enable = false;
+              valve.enable = false;
+              apple.enable = false;
+            };
             steam = {
               protonInstaller.enable = true;
               gamescope = {

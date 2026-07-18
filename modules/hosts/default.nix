@@ -23,11 +23,33 @@ let
       # Determine platform
       isDarwin = lib.hasSuffix "-darwin" system;
 
+      useSolarSecrets = hostData.meta.useSolarSecrets or (hostData.meta.useSecrets or true);
+      useSaculSecrets = hostData.meta.useSaculSecrets or false;
+      useNannyheadSecrets = hostData.meta.useNannyheadSecrets or false;
+
+      useSecrets = useSolarSecrets || useSaculSecrets || useNannyheadSecrets;
+
+      secretsInputName =
+        if useSolarSecrets then
+          "solar-secrets"
+        else if useSaculSecrets then
+          "solar-secrets" # Route to solar-secrets temporarily
+        else if useNannyheadSecrets then
+          "solar-secrets" # Route to solar-secrets temporarily
+        else
+          null;
+
+      secretsInput =
+        if secretsInputName != null && builtins.hasAttr secretsInputName inputs then
+          inputs.${secretsInputName}
+        else
+          null;
+
       hasPrivateSecrets =
-        (builtins.hasAttr "solar-secrets" inputs)
-        && (inputs.solar-secrets ? outPath)
-        && (builtins.pathExists "${inputs.solar-secrets}/secrets")
-        && (hostData.meta.useSecrets or true);
+        useSecrets
+        && (secretsInput != null)
+        && (secretsInput ? outPath)
+        && (builtins.pathExists "${secretsInput}/secrets");
 
       pkgs-input = getPkgInput isStable;
       builder = if isDarwin then inputs.nix-darwin.lib.darwinSystem else pkgs-input.lib.nixosSystem;
@@ -68,7 +90,8 @@ let
           inherit inputs isStable isDarwin;
           isTotal = true;
           inherit (inputs) preservation;
-          useSecrets = hostData.meta.useSecrets or true;
+          inherit useSecrets;
+          inherit secretsInput;
         };
         modules =
           globalModules
@@ -98,9 +121,7 @@ let
                 age.rekey = {
                   hostPubkey =
                     let
-                      # 2. Fix: Shield the string path interpolation entirely behind the presence check.
-                      # If hasPrivateSecrets is false, it points to a harmless dummy string instead of querying inputs.
-                      path = if hasPrivateSecrets then "${inputs.solar-secrets}/hosts/${name}.pub" else "";
+                      path = if hasPrivateSecrets then "${secretsInput}/hosts/${name}.pub" else "";
                     in
                     lib.mkDefault (
                       if hasPrivateSecrets && (builtins.pathExists path) then
@@ -123,14 +144,20 @@ let
       };
     };
 
-  allHosts = lib.genAttrs hostDirs mkHost;
+  hostMetas = lib.genAttrs hostDirs (name: import ./${name}/default.nix);
+
+  isHostDarwin =
+    name:
+    let
+      hostData = hostMetas.${name};
+      system = hostData.meta.system or "x86_64-linux";
+    in
+    lib.hasSuffix "-darwin" system;
+
+  nixosHosts = lib.filterAttrs (name: _: !(isHostDarwin name)) hostMetas;
+  darwinHosts = lib.filterAttrs (name: _: isHostDarwin name) hostMetas;
 in
 {
-  nixosConfigurations = lib.mapAttrs (_n: v: v.config) (
-    lib.filterAttrs (_n: v: !v.isDarwin) allHosts
-  );
-
-  darwinConfigurations = lib.mapAttrs (_n: v: v.config) (
-    lib.filterAttrs (_n: v: v.isDarwin) allHosts
-  );
+  nixosConfigurations = lib.mapAttrs (name: _: (mkHost name).config) nixosHosts;
+  darwinConfigurations = lib.mapAttrs (name: _: (mkHost name).config) darwinHosts;
 }

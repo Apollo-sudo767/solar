@@ -803,14 +803,14 @@
       "locked": {
         "lastModified": 1783984570,
         "narHash": "sha256-s1cYHApkLVZWCxH3qHq/kRLfaKN/OdrIGOeA+bqJj8o=",
-        "owner": "Apollo-sudo767",
-        "repo": "solar",
+        "owner": "nannyhead",
+        "repo": "nannyhead-secrets",
         "rev": "fe194cac48680d1875ddf209ea2ee7a600e42c52",
         "type": "github"
       },
       "original": {
-        "owner": "Apollo-sudo767",
-        "repo": "solar",
+        "owner": "nannyhead",
+        "repo": "nannyhead-secrets",
         "type": "github"
       }
     },
@@ -1317,30 +1317,30 @@
       "locked": {
         "lastModified": 1783984570,
         "narHash": "sha256-s1cYHApkLVZWCxH3qHq/kRLfaKN/OdrIGOeA+bqJj8o=",
-        "owner": "Apollo-sudo767",
-        "repo": "solar",
+        "owner": "sacul2345",
+        "repo": "sacul-secrets",
         "rev": "fe194cac48680d1875ddf209ea2ee7a600e42c52",
         "type": "github"
       },
       "original": {
-        "owner": "Apollo-sudo767",
-        "repo": "solar",
+        "owner": "sacul2345",
+        "repo": "sacul-secrets",
         "type": "github"
       }
     },
     "solar-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1783900499,
-        "narHash": "sha256-iaxU+AA0Q9oUeIKfBSKDR7HoyMt7H5biP5VZxDhIPdg=",
+        "lastModified": 1781215682,
+        "narHash": "sha256-Z/JsHrqvXBdgQ+F3rNYHmRz6ORqcF4ICG5kLIaQH/hs=",
         "owner": "Apollo-sudo767",
-        "repo": "solar",
-        "rev": "292e3f4a2279c316d7f410719fb182576eebfb3e",
+        "repo": "solar-secrets",
+        "rev": "f32cf422fad9a43d3290bb82e32757a3bc5bd361",
         "type": "github"
       },
       "original": {
         "owner": "Apollo-sudo767",
-        "repo": "solar",
+        "repo": "solar-secrets",
         "type": "github"
       }
     },

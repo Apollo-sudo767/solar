@@ -35,17 +35,17 @@
     };
 
     solar-secrets = {
-      url = "github:Apollo-sudo767/solar";
+      url = "github:Apollo-sudo767/solar-secrets";
       flake = false;
     };
 
     sacul-secrets = {
-      url = "github:Apollo-sudo767/solar";
+      url = "github:sacul2345/sacul-secrets";
       flake = false;
     };
 
     nannyhead-secrets = {
-      url = "github:Apollo-sudo767/solar";
+      url = "github:nannyhead/nannyhead-secrets";
       flake = false;
     };
 

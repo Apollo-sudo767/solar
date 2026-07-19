@@ -181,11 +181,11 @@ in
 
           theme = {
             community_palette = "m3-content";
-            source = "wallpaper";
+            source = lib.mkForce "wallpaper";
             wallpaper_scheme = "Noctalia";
           };
 
-          wallpaper = {
+          wallpaper = lib.mkForce {
             directory = pkgs.runCommand "noctalia-sky-wallpapers" { } ''
               mkdir -p $out
               cp ${../../../assets/wallpapers/space.png} $out/space.png

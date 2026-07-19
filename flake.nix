@@ -4,124 +4,114 @@
 
   inputs = {
     # Core nixpkgs channels
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-unstable.url = "git+ssh://git@github.com/NixOS/nixpkgs.git?ref=nixos-unstable";
+    nixpkgs-stable.url = "git+ssh://git@github.com/NixOS/nixpkgs.git?ref=nixos-26.05";
 
     # Flake Parts
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.url = "git+ssh://git@github.com/hercules-ci/flake-parts.git";
 
     # Home Manager
-    home-manager-unstable.url = "github:nix-community/home-manager/master";
-    home-manager-stable.url = "github:nix-community/home-manager/release-26.05";
+    home-manager-unstable.url = "git+ssh://git@github.com/nix-community/home-manager.git?ref=master";
+    home-manager-stable.url = "git+ssh://git@github.com/nix-community/home-manager.git?ref=release-26.05";
 
     # Darwin
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin";
+      url = "git+ssh://git@github.com/nix-darwin/nix-darwin.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Stylix
-    stylix-unstable.url = "github:danth/stylix";
-    stylix-stable.url = "github:danth/stylix/release-26.05";
+    stylix-unstable.url = "git+ssh://git@github.com/danth/stylix.git";
+    stylix-stable.url = "git+ssh://git@github.com/danth/stylix.git?ref=release-26.05";
 
     # Secrets Management
     agenix = {
-      url = "github:ryantm/agenix";
+      url = "git+ssh://git@github.com/ryantm/agenix.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     agenix-rekey = {
-      url = "github:oddlama/agenix-rekey";
+      url = "git+ssh://git@github.com/oddlama/agenix-rekey.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     solar-secrets = {
-      url = "github:Apollo-sudo767/solar-secrets";
-      flake = false;
-    };
-
-    sacul-secrets = {
-      url = "github:sacul2345/sacul-secrets";
-      flake = false;
-    };
-
-    nannyhead-secrets = {
-      url = "github:nannyhead/nannyhead-secrets";
+      url = "git+ssh://git@github.com/Apollo-sudo767/solar-secrets.git";
       flake = false;
     };
 
     # Niri
     niri = {
-      url = "github:epireyn/niri-flake";
+      url = "git+ssh://git@github.com/epireyn/niri-flake.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Paneru
     paneru = {
-      url = "github:karinushka/paneru";
+      url = "git+ssh://git@github.com/karinushka/paneru.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Disko & Impermanence
     disko = {
-      url = "github:nix-community/disko";
+      url = "git+ssh://git@github.com/nix-community/disko.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     impermanence = {
-      url = "github:nix-community/impermanence";
+      url = "git+ssh://git@github.com/nix-community/impermanence.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     preservation = {
-      url = "github:WilliButz/preservation";
+      url = "git+ssh://git@github.com/WilliButz/preservation.git";
     };
 
     # Zen Browser
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake";
+      url = "git+ssh://git@github.com/0xc000022070/zen-browser-flake.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Spicetify
     spicetify-nix = {
-      url = "github:Gerg-L/spicetify-nix";
+      url = "git+ssh://git@github.com/Gerg-L/spicetify-nix.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Nix Minecraft
     nix-minecraft = {
-      url = "github:Infinidoge/nix-minecraft";
+      url = "git+ssh://git@github.com/Infinidoge/nix-minecraft.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Firefox Nightly
     firefox = {
-      url = "github:nix-community/flake-firefox-nightly";
+      url = "git+ssh://git@github.com/nix-community/flake-firefox-nightly.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Noctalia
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "git+ssh://git@github.com/noctalia-dev/noctalia-shell.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     noctalia-v5 = {
-      url = "github:noctalia-dev/noctalia";
+      url = "git+ssh://git@github.com/noctalia-dev/noctalia.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Iron Bar
     ironbar = {
-      url = "github:JakeStanger/ironbar";
+      url = "git+ssh://git@github.com/JakeStanger/ironbar.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Formatting & Linting
     treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
+      url = "git+ssh://git@github.com/numtide/treefmt-nix.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
+      url = "git+ssh://git@github.com/cachix/pre-commit-hooks.nix.git";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 

@@ -105,10 +105,6 @@
             alvr = {
               enable = true;
               oculus.enable = true;
-              pico.enable = true;
-              vive.enable = false;
-              valve.enable = false;
-              apple.enable = false;
             };
             steam = {
               protonInstaller.enable = true;

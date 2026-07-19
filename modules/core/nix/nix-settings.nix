@@ -41,13 +41,9 @@ in
         "pnpm-10.29.2"
       ];
     };
-    # Disable javascript support in yt-dlp to avoid building deno (and rusty-v8) from source
     nixpkgs.overlays = [
       (final: prev: {
         yt-dlp = prev.yt-dlp.override { javascriptSupport = false; };
-        vesktop = prev.vesktop.override {
-          pnpm_10_29_2 = final.pnpm_10;
-        };
       })
     ];
   };

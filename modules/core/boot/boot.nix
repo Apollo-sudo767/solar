@@ -56,6 +56,18 @@ in
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;
 
+    # Bootloader timeout optimization (1 second wait time)
+    boot.loader.timeout = lib.mkDefault 1;
+
+    # Fast boot optimizations
+    systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
+
+    # Prevent journal log bloat from slowing down systemd-tmpfiles-setup.service
+    services.journald.extraConfig = ''
+      SystemMaxUse=200M
+      MaxRetentionSec=14d
+    '';
+
     # The native "Nix-Way" to pass compression properties to the initrd builder engine
     boot.initrd.compressor = "zstd";
 

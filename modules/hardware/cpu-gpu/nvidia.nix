@@ -22,6 +22,11 @@ in
     lib.mkMerge [
       {
         myFeatures.hardware.system.graphics.enable = true;
+        nixpkgs.overlays = [
+          (final: prev: {
+            btop = prev.btop.override { cudaSupport = true; };
+          })
+        ];
       }
       (lib.optionalAttrs (!isDarwin) {
         services.xserver.videoDrivers = lib.mkBefore [ "nvidia" ];
@@ -29,10 +34,11 @@ in
         boot = {
           kernelParams = [
             "nvidia-drm.modeset=1"
+            "nvidia-drm.fbdev=1"
             "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
             "nvidia.NVreg_TemporaryFilePath=/var/tmp"
           ];
-          initrd.kernelModules = [
+          kernelModules = [
             "nvidia"
             "nvidia_modeset"
             "nvidia_uvm"
@@ -76,6 +82,8 @@ in
         environment.variables = {
           WLR_NO_HARDWARE_CURSORS = "1";
           NIXOS_OZONE_WL = "1";
+          ENABLE_HDR_WSI = "1";
+          DXVK_HDR = "1";
           __GL_GSYNC_ALLOWED = "1";
           __GL_VRR_ALLOWED = "1";
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";

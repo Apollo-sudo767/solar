@@ -21,7 +21,7 @@ in
           stdenv.cc.cc
           zlib
           glib
-          xorg.libX11
+          libX11
         ];
       };
     }

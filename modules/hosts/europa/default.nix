@@ -52,13 +52,12 @@
           browsers.firefox.enable = true;
           media = {
             gaming.enable = true;
-            alvr = {
+            vr = {
               enable = true;
-              oculus.enable = true;
-              pico.enable = true;
-              vive.enable = false;
-              valve.enable = false;
-              apple.enable = false;
+              quest = {
+                enable = true;
+                wired = true;
+              };
             };
             media.enable = true;
             obs.enable = true;

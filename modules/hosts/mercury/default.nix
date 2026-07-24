@@ -125,7 +125,7 @@
           };
           networking = {
             tailscale.enable = true;
-            syncthing.enable = true;
+            syncthing.enable = false;
           };
           servers = {
             trilium = {

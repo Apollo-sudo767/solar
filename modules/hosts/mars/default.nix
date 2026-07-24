@@ -102,9 +102,13 @@
           };
           media = {
             gaming.enable = true;
-            alvr = {
+            vr = {
               enable = true;
-              oculus.enable = true;
+              streamer = "wivrn";
+              quest = {
+                enable = true;
+                wired = true;
+              };
             };
             steam = {
               protonInstaller.enable = true;
@@ -134,6 +138,16 @@
             stylePackages.enable = true;
             bitwarden.enable = true;
             social.enable = true;
+            vesktop.enable = false;
+          };
+          office = {
+            libreoffice = {
+              enable = true;
+              variant = "fresh";
+              spellcheck = true;
+              enableOfficeFonts = true;
+              enableJava = true;
+            };
           };
         };
         services = {
@@ -156,7 +170,7 @@
           networking = {
             enable = true;
             tailscale.enable = true;
-            syncthing.enable = true;
+            syncthing.enable = false;
           };
           servers = {
             trilium = {

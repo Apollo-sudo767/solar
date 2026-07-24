@@ -64,8 +64,8 @@ in
         base16Scheme = cfg.scheme;
       }
       // lib.optionalAttrs (!isDarwin) {
-        # Moved inside here because nix-darwin lacks QT system-level options
-        targets.qt.platform = lib.mkForce "qtct";
+        targets.qt.enable = !(config.myFeatures.platforms.desktops.kde.enable or false);
+        targets.qt.platform = lib.mkDefault "qtct";
 
         cursor = {
           package = pkgs.bibata-cursors;
@@ -95,7 +95,6 @@ in
         lib.mkIf cfg.enable {
           stylix.targets = {
             gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
-            qt.enable = config.myFeatures.platforms.desktops.kde.enable or false;
             plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
             spicetify.enable = config.myFeatures.programs.utilities.spicetify.enable or false;
             kmscon.enable = false;

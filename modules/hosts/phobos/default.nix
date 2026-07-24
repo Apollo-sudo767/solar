@@ -53,6 +53,11 @@
         utilities = {
           logseq.enable = true;
         };
+        office = {
+          libreoffice = {
+            enable = true;
+          };
+        };
       };
       platforms = {
         styling = {
@@ -63,7 +68,7 @@
       services = {
         networking = {
           tailscale.enable = true;
-          syncthing.enable = true;
+          syncthing.enable = false;
         };
         servers = {
           trilium = {

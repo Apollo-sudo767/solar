@@ -61,7 +61,8 @@ in
             "Mod+O".action.toggle-overview = { };
             "Mod+C".action.close-window = { };
             "Mod+Shift+E".action.quit = { };
-            "Mod+Super+L".action.spawn = [ "swaylock" ];
+            "Mod+Super+L".action.spawn = [ "niri-lock" ];
+            "Super+Alt+L".action.spawn = [ "niri-lock" ];
           }
           // lib.optionalAttrs config.myFeatures.platforms.addons.noctalia-shell.enable {
             "Mod+S".action.spawn = [

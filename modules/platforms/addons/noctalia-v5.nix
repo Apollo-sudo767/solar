@@ -36,13 +36,33 @@ in
       lib.mkIf config.myFeatures.platforms.desktops.niri.enable
         {
           description = "Lock Noctalia on Suspend";
-          wantedBy = [ "graphical-session.target" ];
-          partOf = [ "graphical-session.target" ];
-          after = [ "graphical-session.target" ];
+          wantedBy = [
+            "graphical-session.target"
+            "niri-session.target"
+          ];
+          partOf = [
+            "graphical-session.target"
+            "niri-session.target"
+          ];
+          after = [
+            "graphical-session.target"
+            "niri-session.target"
+          ];
+          path = [
+            pkgs.swayidle
+            pkgs.bash
+          ];
           serviceConfig = {
             Type = "simple";
-            ExecStart = "${pkgs.swayidle}/bin/swayidle -w before-sleep 'noctalia msg session lock'";
+            ExecStart = "${pkgs.swayidle}/bin/swayidle -w before-sleep '${pkgs.writeShellScript "noctalia-v5-lock" ''
+              if command -v noctalia >/dev/null 2>&1; then
+                noctalia msg session lock
+              fi
+            ''}'";
             Restart = "always";
+            Environment = [
+              "PATH=/etc/profiles/per-user/%u/bin:%h/.nix-profile/bin:/run/current-system/sw/bin"
+            ];
           };
         };
 

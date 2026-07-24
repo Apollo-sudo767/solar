@@ -38,13 +38,35 @@ in
       lib.mkIf config.myFeatures.platforms.desktops.niri.enable
         {
           description = "Lock Noctalia Shell on Suspend";
-          wantedBy = [ "graphical-session.target" ];
-          partOf = [ "graphical-session.target" ];
-          after = [ "graphical-session.target" ];
+          wantedBy = [
+            "graphical-session.target"
+            "niri-session.target"
+          ];
+          partOf = [
+            "graphical-session.target"
+            "niri-session.target"
+          ];
+          after = [
+            "graphical-session.target"
+            "niri-session.target"
+          ];
+          path = [
+            pkgs.swayidle
+            pkgs.bash
+          ];
           serviceConfig = {
             Type = "simple";
-            ExecStart = "${pkgs.swayidle}/bin/swayidle -w before-sleep 'qs -c noctalia-shell ipc call lockScreen lock'";
+            ExecStart = "${pkgs.swayidle}/bin/swayidle -w before-sleep '${pkgs.writeShellScript "noctalia-shell-lock" ''
+              if command -v noctalia-shell >/dev/null 2>&1; then
+                noctalia-shell ipc call lockScreen lock
+              elif command -v qs >/dev/null 2>&1; then
+                qs -c noctalia-shell ipc call lockScreen lock
+              fi
+            ''}'";
             Restart = "always";
+            Environment = [
+              "PATH=/etc/profiles/per-user/%u/bin:%h/.nix-profile/bin:/run/current-system/sw/bin"
+            ];
           };
         };
 

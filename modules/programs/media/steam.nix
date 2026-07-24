@@ -64,6 +64,8 @@ in
                 rm $out/bin/steam
                 cat <<'EOF' > $out/bin/steam
                 #!/bin/sh
+                export PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1
+                export XR_RUNTIME_JSON=/run/current-system/sw/share/openxr/1/openxr_wivrn.json
                 ${lib.optionalString (cfg.gamescope.enable && cfg.gamescope.autoWrap) ''
                   if [ "$XDG_CURRENT_DESKTOP" = "niri" ] || [ -n "$NIRI_SOCKET" ]; then
                     if [ "$STEAM_GAMESCOPE_WRAPPED" != "1" ] && command -v steam-gamescope >/dev/null 2>&1; then
@@ -82,6 +84,10 @@ in
             };
           initialSteam = pkgs.steam.override {
             extraArgs = "-cef-disable-gpu-compositing";
+            extraEnv = {
+              PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES = "1";
+              XR_RUNTIME_JSON = "/run/current-system/sw/share/openxr/1/openxr_wivrn.json";
+            };
           };
           wrapped = makeWrappedSteam initialSteam;
         in

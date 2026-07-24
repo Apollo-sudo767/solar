@@ -12,8 +12,8 @@ let
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   spotify-wrapped = pkgs.spotify.overrideAttrs (oldAttrs: {
     postFixup = (oldAttrs.postFixup or "") + ''
-      # Edit the wrapper script to inject --password-store=basic
-      sed -i 's|exec -a "$0" \("[^"]*"\) *"$@"|exec -a "$0" \1 --password-store=basic "$@"|g' $out/share/spotify/spotify
+      # Edit the wrapper script to inject --password-store=gnome-libsecret
+      sed -i 's|exec -a "$0" \("[^"]*"\) *"$@"|exec -a "$0" \1 --password-store=gnome-libsecret "$@"|g' $out/share/spotify/spotify
     '';
   });
 in

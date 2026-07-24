@@ -61,8 +61,36 @@ in
     };
 
     environment.systemPackages =
+      let
+        niri-lock = pkgs.writeShellScriptBin "niri-lock" ''
+          if ${pkgs.procps}/bin/pgrep -x "noctalia" >/dev/null 2>&1 && ${pkgs.which}/bin/which noctalia >/dev/null 2>&1; then
+            noctalia msg session lock && exit 0
+          fi
+
+          if ${pkgs.procps}/bin/pgrep -x "noctalia-shell" >/dev/null 2>&1 && ${pkgs.which}/bin/which noctalia-shell >/dev/null 2>&1; then
+            noctalia-shell ipc call lockScreen lock && exit 0
+          fi
+
+          if ${pkgs.which}/bin/which swaylock >/dev/null 2>&1; then
+            exec swaylock
+          elif ${pkgs.which}/bin/which hyprlock >/dev/null 2>&1; then
+            exec hyprlock
+          elif ${pkgs.which}/bin/which gtklock >/dev/null 2>&1; then
+            exec gtklock
+          elif ${pkgs.which}/bin/which waylock >/dev/null 2>&1; then
+            exec waylock
+          else
+            exec loginctl lock-session
+          fi
+        '';
+        lock-screen = pkgs.writeShellScriptBin "lock-screen" ''
+          exec niri-lock "$@"
+        '';
+      in
       with pkgs;
       [
+        niri-lock
+        lock-screen
         xwayland-satellite
         networkmanagerapplet
         thunar

@@ -139,6 +139,48 @@ in
                 ];
               });
             };
+
+        virtualisation.vmVariant = {
+          virtualisation.memorySize = 4096;
+          virtualisation.cores = 4;
+          virtualisation.forwardPorts = [
+            {
+              from = "host";
+              host.port = 2222;
+              guest.port = 22;
+            }
+          ];
+          virtualisation.qemu.options = [
+            "-vga"
+            "std"
+          ];
+          services.openssh = {
+            enable = true;
+            settings.PermitRootLogin = lib.mkForce "yes";
+            settings.PermitEmptyPasswords = lib.mkForce "yes";
+          };
+          environment.variables.LIBGL_ALWAYS_SOFTWARE = "1";
+          age.secrets = lib.mkForce { };
+          services.displayManager.defaultSession = lib.mkForce "plasma";
+          services.displayManager.autoLogin = {
+            enable = true;
+            user = cfg.mainUser;
+          };
+          users.users =
+            (lib.genAttrs cfg.usernames (name: {
+              hashedPasswordFile = lib.mkForce null;
+              hashedPassword = lib.mkForce null;
+              password = lib.mkForce "nixos";
+            }))
+            // {
+              root = {
+                password = "nixos";
+                openssh.authorizedKeys.keys = [
+                  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAcokRBeRaSFM1qXB+Qs+A74BkdNmfuxcN5PSKIsBfli apollo@mars"
+                ];
+              };
+            };
+        };
       }
     ))
   ];

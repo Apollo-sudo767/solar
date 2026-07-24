@@ -14,7 +14,8 @@ in
   config = lib.mkIf (cfg.manager == "sddm") (
     lib.mkMerge [
       (lib.optionalAttrs (!isDarwin) {
-        services.displayManager.sddm.wayland.enable = true;
+        services.displayManager.sddm.enable = true;
+        services.displayManager.sddm.wayland.enable = lib.mkForce false;
       })
     ]
   );

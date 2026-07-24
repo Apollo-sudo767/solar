@@ -88,13 +88,13 @@ in
                 "custom/lock" = {
                   format = "󰌾";
                   tooltip = false;
-                  on-click = "swaylock";
+                  on-click = "niri-lock";
                 };
 
                 "custom/suspend" = {
                   format = "󰤄";
                   tooltip = false;
-                  on-click = "swaylock & systemctl suspend";
+                  on-click = "niri-lock & systemctl suspend";
                 };
 
                 "custom/reboot" = {

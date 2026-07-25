@@ -176,9 +176,10 @@
             joplin = {
               enable = true;
               type = "desktop";
+              cli = true;
             };
             trilium = {
-              enable = true;
+              enable = false;
               type = "desktop";
             };
           };

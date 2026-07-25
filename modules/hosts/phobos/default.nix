@@ -71,8 +71,12 @@
           syncthing.enable = false;
         };
         servers = {
-          trilium = {
+          joplin = {
             enable = true;
+            cli = true;
+          };
+          trilium = {
+            enable = false;
             type = "desktop";
           };
         };

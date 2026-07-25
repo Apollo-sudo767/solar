@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  isDarwin ? false,
   isTotal ? true,
   ...
 }:
@@ -46,43 +47,46 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = lib.optional (!pkgs.stdenv.isDarwin) pkgs.onlyoffice-bin;
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        environment.systemPackages = lib.optional (!isDarwin) pkgs.onlyoffice-bin;
 
-    homebrew.casks =
-      lib.optionals (pkgs.stdenv.isDarwin && config.myFeatures.darwin.system.homebrew.enable or false)
-        [
+        home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+          xdg.mimeApps = lib.mkIf (!isDarwin) {
+            enable = true;
+            defaultApplications = {
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [
+                "onlyoffice-desktopeditors.desktop"
+              ];
+              "application/msword" = [ "onlyoffice-desktopeditors.desktop" ];
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" = [
+                "onlyoffice-desktopeditors.desktop"
+              ];
+              "application/vnd.ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+              "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [
+                "onlyoffice-desktopeditors.desktop"
+              ];
+              "application/vnd.ms-powerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
+            };
+          };
+        });
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf (config.myFeatures.core.system.preservation.enable or false && !isDarwin)
+            {
+              users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+                directories = [
+                  ".config/onlyoffice"
+                ];
+              });
+            };
+      }
+      (lib.optionalAttrs isDarwin {
+        homebrew.casks = lib.optionals (config.myFeatures.darwin.system.homebrew.enable or false) [
           "onlyoffice"
         ];
-
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      xdg.mimeApps = lib.mkIf (!pkgs.stdenv.isDarwin) {
-        enable = true;
-        defaultApplications = {
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [
-            "onlyoffice-desktopeditors.desktop"
-          ];
-          "application/msword" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" = [
-            "onlyoffice-desktopeditors.desktop"
-          ];
-          "application/vnd.ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [
-            "onlyoffice-desktopeditors.desktop"
-          ];
-          "application/vnd.ms-powerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
-        };
-      };
-    });
-
-    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.isLinux)
-        {
-          users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-            directories = [
-              ".config/onlyoffice"
-            ];
-          });
-        };
-  };
+      })
+    ]
+  );
 }

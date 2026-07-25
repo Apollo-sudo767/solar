@@ -62,7 +62,7 @@
               enable = true;
               tunnelId = "YOUR_CLOUDFLARE_TUNNEL_UUID"; # Leave a placeholder for me to fill
               domains = {
-                "trilium.apollan.cc" = "http://localhost:8080";
+                "joplin.apollan.cc" = "http://localhost:22300";
               };
             };
             ddns = {
@@ -77,6 +77,7 @@
             joplin = {
               enable = true;
               type = "server";
+              baseUrl = "https://joplin.apollan.cc";
             };
             trilium = {
               enable = false;

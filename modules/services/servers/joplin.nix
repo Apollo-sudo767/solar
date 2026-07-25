@@ -37,7 +37,7 @@ in
     };
     baseUrl = lib.mkOption {
       type = lib.types.str;
-      default = "http://localhost:22300";
+      default = "https://joplin.apollan.cc";
       description = "Public base URL of Joplin Server.";
     };
     port = lib.mkOption {

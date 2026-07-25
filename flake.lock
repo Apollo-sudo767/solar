@@ -270,11 +270,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784674466,
-        "narHash": "sha256-b2IflMPs2qfWrJH8GWpXny/Mo9sHmagGJZR2T14F9sU=",
+        "lastModified": 1784937739,
+        "narHash": "sha256-tm4v/BYas7dqrKhL173rLKxjx71g/xABGZKMbdaTMg8=",
         "ref": "refs/heads/master",
-        "rev": "a81b9cc77f18224cd87aa1fcd724222b51766e8a",
-        "revCount": 9926,
+        "rev": "77aae7d46870782ac5a6c32caaf3118cada81c62",
+        "revCount": 9941,
         "type": "git",
         "url": "ssh://git@github.com/nix-community/flake-firefox-nightly.git"
       },
@@ -510,6 +510,24 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_3"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "fromYaml": {
       "flake": false,
       "locked": {
@@ -645,11 +663,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1784588016,
-        "narHash": "sha256-ouZe80aWEhMLVMkqICFDN+JUw+0FJtCr/bh+hHtRtMg=",
+        "lastModified": 1784913159,
+        "narHash": "sha256-JWq0BfjO4ktpH5USfQNQzdvHpIDT8fSKD5K7LvdMRFs=",
         "ref": "master",
-        "rev": "deeb6b7eb7e0c44ae1819c051ce175bd92a85100",
-        "revCount": 7077,
+        "rev": "079a3b5d1aa6a719920a51316253b7d6dd22738d",
+        "revCount": 7086,
         "type": "git",
         "url": "ssh://git@github.com/nix-community/home-manager.git"
       },
@@ -747,17 +765,38 @@
         ]
       },
       "locked": {
-        "lastModified": 1784671864,
-        "narHash": "sha256-0icnFSifnjUfc0YFwAPAqZuv0oH/btt3EiqFJH4OswA=",
+        "lastModified": 1784760869,
+        "narHash": "sha256-3QrYi2U2L/lgu6m1qAKpi5YCNfKIOuTKoSUk50vVttg=",
         "ref": "refs/heads/master",
-        "rev": "21eebc616aa2ade6da7e57c2a4f600c13f4b2360",
-        "revCount": 2289,
+        "rev": "4917a8401cc9920b8925bf4892517ace894f814c",
+        "revCount": 2290,
         "type": "git",
         "url": "ssh://git@github.com/JakeStanger/ironbar.git"
       },
       "original": {
         "type": "git",
         "url": "ssh://git@github.com/JakeStanger/ironbar.git"
+      }
+    },
+    "joplin-server": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785003206,
+        "narHash": "sha256-nPrvu5cNQ1+nS6gYi8gQZ9MnRJPmuwXTGRoNxTsN290=",
+        "ref": "refs/heads/main",
+        "rev": "06aa2eefb0a63902c62ac5d8716a244398585352",
+        "revCount": 5,
+        "type": "git",
+        "url": "ssh://git@github.com/Apollo-sudo767/joplin-server.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/Apollo-sudo767/joplin-server.git"
       }
     },
     "lib-aggregate": {
@@ -791,11 +830,11 @@
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
       },
       "locked": {
-        "lastModified": 1784573996,
-        "narHash": "sha256-DtURW6dNmnTdD/lFxN3ej34qFka5zwfi94k1t+fcQYU=",
+        "lastModified": 1784970463,
+        "narHash": "sha256-DZAPpKpsb4HbsVFIRN1hgC3AV3L7g+np8QyyfSI+sJ4=",
         "ref": "refs/heads/main",
-        "rev": "e824ba4f9bc2049ab80846e5d70a03f6249065c3",
-        "revCount": 2095,
+        "rev": "13ea222907ca78d5d55312ce2d9e460d369b3ca1",
+        "revCount": 2099,
         "type": "git",
         "url": "ssh://git@github.com/epireyn/niri-flake.git"
       },
@@ -885,14 +924,14 @@
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "systems": "systems_3"
+        "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1784604432,
-        "narHash": "sha256-csCj+e+wQOohlErOgy+8wcNJsvPmSDMbytbJeB+nbC4=",
+        "lastModified": 1784949919,
+        "narHash": "sha256-itGqjPYHqEUqabXbQb+eHguk1c6rBTRGZS4KImp45kM=",
         "ref": "refs/heads/master",
-        "rev": "ff96c92bb6f953d45d95ce92d8865b1ddb025df6",
-        "revCount": 1169,
+        "rev": "a58c1fa23ec0273eb085be1e7874e964aa3cd34f",
+        "revCount": 1172,
         "type": "git",
         "url": "ssh://git@github.com/Infinidoge/nix-minecraft.git"
       },
@@ -979,11 +1018,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1784432872,
-        "narHash": "sha256-n3gKTBIV4ZA5VQpUakffBe3KGu4+mhPoA34rrqS0GkA=",
+        "lastModified": 1784856561,
+        "narHash": "sha256-J+Bx1Z6Oeoj2FgnBhRMKyUhhtDoOpTgXYaVLZpDjW4A=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "fd1462031fdee08f65fd0b4c6b64e22239a77870",
+        "rev": "597283ad8aa0b331c788e97c4c262d58877074ef",
         "type": "github"
       },
       "original": {
@@ -995,11 +1034,11 @@
     },
     "nixpkgs-stable_2": {
       "locked": {
-        "lastModified": 1784432872,
-        "narHash": "sha256-n3gKTBIV4ZA5VQpUakffBe3KGu4+mhPoA34rrqS0GkA=",
+        "lastModified": 1784856561,
+        "narHash": "sha256-J+Bx1Z6Oeoj2FgnBhRMKyUhhtDoOpTgXYaVLZpDjW4A=",
         "ref": "nixos-26.05",
-        "rev": "fd1462031fdee08f65fd0b4c6b64e22239a77870",
-        "revCount": 1009882,
+        "rev": "597283ad8aa0b331c788e97c4c262d58877074ef",
+        "revCount": 1010275,
         "type": "git",
         "url": "ssh://git@github.com/NixOS/nixpkgs.git"
       },
@@ -1011,11 +1050,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1784497964,
-        "narHash": "sha256-vlHUuqAcbcH2RKmHbPiuQzbv1pnzzavXnI62RD0bqCU=",
+        "lastModified": 1784796856,
+        "narHash": "sha256-wWFrV5/Qbm+lyt5x20E/bSbfJiGKMo4RCxZV8cl/WZI=",
         "ref": "nixos-unstable",
-        "rev": "241313f4e8e508cb9b13278c2b0fa25b9ca27163",
-        "revCount": 1037713,
+        "rev": "e2587caef70cea85dd97d7daab492899902dbf5d",
+        "revCount": 1040357,
         "type": "git",
         "url": "ssh://git@github.com/NixOS/nixpkgs.git"
       },
@@ -1080,11 +1119,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784678560,
-        "narHash": "sha256-z2VjfHWSlKVACcTWraWNriqIap700bTUr5ETQie+Wek=",
+        "lastModified": 1785001670,
+        "narHash": "sha256-uMRGo+LQ6DLWZq7sL0r2ca9sfpn0S0tdImbc6i9ThAU=",
         "ref": "refs/heads/main",
-        "rev": "f7ff72f3116f7495a7a08207c698d5d175dc40be",
-        "revCount": 4675,
+        "rev": "8b173e6b043639b377c15862b7ad0c8ed096d156",
+        "revCount": 4823,
         "type": "git",
         "url": "ssh://git@github.com/noctalia-dev/noctalia-shell.git"
       },
@@ -1100,11 +1139,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784678560,
-        "narHash": "sha256-z2VjfHWSlKVACcTWraWNriqIap700bTUr5ETQie+Wek=",
+        "lastModified": 1785001670,
+        "narHash": "sha256-uMRGo+LQ6DLWZq7sL0r2ca9sfpn0S0tdImbc6i9ThAU=",
         "ref": "refs/heads/main",
-        "rev": "f7ff72f3116f7495a7a08207c698d5d175dc40be",
-        "revCount": 4675,
+        "rev": "8b173e6b043639b377c15862b7ad0c8ed096d156",
+        "revCount": 4823,
         "type": "git",
         "url": "ssh://git@github.com/noctalia-dev/noctalia.git"
       },
@@ -1173,11 +1212,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784677669,
-        "narHash": "sha256-cTttJyAcgR8NQFQNkuD5Or/4I4ELTT10UCxf/NTqcwM=",
+        "lastModified": 1784896537,
+        "narHash": "sha256-TuVxm2b3crbGs8qDNhQFQ+Yn93usHQN6wVNo42DsQG4=",
         "ref": "refs/heads/main",
-        "rev": "152eda4c5a33d2cdd37605c2da0db19d240f1a06",
-        "revCount": 749,
+        "rev": "68a03e5a65cd2d4242a8220ba8dbed0e04a9c2ee",
+        "revCount": 770,
         "type": "git",
         "url": "ssh://git@github.com/karinushka/paneru.git"
       },
@@ -1256,6 +1295,7 @@
         "home-manager-unstable": "home-manager-unstable",
         "impermanence": "impermanence",
         "ironbar": "ironbar",
+        "joplin-server": "joplin-server",
         "niri": "niri",
         "nix-darwin": "nix-darwin",
         "nix-minecraft": "nix-minecraft",
@@ -1295,7 +1335,7 @@
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "systems": "systems_4"
+        "systems": "systems_5"
       },
       "locked": {
         "lastModified": 1784481035,
@@ -1322,7 +1362,7 @@
         "gnome-shell": "gnome-shell",
         "nixpkgs": "nixpkgs_3",
         "nur": "nur",
-        "systems": "systems_5",
+        "systems": "systems_6",
         "tinted-kitty": "tinted-kitty",
         "tinted-schemes": "tinted-schemes",
         "tinted-tmux": "tinted-tmux",
@@ -1354,7 +1394,7 @@
         "gnome-shell": "gnome-shell_2",
         "nixpkgs": "nixpkgs_4",
         "nur": "nur_2",
-        "systems": "systems_6",
+        "systems": "systems_7",
         "tinted-kitty": "tinted-kitty_2",
         "tinted-schemes": "tinted-schemes_2",
         "tinted-tmux": "tinted-tmux_2",
@@ -1450,6 +1490,21 @@
       }
     },
     "systems_6": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_7": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
@@ -1653,11 +1708,11 @@
     "xwayland-satellite-unstable": {
       "flake": false,
       "locked": {
-        "lastModified": 1783895132,
-        "narHash": "sha256-Dl0Gvrig3EpE962hzF3ETPhUztlfuRhcmlpd8ioHN54=",
+        "lastModified": 1784679892,
+        "narHash": "sha256-Mb7jpqnrcYCfNSItIkkHpuR3YxWFxPuIBfcwNKlRBkk=",
         "owner": "Supreeeme",
         "repo": "xwayland-satellite",
-        "rev": "a2b5c635d8c8c99b286967658d0d177044887eb8",
+        "rev": "8d135d3b2854b30fd01ea6cd6c27e523dd50a839",
         "type": "github"
       },
       "original": {
@@ -1674,11 +1729,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784586513,
-        "narHash": "sha256-ewIv3xH9bQK7uMkU3xK6NWFEW5oIuAtIny8ifJwcY/E=",
+        "lastModified": 1784985989,
+        "narHash": "sha256-Mz4G81HXJlUtHoJtA31D+Ob7uma2BX7E/y7F9QazuFc=",
         "ref": "refs/heads/main",
-        "rev": "0ea161e9ac257510acabfb6e9dbf13630298760d",
-        "revCount": 1223,
+        "rev": "a8f9b6d014c9cfe0615dccb2bc7808713f6e62c2",
+        "revCount": 1226,
         "type": "git",
         "url": "ssh://git@github.com/0xc000022070/zen-browser-flake.git"
       },

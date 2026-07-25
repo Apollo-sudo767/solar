@@ -128,6 +128,10 @@
             syncthing.enable = false;
           };
           servers = {
+            joplin = {
+              enable = true;
+              type = "desktop";
+            };
             trilium = {
               enable = true;
               type = "desktop";

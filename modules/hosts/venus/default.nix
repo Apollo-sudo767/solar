@@ -74,6 +74,10 @@
             };
           };
           servers = {
+            joplin = {
+              enable = true;
+              type = "server";
+            };
             trilium = {
               enable = true;
               type = "server";

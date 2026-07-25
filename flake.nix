@@ -115,6 +115,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Joplin Server Flake
+    joplin-server = {
+      url = "git+ssh://git@github.com/Apollo-sudo767/joplin-server.git";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs =

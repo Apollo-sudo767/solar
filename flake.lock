@@ -786,11 +786,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785003206,
-        "narHash": "sha256-nPrvu5cNQ1+nS6gYi8gQZ9MnRJPmuwXTGRoNxTsN290=",
+        "lastModified": 1785012097,
+        "narHash": "sha256-BZQAk2XN0VW+4bhTfDuawSerMQMvbOjzX8r5NKMdsbQ=",
         "ref": "refs/heads/main",
-        "rev": "06aa2eefb0a63902c62ac5d8716a244398585352",
-        "revCount": 5,
+        "rev": "78b5b96255d7ccdc9d68affc63e72153342bd88a",
+        "revCount": 7,
         "type": "git",
         "url": "ssh://git@github.com/Apollo-sudo767/joplin-server.git"
       },
@@ -1119,11 +1119,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785001670,
-        "narHash": "sha256-uMRGo+LQ6DLWZq7sL0r2ca9sfpn0S0tdImbc6i9ThAU=",
+        "lastModified": 1785005717,
+        "narHash": "sha256-iq/Eqx62P/JJDpW7CgEsMWWPwOexIWRKXtqKF/drawA=",
         "ref": "refs/heads/main",
-        "rev": "8b173e6b043639b377c15862b7ad0c8ed096d156",
-        "revCount": 4823,
+        "rev": "3d7b9869950592ff7cf3704f6a53afb169d850db",
+        "revCount": 4826,
         "type": "git",
         "url": "ssh://git@github.com/noctalia-dev/noctalia-shell.git"
       },
@@ -1139,11 +1139,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785001670,
-        "narHash": "sha256-uMRGo+LQ6DLWZq7sL0r2ca9sfpn0S0tdImbc6i9ThAU=",
+        "lastModified": 1785005717,
+        "narHash": "sha256-iq/Eqx62P/JJDpW7CgEsMWWPwOexIWRKXtqKF/drawA=",
         "ref": "refs/heads/main",
-        "rev": "8b173e6b043639b377c15862b7ad0c8ed096d156",
-        "revCount": 4823,
+        "rev": "3d7b9869950592ff7cf3704f6a53afb169d850db",
+        "revCount": 4826,
         "type": "git",
         "url": "ssh://git@github.com/noctalia-dev/noctalia.git"
       },

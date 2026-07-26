@@ -52,24 +52,21 @@
         };
         services = {
           nginx = {
-            enable = false;
+            enable = true;
           };
           hardware.udisks2.enable = true;
           networking = {
             enable = true;
             tailscale.enable = true;
             cloudflare = {
-              enable = true;
-              tunnelId = "YOUR_CLOUDFLARE_TUNNEL_UUID"; # Leave a placeholder for me to fill
-              domains = {
-                "joplin.apollan.cc" = "http://localhost:22300";
-              };
+              enable = false;
             };
             ddns = {
               enable = true;
               domains = [
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
+                "joplin.apollan.cc"
               ];
             };
           };

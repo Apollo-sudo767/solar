@@ -786,11 +786,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785032529,
-        "narHash": "sha256-yos2ZsXgAnX/wRHLbnf9FFLoFvjHT7oRgHvdqD0kolw=",
+        "lastModified": 1785033439,
+        "narHash": "sha256-b4J4ECJyl9oKYDb9hOsPD8KQPSY9ig/CG21f/vSE5vc=",
         "ref": "refs/heads/main",
-        "rev": "a160a8341a728556b13a58490bcf6eda49279cda",
-        "revCount": 12,
+        "rev": "c0d77522f83e9c2682dfffb1f9c955dbeb1dbdc3",
+        "revCount": 13,
         "type": "git",
         "url": "ssh://git@github.com/Apollo-sudo767/joplin-server.git"
       },

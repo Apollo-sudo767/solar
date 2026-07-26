@@ -54,6 +54,7 @@ in
           enable = true;
           inherit (cfg) baseUrl port;
           database.createLocally = true;
+          nginx.enable = true;
         };
 
         networking.firewall.allowedTCPPorts = lib.mkIf isServerType [ cfg.port ];

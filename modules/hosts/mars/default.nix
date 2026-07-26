@@ -172,9 +172,6 @@
             tailscale.enable = true;
             syncthing.enable = false;
           };
-          networking.extraHosts = ''
-            100.67.213.66 joplin.apollan.cc
-          '';
           servers = {
             joplin = {
               enable = true;

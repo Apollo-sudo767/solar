@@ -108,6 +108,7 @@
           utilities = {
             bitwarden.enable = true;
             stylePackages.enable = true;
+            filemanager.enable = true;
             social.enable = true;
           };
         };

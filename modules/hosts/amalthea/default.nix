@@ -61,6 +61,7 @@
             direnv.enable = true;
             nix-ld.enable = true;
           };
+          utilities.filemanager.enable = true;
         };
 
         services = {

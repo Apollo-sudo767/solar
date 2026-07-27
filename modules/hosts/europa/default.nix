@@ -67,6 +67,7 @@
             social.enable = true;
             bitwarden.enable = true;
             stylePackages.enable = true;
+            filemanager.enable = true;
           };
         };
         services = {

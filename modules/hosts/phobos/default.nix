@@ -52,6 +52,7 @@
         };
         utilities = {
           logseq.enable = true;
+          filemanager.enable = true;
         };
         office = {
           libreoffice = {

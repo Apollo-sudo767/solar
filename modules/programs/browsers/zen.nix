@@ -31,7 +31,11 @@ in
 {
   options.myFeatures.programs.browsers.zen = {
     enable = lib.mkEnableOption "Zen Browser with Phanes Overrides";
-    default = lib.mkEnableOption "Set Zen Browser as the default browser";
+    default = lib.mkOption {
+      type = lib.types.bool;
+      default = !config.myFeatures.programs.browsers.firefox.enable;
+      description = "Set Zen Browser as the default browser";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -41,7 +45,7 @@ in
     home-manager.sharedModules = lib.mkIf cfg.default [
       {
         home.sessionVariables = {
-          BROWSER = "zen";
+          BROWSER = lib.mkDefault "zen";
         };
 
         xdg.mimeApps = {

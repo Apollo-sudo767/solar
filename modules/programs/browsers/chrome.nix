@@ -11,7 +11,11 @@ in
 {
   options.myFeatures.programs.browsers.chrome = {
     enable = lib.mkEnableOption "Enables Chromium-based browsers";
-    default = lib.mkEnableOption "Set Chrome/Chromium as the default browser";
+    default = lib.mkOption {
+      type = lib.types.bool;
+      default = !config.myFeatures.programs.browsers.firefox.enable;
+      description = "Set Chrome/Chromium as the default browser";
+    };
 
     googleChrome = {
       enable = lib.mkEnableOption "Use Google Chrome (proprietary)";
@@ -73,7 +77,7 @@ in
           };
 
           home.sessionVariables = lib.mkIf cfg.default {
-            BROWSER = browserCmd;
+            BROWSER = lib.mkDefault browserCmd;
           };
 
           xdg.mimeApps = lib.mkIf cfg.default {

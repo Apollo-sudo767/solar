@@ -14,7 +14,11 @@ in
 {
   options.myFeatures.programs.browsers.firefox = {
     enable = lib.mkEnableOption "Enables Firefox browser";
-    default = lib.mkEnableOption "Set Firefox as the default browser";
+    default = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Set Firefox as the default browser";
+    };
 
     nightly = {
       enable = lib.mkEnableOption "Use Firefox Nightly binary";
@@ -99,7 +103,7 @@ in
           };
 
           home.sessionVariables = lib.mkIf cfg.default {
-            BROWSER = if cfg.nightly.enable then "firefox-nightly" else "firefox";
+            BROWSER = lib.mkDefault (if cfg.nightly.enable then "firefox-nightly" else "firefox");
           };
 
           xdg.mimeApps = lib.mkIf cfg.default {

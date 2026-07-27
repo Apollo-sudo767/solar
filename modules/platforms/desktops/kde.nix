@@ -76,64 +76,65 @@ in
           qt.enable = lib.mkForce false;
           stylix.targets.kde.enable = lib.mkForce true;
 
-          xdg.configFile."kdeglobals".text = lib.mkIf config.stylix.enable (
-            let
-              hexToRgb =
-                hex:
-                let
-                  r = builtins.fromTOML "x=0x${builtins.substring 0 2 hex}";
-                  g = builtins.fromTOML "x=0x${builtins.substring 2 2 hex}";
-                  b = builtins.fromTOML "x=0x${builtins.substring 4 2 hex}";
-                in
-                "${toString r.x},${toString g.x},${toString b.x}";
-              bg = hexToRgb config.stylix.base16Scheme.base00;
-              bgAlt = hexToRgb config.stylix.base16Scheme.base01;
-              fg = hexToRgb config.stylix.base16Scheme.base05;
-              accent = hexToRgb config.stylix.base16Scheme.base0D;
-              selectionBg = hexToRgb config.stylix.base16Scheme.base0D;
-              selectionFg = hexToRgb config.stylix.base16Scheme.base00;
-            in
-            lib.mkForce ''
-              [General]
-              ColorScheme=Stylix
-              accentColor=${accent}
+          xdg.configFile = lib.mkIf (config.stylix.enable or false) {
+            "kdeglobals".text =
+              let
+                hexToRgb =
+                  hex:
+                  let
+                    r = builtins.fromTOML "x=0x${builtins.substring 0 2 hex}";
+                    g = builtins.fromTOML "x=0x${builtins.substring 2 2 hex}";
+                    b = builtins.fromTOML "x=0x${builtins.substring 4 2 hex}";
+                  in
+                  "${toString r.x},${toString g.x},${toString b.x}";
+                bg = hexToRgb config.stylix.base16Scheme.base00;
+                bgAlt = hexToRgb config.stylix.base16Scheme.base01;
+                fg = hexToRgb config.stylix.base16Scheme.base05;
+                accent = hexToRgb config.stylix.base16Scheme.base0D;
+                selectionBg = hexToRgb config.stylix.base16Scheme.base0D;
+                selectionFg = hexToRgb config.stylix.base16Scheme.base00;
+              in
+              lib.mkForce ''
+                [General]
+                ColorScheme=Stylix
+                accentColor=${accent}
 
-              [Colors:Window]
-              BackgroundNormal=${bg}
-              BackgroundAlternate=${bgAlt}
-              ForegroundNormal=${fg}
-              ForegroundActive=${accent}
+                [Colors:Window]
+                BackgroundNormal=${bg}
+                BackgroundAlternate=${bgAlt}
+                ForegroundNormal=${fg}
+                ForegroundActive=${accent}
 
-              [Colors:View]
-              BackgroundNormal=${bg}
-              BackgroundAlternate=${bgAlt}
-              ForegroundNormal=${fg}
-              ForegroundActive=${accent}
+                [Colors:View]
+                BackgroundNormal=${bg}
+                BackgroundAlternate=${bgAlt}
+                ForegroundNormal=${fg}
+                ForegroundActive=${accent}
 
-              [Colors:Button]
-              BackgroundNormal=${bgAlt}
-              BackgroundAlternate=${bg}
-              ForegroundNormal=${fg}
-              ForegroundActive=${accent}
+                [Colors:Button]
+                BackgroundNormal=${bgAlt}
+                BackgroundAlternate=${bg}
+                ForegroundNormal=${fg}
+                ForegroundActive=${accent}
 
-              [Colors:Header]
-              BackgroundNormal=${bgAlt}
-              BackgroundAlternate=${bg}
-              ForegroundNormal=${fg}
-              ForegroundActive=${accent}
+                [Colors:Header]
+                BackgroundNormal=${bgAlt}
+                BackgroundAlternate=${bg}
+                ForegroundNormal=${fg}
+                ForegroundActive=${accent}
 
-              [Colors:Selection]
-              BackgroundNormal=${selectionBg}
-              BackgroundAlternate=${selectionBg}
-              ForegroundNormal=${selectionFg}
-              ForegroundActive=${selectionFg}
+                [Colors:Selection]
+                BackgroundNormal=${selectionBg}
+                BackgroundAlternate=${selectionBg}
+                ForegroundNormal=${selectionFg}
+                ForegroundActive=${selectionFg}
 
-              [Colors:Tooltip]
-              BackgroundNormal=${bgAlt}
-              BackgroundAlternate=${bg}
-              ForegroundNormal=${fg}
-            ''
-          );
+                [Colors:Tooltip]
+                BackgroundNormal=${bgAlt}
+                BackgroundAlternate=${bg}
+                ForegroundNormal=${fg}
+              '';
+          };
 
           systemd.user.services.set-kde-theme = lib.mkIf (cfg.wallpaper.stylix && config.stylix.enable) {
             Unit = {

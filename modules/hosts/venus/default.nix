@@ -48,7 +48,10 @@
             direnv.enable = true;
             nix-ld.enable = true;
           };
-          utilities.lego.enable = true;
+          utilities = {
+            lego.enable = true;
+            filemanager.enable = true;
+          };
         };
         services = {
           nginx = {

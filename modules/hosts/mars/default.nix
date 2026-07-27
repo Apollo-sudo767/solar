@@ -139,6 +139,7 @@
             bitwarden.enable = true;
             social.enable = true;
             vesktop.enable = false;
+            filemanager.enable = true;
           };
           office = {
             libreoffice = {

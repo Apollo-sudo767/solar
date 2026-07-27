@@ -23,6 +23,7 @@ in
         ];
         auto-optimise-store = true;
         warn-dirty = false;
+        log-format = "bar";
       };
 
       # FIX: Only enable Nix-managed GC on Linux using the built-in stdenv check.

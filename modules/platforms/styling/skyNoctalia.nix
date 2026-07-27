@@ -185,6 +185,10 @@ in
             wallpaper_scheme = "Noctalia";
           };
 
+          weather = {
+            unit = "fahrenheit";
+          };
+
           wallpaper = lib.mkForce {
             directory = pkgs.runCommand "noctalia-sky-wallpapers" { } ''
               mkdir -p $out

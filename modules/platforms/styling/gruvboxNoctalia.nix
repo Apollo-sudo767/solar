@@ -295,7 +295,7 @@ in
             weatherEnabled = true;
             weatherShowEffects = true;
             weatherTaliaMascotAlways = false;
-            useFahrenheit = false;
+            useFahrenheit = true;
             use12hourFormat = false;
             showWeekNumberInCalendar = false;
             showCalendarEvents = true;

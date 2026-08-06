@@ -112,10 +112,7 @@
             social.enable = true;
           };
           office = {
-            joplin = {
-              enable = true;
-              cli = true;
-            };
+            ap-office.enable = true;
           };
         };
 

@@ -80,7 +80,6 @@
             };
             trilium = {
               enable = false;
-              type = "server";
             };
             factorio = {
               enable = true;

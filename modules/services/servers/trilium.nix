@@ -3,7 +3,7 @@
   lib,
   pkgs,
   isDarwin,
-  isTotal,
+  isTotal ? true,
   ...
 }:
 
@@ -12,40 +12,23 @@ let
 in
 {
   options.myFeatures.services.servers.trilium = {
-    enable = lib.mkEnableOption "Trilium (Solar Managed)";
-    type = lib.mkOption {
-      type = lib.types.enum [
-        "server"
-        "desktop"
-      ];
-      default = "server";
-      description = "Whether to deploy the background server version or the desktop client application.";
-    };
+    enable = lib.mkEnableOption "Trilium Server (Solar Managed)";
     port = lib.mkOption {
       type = lib.types.port;
       default = 8080;
-      description = "Port for the Trilium server (only applicable in server mode)";
+      description = "Port for the Trilium server";
     };
   };
 
   config = lib.mkIf cfg.enable (
-    lib.mkMerge [
-      (lib.optionalAttrs (!isDarwin) {
-        services.trilium-server = lib.mkIf (cfg.type == "server") {
-          enable = true;
-          inherit (cfg) port;
-          host = "0.0.0.0";
-        };
+    lib.optionalAttrs (!isDarwin) {
+      services.trilium-server = {
+        enable = true;
+        inherit (cfg) port;
+        host = "0.0.0.0";
+      };
 
-        networking.firewall.allowedTCPPorts = lib.mkIf (cfg.type == "server") [ cfg.port ];
-
-        environment.systemPackages = lib.mkIf (cfg.type == "desktop") [ pkgs.trilium-desktop ];
-      })
-      (lib.optionalAttrs isDarwin {
-        environment.systemPackages = [
-          (if cfg.type == "server" then pkgs.trilium-server else pkgs.trilium-desktop)
-        ];
-      })
-    ]
+      networking.firewall.allowedTCPPorts = [ cfg.port ];
+    }
   );
 }

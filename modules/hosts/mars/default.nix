@@ -181,7 +181,6 @@
           servers = {
             trilium = {
               enable = false;
-              type = "desktop";
             };
           };
         };

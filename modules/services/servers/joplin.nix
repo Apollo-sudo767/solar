@@ -110,6 +110,19 @@ in
         };
 
         networking.firewall.allowedTCPPorts = lib.mkIf isServerType [ cfg.port ];
+
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable {
+            users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+              directories =
+                (lib.optional isDesktopType ".config/joplin-desktop")
+                ++ (lib.optional isCliType ".config/joplin")
+                ++ (lib.optionals hasPlugins [
+                  ".zotero"
+                  "Zotero"
+                ]);
+            });
+          };
       })
       (lib.optionalAttrs isDarwin {
         homebrew.casks = lib.mkIf hasPlugins [ "zotero" ];

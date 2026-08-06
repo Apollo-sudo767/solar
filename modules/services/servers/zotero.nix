@@ -97,6 +97,20 @@ in
               enabled = true;
               credentials = true;
               allowed_hosts = [ "*" ];
+              allowed_origins = [ "*" ];
+              allowed_headers = [ "*" ];
+              allowed_methods = [
+                "GET"
+                "POST"
+                "PUT"
+                "DELETE"
+                "MKCOL"
+                "PROPFIND"
+                "PROPPATCH"
+                "COPY"
+                "MOVE"
+                "OPTIONS"
+              ];
             };
             users = [
               {

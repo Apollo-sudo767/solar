@@ -70,6 +70,7 @@
                 "create-aero.apollan.cc"
                 "factorio.apollan.cc"
                 "joplin.apollan.cc"
+                "zotero.apollan.cc"
               ];
             };
           };
@@ -78,6 +79,10 @@
               enable = true;
               type = "server";
               baseUrl = "https://joplin.apollan.cc";
+            };
+            zotero = {
+              enable = true;
+              baseUrl = "https://zotero.apollan.cc";
             };
             trilium = {
               enable = false;

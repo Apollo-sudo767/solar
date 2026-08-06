@@ -149,6 +149,9 @@
               enableOfficeFonts = true;
               enableJava = true;
             };
+            zotero = {
+              enable = true;
+            };
           };
         };
         services = {

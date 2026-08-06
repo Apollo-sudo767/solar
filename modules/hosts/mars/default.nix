@@ -142,15 +142,13 @@
             filemanager.enable = true;
           };
           office = {
+            ap-office.enable = true;
             libreoffice = {
               enable = true;
               variant = "fresh";
               spellcheck = true;
               enableOfficeFonts = true;
               enableJava = true;
-            };
-            zotero = {
-              enable = true;
             };
           };
         };

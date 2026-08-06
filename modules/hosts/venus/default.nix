@@ -71,6 +71,7 @@
                 "factorio.apollan.cc"
                 "joplin.apollan.cc"
                 "zotero.apollan.cc"
+                "languagetool.apollan.cc"
               ];
             };
           };
@@ -82,6 +83,10 @@
             zotero = {
               enable = true;
               baseUrl = "https://zotero.apollan.cc";
+            };
+            languagetool = {
+              enable = true;
+              baseUrl = "https://languagetool.apollan.cc";
             };
             trilium = {
               enable = false;

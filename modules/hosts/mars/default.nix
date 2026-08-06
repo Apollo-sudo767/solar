@@ -144,7 +144,6 @@
           office = {
             ap-office.enable = true;
             libreoffice = {
-              enable = true;
               variant = "fresh";
               spellcheck = true;
               enableOfficeFonts = true;

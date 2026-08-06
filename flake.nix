@@ -1,4 +1,8 @@
 # flake.nix
+# Solar - Fully Automated Dendritic Flake
+#
+# Antigravity Rule: All code changes made by Antigravity MUST be created on a feature
+# branch and submitted as a GitHub Pull Request (PR) for review. Direct pushes to main are prohibited.
 {
   description = "Fully Automated Dendritic Flake";
 

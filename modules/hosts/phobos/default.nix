@@ -55,14 +55,7 @@
           filemanager.enable = true;
         };
         office = {
-          libreoffice = {
-            enable = true;
-          };
-          joplin = {
-            enable = true;
-            cli = true;
-            extraTools = true;
-          };
+          ap-office.enable = true;
         };
       };
       platforms = {

@@ -11,6 +11,19 @@ let
   cfg = config.myFeatures.services.servers.zotero;
   rawHost = lib.replaceStrings [ "https://" "http://" ] [ "" "" ] cfg.baseUrl;
   domainName = lib.head (lib.splitString "/" rawHost);
+
+  # Bcrypt hash for default password "zotero"
+  defaultZoteroBcrypt = "$2a$10$39wq30lPabYwZN1.LTchG.dMXAG.U.qBvD7xa0mF.OQoVskT7i7/K";
+
+  effectivePasswordHash =
+    if cfg.passwordHash != null then
+      cfg.passwordHash
+    else if lib.hasPrefix "$2" cfg.password then
+      cfg.password
+    else if cfg.password == "zotero" then
+      defaultZoteroBcrypt
+    else
+      cfg.password;
 in
 {
   options.myFeatures.services.servers.zotero = {
@@ -38,7 +51,12 @@ in
     password = lib.mkOption {
       type = lib.types.str;
       default = "zotero";
-      description = "WebDAV authentication password for Zotero client attachment sync.";
+      description = "WebDAV authentication password or bcrypt hash for Zotero client attachment sync.";
+    };
+    passwordHash = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Optional pre-hashed bcrypt string for WebDAV authentication ($2a$...).";
     };
     configFile = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
@@ -83,7 +101,7 @@ in
             users = [
               {
                 inherit (cfg) username;
-                inherit (cfg) password;
+                password = effectivePasswordHash;
                 scope = cfg.dataDir;
                 modify = true;
               }

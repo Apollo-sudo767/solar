@@ -22,7 +22,7 @@ in
   config = lib.mkIf cfg.enable {
     homebrew = {
       enable = true;
-      onActivation.cleanup = "zap"; # Automatically uninstall apps you remove from this list!
+      onActivation.cleanup = "none";
       casks = [
         # Add your Mac-only GUI apps here
         "logseq"

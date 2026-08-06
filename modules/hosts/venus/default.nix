@@ -77,7 +77,6 @@
           servers = {
             joplin = {
               enable = true;
-              type = "server";
               baseUrl = "https://joplin.apollan.cc";
             };
             zotero = {

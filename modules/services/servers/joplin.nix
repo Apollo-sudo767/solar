@@ -16,28 +16,34 @@ let
   hasPlugins = isDesktopType && (cfg.extraTools || cfg.plugins.enable || cfg.researchTools);
 
   # Derive Jopdoc Joplin Desktop plugin (.jpl) from official NPM package release
-  jopdocJpl = pkgs.runCommand "jopdoc.nsharris247.jpl" {
-    src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/joplin-plugin-jopdoc/-/joplin-plugin-jopdoc-1.0.3.tgz";
-      hash = "sha256-rrdq8PBxuttrjAQ+RzlfQLBLWrENKltPPrcKCE1D8VI=";
-    };
-    nativeBuildInputs = [ pkgs.gnutar ];
-  } ''
-    tar -xzf $src package/publish/jopdoc.nsharris247.jpl
-    mv package/publish/jopdoc.nsharris247.jpl $out
-  '';
+  jopdocJpl =
+    pkgs.runCommand "jopdoc.nsharris247.jpl"
+      {
+        src = pkgs.fetchurl {
+          url = "https://registry.npmjs.org/joplin-plugin-jopdoc/-/joplin-plugin-jopdoc-1.0.3.tgz";
+          hash = "sha256-rrdq8PBxuttrjAQ+RzlfQLBLWrENKltPPrcKCE1D8VI=";
+        };
+        nativeBuildInputs = [ pkgs.gnutar ];
+      }
+      ''
+        tar -xzf $src package/publish/jopdoc.nsharris247.jpl
+        mv package/publish/jopdoc.nsharris247.jpl $out
+      '';
 
   # Derive Zotero Link Joplin Desktop plugin (.jpl) from official NPM package release
-  zoteroLinkJpl = pkgs.runCommand "nz.magnusso.zotero-link.jpl" {
-    src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/joplin-plugin-zotero-link/-/joplin-plugin-zotero-link-2.1.5.tgz";
-      hash = "sha256-BbvF7BDoIwkiEITFKmy2A00JXX580se9wCx23cD+bYE=";
-    };
-    nativeBuildInputs = [ pkgs.gnutar ];
-  } ''
-    tar -xzf $src package/publish/nz.magnusso.zotero-link.jpl
-    mv package/publish/nz.magnusso.zotero-link.jpl $out
-  '';
+  zoteroLinkJpl =
+    pkgs.runCommand "nz.magnusso.zotero-link.jpl"
+      {
+        src = pkgs.fetchurl {
+          url = "https://registry.npmjs.org/joplin-plugin-zotero-link/-/joplin-plugin-zotero-link-2.1.5.tgz";
+          hash = "sha256-BbvF7BDoIwkiEITFKmy2A00JXX580se9wCx23cD+bYE=";
+        };
+        nativeBuildInputs = [ pkgs.gnutar ];
+      }
+      ''
+        tar -xzf $src package/publish/nz.magnusso.zotero-link.jpl
+        mv package/publish/nz.magnusso.zotero-link.jpl $out
+      '';
 in
 {
   imports = lib.optional (!isDarwin) inputs.joplin-server.nixosModules.default;
@@ -112,17 +118,18 @@ in
         networking.firewall.allowedTCPPorts = lib.mkIf isServerType [ cfg.port ];
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-          lib.mkIf config.myFeatures.core.system.preservation.enable {
-            users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-              directories =
-                (lib.optional isDesktopType ".config/joplin-desktop")
-                ++ (lib.optional isCliType ".config/joplin")
-                ++ (lib.optionals hasPlugins [
-                  ".zotero"
-                  "Zotero"
-                ]);
-            });
-          };
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+                directories =
+                  (lib.optional isDesktopType ".config/joplin-desktop")
+                  ++ (lib.optional isCliType ".config/joplin")
+                  ++ (lib.optionals hasPlugins [
+                    ".zotero"
+                    "Zotero"
+                  ]);
+              });
+            };
       })
       (lib.optionalAttrs isDarwin {
         homebrew.casks = lib.mkIf hasPlugins [ "zotero" ];
@@ -152,7 +159,8 @@ in
                 "Library/Application Support/joplin-desktop/plugins/jopdoc.nsharris247.jpl".source = jopdocJpl;
               })
               (lib.mkIf (isDarwin && cfg.plugins.zoteroLink) {
-                "Library/Application Support/joplin-desktop/plugins/nz.magnusso.zotero-link.jpl".source = zoteroLinkJpl;
+                "Library/Application Support/joplin-desktop/plugins/nz.magnusso.zotero-link.jpl".source =
+                  zoteroLinkJpl;
               })
             ];
           }

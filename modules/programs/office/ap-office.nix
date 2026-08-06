@@ -11,22 +11,32 @@ let
 in
 {
   options.myFeatures.programs.office.ap-office = {
-    enable = lib.mkEnableOption "AP Office Suite (Joplin, Zotero, Pandoc)";
+    enable = lib.mkEnableOption "AP Office Academic Suite (Joplin, Zotero, Pandoc, Typst, LanguageTool)";
 
     joplin = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Include Joplin notes application in AP Office Suite.";
+      description = "Include Joplin core writing workspace & Markdown engine in AP Office Suite.";
     };
     zotero = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Include Zotero reference manager in AP Office Suite.";
+      description = "Include Zotero reference manager & PDF manager in AP Office Suite.";
     };
     pandoc = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Include Pandoc & TeX Live publishing engine in AP Office Suite.";
+      description = "Include Pandoc universal document converter in AP Office Suite.";
+    };
+    typst = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Include Typst modern typesetting engine & PDF compiler in AP Office Suite.";
+    };
+    languagetool = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Include LanguageTool desktop proofreading & style linter in AP Office Suite.";
     };
   };
 
@@ -34,5 +44,7 @@ in
     myFeatures.programs.office.joplin.enable = lib.mkDefault cfg.joplin;
     myFeatures.programs.office.zotero.enable = lib.mkDefault cfg.zotero;
     myFeatures.programs.office.pandoc.enable = lib.mkDefault cfg.pandoc;
+    myFeatures.programs.office.typst.enable = lib.mkDefault cfg.typst;
+    myFeatures.programs.office.languagetool.enable = lib.mkDefault cfg.languagetool;
   };
 }

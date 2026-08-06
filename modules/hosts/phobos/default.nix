@@ -58,6 +58,11 @@
           libreoffice = {
             enable = true;
           };
+          joplin = {
+            enable = true;
+            cli = true;
+            extraTools = true;
+          };
         };
       };
       platforms = {
@@ -72,11 +77,6 @@
           syncthing.enable = false;
         };
         servers = {
-          joplin = {
-            enable = true;
-            cli = true;
-            extraTools = true;
-          };
           trilium = {
             enable = false;
             type = "desktop";

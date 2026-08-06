@@ -111,6 +111,12 @@
             filemanager.enable = true;
             social.enable = true;
           };
+          office = {
+            joplin = {
+              enable = true;
+              cli = true;
+            };
+          };
         };
 
         services = {
@@ -129,11 +135,6 @@
             syncthing.enable = false;
           };
           servers = {
-            joplin = {
-              enable = true;
-              type = "desktop";
-              cli = true;
-            };
             trilium = {
               enable = false;
               type = "desktop";

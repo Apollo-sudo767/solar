@@ -149,6 +149,11 @@
               enableOfficeFonts = true;
               enableJava = true;
             };
+            joplin = {
+              enable = true;
+              cli = true;
+              extraTools = true;
+            };
           };
         };
         services = {
@@ -174,12 +179,6 @@
             syncthing.enable = false;
           };
           servers = {
-            joplin = {
-              enable = true;
-              type = "desktop";
-              cli = true;
-              extraTools = true;
-            };
             trilium = {
               enable = false;
               type = "desktop";

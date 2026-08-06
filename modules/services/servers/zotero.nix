@@ -61,30 +61,36 @@ in
         "d ${cfg.dataDir}/zotero 0770 webdav webdav -"
       ];
 
-      services.webdav = {
-        enable = true;
-        inherit (cfg) configFile;
-        settings = lib.mkIf (cfg.configFile == null) {
-          address = "0.0.0.0";
-          inherit (cfg) port;
-          scope = cfg.dataDir;
-          modify = true;
-          auth = true;
-          cors = {
-            enabled = true;
-            credentials = true;
-            allowed_hosts = [ "*" ];
+      services.webdav = lib.mkMerge [
+        {
+          enable = true;
+        }
+        (lib.mkIf (cfg.configFile != null) {
+          inherit (cfg) configFile;
+        })
+        (lib.mkIf (cfg.configFile == null) {
+          settings = {
+            address = "0.0.0.0";
+            inherit (cfg) port;
+            scope = cfg.dataDir;
+            modify = true;
+            auth = true;
+            cors = {
+              enabled = true;
+              credentials = true;
+              allowed_hosts = [ "*" ];
+            };
+            users = [
+              {
+                inherit (cfg) username;
+                inherit (cfg) password;
+                scope = cfg.dataDir;
+                modify = true;
+              }
+            ];
           };
-          users = [
-            {
-              inherit (cfg) username;
-              inherit (cfg) password;
-              scope = cfg.dataDir;
-              modify = true;
-            }
-          ];
-        };
-      };
+        })
+      ];
 
       services.nginx = lib.mkIf cfg.nginx.enable {
         enable = true;

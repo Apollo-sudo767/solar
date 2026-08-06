@@ -75,6 +75,7 @@
           joplin = {
             enable = true;
             cli = true;
+            extraTools = true;
           };
           trilium = {
             enable = false;

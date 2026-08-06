@@ -149,10 +149,8 @@
               enableOfficeFonts = true;
               enableJava = true;
             };
-            joplin = {
+            zotero = {
               enable = true;
-              cli = true;
-              extraTools = true;
             };
           };
         };

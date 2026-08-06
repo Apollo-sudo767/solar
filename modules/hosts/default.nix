@@ -108,7 +108,7 @@ let
                 nixpkgs.hostPlatform = system;
                 networking.hostName = name;
                 nixpkgs.config.allowUnfree = true;
-                home-manager.useGlobalPkgs = false;
+                home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
                 home-manager.sharedModules = [
                   {

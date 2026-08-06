@@ -9,6 +9,8 @@
 
 let
   cfg = config.myFeatures.services.servers.zotero;
+  rawHost = lib.replaceStrings [ "https://" "http://" ] [ "" "" ] cfg.baseUrl;
+  domainName = lib.head (lib.splitString "/" rawHost);
 in
 {
   options.myFeatures.services.servers.zotero = {
@@ -38,6 +40,11 @@ in
       default = "zotero";
       description = "WebDAV authentication password for Zotero client attachment sync.";
     };
+    configFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+      description = "Path to custom WebDAV config YAML file on server disk. Overrides declarative settings if set, allowing runtime user/password management outside Nix.";
+    };
     nginx = {
       enable = lib.mkOption {
         type = lib.types.bool;
@@ -56,12 +63,18 @@ in
 
       services.webdav = {
         enable = true;
-        settings = {
+        inherit (cfg) configFile;
+        settings = lib.mkIf (cfg.configFile == null) {
           address = "0.0.0.0";
           inherit (cfg) port;
           scope = cfg.dataDir;
           modify = true;
           auth = true;
+          cors = {
+            enabled = true;
+            credentials = true;
+            allowed_hosts = [ "*" ];
+          };
           users = [
             {
               inherit (cfg) username;
@@ -70,6 +83,31 @@ in
               modify = true;
             }
           ];
+        };
+      };
+
+      services.nginx = lib.mkIf cfg.nginx.enable {
+        enable = true;
+        virtualHosts."${domainName}" = {
+          enableACME = lib.mkDefault (!lib.hasSuffix ".local" domainName);
+          forceSSL = lib.mkDefault (!lib.hasSuffix ".local" domainName);
+          locations."/" = {
+            proxyPass = "http://127.0.0.1:${toString cfg.port}/";
+            proxyWebsockets = true;
+            extraConfig = ''
+              # Strip/fix Origin header for WebDAV to prevent "Invalid origin" error
+              proxy_set_header Origin "";
+
+              # Essential WebDAV proxy headers
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+
+              # Disable body size limits for uploading large PDFs
+              client_max_body_size 0;
+            '';
+          };
         };
       };
 

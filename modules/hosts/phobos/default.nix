@@ -79,7 +79,6 @@
           };
           trilium = {
             enable = false;
-            type = "desktop";
           };
         };
       };

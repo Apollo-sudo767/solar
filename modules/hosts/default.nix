@@ -110,12 +110,6 @@ let
                 nixpkgs.config.allowUnfree = true;
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
-                home-manager.sharedModules = [
-                  {
-                    nixpkgs.config = config.nixpkgs.config;
-                    nixpkgs.overlays = config.nixpkgs.overlays;
-                  }
-                ];
 
                 # Set defaults for agenix-rekey so evaluation doesn't fail
                 age.rekey = {

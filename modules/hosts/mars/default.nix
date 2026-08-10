@@ -102,14 +102,6 @@
           };
           media = {
             gaming.enable = true;
-            vr = {
-              enable = true;
-              streamer = "wivrn";
-              quest = {
-                enable = true;
-                wired = true;
-              };
-            };
             steam = {
               protonInstaller.enable = true;
               gamescope = {
@@ -143,12 +135,6 @@
           };
           office = {
             ap-office.enable = true;
-            libreoffice = {
-              variant = "fresh";
-              spellcheck = true;
-              enableOfficeFonts = true;
-              enableJava = true;
-            };
           };
         };
         services = {
@@ -171,12 +157,6 @@
           networking = {
             enable = true;
             tailscale.enable = true;
-            syncthing.enable = false;
-          };
-          servers = {
-            trilium = {
-              enable = false;
-            };
           };
         };
       };

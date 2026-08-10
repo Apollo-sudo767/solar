@@ -113,6 +113,7 @@
             obs.enable = true;
             davinci.enable = true;
             vlc.enable = true;
+            ani-cli.enable = true;
           };
           browsers = {
             firefox = {

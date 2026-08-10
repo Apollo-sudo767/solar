@@ -12,14 +12,21 @@ let
   rawHost = lib.replaceStrings [ "https://" "http://" ] [ "" "" ] cfg.baseUrl;
   domainName = lib.head (lib.splitString "/" rawHost);
 
-  # Bcrypt hash for default password "zotero"
-  defaultZoteroBcrypt = "$2a$10$39wq30lPabYwZN1.LTchG.dMXAG.U.qBvD7xa0mF.OQoVskT7i7/K";
+  # Bcrypt hash for default password "zotero" (hacdias/webdav requires {bcrypt} prefix)
+  defaultZoteroBcrypt = "{bcrypt}$2a$10$39wq30lPabYwZN1.LTchG.dMXAG.U.qBvD7xa0mF.OQoVskT7i7/K";
 
   effectivePasswordHash =
     if cfg.passwordHash != null then
-      cfg.passwordHash
-    else if lib.hasPrefix "$2" cfg.password then
+      if lib.hasPrefix "{bcrypt}" cfg.passwordHash then
+        cfg.passwordHash
+      else if lib.hasPrefix "$2" cfg.passwordHash then
+        "{bcrypt}${cfg.passwordHash}"
+      else
+        cfg.passwordHash
+    else if lib.hasPrefix "{bcrypt}" cfg.password then
       cfg.password
+    else if lib.hasPrefix "$2" cfg.password then
+      "{bcrypt}${cfg.password}"
     else if cfg.password == "zotero" then
       defaultZoteroBcrypt
     else

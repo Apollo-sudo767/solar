@@ -133,6 +133,10 @@
             social.enable = true;
             vesktop.enable = false;
             filemanager.enable = true;
+            spotify = {
+              enable = false;
+              tui.enable = true;
+            };
           };
           office = {
             ap-office.enable = true;

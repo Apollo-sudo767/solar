@@ -69,16 +69,13 @@ in
       lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-            directories =
-              lib.optionals guiEnabled [
-                ".config/spotify"
-                ".cache/spotify"
-                ".local/share/spotify"
-              ]
-              ++ lib.optionals tuiCfg.enable [
-                ".config/spotify-player"
-                ".cache/spotify-player"
-              ];
+            directories = [
+              ".config/spotify"
+              ".cache/spotify"
+              ".local/share/spotify"
+              ".config/spotify-player"
+              ".cache/spotify-player"
+            ];
           });
         };
   };

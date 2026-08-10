@@ -22,6 +22,7 @@ in
       pipes
       asciiquarium
       cava
+      lavat
       vitetris
     ];
   };

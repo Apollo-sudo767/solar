@@ -33,7 +33,20 @@ in
     enable = lib.mkEnableOption "Zen Browser with Phanes Overrides";
     default = lib.mkOption {
       type = lib.types.bool;
-      default = !config.myFeatures.programs.browsers.firefox.enable;
+      default =
+        !(
+          (
+            (
+              config.myFeatures.programs.browsers.firefox.enable
+              || config.myFeatures.programs.browsers.firefox.nightly.enable
+            )
+            && config.myFeatures.programs.browsers.firefox.default
+          )
+          || (
+            config.myFeatures.programs.browsers.chrome.enable
+            && config.myFeatures.programs.browsers.chrome.default
+          )
+        );
       description = "Set Zen Browser as the default browser";
     };
   };

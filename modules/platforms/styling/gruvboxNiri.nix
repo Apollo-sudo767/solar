@@ -13,7 +13,29 @@ in
 
   config = lib.mkIf cfg.enable {
     myFeatures.platforms = {
-      desktops.niri.enable = true;
+      desktops.niri = {
+        enable = true;
+        settings.layout = {
+          default-column-width = lib.mkDefault { proportion = 0.5; };
+          preset-column-widths = lib.mkDefault [
+            { proportion = 0.33333; }
+            { proportion = 0.5; }
+            { proportion = 0.66667; }
+          ];
+          background-color = "transparent";
+          gaps = 0;
+          focus-ring = {
+            enable = false;
+            width = 0;
+            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+          };
+          border = lib.mkForce {
+            enable = false;
+            width = 0;
+          };
+        };
+      };
       addons = {
         # noctalia-shell.enable = false;
         #idle.enable = true;
@@ -88,21 +110,6 @@ in
             open-focused = false;
           }
         ];
-        layout = {
-          background-color = "transparent";
-          gaps = 0;
-          focus-ring = {
-            enable = false;
-            width = 0;
-            # These only evaluate correctly once Stylix is enabled
-            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
-            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
-          };
-          border = lib.mkForce {
-            enable = false;
-            width = 0;
-          };
-        };
       };
     });
   };

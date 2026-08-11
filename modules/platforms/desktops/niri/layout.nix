@@ -32,17 +32,27 @@ in
         }
       ];
       layout = {
-        background-color = "transparent";
-        gaps = 0;
+        default-column-width = lib.mkDefault { proportion = 0.5; };
+        preset-column-widths = lib.mkDefault [
+          { proportion = 0.33333; }
+          { proportion = 0.5; }
+          { proportion = 0.66667; }
+        ];
+        background-color = lib.mkDefault "transparent";
+        gaps = lib.mkDefault 0;
         focus-ring = {
-          enable = lib.mkForce false;
-          width = lib.mkForce 0;
+          enable = lib.mkDefault false;
+          width = lib.mkDefault 0;
         };
         border = {
-          enable = true;
-          width = 2;
-          active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
-          inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+          enable = lib.mkDefault true;
+          width = lib.mkDefault 2;
+          active.color = lib.mkDefault (
+            if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598"
+          );
+          inactive.color = lib.mkDefault (
+            if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945"
+          );
         };
       };
       window-rules = [

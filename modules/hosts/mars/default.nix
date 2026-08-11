@@ -117,14 +117,8 @@
           };
           browsers = {
             firefox = {
-              enable = true;
-              default = true;
               nightly.enable = true;
               extensions.enable = true;
-            };
-            chrome = {
-              enable = true;
-              ungoogled.enable = true;
             };
           };
           utilities = {

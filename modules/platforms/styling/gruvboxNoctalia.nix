@@ -502,6 +502,26 @@ in
             indicatorColor = "primary";
             indicatorOpacity = 0.6;
           };
+          hot_corners = {
+            enabled = false;
+            delay_ms = 0;
+            top_left = {
+              action = "none";
+              command = "";
+            };
+            top_right = {
+              action = "none";
+              command = "";
+            };
+            bottom_left = {
+              action = "none";
+              command = "";
+            };
+            bottom_right = {
+              action = "none";
+              command = "";
+            };
+          };
           network = {
             bluetoothRssiPollingEnabled = false;
             bluetoothRssiPollIntervalMs = 60000;

@@ -38,6 +38,9 @@ in
 
       gestures = {
         dnd-edge-workspace-switch = { };
+        hot-corners = {
+          enable = false;
+        };
       };
     };
   };

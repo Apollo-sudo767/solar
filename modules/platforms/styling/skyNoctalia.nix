@@ -21,7 +21,7 @@ in
       programs.noctalia = {
         settings = {
           # v5 Specific Configuration - Matched EXACTLY to ~/.config/noctalia/config.toml
-          appLauncher = {
+          app_launcher = {
             iconMode = "tabler";
             position = "center";
             showCategories = true;
@@ -116,7 +116,7 @@ in
             mSurface = "#050a18";
           };
 
-          controlCenter = {
+          control_center = {
             position = "close_to_bar_button";
             shortcuts = {
               left = [
@@ -133,6 +133,27 @@ in
           };
 
           dock.enabled = false;
+
+          hot_corners = {
+            enabled = false;
+            delay_ms = 0;
+            top_left = {
+              action = "none";
+              command = "";
+            };
+            top_right = {
+              action = "none";
+              command = "";
+            };
+            bottom_left = {
+              action = "none";
+              command = "";
+            };
+            bottom_right = {
+              action = "none";
+              command = "";
+            };
+          };
 
           general = {
             animationSpeed = 1;
@@ -170,7 +191,7 @@ in
 
           lockscreen = {
             blurred_desktop = true;
-            wallpaper_blur_intensity = 0.61999998614192009;
+            blur_intensity = 0.62;
           };
 
           shell = {

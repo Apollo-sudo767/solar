@@ -25,7 +25,29 @@ in
       };
 
       # Enable Niri and Keybinds
-      desktops.niri.enable = true;
+      desktops.niri = {
+        enable = true;
+        settings.layout = {
+          default-column-width = lib.mkDefault { proportion = 0.5; };
+          preset-column-widths = lib.mkDefault [
+            { proportion = 0.33333; }
+            { proportion = 0.5; }
+            { proportion = 0.66667; }
+          ];
+          background-color = "transparent";
+          gaps = 8;
+          focus-ring = {
+            enable = false;
+            width = 0;
+          };
+          border = {
+            enable = true;
+            width = 2;
+            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+          };
+        };
+      };
       styling.niriKeybinds.enable = true;
 
       # Use the NEW Noctalia v5 Rice instead of defaults
@@ -111,20 +133,6 @@ in
             open-focused = false;
           }
         ];
-        layout = lib.mkForce {
-          background-color = "transparent";
-          gaps = 8;
-          focus-ring = {
-            enable = false;
-            width = 0;
-          };
-          border = {
-            enable = true;
-            width = 2;
-            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
-            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
-          };
-        };
       };
     });
 

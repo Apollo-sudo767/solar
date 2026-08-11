@@ -13,7 +13,14 @@ in
     enable = lib.mkEnableOption "Enables Chromium-based browsers";
     default = lib.mkOption {
       type = lib.types.bool;
-      default = !config.myFeatures.programs.browsers.firefox.enable;
+      default =
+        !(
+          (
+            config.myFeatures.programs.browsers.firefox.enable
+            || config.myFeatures.programs.browsers.firefox.nightly.enable
+          )
+          && config.myFeatures.programs.browsers.firefox.default
+        );
       description = "Set Chrome/Chromium as the default browser";
     };
 

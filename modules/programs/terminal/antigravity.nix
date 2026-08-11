@@ -15,7 +15,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # 1. Install system-wide cleanly
-    environment.systemPackages = [ pkgs.antigravity-cli ];
+    environment.systemPackages = lib.optional (pkgs ? antigravity-cli) pkgs.antigravity-cli;
 
     # 2. Set the alias system-wide so it works regardless of HM state
     environment.shellAliases = {

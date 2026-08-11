@@ -5,21 +5,18 @@
   inputs,
   isDarwin,
   isTotal,
+  isStable ? false,
   ...
 }:
 
 let
   inherit isDarwin isTotal;
   cfg = config.myFeatures.platforms.styling.stylix;
+  stylixInput = if isStable then inputs.stylix-stable else inputs.stylix-unstable;
 in
 {
   imports = [
-    (
-      if isDarwin then
-        inputs.stylix-unstable.darwinModules.stylix
-      else
-        inputs.stylix-unstable.nixosModules.stylix
-    )
+    (if isDarwin then stylixInput.darwinModules.stylix else stylixInput.nixosModules.stylix)
   ];
 
   options.myFeatures.platforms.styling.stylix = {
@@ -49,7 +46,7 @@ in
           };
         })
       ]
-      ++ lib.optional (!config.stylix.enable) inputs.stylix-unstable.homeModules.stylix;
+      ++ lib.optional (!config.stylix.enable) stylixInput.homeModules.stylix;
     }
 
     # Universal Stylix (Base Theme & Common Targets)

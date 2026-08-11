@@ -92,6 +92,9 @@ in
               isDefault = name == lib.head config.myFeatures.core.system.users.usernames;
               settings = {
                 "browser.download.dir" = "/home/${name}/Downloads";
+                "browser.download.folderList" = 2;
+                "browser.download.useDownloadDir" = true;
+                "browser.download.start_downloads_in_tmp_dir" = false;
                 "browser.startup.page" = 3;
                 "datareporting.healthreport.uploadEnabled" = false;
                 "browser.topsites.contile.enabled" = false;

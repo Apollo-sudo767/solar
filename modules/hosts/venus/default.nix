@@ -17,6 +17,7 @@
       myFeatures = {
         core = {
           system.core-branch.enable = true;
+          system.disko.enable = false;
           system.users = {
             usernames = [
               "apollo"

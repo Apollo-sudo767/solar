@@ -17,6 +17,7 @@
         core = {
           system = {
             core-branch.enable = true;
+            disko.enable = false;
             users.usernames = [ "hephaestus" ];
           };
           security.security = {

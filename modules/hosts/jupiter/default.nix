@@ -20,11 +20,12 @@
             enable = true;
             usePersistence = false;
           };
+          system.disko.enable = false;
           system.users.agenixPassword = false;
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
-            secureBoot.enable = true;
+            secureBoot.enable = false;
             kernel = "zen";
           };
           security.security = {

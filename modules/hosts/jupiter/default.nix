@@ -21,7 +21,10 @@
             usePersistence = false;
           };
           system.disko.enable = false;
-          system.users.agenixPassword = false;
+          system.users = {
+            usernames = [ "daphne" ];
+            agenixPassword = false;
+          };
           shell.shell-branch.enable = true;
           boot = {
             enable = true;

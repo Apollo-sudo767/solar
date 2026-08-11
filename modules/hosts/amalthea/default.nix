@@ -24,7 +24,7 @@
           system.core-branch.enable = true;
           system.disko.enable = false;
           system.users = {
-            usernames = [ "hepheastus" ];
+            usernames = [ "daphne" ];
           };
           shell.shell-branch.enable = true;
           boot = {

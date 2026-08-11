@@ -20,7 +20,10 @@
             enable = true;
             usePersistence = false;
           };
-          system.disko.enable = false;
+          system.disko = {
+            enable = true;
+            enableLuks = false;
+          };
           system.users = {
             usernames = [ "daphne" ];
             agenixPassword = false;

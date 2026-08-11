@@ -22,7 +22,10 @@
       myFeatures = {
         core = {
           system.core-branch.enable = true;
-          system.disko.enable = false;
+          system.disko = {
+            enable = true;
+            enableLuks = false;
+          };
           system.users = {
             usernames = [ "hepheastus" ];
           };

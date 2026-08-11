@@ -7,21 +7,72 @@
 }:
 let
   cfg = config.myFeatures.core.system.disko;
+  usePersistence = config.myFeatures.core.system.core-branch.usePersistence or false;
 
   # Helper to identify disk type from string
   isNVMe = dev: lib.strings.hasInfix "nvme" dev;
   isSSD = dev: lib.strings.hasInfix "sd" dev && !(isHDD dev);
   isHDD = dev: (lib.strings.hasInfix "sda" dev); # /dev/sda is the HDD on mars
 
-  # Better approach: User provides categorized lists, or we use a single list with a helper
-  # Let's stick to the user providing the categories for maximum control
-
-  inherit (cfg) speedDisks;
-  inherit (cfg) bulkDisks;
+  inherit (cfg) speedDisks bulkDisks enableLuks;
 
   # The very first disk in speedDisks is our "Primary" (holds ESP)
   mainDisk = lib.head speedDisks;
   otherSpeedDisks = lib.filter (d: d != mainDisk) speedDisks;
+
+  # Subvolume definitions based on persistence setting
+  rootMountPoint = if usePersistence then "/mnt-root" else "/";
+
+  btrfsContent = {
+    type = "btrfs";
+    extraArgs = [
+      "-f"
+      "-L"
+      "speed"
+    ]
+    ++ (
+      if enableLuks then
+        (map (d: "/dev/mapper/crypted-speed-${lib.strings.sanitizeDerivationName d}") otherSpeedDisks)
+      else
+        otherSpeedDisks
+    );
+    subvolumes = {
+      "/root" = {
+        mountpoint = rootMountPoint;
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
+      };
+      "/nix" = {
+        mountpoint = "/nix";
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
+      };
+      "/persist" = {
+        mountpoint = "/persist";
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
+      };
+    };
+  };
+
+  mainPartitionContent =
+    if enableLuks then
+      {
+        type = "luks";
+        name = "crypted-speed-main";
+        extraOpenArgs = [ "--allow-discards" ];
+        settings.allowDiscards = true;
+        settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
+        content = btrfsContent;
+      }
+    else
+      btrfsContent;
 
   # ESP and Main Speed Pool
   mkMainDisk = device: {
@@ -40,48 +91,9 @@ let
             mountOptions = [ "umask=0077" ];
           };
         };
-        luks = {
+        root = {
           size = "100%";
-          content = {
-            type = "luks";
-            name = "crypted-speed-main";
-            # Enable SSD trimming and allow for future keyfile integration
-            extraOpenArgs = [ "--allow-discards" ];
-            settings.allowDiscards = true;
-            settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
-            content = {
-              type = "btrfs";
-              extraArgs = [
-                "-f"
-                "-L"
-                "speed"
-              ]
-              ++ (map (d: "/dev/mapper/crypted-speed-${lib.strings.sanitizeDerivationName d}") otherSpeedDisks);
-              subvolumes = {
-                "/root" = {
-                  mountpoint = "/mnt-root";
-                  mountOptions = [
-                    "compress=zstd"
-                    "noatime"
-                  ];
-                };
-                "/nix" = {
-                  mountpoint = "/nix";
-                  mountOptions = [
-                    "compress=zstd"
-                    "noatime"
-                  ];
-                };
-                "/persist" = {
-                  mountpoint = "/persist";
-                  mountOptions = [
-                    "compress=zstd"
-                    "noatime"
-                  ];
-                };
-              };
-            };
-          };
+          content = mainPartitionContent;
         };
       };
     };
@@ -94,14 +106,18 @@ let
     content = {
       type = "gpt";
       partitions = {
-        luks = {
+        root = {
           size = "100%";
-          content = {
-            type = "luks";
-            name = "crypted-speed-${lib.strings.sanitizeDerivationName device}";
-            settings.allowDiscards = true;
-            settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
-          };
+          content =
+            if enableLuks then
+              {
+                type = "luks";
+                name = "crypted-speed-${lib.strings.sanitizeDerivationName device}";
+                settings.allowDiscards = true;
+                settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
+              }
+            else
+              null;
         };
       };
     };
@@ -114,39 +130,61 @@ let
     content = {
       type = "gpt";
       partitions = {
-        luks = {
+        bulk = {
           size = "100%";
-          content = {
-            type = "luks";
-            name = "crypted-bulk-${lib.strings.sanitizeDerivationName device}";
-            settings.allowDiscards = !isHDD device;
-            settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
-            # Only the first bulk disk initializes the Btrfs filesystem
-            content =
-              if device == (lib.head bulkDisks) then
-                {
-                  type = "btrfs";
-                  extraArgs = [
-                    "-f"
-                    "-L"
-                    "bulk"
-                  ]
-                  ++ (map (d: "/dev/mapper/crypted-bulk-${lib.strings.sanitizeDerivationName d}") (
-                    lib.drop 1 bulkDisks
-                  ));
-                  subvolumes = {
-                    "/persist/bulk" = {
-                      mountpoint = "/persist/bulk";
-                      mountOptions = [
-                        "compress=zstd"
-                        "noatime"
-                      ];
-                    };
+          content =
+            if enableLuks then
+              {
+                type = "luks";
+                name = "crypted-bulk-${lib.strings.sanitizeDerivationName device}";
+                settings.allowDiscards = !isHDD device;
+                settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
+                content =
+                  if device == (lib.head bulkDisks) then
+                    {
+                      type = "btrfs";
+                      extraArgs = [
+                        "-f"
+                        "-L"
+                        "bulk"
+                      ]
+                      ++ (map (d: "/dev/mapper/crypted-bulk-${lib.strings.sanitizeDerivationName d}") (
+                        lib.drop 1 bulkDisks
+                      ));
+                      subvolumes = {
+                        "/persist/bulk" = {
+                          mountpoint = "/persist/bulk";
+                          mountOptions = [
+                            "compress=zstd"
+                            "noatime"
+                          ];
+                        };
+                      };
+                    }
+                  else
+                    null;
+              }
+            else if device == (lib.head bulkDisks) then
+              {
+                type = "btrfs";
+                extraArgs = [
+                  "-f"
+                  "-L"
+                  "bulk"
+                ]
+                ++ (lib.drop 1 bulkDisks);
+                subvolumes = {
+                  "/persist/bulk" = {
+                    mountpoint = "/persist/bulk";
+                    mountOptions = [
+                      "compress=zstd"
+                      "noatime"
+                    ];
                   };
-                }
-              else
-                null;
-          };
+                };
+              }
+            else
+              null;
         };
       };
     };
@@ -156,6 +194,11 @@ in
 {
   options.myFeatures.core.system.disko = {
     enable = lib.mkEnableOption "Universal Hardware-Aware Disko";
+    enableLuks = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable LUKS encryption on disko partitions.";
+    };
     speedDisks = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ "/dev/nvme0n1" ];
@@ -180,18 +223,20 @@ in
                 // (lib.genAttrs otherSpeedDisks mkOtherSpeedDisk)
                 // (lib.genAttrs bulkDisks mkBulkDisk);
 
-              nodev."/" = {
-                fsType = "tmpfs";
-                mountOptions = [
-                  "size=4G"
-                  "mode=755"
-                ];
+              nodev = lib.mkIf usePersistence {
+                "/" = {
+                  fsType = "tmpfs";
+                  mountOptions = [
+                    "size=4G"
+                    "mode=755"
+                  ];
+                };
               };
             };
 
             # Ensure mounts are available for Preservation
-            fileSystems."/persist".neededForBoot = true;
-            fileSystems."/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
+            fileSystems."/persist".neededForBoot = lib.mkIf usePersistence true;
+            fileSystems."/persist/bulk" = lib.mkIf (bulkDisks != [ ] && usePersistence) {
               neededForBoot = true;
             };
           })

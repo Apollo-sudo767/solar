@@ -22,18 +22,6 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  # Standard eMMC / SSD Root Partition
-  # Using labels is safer for portable devices
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/NIXOS_ROOT";
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/NIXOS_BOOT";
-    fsType = "vfat";
-  };
-
   # SD Card Automount for Games
   fileSystems."/mnt/games" = {
     device = "/dev/disk/by-label/GAMES";

@@ -35,7 +35,7 @@ in
           security.ssh.enable = lib.mkDefault true;
           system.users.enable = lib.mkDefault true;
           system.preservation.enable = lib.mkIf (cfg.usePersistence && !isDarwin) true;
-          system.disko.enable = lib.mkIf (cfg.usePersistence && !isDarwin) (lib.mkDefault true);
+          system.disko.enable = lib.mkDefault (!isDarwin);
         };
       }
 

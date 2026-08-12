@@ -11,7 +11,6 @@ let
   cfg = config.myFeatures.services.servers.zotero;
   rawHost = lib.replaceStrings [ "https://" "http://" ] [ "" "" ] cfg.baseUrl;
   domainName = lib.head (lib.splitString "/" rawHost);
-
   # Bcrypt hash for default password "zotero" (hacdias/webdav requires {bcrypt} prefix)
   defaultZoteroBcrypt = "{bcrypt}$2a$10$39wq30lPabYwZN1.LTchG.dMXAG.U.qBvD7xa0mF.OQoVskT7i7/K";
 

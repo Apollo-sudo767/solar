@@ -20,7 +20,7 @@ let
   mainDisk = lib.head speedDisks;
   otherSpeedDisks = lib.filter (d: d != mainDisk) speedDisks;
 
-  btrfsContent = {
+  btrfsSubvolumesContent = {
     type = "btrfs";
     extraArgs = [
       "-f"
@@ -28,12 +28,7 @@ let
       "-L"
       "speed"
     ];
-    mountpoint = if usePersistence then null else "/";
-    mountOptions = [
-      "compress=zstd"
-      "noatime"
-    ];
-    subvolumes = lib.mkIf usePersistence {
+    subvolumes = {
       "root" = {
         mountpoint = "/mnt-root";
         mountOptions = [
@@ -58,6 +53,24 @@ let
     };
   };
 
+  btrfsFilesystemContent = {
+    type = "filesystem";
+    format = "btrfs";
+    mountpoint = "/";
+    mountOptions = [
+      "compress=zstd"
+      "noatime"
+    ];
+    extraArgs = [
+      "-f"
+      "-K"
+      "-L"
+      "speed"
+    ];
+  };
+
+  btrfsContent = if usePersistence then btrfsSubvolumesContent else btrfsFilesystemContent;
+
   mainPartitionContent =
     if enableLuks then
       {
@@ -66,7 +79,7 @@ let
         extraOpenArgs = [ "--allow-discards" ];
         settings.allowDiscards = true;
         settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
-        content = btrfsContent;
+        content = btrfsSubvolumesContent;
       }
     else
       btrfsContent;
@@ -146,7 +159,7 @@ let
                         "-L"
                         "bulk"
                       ];
-                      subvolumes = lib.mkIf usePersistence {
+                      subvolumes = {
                         "persist-bulk" = {
                           mountpoint = "/persist/bulk";
                           mountOptions = [
@@ -161,22 +174,19 @@ let
               }
             else if device == (lib.head bulkDisks) then
               {
-                type = "btrfs";
+                type = "filesystem";
+                format = "btrfs";
+                mountpoint = "/persist/bulk";
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
                 extraArgs = [
                   "-f"
                   "-K"
                   "-L"
                   "bulk"
                 ];
-                subvolumes = lib.mkIf usePersistence {
-                  "persist-bulk" = {
-                    mountpoint = "/persist/bulk";
-                    mountOptions = [
-                      "compress=zstd"
-                      "noatime"
-                    ];
-                  };
-                };
               }
             else
               null;

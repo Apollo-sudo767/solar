@@ -103,7 +103,6 @@ in
             cors = {
               enabled = true;
               credentials = true;
-              allowed_hosts = [ "*" ];
               allowed_origins = [ "*" ];
               allowed_headers = [ "*" ];
               allowed_methods = [

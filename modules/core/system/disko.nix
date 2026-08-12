@@ -20,19 +20,22 @@ let
   mainDisk = lib.head speedDisks;
   otherSpeedDisks = lib.filter (d: d != mainDisk) speedDisks;
 
-  # Subvolume definitions based on persistence setting
-  rootMountPoint = if usePersistence then "/mnt-root" else "/";
-
   btrfsContent = {
     type = "btrfs";
     extraArgs = [
       "-f"
+      "-K" # Skip mkfs TRIM to avoid udev race condition during temporary mount
       "-L"
       "speed"
     ];
+    mountpoint = if usePersistence then null else "/";
+    mountOptions = [
+      "compress=zstd"
+      "noatime"
+    ];
     subvolumes = {
-      "root" = {
-        mountpoint = rootMountPoint;
+      "root" = lib.mkIf usePersistence {
+        mountpoint = "/mnt-root";
         mountOptions = [
           "compress=zstd"
           "noatime"
@@ -139,6 +142,7 @@ let
                       type = "btrfs";
                       extraArgs = [
                         "-f"
+                        "-K"
                         "-L"
                         "bulk"
                       ];
@@ -160,6 +164,7 @@ let
                 type = "btrfs";
                 extraArgs = [
                   "-f"
+                  "-K"
                   "-L"
                   "bulk"
                 ];

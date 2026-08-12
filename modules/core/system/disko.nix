@@ -29,29 +29,23 @@ let
       "-f"
       "-L"
       "speed"
-    ]
-    ++ (
-      if enableLuks then
-        (map (d: "/dev/mapper/crypted-speed-${lib.strings.sanitizeDerivationName d}") otherSpeedDisks)
-      else
-        otherSpeedDisks
-    );
+    ];
     subvolumes = {
-      "/root" = {
+      "root" = {
         mountpoint = rootMountPoint;
         mountOptions = [
           "compress=zstd"
           "noatime"
         ];
       };
-      "/nix" = {
+      "nix" = {
         mountpoint = "/nix";
         mountOptions = [
           "compress=zstd"
           "noatime"
         ];
       };
-      "/persist" = {
+      "persist" = {
         mountpoint = "/persist";
         mountOptions = [
           "compress=zstd"
@@ -147,12 +141,9 @@ let
                         "-f"
                         "-L"
                         "bulk"
-                      ]
-                      ++ (map (d: "/dev/mapper/crypted-bulk-${lib.strings.sanitizeDerivationName d}") (
-                        lib.drop 1 bulkDisks
-                      ));
+                      ];
                       subvolumes = {
-                        "/persist/bulk" = {
+                        "persist-bulk" = {
                           mountpoint = "/persist/bulk";
                           mountOptions = [
                             "compress=zstd"
@@ -171,10 +162,9 @@ let
                   "-f"
                   "-L"
                   "bulk"
-                ]
-                ++ (lib.drop 1 bulkDisks);
+                ];
                 subvolumes = {
-                  "/persist/bulk" = {
+                  "persist-bulk" = {
                     mountpoint = "/persist/bulk";
                     mountOptions = [
                       "compress=zstd"
@@ -235,9 +225,11 @@ in
             };
 
             # Ensure mounts are available for Preservation
-            fileSystems."/persist".neededForBoot = lib.mkIf usePersistence true;
-            fileSystems."/persist/bulk" = lib.mkIf (bulkDisks != [ ] && usePersistence) {
-              neededForBoot = true;
+            fileSystems = lib.mkIf usePersistence {
+              "/persist".neededForBoot = true;
+              "/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
+                neededForBoot = true;
+              };
             };
           })
         ]

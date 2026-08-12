@@ -24,7 +24,7 @@ let
     type = "btrfs";
     extraArgs = [
       "-f"
-      "-K" # Skip mkfs TRIM to avoid udev race condition during temporary mount
+      "-K"
       "-L"
       "speed"
     ];
@@ -33,8 +33,8 @@ let
       "compress=zstd"
       "noatime"
     ];
-    subvolumes = {
-      "root" = lib.mkIf usePersistence {
+    subvolumes = lib.mkIf usePersistence {
+      "root" = {
         mountpoint = "/mnt-root";
         mountOptions = [
           "compress=zstd"
@@ -146,7 +146,7 @@ let
                         "-L"
                         "bulk"
                       ];
-                      subvolumes = {
+                      subvolumes = lib.mkIf usePersistence {
                         "persist-bulk" = {
                           mountpoint = "/persist/bulk";
                           mountOptions = [
@@ -168,7 +168,7 @@ let
                   "-L"
                   "bulk"
                 ];
-                subvolumes = {
+                subvolumes = lib.mkIf usePersistence {
                   "persist-bulk" = {
                     mountpoint = "/persist/bulk";
                     mountOptions = [

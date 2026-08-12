@@ -45,6 +45,16 @@ in
 
       programs.spotify-player = lib.mkIf tuiCfg.enable {
         enable = true;
+        settings = {
+          enable_streaming = "Always";
+          device = {
+            name = "spotify-player";
+            device_type = "speaker";
+            audio_cache = true;
+            volume = 70;
+            bitrate = 320;
+          };
+        };
       };
 
       programs.spicetify = lib.mkIf (guiEnabled && spicetifyCfg.enable) {

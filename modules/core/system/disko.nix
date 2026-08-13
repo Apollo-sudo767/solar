@@ -242,9 +242,6 @@ in
             # Ensure mounts are available for Preservation
             fileSystems = lib.mkIf usePersistence {
               "/persist".neededForBoot = true;
-              "/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
-                neededForBoot = true;
-              };
             };
           })
         ]

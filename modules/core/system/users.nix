@@ -63,15 +63,18 @@ in
           ];
           # Password Logic
           hashedPasswordFile =
-            if useAgenixPassword then
-              (
-                if (config.age.secrets ? "password-${name}.age") then
-                  config.age.secrets."password-${name}.age".path
-                else if (config.age.secrets ? "password-apollo.age") then
-                  config.age.secrets."password-apollo.age".path
-                else
-                  null
-              )
+            if
+              useAgenixPassword
+              && (config.age.secrets ? "password-${name}.age")
+              && (config.myFeatures.core.security.agenix.usePrivateSecrets or false)
+            then
+              config.age.secrets."password-${name}.age".path
+            else if
+              useAgenixPassword
+              && (config.age.secrets ? "password-apollo.age")
+              && (config.myFeatures.core.security.agenix.usePrivateSecrets or false)
+            then
+              config.age.secrets."password-apollo.age".path
             else
               "/etc/user-password";
         }

@@ -67,6 +67,12 @@ in
     # Fast boot optimizations
     systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
+    # Prevent vconsole-setup exit status 1 under Wayland/greetd from marking systemd as degraded
+    systemd.services.systemd-vconsole-setup.serviceConfig.SuccessExitStatus = [
+      0
+      1
+    ];
+
     # Prevent journal log bloat from slowing down systemd-tmpfiles-setup.service
     services.journald.extraConfig = ''
       SystemMaxUse=200M

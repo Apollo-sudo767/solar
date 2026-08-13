@@ -17,6 +17,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.kernelParams = [ "video=${cfg.resolution}" ];
+    # Bare resolution string (e.g. video=2560x1440) causes DRM driver mode rejection on Nvidia/SimpleDRM.
+    # Omit bare video kernelParam to ensure clean DRM mode initialization.
   };
 }

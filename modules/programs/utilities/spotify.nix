@@ -45,16 +45,6 @@ in
 
       programs.spotify-player = lib.mkIf tuiCfg.enable {
         enable = true;
-        settings = {
-          enable_streaming = "Always";
-          device = {
-            name = "spotify-player";
-            device_type = "speaker";
-            audio_cache = true;
-            volume = 70;
-            bitrate = 320;
-          };
-        };
       };
 
       programs.spicetify = lib.mkIf (guiEnabled && spicetifyCfg.enable) {
@@ -79,13 +69,15 @@ in
       lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-            directories = [
-              ".config/spotify"
-              ".cache/spotify"
-              ".local/share/spotify"
-              ".config/spotify-player"
-              ".cache/spotify-player"
-            ];
+            directories =
+              (lib.optionals guiEnabled [
+                ".config/spotify"
+                ".cache/spotify"
+                ".local/share/spotify"
+              ])
+              ++ (lib.optionals tuiCfg.enable [
+                ".cache/spotify-player"
+              ]);
           });
         };
   };

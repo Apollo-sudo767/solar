@@ -29,21 +29,21 @@ let
       "speed"
     ];
     subvolumes = {
-      "root" = {
+      "/root" = {
         mountpoint = "/mnt-root";
         mountOptions = [
           "compress=zstd"
           "noatime"
         ];
       };
-      "nix" = {
+      "/nix" = {
         mountpoint = "/nix";
         mountOptions = [
           "compress=zstd"
           "noatime"
         ];
       };
-      "persist" = {
+      "/persist" = {
         mountpoint = "/persist";
         mountOptions = [
           "compress=zstd"
@@ -79,7 +79,7 @@ let
         extraOpenArgs = [ "--allow-discards" ];
         settings.allowDiscards = true;
         settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
-        content = btrfsSubvolumesContent;
+        content = btrfsContent;
       }
     else
       btrfsContent;
@@ -160,7 +160,7 @@ let
                         "bulk"
                       ];
                       subvolumes = {
-                        "persist-bulk" = {
+                        "/persist/bulk" = {
                           mountpoint = "/persist/bulk";
                           mountOptions = [
                             "compress=zstd"
@@ -242,9 +242,6 @@ in
             # Ensure mounts are available for Preservation
             fileSystems = lib.mkIf usePersistence {
               "/persist".neededForBoot = true;
-              "/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
-                neededForBoot = true;
-              };
             };
           })
         ]

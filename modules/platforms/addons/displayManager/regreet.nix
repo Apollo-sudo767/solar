@@ -14,7 +14,7 @@ in
   config = lib.mkIf (cfg.manager == "regreet") (
     lib.mkMerge [
       (lib.optionalAttrs (!isDarwin) {
-        programs.regreet.enable = true;
+        services.displayManager.regreet.enable = true;
         services.greetd = {
           enable = true;
           settings = {
@@ -70,7 +70,7 @@ in
       })
 
       {
-        programs.regreet = lib.mkIf (!isDarwin && config.stylix.enable) (
+        services.displayManager.regreet = lib.mkIf (!isDarwin && config.stylix.enable) (
           lib.mkMerge [
             {
               theme = {

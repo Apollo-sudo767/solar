@@ -243,6 +243,17 @@ in
             fileSystems = lib.mkIf usePersistence {
               "/persist".neededForBoot = true;
             };
+
+            # Only unlock the primary speed disk in Stage 1 initrd to prevent secondary drives from causing initrd emergency mode timeouts
+            boot.initrd.luks.devices = lib.mkIf (!isDarwin && enableLuks) (
+              lib.mkForce {
+                "crypted-speed-main" = {
+                  device = "/dev/disk/by-partlabel/disk-${lib.strings.sanitizeDerivationName mainDisk}-root";
+                  allowDiscards = true;
+                  crypttabExtraOpts = [ "tpm2-device=auto" ];
+                };
+              }
+            );
           })
         ]
       );

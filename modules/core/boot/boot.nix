@@ -67,21 +67,8 @@ in
     # Fast boot optimizations
     systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
-    # Prevent vconsole-setup exit status 1 under Wayland/greetd from marking systemd as degraded
-    systemd.services.systemd-vconsole-setup = {
-      enable = true;
-      serviceConfig = {
-        ExecStart = [
-          ""
-          "${config.systemd.package}/lib/systemd/systemd-vconsole-setup"
-        ];
-        SuccessExitStatus = [
-          0
-          1
-          "SIGTERM"
-        ];
-      };
-    };
+    # Disable systemd-vconsole-setup to prevent loadkeys exit code 1 under Wayland/greetd from degrading systemd
+    systemd.services.systemd-vconsole-setup.enable = false;
 
     # Prevent journal log bloat from slowing down systemd-tmpfiles-setup.service
     services.journald.extraConfig = ''

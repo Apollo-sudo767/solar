@@ -91,6 +91,10 @@ in
 
     boot.initrd.systemd.enable = true;
     boot.initrd.systemd.tpm2.enable = true;
+    boot.initrd.systemd.storePaths = [
+      pkgs.libxcrypt-legacy
+      pkgs.libxcrypt
+    ];
 
     boot.kernelParams = [
       "quiet"

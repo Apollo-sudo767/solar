@@ -26,10 +26,7 @@ in
         ];
         config = {
           common.default = [ "gtk" ];
-          niri.default = [
-            "gnome"
-            "gtk"
-          ];
+          niri.default = [ "gtk" ];
           plasma.default = [
             "kde"
             "gtk"

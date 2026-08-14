@@ -27,7 +27,13 @@ let
       "-K"
       "-L"
       "speed"
-    ];
+    ]
+    ++ (
+      if enableLuks then
+        (map (d: "/dev/mapper/crypted-speed-${lib.strings.sanitizeDerivationName d}") otherSpeedDisks)
+      else
+        otherSpeedDisks
+    );
     subvolumes = {
       "/root" = {
         mountpoint = "/mnt-root";
@@ -66,7 +72,13 @@ let
       "-K"
       "-L"
       "speed"
-    ];
+    ]
+    ++ (
+      if enableLuks then
+        (map (d: "/dev/mapper/crypted-speed-${lib.strings.sanitizeDerivationName d}") otherSpeedDisks)
+      else
+        otherSpeedDisks
+    );
   };
 
   btrfsContent = if usePersistence then btrfsSubvolumesContent else btrfsFilesystemContent;
@@ -101,7 +113,7 @@ let
             mountOptions = [ "umask=0077" ];
           };
         };
-        root = {
+        "${if enableLuks then "luks" else "root"}" = {
           size = "100%";
           content = mainPartitionContent;
         };
@@ -116,7 +128,7 @@ let
     content = {
       type = "gpt";
       partitions = {
-        root = {
+        "${if enableLuks then "luks" else "root"}" = {
           size = "100%";
           content =
             if enableLuks then
@@ -140,7 +152,7 @@ let
     content = {
       type = "gpt";
       partitions = {
-        bulk = {
+        "${if enableLuks then "luks" else "bulk"}" = {
           size = "100%";
           content =
             if enableLuks then
@@ -158,7 +170,13 @@ let
                         "-K"
                         "-L"
                         "bulk"
-                      ];
+                      ]
+                      ++ (
+                        if enableLuks then
+                          (map (d: "/dev/mapper/crypted-bulk-${lib.strings.sanitizeDerivationName d}") (lib.drop 1 bulkDisks))
+                        else
+                          (lib.drop 1 bulkDisks)
+                      );
                       subvolumes = {
                         "/persist/bulk" = {
                           mountpoint = "/persist/bulk";
@@ -186,7 +204,8 @@ let
                   "-K"
                   "-L"
                   "bulk"
-                ];
+                ]
+                ++ (lib.drop 1 bulkDisks);
               }
             else
               null;
@@ -242,6 +261,9 @@ in
             # Ensure mounts are available for Preservation
             fileSystems = lib.mkIf usePersistence {
               "/persist".neededForBoot = true;
+              "/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
+                neededForBoot = true;
+              };
             };
           })
         ]

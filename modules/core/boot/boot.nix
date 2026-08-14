@@ -67,9 +67,6 @@ in
     # Fast boot optimizations
     systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
-    # Disable NixOS vconsole reloader to prevent systemd-vconsole-setup failures under Wayland/greetd
-    console.enable = false;
-
     # Prevent journal log bloat from slowing down systemd-tmpfiles-setup.service
     services.journald.extraConfig = ''
       SystemMaxUse=200M
@@ -91,18 +88,12 @@ in
 
     boot.initrd.systemd.enable = true;
     boot.initrd.systemd.tpm2.enable = true;
-    boot.initrd.systemd.storePaths = [
-      pkgs.libxcrypt-legacy
-      pkgs.libxcrypt
-    ];
 
     boot.kernelParams = [
       "quiet"
       "loglevel=3"
       "systemd.show_status=auto"
       "rd.udev.log_level=3"
-      # Allow systemd-cryptsetup to cache the password for multiple devices
-      "rd.luks.options=timeout=0"
     ];
 
     boot.kernel.sysctl = {

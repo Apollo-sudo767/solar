@@ -42,7 +42,10 @@
         hardware = {
           cpu-gpu.intel.enable = true;
           peripherals.bluetooth.enable = true;
-          peripherals.wifi.enable = true;
+          peripherals.wifi = {
+            enable = true;
+            persistence = true;
+          };
           input.controllers.enable = true;
         };
 

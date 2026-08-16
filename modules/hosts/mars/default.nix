@@ -62,9 +62,15 @@
               resolution = "2560x1440";
             };
           };
-          peripherals.bluetooth = {
-            enable = true;
-            gaming.enable = true;
+          peripherals = {
+            bluetooth = {
+              enable = true;
+              gaming.enable = true;
+            };
+            wifi = {
+              enable = true;
+              persistence = true;
+            };
           };
           input = {
             controllers = {
@@ -125,7 +131,7 @@
             stylePackages.enable = true;
             bitwarden.enable = true;
             social.enable = true;
-            vesktop.enable = false;
+            webcord.enable = false;
             filemanager.enable = true;
             spotify = {
               enable = false;

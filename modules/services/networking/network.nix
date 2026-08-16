@@ -30,6 +30,10 @@ in
           precedence ::ffff:0:0/96  100
         '';
 
+        systemd.tmpfiles.rules = [
+          "d /persist/etc/NetworkManager/system-connections 0700 root root - -"
+        ];
+
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {
@@ -39,6 +43,9 @@ in
                   directory = "/etc/NetworkManager/system-connections";
                   how = "symlink";
                 }
+                "/etc/wpa_supplicant"
+                "/var/lib/wpa_supplicant"
+                "/var/lib/iwd"
               ];
             };
       })

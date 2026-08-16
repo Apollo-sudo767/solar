@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "Enables Wifi Services";
     persistence = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
       description = "Whether to persist WiFi network connections across reboots.";
     };
   };
@@ -58,6 +58,9 @@ in
               directory = "/etc/NetworkManager/system-connections";
               how = "symlink";
             }
+            "/etc/wpa_supplicant"
+            "/var/lib/wpa_supplicant"
+            "/var/lib/iwd"
           ];
         };
   };

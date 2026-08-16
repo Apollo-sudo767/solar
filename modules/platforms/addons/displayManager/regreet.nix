@@ -22,17 +22,48 @@ in
             default_session = {
               command =
                 let
-                  # We use sway to launch regreet. Using 'output *' ensures it works on all hosts
-                  # regardless of their monitor names (DP-1 vs eDP-1).
+                  regreetLauncher = pkgs.writeShellScript "regreet-launcher" ''
+                    # Clean any stored display_name to prevent crashes when monitor setup changes
+                    if [ -f /var/lib/regreet/state.toml ]; then
+                      ${pkgs.gnused}/bin/sed -i '/display_name/d' /var/lib/regreet/state.toml 2>/dev/null || true
+                    fi
+
+                    # Run ReGreet, with a fallback cleanup if it fails
+                    if ! ${pkgs.regreet}/bin/regreet; then
+                      echo "ReGreet failed. Resetting state and retrying..." >&2
+                      rm -rf /var/lib/regreet/state.toml /var/cache/regreet/* 2>/dev/null || true
+                      ${pkgs.regreet}/bin/regreet || true
+                    fi
+
+                    ${pkgs.sway}/bin/swaymsg exit
+                  '';
+                  # We use sway to launch regreet. Using 'output * enable' ensures it works on all hosts
+                  # regardless of monitor count or output names (DP-1 vs eDP-1).
                   swayConfig = pkgs.writeText "greetd-sway-config" ''
+                    output * enable
                     output * bg #000000 solid_color
-                    exec "${pkgs.regreet}/bin/regreet; ${pkgs.sway}/bin/swaymsg exit"
+                    exec "${regreetLauncher}"
                   '';
                   greetdSession = pkgs.writeShellScript "greetd-session" ''
+                    # Prioritize DRM devices with connected outputs so Sway attaches to active monitor GPUs
+                    CONNECTED_CARDS=""
+                    OTHER_CARDS=""
+                    for card in /sys/class/drm/card[0-9]*; do
+                      card_name=$(basename "$card")
+                      dev_path="/dev/dri/$card_name"
+                      if [ -e "$dev_path" ]; then
+                        if grep -q "^connected" "$card"/*/status 2>/dev/null; then
+                          CONNECTED_CARDS="''${CONNECTED_CARDS:+$CONNECTED_CARDS:}$dev_path"
+                        else
+                          OTHER_CARDS="''${OTHER_CARDS:+$OTHER_CARDS:}$dev_path"
+                        fi
+                      fi
+                    done
+                    if [ -n "$CONNECTED_CARDS" ]; then
+                      export WLR_DRM_DEVICES="''${CONNECTED_CARDS}:''${OTHER_CARDS}"
+                    fi
+
                     export WLR_NO_HARDWARE_CURSORS=1
-                    export WLR_RENDERER=pixman
-                    export WLR_DRM_NO_ATOMIC=1
-                    export WLR_DRM_NO_MODIFIERS=1
                     export __GL_GSYNC_ALLOWED=0
                     export __GL_VRR_ALLOWED=0
                     export GTK_USE_PORTAL=0

@@ -105,7 +105,10 @@
               bluetooth.enable = false;
               aggressive = true;
             };
-            wifi.enable = true;
+            wifi = {
+              enable = true;
+              persistence = true;
+            };
           };
           input = {
             controllers.enable = true;

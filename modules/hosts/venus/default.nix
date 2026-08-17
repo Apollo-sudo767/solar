@@ -85,7 +85,7 @@
               enable = true;
               baseUrl = "https://zotero.apollan.cc";
               username = "unbalance";
-              passwordHash = "{bcrypt}$2b$12$uqaSSrYXiMO8eA9o/kdPnuURpT4nnBg7iAYV2EIf3E8/aV3GeU192";
+              passwordHash = "{bcrypt}$2b$05$gmW3pWcO.U2wn9CgXHOO1eJ7rx.8SNQWVYNjbU7IrfXpE17VaTn5O";
             };
             languagetool = {
               enable = true;

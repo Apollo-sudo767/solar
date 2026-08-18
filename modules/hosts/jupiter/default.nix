@@ -67,7 +67,7 @@
           desktops.kde.enable = true;
           styling = {
             stylix.enable = true;
-            themes.forest.enable = true;
+            themes.strawberry.enable = true;
           };
           addons = {
             displayManager.manager = "sddm";

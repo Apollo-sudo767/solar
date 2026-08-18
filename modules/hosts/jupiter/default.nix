@@ -109,6 +109,7 @@
             stylePackages.enable = true;
             bitwarden.enable = true;
             webcord.enable = true;
+            vesktop.enable = true;
             filemanager = {
               enable = true;
               selection = "dolphin";

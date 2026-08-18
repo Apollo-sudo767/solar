@@ -17,6 +17,7 @@ in
         "sddm"
         "gtkGreet"
         "regreet"
+        "cosmic-greeter"
         "none"
       ];
       default = "none";

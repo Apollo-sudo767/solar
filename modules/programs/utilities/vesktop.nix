@@ -7,6 +7,11 @@
 
 let
   cfg = config.myFeatures.programs.utilities.vesktop;
+
+  isDE =
+    (config.myFeatures.platforms.desktops.kde.enable or false)
+    || (config.myFeatures.platforms.desktops.gnome.enable or false)
+    || (config.myFeatures.platforms.desktops.cosmic.enable or false);
 in
 {
   options.myFeatures.programs.utilities.vesktop = {
@@ -20,6 +25,7 @@ in
         settings = {
           discordBranch = "stable";
           hardwareAcceleration = true;
+          useNativeTitlebar = lib.mkDefault isDE;
           vencord = {
             settings.plugins = {
               ChatInputButtonAPI.enabled = true;

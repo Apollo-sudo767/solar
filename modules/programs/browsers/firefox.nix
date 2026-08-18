@@ -10,6 +10,15 @@ let
   cfg = config.myFeatures.programs.browsers.firefox;
   firefox-nightly = inputs.firefox.packages.${pkgs.stdenv.hostPlatform.system}.firefox-nightly-bin;
   enabled = cfg.enable || cfg.nightly.enable;
+
+  isDE =
+    (config.myFeatures.platforms.desktops.kde.enable or false)
+    || (config.myFeatures.platforms.desktops.gnome.enable or false)
+    || (config.myFeatures.platforms.desktops.cosmic.enable or false);
+
+  isTiling =
+    (config.myFeatures.platforms.desktops.niri.enable or false)
+    || (config.myFeatures.platforms.desktops.paneru.enable or false);
 in
 {
   options.myFeatures.programs.browsers.firefox = {
@@ -101,6 +110,7 @@ in
                 "browser.newtabpage.activity-stream.showSponsored" = false;
                 "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
                 "browser.uiCustomization.debug" = lib.mkIf cfg.nightly.enable true;
+                "browser.tabs.inTitlebar" = lib.mkDefault (if isDE then 0 else (if isTiling then 1 else 0));
               };
             });
           };

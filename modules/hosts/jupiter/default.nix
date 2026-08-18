@@ -108,14 +108,12 @@
           utilities = {
             stylePackages.enable = true;
             bitwarden.enable = true;
-            social.enable = true;
-            vesktop.enable = false;
+            webcord.enable = true;
             filemanager = {
               enable = true;
               selection = "dolphin";
             };
             spotify = {
-              enable = false;
               tui.enable = true;
             };
           };

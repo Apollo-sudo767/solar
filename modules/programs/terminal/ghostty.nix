@@ -10,6 +10,10 @@ let
   inherit isTotal;
   cfg = config.myFeatures.programs.terminal.ghostty;
 
+  isDE =
+    (config.myFeatures.platforms.desktops.kde.enable or false)
+    || (config.myFeatures.platforms.desktops.gnome.enable or false);
+
   isTiling =
     (config.myFeatures.platforms.desktops.niri.enable or false)
     || (config.myFeatures.platforms.desktops.paneru.enable or false);
@@ -31,7 +35,7 @@ in
             font-family = lib.mkDefault "JetBrainsMono Nerd Font";
             window-padding-x = 10;
             window-padding-y = 10;
-            window-decoration = lib.mkDefault (!isTiling);
+            window-decoration = lib.mkDefault (if isDE then true else (!isTiling));
             confirm-close-surface = false;
             background-opacity = lib.mkDefault 0.85;
             background-blur = lib.mkDefault true;

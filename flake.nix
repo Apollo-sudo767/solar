@@ -121,7 +121,7 @@
 
     # Joplin Server Flake
     joplin-server = {
-      url = "git+ssh://git@github.com/Apollo-sudo767/joplin-server.git";
+      url = "github:Apollo-sudo767/joplin-server";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };

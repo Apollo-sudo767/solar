@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs ? null,
   isTotal,
   ...
 }:
@@ -11,20 +12,27 @@ let
   cfg = config.myFeatures.core.shell.shell;
   host = config.networking.hostName;
   secretsOverride =
+    let
+      secretsPath =
+        if pkgs.stdenv.isDarwin then
+          "/Users/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets"
+        else
+          "/home/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets";
+      hasLocalSecretsDir = builtins.pathExists secretsPath;
+      rekeyedFallback =
+        if inputs != null && (inputs ? self) then
+          "${inputs.self}/rekeyed/${host}"
+        else
+          "$HOME/src/solar/rekeyed/${host}";
+    in
     if
-      config.myFeatures.core.security.agenix.enable
-      && config.myFeatures.core.security.agenix.usePrivateSecrets
+      (config.myFeatures.core.security.agenix.enable or false)
+      && (config.myFeatures.core.security.agenix.usePrivateSecrets or false)
+      && hasLocalSecretsDir
     then
-      let
-        secretsPath =
-          if pkgs.stdenv.isDarwin then
-            "/Users/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets"
-          else
-            "/home/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets";
-      in
       " --override-input solar-secrets path:${secretsPath}"
     else
-      "";
+      " --override-input solar-secrets path:${rekeyedFallback}";
 in
 {
   options.myFeatures.core.shell.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";

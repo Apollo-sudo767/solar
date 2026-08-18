@@ -50,12 +50,6 @@
               open = true;
             };
           };
-          system = {
-            ttyResolution = {
-              enable = true;
-              resolution = "2560x1440";
-            };
-          };
           peripherals.bluetooth = {
             enable = true;
             gaming.enable = true;
@@ -66,7 +60,6 @@
               xbox = true;
               nintendo = true;
             };
-            wooting.enable = true;
           };
         };
 
@@ -83,11 +76,6 @@
 
         programs = {
           terminal = {
-            git = {
-              enable = true;
-              userName = "Apollo-sudo767";
-              userEmail = "fireshifter767@gmail.com";
-            };
             ghostty.enable = true;
             fastfetch.enable = true;
             helix.enable = true;
@@ -120,11 +108,13 @@
           utilities = {
             stylePackages.enable = true;
             bitwarden.enable = true;
-            social.enable = true;
-            vesktop.enable = false;
-            filemanager.enable = true;
+            webcord.enable = true;
+            vesktop.enable = true;
+            filemanager = {
+              enable = true;
+              selection = "dolphin";
+            };
             spotify = {
-              enable = false;
               tui.enable = true;
             };
           };

@@ -77,7 +77,8 @@ in
         "nemo"
         "pcmanfm"
       ];
-      default = "thunar";
+      default =
+        if (config.myFeatures.platforms.desktops.kde.enable or false) then "dolphin" else "thunar";
       description = "Select the active file manager to install and set as default.";
     };
 
@@ -197,17 +198,29 @@ in
           lib.mkIf (config.myFeatures.core.system.preservation.enable or false)
             {
               users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-                directories = [
-                  ".config/Thunar"
-                  ".config/xfce4/xfconf"
-                  ".config/nautilus"
-                  ".config/dolphin"
-                  ".config/yazi"
-                  ".config/nemo"
-                  ".config/pcmanfm"
-                  ".local/share/file-manager"
-                  ".local/share/Thunar"
-                ];
+                directories =
+                  lib.optionals (activeManager == "thunar") [
+                    ".config/Thunar"
+                    ".config/xfce4/xfconf"
+                    ".local/share/Thunar"
+                  ]
+                  ++ lib.optionals (activeManager == "nautilus") [
+                    ".config/nautilus"
+                  ]
+                  ++ lib.optionals (activeManager == "dolphin") [
+                    ".config/dolphin"
+                    ".local/share/dolphin"
+                  ]
+                  ++ lib.optionals (activeManager == "yazi") [
+                    ".config/yazi"
+                  ]
+                  ++ lib.optionals (activeManager == "nemo") [
+                    ".config/nemo"
+                  ]
+                  ++ lib.optionals (activeManager == "pcmanfm") [
+                    ".config/pcmanfm"
+                    ".local/share/file-manager"
+                  ];
               });
             };
       })

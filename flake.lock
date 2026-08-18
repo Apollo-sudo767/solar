@@ -788,15 +788,15 @@
       "locked": {
         "lastModified": 1785109451,
         "narHash": "sha256-KTZU+xEsXwx9dsal0Vo5OavdyMVTK6akeA9MSUT5jOE=",
-        "ref": "refs/heads/main",
+        "owner": "Apollo-sudo767",
+        "repo": "joplin-server",
         "rev": "9567b2b7ec6396de68dd59bd26f2cec484a2ad40",
-        "revCount": 15,
-        "type": "git",
-        "url": "ssh://git@github.com/Apollo-sudo767/joplin-server.git"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/Apollo-sudo767/joplin-server.git"
+        "owner": "Apollo-sudo767",
+        "repo": "joplin-server",
+        "type": "github"
       }
     },
     "lib-aggregate": {

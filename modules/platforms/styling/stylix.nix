@@ -30,6 +30,15 @@ in
       type = lib.types.path;
       description = "Path to the wallpaper image.";
     };
+    polarity = lib.mkOption {
+      type = lib.types.enum [
+        "dark"
+        "light"
+        "either"
+      ];
+      default = "dark";
+      description = "Theme polarity (dark or light).";
+    };
   };
 
   config = lib.mkMerge [
@@ -54,7 +63,7 @@ in
       stylix = {
         enable = true;
         image = cfg.wallpaper;
-        polarity = "dark";
+        inherit (cfg) polarity;
         opacity.terminal = 0.85;
       }
       // lib.optionalAttrs (cfg.scheme != null) {

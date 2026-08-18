@@ -19,11 +19,13 @@ in
       portal = {
         enable = true;
         xdgOpenUsePortal = true;
-        extraPortals = with pkgs; [
-          xdg-desktop-portal-gtk
-          xdg-desktop-portal-gnome
-          kdePackages.xdg-desktop-portal-kde
-        ];
+        extraPortals =
+          with pkgs;
+          [ xdg-desktop-portal-gtk ]
+          ++ lib.optional (config.myFeatures.platforms.desktops.gnome.enable or false
+          ) xdg-desktop-portal-gnome
+          ++ lib.optional (config.myFeatures.platforms.desktops.kde.enable or false
+          ) kdePackages.xdg-desktop-portal-kde;
         config = {
           common.default = [ "gtk" ];
           niri.default = [ "gtk" ];

@@ -83,6 +83,7 @@ in
       systemd.tmpfiles.rules = [
         "d ${cfg.dataDir} 0775 webdav webdav -"
         "d ${cfg.dataDir}/zotero 0775 webdav webdav -"
+        "Z ${cfg.dataDir} 0775 webdav webdav -"
         "f+ ${cfg.dataDir}/zotero/lastsync.txt 0664 webdav webdav - 1724000000"
         "f+ ${cfg.dataDir}/lastsync.txt 0664 webdav webdav - 1724000000"
       ];

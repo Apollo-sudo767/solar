@@ -134,7 +134,7 @@ in
               {
                 inherit (cfg) username;
                 password = effectivePasswordHash;
-                scope = ".";
+                scope = "${cfg.dataDir}/zotero";
                 modify = true;
                 permissions = "CRUD";
               }

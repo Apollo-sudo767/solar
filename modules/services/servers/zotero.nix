@@ -81,10 +81,10 @@ in
   config = lib.mkIf cfg.enable (
     lib.optionalAttrs (!isDarwin) {
       systemd.tmpfiles.rules = [
-        "d ${cfg.dataDir} 0770 webdav webdav -"
-        "d ${cfg.dataDir}/zotero 0770 webdav webdav -"
-        "f+ ${cfg.dataDir}/zotero/lastsync.txt 0660 webdav webdav - 1724000000"
-        "f+ ${cfg.dataDir}/lastsync.txt 0660 webdav webdav - 1724000000"
+        "d ${cfg.dataDir} 0775 webdav webdav -"
+        "d ${cfg.dataDir}/zotero 0775 webdav webdav -"
+        "f+ ${cfg.dataDir}/zotero/lastsync.txt 0664 webdav webdav - 1724000000"
+        "f+ ${cfg.dataDir}/lastsync.txt 0664 webdav webdav - 1724000000"
       ];
 
       services.webdav = lib.mkMerge [
@@ -100,6 +100,7 @@ in
             inherit (cfg) port;
             scope = "${cfg.dataDir}/zotero";
             modify = true;
+            permissions = "CRUD";
             auth = true;
             cors = {
               enabled = true;
@@ -127,6 +128,14 @@ in
                 password = effectivePasswordHash;
                 scope = ".";
                 modify = true;
+                permissions = "CRUD";
+                rules = [
+                  {
+                    allow = true;
+                    path = ".*";
+                    regex = true;
+                  }
+                ];
               }
             ];
           };

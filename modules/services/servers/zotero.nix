@@ -100,7 +100,6 @@ in
             inherit (cfg) port;
             scope = "${cfg.dataDir}/zotero";
             modify = true;
-            permissions = "CRUD";
             auth = true;
             cors = {
               enabled = true;
@@ -128,12 +127,11 @@ in
                 password = effectivePasswordHash;
                 scope = ".";
                 modify = true;
-                permissions = "CRUD";
                 rules = [
                   {
+                    regex = true;
                     allow = true;
                     path = ".*";
-                    regex = true;
                   }
                 ];
               }

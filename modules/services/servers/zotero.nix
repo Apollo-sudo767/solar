@@ -81,11 +81,11 @@ in
   config = lib.mkIf cfg.enable (
     lib.optionalAttrs (!isDarwin) {
       systemd.tmpfiles.rules = [
-        "d ${cfg.dataDir} 0775 webdav webdav -"
-        "d ${cfg.dataDir}/zotero 0775 webdav webdav -"
-        "Z ${cfg.dataDir} 0775 webdav webdav -"
-        "f+ ${cfg.dataDir}/zotero/lastsync.txt 0664 webdav webdav - 1724000000"
-        "f+ ${cfg.dataDir}/lastsync.txt 0664 webdav webdav - 1724000000"
+        "d ${cfg.dataDir} 0777 webdav webdav -"
+        "d ${cfg.dataDir}/zotero 0777 webdav webdav -"
+        "Z ${cfg.dataDir} 0777 webdav webdav -"
+        "r ${cfg.dataDir}/zotero/lastsync.txt"
+        "r ${cfg.dataDir}/lastsync.txt"
       ];
 
       services.webdav = lib.mkMerge [

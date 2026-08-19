@@ -148,6 +148,11 @@ in
               rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
               rewrite ^/zotero/zotero/?$ /zotero/ break;
 
+              # Handle MKCOL on existing collections (returns 201 Created to satisfy Zotero client verification)
+              if ($request_method = MKCOL) {
+                return 201;
+              }
+
               # Ensure redirect Location headers use https
               proxy_redirect http:// https://;
 

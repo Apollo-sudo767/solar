@@ -127,6 +127,7 @@ in
                 password = effectivePasswordHash;
                 scope = ".";
                 modify = true;
+                permissions = "CRUD";
               }
             ];
           };

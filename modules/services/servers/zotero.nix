@@ -99,7 +99,7 @@ in
           settings = {
             address = "0.0.0.0";
             inherit (cfg) port;
-            scope = cfg.dataDir;
+            scope = "${cfg.dataDir}/zotero";
             modify = true;
             auth = true;
             cors = {
@@ -149,9 +149,11 @@ in
                 return 201;
               }
 
-              # Rewrite duplicate /zotero/zotero/ paths if entered mistakenly in client
-              rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
-              rewrite ^/zotero/zotero/?$ /zotero/ break;
+              # Strip any /zotero or /zotero/zotero prefix so all requests map to WebDAV root
+              rewrite ^/zotero/zotero/(.*)$ /$1 break;
+              rewrite ^/zotero/zotero/?$ / break;
+              rewrite ^/zotero/(.*)$ /$1 break;
+              rewrite ^/zotero/?$ / break;
 
               # Ensure redirect Location headers use https
               proxy_redirect http:// https://;

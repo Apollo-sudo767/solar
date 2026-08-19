@@ -187,7 +187,11 @@ in
         };
       };
 
-      networking.firewall.allowedTCPPorts = [ cfg.port ];
+      networking.firewall.allowedTCPPorts = [
+        80
+        443
+        cfg.port
+      ];
     }
   );
 }

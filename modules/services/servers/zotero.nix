@@ -88,6 +88,14 @@ in
         "r ${cfg.dataDir}/lastsync.txt"
       ];
 
+      systemd.services.webdav = {
+        preStart = ''
+          mkdir -p ${cfg.dataDir}/zotero
+          chown -R webdav:webdav ${cfg.dataDir}
+          chmod -R 0777 ${cfg.dataDir}
+        '';
+      };
+
       services.webdav = lib.mkMerge [
         {
           enable = true;

@@ -107,6 +107,7 @@ in
           settings = {
             address = "0.0.0.0";
             inherit (cfg) port;
+            directory = "${cfg.dataDir}/zotero";
             scope = "${cfg.dataDir}/zotero";
             modify = true;
             auth = true;

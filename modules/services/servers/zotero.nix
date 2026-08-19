@@ -170,6 +170,12 @@ in
               proxy_set_header Destination $http_destination;
               proxy_set_header Overwrite $http_overwrite;
 
+              # Use HTTP/1.1 for proxy Keep-Alive to prevent hanging connections
+              proxy_http_version 1.1;
+              proxy_set_header Connection "";
+              proxy_read_timeout 600s;
+              proxy_send_timeout 600s;
+
               # Disable request/response buffering for WebDAV operations
               proxy_buffering off;
               proxy_request_buffering off;

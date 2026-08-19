@@ -82,6 +82,7 @@ in
     lib.optionalAttrs (!isDarwin) {
       systemd.tmpfiles.rules = [
         "d ${cfg.dataDir} 0777 webdav webdav -"
+        "d ${cfg.dataDir}/zotero 0777 webdav webdav -"
         "Z ${cfg.dataDir} 0777 webdav webdav -"
         "r ${cfg.dataDir}/zotero/lastsync.txt"
         "r ${cfg.dataDir}/lastsync.txt"
@@ -146,6 +147,11 @@ in
               # Rewrite duplicate /zotero/zotero/ paths if entered mistakenly in client
               rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
               rewrite ^/zotero/zotero/?$ /zotero/ break;
+
+              # Handle MKCOL directory creation (returns 201 Created to satisfy Zotero protocol probe)
+              if ($request_method = MKCOL) {
+                return 201;
+              }
 
               # Ensure redirect Location headers use https
               proxy_redirect http:// https://;

@@ -84,6 +84,7 @@ in
         "d ${cfg.dataDir} 0770 webdav webdav -"
         "d ${cfg.dataDir}/zotero 0770 webdav webdav -"
         "f+ ${cfg.dataDir}/zotero/lastsync.txt 0660 webdav webdav - -"
+        "f+ ${cfg.dataDir}/lastsync.txt 0660 webdav webdav - -"
       ];
 
       services.webdav = lib.mkMerge [
@@ -124,7 +125,7 @@ in
               {
                 inherit (cfg) username;
                 password = effectivePasswordHash;
-                scope = cfg.dataDir;
+                scope = ".";
                 modify = true;
               }
             ];
@@ -143,6 +144,10 @@ in
             extraConfig = ''
               # Rewrite duplicate /zotero/zotero/ paths if entered mistakenly in client
               rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
+              rewrite ^/zotero/zotero/?$ /zotero/ break;
+
+              # Ensure redirect Location headers use https
+              proxy_redirect http:// https://;
 
               # Strip Origin header for WebDAV to prevent "Invalid origin" CORS error
               proxy_set_header Origin "";

@@ -20,7 +20,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      programs.vesktop = lib.mkIf pkgs.stdenv.isLinux {
+      programs.vesktop = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
         enable = true;
         settings = {
           discordBranch = "stable";
@@ -37,7 +37,7 @@ in
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.hostPlatform.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

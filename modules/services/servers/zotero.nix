@@ -99,7 +99,7 @@ in
           settings = {
             address = "0.0.0.0";
             inherit (cfg) port;
-            scope = "${cfg.dataDir}/zotero";
+            scope = cfg.dataDir;
             modify = true;
             auth = true;
             cors = {
@@ -144,11 +144,9 @@ in
             proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;
             extraConfig = ''
-              # Strip any /zotero or /zotero/zotero prefix so all requests map to WebDAV root
-              rewrite ^/zotero/zotero/(.*)$ /$1 break;
-              rewrite ^/zotero/zotero/?$ / break;
-              rewrite ^/zotero/(.*)$ /$1 break;
-              rewrite ^/zotero/?$ / break;
+              # Rewrite duplicate /zotero/zotero/ paths if entered mistakenly in client
+              rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
+              rewrite ^/zotero/zotero/?$ /zotero/ break;
 
               # Ensure redirect Location headers use https
               proxy_redirect http:// https://;

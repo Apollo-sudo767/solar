@@ -83,6 +83,7 @@ in
       systemd.tmpfiles.rules = [
         "d ${cfg.dataDir} 0770 webdav webdav -"
         "d ${cfg.dataDir}/zotero 0770 webdav webdav -"
+        "f+ ${cfg.dataDir}/zotero/lastsync.txt 0660 webdav webdav - -"
       ];
 
       services.webdav = lib.mkMerge [
@@ -106,8 +107,10 @@ in
               allowed_headers = [ "*" ];
               allowed_methods = [
                 "GET"
+                "HEAD"
                 "POST"
                 "PUT"
+                "PATCH"
                 "DELETE"
                 "MKCOL"
                 "PROPFIND"
@@ -138,7 +141,10 @@ in
             proxyPass = "http://127.0.0.1:${toString cfg.port}/";
             proxyWebsockets = true;
             extraConfig = ''
-              # Strip/fix Origin header for WebDAV to prevent "Invalid origin" error
+              # Rewrite duplicate /zotero/zotero/ paths if entered mistakenly in client
+              rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
+
+              # Strip Origin header for WebDAV to prevent "Invalid origin" CORS error
               proxy_set_header Origin "";
 
               # Essential WebDAV proxy headers
@@ -146,6 +152,15 @@ in
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
+
+              # Additional WebDAV headers for file movement/properties
+              proxy_set_header Depth $http_depth;
+              proxy_set_header Destination $http_destination;
+              proxy_set_header Overwrite $http_overwrite;
+
+              # Disable request/response buffering for WebDAV operations
+              proxy_buffering off;
+              proxy_request_buffering off;
 
               # Disable body size limits for uploading large PDFs
               client_max_body_size 0;

@@ -83,8 +83,8 @@ in
       systemd.tmpfiles.rules = [
         "d ${cfg.dataDir} 0770 webdav webdav -"
         "d ${cfg.dataDir}/zotero 0770 webdav webdav -"
-        "f+ ${cfg.dataDir}/zotero/lastsync.txt 0660 webdav webdav - -"
-        "f+ ${cfg.dataDir}/lastsync.txt 0660 webdav webdav - -"
+        "f+ ${cfg.dataDir}/zotero/lastsync.txt 0660 webdav webdav - 1724000000"
+        "f+ ${cfg.dataDir}/lastsync.txt 0660 webdav webdav - 1724000000"
       ];
 
       services.webdav = lib.mkMerge [
@@ -98,7 +98,7 @@ in
           settings = {
             address = "0.0.0.0";
             inherit (cfg) port;
-            scope = cfg.dataDir;
+            scope = "${cfg.dataDir}/zotero";
             modify = true;
             auth = true;
             cors = {
@@ -139,12 +139,14 @@ in
           enableACME = lib.mkDefault (!lib.hasSuffix ".local" domainName);
           forceSSL = lib.mkDefault (!lib.hasSuffix ".local" domainName);
           locations."/" = {
-            proxyPass = "http://127.0.0.1:${toString cfg.port}/";
+            proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;
             extraConfig = ''
-              # Rewrite duplicate /zotero/zotero/ paths if entered mistakenly in client
-              rewrite ^/zotero/zotero/(.*)$ /zotero/$1 break;
-              rewrite ^/zotero/zotero/?$ /zotero/ break;
+              # Strip any /zotero or /zotero/zotero prefix so all requests map to WebDAV root
+              rewrite ^/zotero/zotero/(.*)$ /$1 break;
+              rewrite ^/zotero/zotero/?$ / break;
+              rewrite ^/zotero/(.*)$ /$1 break;
+              rewrite ^/zotero/?$ / break;
 
               # Ensure redirect Location headers use https
               proxy_redirect http:// https://;

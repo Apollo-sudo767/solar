@@ -127,13 +127,6 @@ in
                 password = effectivePasswordHash;
                 scope = ".";
                 modify = true;
-                rules = [
-                  {
-                    regex = true;
-                    allow = true;
-                    path = ".*";
-                  }
-                ];
               }
             ];
           };

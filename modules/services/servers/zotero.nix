@@ -140,6 +140,12 @@ in
         virtualHosts."${domainName}" = {
           enableACME = lib.mkDefault (!lib.hasSuffix ".local" domainName);
           forceSSL = lib.mkDefault (!lib.hasSuffix ".local" domainName);
+          extraConfig = ''
+            # Return 201 Created for WebDAV MKCOL method to satisfy Zotero client directory probes
+            if ($request_method = MKCOL) {
+              return 201;
+            }
+          '';
           locations."/" = {
             proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;

@@ -20,7 +20,7 @@
 
       system.stateVersion = "26.11";
 
-      # Jupiter: Intel Mac Mini
+      # Thebe: Intel Mac Mini (Moon of Jupiter)
       myFeatures = {
         core = {
           system.core-branch = {

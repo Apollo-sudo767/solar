@@ -62,6 +62,16 @@ experimental-features = nix-command flakes
 
 ## ⚒️ Deployment Instructions
 
+For complete step-by-step bare-metal installation instructions, see [INSTALL.md](INSTALL.md).
+
+### Automated Installation
+
+Run the interactive installation wizard:
+
+```bash
+./install.sh
+```
+
 ### Initial Bootstrap
 
 To apply a configuration to a new machine for the first time:

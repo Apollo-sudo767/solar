@@ -24,7 +24,7 @@ All three Jupiter moon hosts use **Disko**, **LUKS Encryption**, and **Btrfs** w
 
 | Host | Role | Boot Drive(s) (`speedDisks`) | Data Drive(s) (`bulkDisks`) | Services |
 | :--- | :--- | :--- | :--- | :--- |
-| **`thebe`** | Intel Mac Mini | `/dev/sda` (or NVMe) | — | Intel graphics, Apple SMC, systemd-boot |
+| **`thebe`** | Intel Mac Mini | `/dev/sda` (or NVMe) | — | Intel graphics, Apple SMC, Limine bootloader |
 | **`ganymede`** | Dedicated NAS | `/dev/nvme0n1` | `/dev/sda`, `/dev/sdb` | Samba (SMB3), NFS, Avahi mDNS, Btrfs Scrub |
 | **`callisto`** | General Storage | `/dev/nvme0n1` | `/dev/sda` | Syncthing, Restic/Borg, Btrfs Scrub |
 
@@ -126,7 +126,7 @@ ______________________________________________________________________
 ### Thebe (Intel Mac Mini)
 
 - **Booting Live USB**: Hold the `Option` (or `Alt`) key immediately after powering on until the Apple boot menu appears, then select the EFI Boot USB drive.
-- **Bootloader**: `thebe` uses `systemd-boot` configured for standard UEFI.
+- **Bootloader**: `thebe` uses `limine` with styled background graphics.
 - **Thermal & Fan Control**: The `applesmc` kernel module is loaded automatically for thermal sensor monitoring.
 
 ### Ganymede (Dedicated NAS)

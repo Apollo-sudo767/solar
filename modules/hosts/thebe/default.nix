@@ -39,7 +39,7 @@
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
-            loader = "systemd"; # Standard EFI systemd-boot for Apple EFI
+            loader = "limine";
             kernel = "latest";
             secureBoot.enable = false;
           };

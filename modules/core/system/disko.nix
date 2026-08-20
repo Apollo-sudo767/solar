@@ -1,3 +1,13 @@
+# modules/core/system/disko.nix
+#
+# Universal Hardware-Aware Disko Module
+#
+# Provides a declarative, unified storage foundation across all Linux hosts in Solar:
+# - Supports single-disk (NVMe/SSD) and multi-disk (Speed + Bulk) topologies.
+# - Formats storage with Btrfs (zstd compression, noatime) and automatic subvolume layouts.
+# - Automatically adapts between standard root and wipe-on-boot tmpfs persistence modes.
+# - Provides optional full-disk LUKS2 encryption with TPM2 auto-unlock hooks.
+# - Fully hardware-agnostic: supports persistent device paths (/dev/disk/by-id/...).
 {
   lib,
   config,

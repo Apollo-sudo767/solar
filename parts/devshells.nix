@@ -21,8 +21,9 @@
               nh
               comma
               nix-index
+              mdbook
             ]
-            ++ lib.optional pkgs.stdenv.isDarwin age-plugin-se;
+            ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin age-plugin-se;
 
           shellHook = ''
             ${config.pre-commit.installationScript} >/dev/null 2>&1 || true

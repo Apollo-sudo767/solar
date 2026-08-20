@@ -1,0 +1,18 @@
+[book]
+authors = ["Apollo-sudo767"]
+language = "en"
+src = "docs"
+title = "Solar Documentation ☀️"
+
+[output.html]
+git-repository-url = "https://github.com/Apollo-sudo767/solar"
+edit-url-template = "https://github.com/Apollo-sudo767/solar/edit/main/{path}"
+default-theme = "navy"
+preferred-dark-theme = "navy"
+
+[output.html.search]
+enable = true
+limit-results = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1

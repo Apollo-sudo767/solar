@@ -25,8 +25,7 @@
             ++ lib.optional pkgs.stdenv.isDarwin age-plugin-se;
 
           shellHook = ''
-            ${config.pre-commit.installationScript}
-            echo "☀️ Solar environment active."
+            ${config.pre-commit.installationScript} >/dev/null 2>&1 || true
           '';
 
         };

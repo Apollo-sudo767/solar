@@ -113,10 +113,10 @@ in
           ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
           ll = "ls -l";
           la = "eza -a";
-          # Use your host variable for easy rebuilds
-          nrs = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild switch --flake .#${host}${secretsOverride}";
-          nrb = "sudo --preserve-env=SSH_AUTH_SOCK nixos-rebuild boot --flake .#${host}${secretsOverride}";
-          drs = "sudo --preserve-env=SSH_AUTH_SOCK darwin-rebuild switch --flake .#${host}${secretsOverride}";
+          # Use nh for clean, non-noisy progress bars
+          nrs = "nh os switch . --hostname ${host} ${secretsOverride}";
+          nrb = "nh os boot . --hostname ${host} ${secretsOverride}";
+          drs = "nh darwin switch . --hostname ${host} ${secretsOverride}";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";
@@ -129,7 +129,7 @@ in
         initContent = ''
           # General Shell Prefs
           export EDITOR=hx
-          # ... the rest of your init code
+          export DIRENV_LOG_FORMAT="" # Quiet direnv chatter
         '';
       };
     });

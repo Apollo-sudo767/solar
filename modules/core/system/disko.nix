@@ -265,11 +265,13 @@ in
               };
             };
 
-            # Ensure mounts are available for Preservation
-            fileSystems = lib.mkIf usePersistence {
-              "/persist".neededForBoot = true;
-              "/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
+            # Ensure mounts are available for Preservation and storage services
+            fileSystems = {
+              "/persist" = lib.mkIf usePersistence {
                 neededForBoot = true;
+              };
+              "/persist/bulk" = lib.mkIf (bulkDisks != [ ]) {
+                neededForBoot = lib.mkDefault true;
               };
             };
           })

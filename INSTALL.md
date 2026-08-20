@@ -15,6 +15,12 @@ ______________________________________________________________________
    - [Ganymede (Dedicated NAS)](#ganymede-dedicated-nas)
    - [Callisto (General Storage)](#callisto-general-storage)
 1. [🔐 Setting Up LUKS Disk Encryption](#-setting-up-luks-disk-encryption)
+   - [Crucial: Same Passphrase for Multi-Disk & Automated Reboots](#crucial-same-passphrase-for-multi-disk--automated-reboots)
+   - [Adding Backup Recovery Keys](#adding-backup-recovery-keys)
+1. [🔄 Easy Drive Swapping & Storage Pool Management](#-easy-drive-swapping--storage-pool-management)
+   - [Using Persistent Drive Identifiers (`/dev/disk/by-id/`)](#using-persistent-drive-identifiers-devdiskby-id)
+   - [Declarative Drive Replacement (via Disko)](#declarative-drive-replacement-via-disko)
+   - [Live Zero-Downtime Drive Swapping (via Native Btrfs)](#live-zero-downtime-drive-swapping-via-native-btrfs)
 1. [🛡️ Setting Up Native Secure Boot with Limine (`sbctl`)](#%EF%B8%8F-setting-up-native-secure-boot-with-limine-sbctl)
 1. [🔑 Binding LUKS to Secure Boot via TPM 2.0 (Tamper-Proof Auto-Unlock)](#-binding-luks-to-secure-boot-via-tpm-20-tamper-proof-auto-unlock)
 1. [Post-Installation Verification & Maintenance](#post-installation-verification--maintenance)
@@ -110,6 +116,9 @@ sudo nix --extra-experimental-features "nix-command flakes" \
 
 *(You will be prompted to enter a passphrase for each LUKS encrypted volume.)*
 
+> [!IMPORTANT]
+> When Disko prompts for passphrases on multi-drive systems (`ganymede` / `callisto`), **set the EXACT same passphrase on all disks**. See the section below for details.
+
 ### Step 3: Install NixOS
 
 ```bash
@@ -167,28 +176,131 @@ ______________________________________________________________________
 
 Disko automatically configures **LUKS2 encryption** on all `speedDisks` and `bulkDisks` when `enableLuks = true` (default on `thebe`, `ganymede`, and `callisto`).
 
-### 1. Initial Passphrase Setup
+### Crucial: Same Passphrase for Multi-Disk & Automated Reboots
 
-When Disko formats the drive during installation, it will prompt you for an initial LUKS passphrase. Choose a strong, memorable passphrase.
+> [!IMPORTANT]
+> **ALWAYS set the same LUKS passphrase across all encrypted drives in a multi-disk machine.**
+>
+> **Why this is required:**
+>
+> 1. **Single-Prompt Booting:** During early boot (`initrd`), `systemd-cryptsetup` caches the passphrase entered for the root disk and automatically tries it against all remaining encrypted disks. If all disks share the same passphrase, you only type your password **once** on boot rather than once per drive.
+> 1. **Automating Reboots & Remote Restarts:** When automating reboots or deploying remotely, mismatched passphrases will cause the boot sequence to stall waiting for secondary disk passwords.
+> 1. **TPM 2.0 Fallback:** If TPM2 auto-unlock ever requires manual fallback (e.g. after a firmware update), typing the passphrase once unlocks the entire storage array simultaneously.
 
-### 2. Adding a Backup Recovery Passphrase / Key
+If you ever need to synchronize or add the same passphrase across existing drives:
 
-After booting into the installed system, it is strongly recommended to add a secondary recovery passphrase:
+```bash
+# Add the primary passphrase to your bulk disk(s):
+sudo cryptsetup luksAddKey /dev/sda1
+sudo cryptsetup luksAddKey /dev/sdb1
+```
+
+### Adding Backup Recovery Keys
+
+After booting into the installed system, you can add a secondary recovery passphrase to key slot 1:
 
 ```bash
 # Identify your encrypted partition (e.g., /dev/nvme0n1p2 or /dev/sda2)
 lsblk -f
 
-# Add a secondary recovery passphrase to key slot 1:
+# Add a secondary recovery passphrase:
 sudo cryptsetup luksAddKey /dev/nvme0n1p2
 ```
 
-### 3. Inspecting LUKS Key Slots
+### Inspecting LUKS Key Slots
 
 You can verify active key slots and encryption parameters at any time:
 
 ```bash
 sudo cryptsetup luksDump /dev/nvme0n1p2
+```
+
+______________________________________________________________________
+
+## 🔄 Easy Drive Swapping & Storage Pool Management
+
+The Solar Disko architecture is hardware-aware and designed for **seamless drive replacement, disk swaps, and storage expansion**.
+
+### Using Persistent Drive Identifiers (`/dev/disk/by-id/`)
+
+Linux device names like `/dev/sda` and `/dev/sdb` can occasionally change order across reboots when hardware cables or controllers are reordered. To ensure drive swaps are 100% deterministic, you can specify drives by their persistent hardware ID in your host configuration:
+
+```bash
+# List all disks by model and serial number:
+ls -la /dev/disk/by-id/
+```
+
+In `modules/hosts/<hostname>/default.nix`:
+
+```nix
+system.disko = {
+  enable = true;
+  enableLuks = true;
+  speedDisks = [ "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5GXNF0R123456" ];
+  bulkDisks = [
+    "/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K1234567"
+    "/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K7654321"
+  ];
+};
+```
+
+*Disko automatically sanitizes device paths and configures the corresponding mapper names.*
+
+______________________________________________________________________
+
+### Declarative Drive Replacement (via Disko)
+
+When permanently replacing a failed drive or upgrading a disk:
+
+1. **Power down and physically swap the drive** (or connect the replacement disk).
+1. **Update the device list** in `modules/hosts/<hostname>/default.nix` with the new disk path / ID.
+1. **Partition & format the new drive into the pool with Disko:**
+   ```bash
+   sudo nix --extra-experimental-features "nix-command flakes" \
+     run github:nix-community/disko -- \
+     --mode disko \
+     --flake .#<hostname>
+   ```
+   *(Ensure you enter the same LUKS passphrase as the rest of the pool).*
+1. **Re-enroll TPM 2.0 auto-unlock on the new drive partition:**
+   ```bash
+   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 <new_luks_partition>
+   ```
+
+______________________________________________________________________
+
+### Live Zero-Downtime Drive Swapping (via Native Btrfs)
+
+For active NAS and storage servers (**ganymede** and **callisto**), Btrfs allows you to hot-swap or replace drives **live without unmounting shares or taking the storage offline**:
+
+#### 1. Live Replacing a Drive in the Btrfs Pool:
+
+```bash
+# 1. Format and encrypt the replacement drive with the same passphrase:
+sudo cryptsetup luksFormat --type luks2 /dev/sdc1
+sudo cryptsetup open /dev/sdc1 crypted-bulk-new
+
+# 2. Live stream and mirror data from old drive to new drive:
+sudo btrfs replace start /dev/mapper/crypted-bulk-sda /dev/mapper/crypted-bulk-new /persist/bulk
+
+# 3. Check progress:
+sudo btrfs replace status /persist/bulk
+```
+
+*Once replacement completes, the old drive is automatically removed from the pool and can be unplugged.*
+
+#### 2. Adding a New Drive to Expand Storage:
+
+```bash
+# Format and open LUKS on the new drive:
+sudo cryptsetup luksFormat --type luks2 /dev/sdd1
+sudo cryptsetup open /dev/sdd1 crypted-bulk-extra
+
+# Add the new device into the bulk storage pool:
+sudo btrfs device add /dev/mapper/crypted-bulk-extra /persist/bulk
+
+# Rebalance data across all drives (optional, runs in background):
+sudo btrfs balance start /persist/bulk
 ```
 
 ______________________________________________________________________

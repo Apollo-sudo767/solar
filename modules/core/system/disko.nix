@@ -9,11 +9,6 @@ let
   cfg = config.myFeatures.core.system.disko;
   usePersistence = config.myFeatures.core.system.core-branch.usePersistence or false;
 
-  # Helper to identify disk type from string
-  isNVMe = dev: lib.strings.hasInfix "nvme" dev;
-  isSSD = dev: lib.strings.hasInfix "sd" dev && !(isHDD dev);
-  isHDD = dev: (lib.strings.hasInfix "sda" dev); # /dev/sda is the HDD on mars
-
   inherit (cfg) speedDisks bulkDisks enableLuks;
 
   # The very first disk in speedDisks is our "Primary" (holds ESP)
@@ -135,6 +130,7 @@ let
               {
                 type = "luks";
                 name = "crypted-speed-${lib.strings.sanitizeDerivationName device}";
+                extraOpenArgs = [ "--allow-discards" ];
                 settings.allowDiscards = true;
                 settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
               }
@@ -145,7 +141,7 @@ let
     };
   };
 
-  # Bulk Disks Pool (HDDs)
+  # Bulk Disks Pool (HDDs / Storage SSDs)
   mkBulkDisk = device: {
     type = "disk";
     inherit device;
@@ -159,7 +155,8 @@ let
               {
                 type = "luks";
                 name = "crypted-bulk-${lib.strings.sanitizeDerivationName device}";
-                settings.allowDiscards = !isHDD device;
+                extraOpenArgs = [ "--allow-discards" ];
+                settings.allowDiscards = true;
                 settings.crypttabExtraOpts = [ "tpm2-device=auto" ];
                 content =
                   if device == (lib.head bulkDisks) then

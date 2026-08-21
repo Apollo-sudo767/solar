@@ -67,6 +67,15 @@
         };
 
         platforms = {
+          desktops.niri = {
+            monitors = [
+              {
+                name = "eDP-1";
+                resolution = "1080p";
+                orientation = "horizontal";
+              }
+            ];
+          };
           styling = {
             stylix.enable = true;
             skyNiri.enable = true;

@@ -82,7 +82,35 @@
           };
         };
         platforms = {
-          desktops.niri.modKey = "super";
+          desktops.niri = {
+            modKey = "super";
+            monitors = [
+              {
+                name = "DP-4";
+                aliases = [ "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961" ];
+                resolution = "1440p";
+                refresh = 180.0;
+                orientation = "horizontal";
+                position = {
+                  x = 0;
+                  y = 0;
+                };
+                vrr = true;
+              }
+              {
+                name = "DP-5";
+                aliases = [ "ASUSTek COMPUTER INC VG278 LBLMQS200546" ];
+                resolution = "1080p";
+                refresh = 165.0;
+                orientation = "horizontal";
+                position = {
+                  x = 2560;
+                  y = 0;
+                };
+                vrr = true;
+              }
+            ];
+          };
           styling = {
             stylix.enable = true;
             skyNiri.enable = true;

@@ -13,6 +13,8 @@ ______________________________________________________________________
 | `drs` | `nh darwin switch .` | Rebuilds and switches macOS system environment (`phobos`). |
 | `nfu` | `nix flake update` | Updates all flake inputs in `flake.lock`. |
 | `nfc` | `nix flake check` | Validates and checks flake evaluation. |
+| `nc` / `ncl` | `nh clean all --keep 5 --keep-since 7d` | Cleans old profiles and generations keeping the last 5 within 7 days. |
+| `nco` | `nh clean all --keep 5 --keep-since 7d --optimise` | Cleans old profiles and deduplicates/optimizes the Nix store. |
 | `seed` | Bitwarden Age unlock | Unlocks and seeds master encryption key into volatile RAM (`/run/user/...`). |
 | `unseed` | Purge RAM key | Securely purges the master Age key from RAM. |
 

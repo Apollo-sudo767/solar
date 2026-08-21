@@ -53,6 +53,9 @@ in
       drs = "nh darwin switch --no-nom";
       nfu = "nix flake update";
       nfc = "nix flake check";
+      nc = "nh clean all --keep 5 --keep-since 7d";
+      ncl = "nh clean all --keep 5 --keep-since 7d";
+      nco = "nh clean all --keep 5 --keep-since 7d --optimise";
     };
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
@@ -134,6 +137,9 @@ in
           drs = "nh darwin switch --no-nom";
           nfu = "nix flake update";
           nfc = "nix flake check";
+          nc = "nh clean all --keep 5 --keep-since 7d";
+          ncl = "nh clean all --keep 5 --keep-since 7d";
+          nco = "nh clean all --keep 5 --keep-since 7d --optimise";
           gs = "git status";
           ga = "git add";
           gc = "git commit";

@@ -58,11 +58,14 @@ ______________________________________________________________________
 Once installed, use the built-in shell aliases:
 
 ```bash
-nrs   # Rebuild and switch immediately via nh (nh os switch .)
-nrb   # Rebuild for next boot (nh os boot .)
-drs   # macOS Darwin rebuild (nh darwin switch .)
+nrs   # Rebuild and switch immediately via nh (nh os switch --no-nom)
+nrb   # Rebuild for next boot (nh os boot --no-nom)
+drs   # macOS Darwin rebuild (nh darwin switch --no-nom)
 nfu   # Update all flake lock inputs (nix flake update)
 nfc   # Check flake evaluation (nix flake check)
+nc    # Clean profiles and generations keeping last 5 within 7d (nh clean all)
+ncl   # Clean profiles (alias for nc)
+nco   # Clean profiles and optimize/deduplicate Nix store
 seed  # Unlock and seed Age master keys into RAM
 unseed# Purge Age master keys from RAM
 ```

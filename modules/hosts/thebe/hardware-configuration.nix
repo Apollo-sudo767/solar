@@ -32,4 +32,9 @@
   # Platform & CPU
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  # Apple Keyboard Quirk: Default to standard F1-F12 keys instead of media keys
+  boot.extraModprobeConfig = ''
+    options hid_apple fnmode=2
+  '';
 }

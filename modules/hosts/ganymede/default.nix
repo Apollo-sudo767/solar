@@ -177,5 +177,10 @@
         PermitRootLogin = lib.mkDefault "prohibit-password";
         PasswordAuthentication = lib.mkDefault true;
       };
+
+      # Automatically provision storage directory with appropriate share permissions
+      systemd.tmpfiles.rules = [
+        "d /persist/bulk/storage 0775 ${config.myFeatures.core.system.users.mainUser} users - -"
+      ];
     };
 }

@@ -133,5 +133,10 @@
         PermitRootLogin = lib.mkDefault "prohibit-password";
         PasswordAuthentication = lib.mkDefault true;
       };
+
+      # Automatically provision Syncthing data directory
+      systemd.tmpfiles.rules = [
+        "d /persist/bulk/syncthing 0770 ${config.myFeatures.core.system.users.mainUser} users - -"
+      ];
     };
 }

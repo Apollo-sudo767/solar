@@ -294,6 +294,7 @@ if [[ "$REMOTE_BUILD" == "true" ]]; then
         --no-link --print-out-paths --no-write-lock-file)
 
     echo "📡 Phase 3: Executing disko and installation..."
+    echo "💡 Note: If prompted for LUKS passphrases on multiple disks, use the SAME passphrase across all drives."
     nix run github:nix-community/nixos-anywhere -- \
         --phases disko,install,reboot \
         --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
@@ -305,6 +306,7 @@ else
     SYSTEM_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" --override-input solar-secrets "path:$OVERRIDE_SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
 
     echo "📡 Executing nixos-anywhere..."
+    echo "💡 Note: If prompted for LUKS passphrases on multiple disks, use the SAME passphrase across all drives."
     echo "If you set a password on the live USB, nixos-anywhere will prompt for it now."
     nix run github:nix-community/nixos-anywhere -- \
         --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
@@ -319,7 +321,10 @@ echo "🛠️  MANUAL POST-INSTALL STEPS"
 echo "----------------------------------------------------------------------"
 echo "1. Wait for the machine to reboot and enter your LUKS passphrase."
 echo "2. Log in (via SSH or physically)."
-echo "3. If using Secure Boot, run the following commands as root:"
+echo "3. (Optional) Enroll TPM 2.0 tamper-proof auto-unlock on encrypted drives:"
+echo "   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2"
+echo ""
+echo "4. If using Secure Boot, run the following commands as root:"
 echo ""
 echo "   # Create keys if they don't exist"
 echo "   sbctl create-keys"
@@ -330,10 +335,6 @@ echo ""
 echo "   # Sign boot files and kernels"
 echo "   find /boot -type f -name \"*.efi\" -exec sbctl sign -s {} +"
 echo "   find /boot -type f \( -name \"vmlinuz*\" -o -name \"bzImage*\" \) -exec sbctl sign -s {} +"
-echo ""
-echo "   # If using Limine, disable internal hash verification to avoid panics"
-echo "   sed -i \"s/hash_mismatch_panic: yes/hash_mismatch_panic: no/\" /boot/limine/limine.conf"
-echo "   sed -i \"s/#[a-f0-9]\{64\}//g\" /boot/limine/limine.conf"
 echo ""
 echo "   # Finalize"
 echo "   sync"

@@ -114,6 +114,13 @@ in
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
 
+        history = {
+          size = 10000;
+          save = 10000;
+          path = "$HOME/.local/state/zsh/history";
+          share = true;
+        };
+
         shellAliases = {
           # The Seeding Command: RAM-only, vanishes on reboot
           seed = "export BW_SESSION=$(bw unlock --raw) && mkdir -p /run/user/$(id -u)/sops && bw get item 'Solar Age Master' | jq -r '.notes' > /run/user/$(id -u)/sops/keys.txt && chmod 600 /run/user/$(id -u)/sops/keys.txt";
@@ -141,13 +148,5 @@ in
         '';
       };
     });
-
-    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.hostPlatform.isDarwin)
-        {
-          files = lib.concatMap (name: [
-            "/home/${name}/.zsh_history"
-          ]) config.myFeatures.core.system.users.usernames;
-        };
   };
 }

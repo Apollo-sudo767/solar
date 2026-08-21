@@ -26,7 +26,10 @@
 - [Bare-Metal Installation Guide](deployment/installation.md)
 - [Routine Updates & System Maintenance](deployment/maintenance.md)
 
-# Developer Guides
+# Configuration & Developer Guides
 
+- [How Modules Work](guides/how-modules-work.md)
+- [Setting Up a Basic Desktop](guides/setting-up-a-desktop.md)
+- [Setting Up a Basic Server](guides/setting-up-a-server.md)
 - [Adding a New Host](guides/adding-a-host.md)
 - [Adding a New Feature Module](guides/adding-a-feature.md)

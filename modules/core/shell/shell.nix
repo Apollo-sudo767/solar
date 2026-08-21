@@ -48,9 +48,9 @@ in
     programs.zsh.enable = true;
 
     environment.shellAliases = {
-      nrs = "nh os switch -Q";
-      nrb = "nh os boot -Q";
-      drs = "nh darwin switch -Q";
+      nrs = "nh os switch --no-nom";
+      nrb = "nh os boot --no-nom";
+      drs = "nh darwin switch --no-nom";
       nfu = "nix flake update";
       nfc = "nix flake check";
     };
@@ -128,10 +128,10 @@ in
           ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
           ll = "ls -l";
           la = "eza -a";
-          # Use nh for clean, non-noisy progress bars
-          nrs = "nh os switch -Q";
-          nrb = "nh os boot -Q";
-          drs = "nh darwin switch -Q";
+          # Use nh with clean output
+          nrs = "nh os switch --no-nom";
+          nrb = "nh os boot --no-nom";
+          drs = "nh darwin switch --no-nom";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";

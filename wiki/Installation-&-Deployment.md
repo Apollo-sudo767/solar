@@ -58,8 +58,11 @@ ______________________________________________________________________
 Once installed, use the built-in shell aliases:
 
 ```bash
-nrs   # Rebuild and switch immediately (sudo nixos-rebuild switch --flake .)
-nrb   # Rebuild for next boot (sudo nixos-rebuild boot --flake .)
+nrs   # Rebuild and switch immediately via nh (nh os switch .)
+nrb   # Rebuild for next boot (nh os boot .)
+drs   # macOS Darwin rebuild (nh darwin switch .)
 nfu   # Update all flake lock inputs (nix flake update)
-drs   # macOS Darwin rebuild (darwin-rebuild switch --flake .)
+nfc   # Check flake evaluation (nix flake check)
+seed  # Unlock and seed Age master keys into RAM
+unseed# Purge Age master keys from RAM
 ```

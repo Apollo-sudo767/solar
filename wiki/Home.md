@@ -7,6 +7,9 @@ ______________________________________________________________________
 ## 🌟 Quick Links
 
 - 🌲 **[Architecture](Architecture.md)**: Deep dive into the Dendritic Tree and automatic module discovery.
+- ⚙️ **[How Modules Work](How-Modules-Work.md)**: Comprehensive guide to options, multi-user Home Manager, and styling.
+- 🖥️ **[Setting Up a Basic Desktop](Setting-Up-a-Basic-Desktop.md)**: Blueprint for configuring a workstation or laptop.
+- 🖧 **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**: Blueprint for configuring a headless storage or application server.
 - 🪐 **[Fleet Overview](Fleet-Overview.md)**: Detailed breakdown of all machines in the Solar constellation.
 - 🚀 **[Installation & Deployment](Installation-&-Deployment.md)**: Bare-metal setup, interactive `install.sh`, and `nixos-anywhere`.
 - 💾 **[Storage & Disko](Storage-&-Disko.md)**: Universal hardware-aware Disko, Btrfs subvolumes, and drive swapping.

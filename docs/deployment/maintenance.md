@@ -8,10 +8,13 @@ ______________________________________________________________________
 
 | Command | Action | Description |
 | :--- | :--- | :--- |
-| `nrs` | `sudo nixos-rebuild switch --flake .` | Rebuilds and activates configuration immediately. |
-| `nrb` | `sudo nixos-rebuild boot --flake .` | Rebuilds configuration and sets as default for next boot. |
+| `nrs` | `nh os switch .` | Rebuilds and activates Linux configuration immediately via `nh`. |
+| `nrb` | `nh os boot .` | Rebuilds configuration and sets as default for next boot. |
+| `drs` | `nh darwin switch .` | Rebuilds and switches macOS system environment (`phobos`). |
 | `nfu` | `nix flake update` | Updates all flake inputs in `flake.lock`. |
-| `drs` | `darwin-rebuild switch --flake .` | Rebuilds and switches macOS system environment (`phobos`). |
+| `nfc` | `nix flake check` | Validates and checks flake evaluation. |
+| `seed` | Bitwarden Age unlock | Unlocks and seeds master encryption key into volatile RAM (`/run/user/...`). |
+| `unseed` | Purge RAM key | Securely purges the master Age key from RAM. |
 
 ______________________________________________________________________
 

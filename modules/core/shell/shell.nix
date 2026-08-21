@@ -45,10 +45,12 @@ in
       pkgs.fzf
     ];
 
+    programs.zsh.enable = true;
+
     environment.shellAliases = {
-      nrs = "nh os switch";
-      nrb = "nh os boot";
-      drs = "nh darwin switch";
+      nrs = "nh os switch -Q";
+      nrb = "nh os boot -Q";
+      drs = "nh darwin switch -Q";
       nfu = "nix flake update";
       nfc = "nix flake check";
     };
@@ -120,9 +122,9 @@ in
           ll = "ls -l";
           la = "eza -a";
           # Use nh for clean, non-noisy progress bars
-          nrs = "nh os switch";
-          nrb = "nh os boot";
-          drs = "nh darwin switch";
+          nrs = "nh os switch -Q";
+          nrb = "nh os boot -Q";
+          drs = "nh darwin switch -Q";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";

@@ -16,6 +16,7 @@ in
 
   config = lib.mkIf cfg.enable {
     nix = {
+      channel.enable = lib.mkIf pkgs.stdenv.hostPlatform.isLinux false;
       settings = {
         experimental-features = [
           "nix-command"
@@ -26,7 +27,7 @@ in
       };
 
       # FIX: Only enable Nix-managed GC on Linux using the built-in stdenv check.
-      gc = lib.mkIf pkgs.stdenv.isLinux {
+      gc = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
         automatic = true;
         dates = "weekly";
         options = "--delete-older-than 7d";

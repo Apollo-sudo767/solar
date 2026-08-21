@@ -14,7 +14,7 @@ let
   secretsOverride =
     let
       secretsPath =
-        if pkgs.stdenv.isDarwin then
+        if pkgs.stdenv.hostPlatform.isDarwin then
           "/Users/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets"
         else
           "/home/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets";
@@ -45,7 +45,13 @@ in
       pkgs.fzf
     ];
 
-    programs.zsh.enable = true;
+    environment.shellAliases = {
+      nrs = "nh os switch";
+      nrb = "nh os boot";
+      drs = "nh darwin switch";
+      nfu = "nix flake update";
+      nfc = "nix flake check";
+    };
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.starship = {
@@ -114,9 +120,9 @@ in
           ll = "ls -l";
           la = "eza -a";
           # Use nh for clean, non-noisy progress bars
-          nrs = "nh os switch . --hostname ${host} ${secretsOverride}";
-          nrb = "nh os boot . --hostname ${host} ${secretsOverride}";
-          drs = "nh darwin switch . --hostname ${host} ${secretsOverride}";
+          nrs = "nh os switch";
+          nrb = "nh os boot";
+          drs = "nh darwin switch";
           nfu = "nix flake update";
           nfc = "nix flake check";
           gs = "git status";
@@ -135,7 +141,7 @@ in
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.hostPlatform.isDarwin)
         {
           files = lib.concatMap (name: [
             "/home/${name}/.zsh_history"

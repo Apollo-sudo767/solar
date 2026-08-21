@@ -14,22 +14,7 @@ mkdir -p modules/hosts/<hostname>
 
 ______________________________________________________________________
 
-## ⚙️ Step 2: Create `meta.nix`
-
-Define the target architecture and configuration channels in `modules/hosts/<hostname>/meta.nix`:
-
-```nix
-{
-  system = "x86_64-linux"; # or "aarch64-linux", "aarch64-darwin"
-  stable = false;          # true for nixpkgs-stable, false for nixpkgs-unstable
-  useSolarSecrets = false; # set false for standalone hosts without private secrets
-  useSecrets = false;
-}
-```
-
-______________________________________________________________________
-
-## 💻 Step 3: Create `hardware-configuration.nix`
+## 💻 Step 2: Create `hardware-configuration.nix`
 
 Include hardware drivers and CPU microcode in `modules/hosts/<hostname>/hardware-configuration.nix`:
 
@@ -50,19 +35,21 @@ Include hardware drivers and CPU microcode in `modules/hosts/<hostname>/hardware
 
 ______________________________________________________________________
 
-## 🧩 Step 4: Create `default.nix`
+## 🧩 Step 3: Create `default.nix` (with inline `meta` and `module`)
 
-Enable your desired features in `modules/hosts/<hostname>/default.nix`:
+Define host metadata (`system`, `stable`, `useSolarSecrets`) and enable your desired features in `modules/hosts/<hostname>/default.nix`:
 
 ```nix
 {
+  # 1. Host Metadata (used by flake.nix and modules/hosts/default.nix)
   meta = {
-    system = "x86_64-linux";
-    stable = false;
-    useSolarSecrets = false;
+    system = "x86_64-linux"; # or "aarch64-linux", "aarch64-darwin"
+    stable = false;          # true for nixpkgs-stable, false for nixpkgs-unstable
+    useSolarSecrets = false; # set true to decrypt private secrets with agenix
     useSecrets = false;
   };
 
+  # 2. Host System Module
   module = { config, lib, pkgs, ... }: {
     imports = [ ./hardware-configuration.nix ];
     system.stateVersion = "26.11";
@@ -92,7 +79,7 @@ Enable your desired features in `modules/hosts/<hostname>/default.nix`:
 
 ______________________________________________________________________
 
-## 🔍 Step 5: Test Evaluation
+## 🔍 Step 4: Test Evaluation
 
 Verify that the flake automatically discovers and evaluates your new host:
 

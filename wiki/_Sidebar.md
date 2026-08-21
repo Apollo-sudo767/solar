@@ -16,6 +16,9 @@ ______________________________________________________________________
 
 #### 🛠️ **Guides**
 
+- **[How Modules Work](How-Modules-Work.md)**
+- **[Setting Up a Basic Desktop](Setting-Up-a-Basic-Desktop.md)**
+- **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**
 - **[Adding a New Host](Adding-a-New-Host.md)**
 - **[Adding a New Feature](Adding-a-New-Feature.md)**
 

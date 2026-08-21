@@ -47,7 +47,7 @@ Recursively walks all subdirectories of `modules/` (excluding `hosts/`) and extr
 
 Scans `modules/hosts/` for subdirectories (excluding `shared/`). For each host:
 
-1. Reads `meta.nix` (or `meta` in `default.nix`) for system architecture (`x86_64-linux`, `aarch64-darwin`, etc.), release channel (`stable` vs `unstable`), and secret toggles.
+1. Reads the `meta` attribute set in `modules/hosts/<hostname>/default.nix` for system architecture (`x86_64-linux`, `aarch64-darwin`, etc.), release channel (`stable` vs `unstable`), and secret toggles.
 1. Directs the build to either `pkgs.lib.nixosSystem` or `inputs.nix-darwin.lib.darwinSystem`.
 1. Injects Home Manager, Disko, Preservation, and Agenix modules dynamically.
 1. Exposes the resulting configurations under `nixosConfigurations.<hostname>` and `darwinConfigurations.<hostname>`.

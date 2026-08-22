@@ -174,7 +174,7 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
           };
           styling = {
             stylix.enable = true;
-            skyNiri.enable = true;          # Complete Sky theme rice for Niri & Noctalia
+            flavors.sky.enable = true;          # Complete Sky flavor preset for compositors & Noctalia
           };
           addons = {
             displayManager.manager = "regreet"; # Modern GTK4 Wayland greeter

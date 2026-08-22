@@ -18,7 +18,7 @@ config.myFeatures.<category>.<subcategory>.<feature>
 | :--- | :--- | :--- |
 | **`core`** | `modules/core/` | Foundational system settings: bootloaders (`limine`, `grub`, `systemd`), Nix settings (`lix`, `cachix`, `automation`), security (`agenix`, `ssh`), shell (`zsh`, `starship`, `cli`), and system management (`users`, `disko`, `preservation`). |
 | **`hardware`** | `modules/hardware/` | Hardware drivers and hardware-specific toggles: CPU/GPU (`amd`, `intel`, `nvidia`, `prime`), input devices (`controllers`, `wooting`, `trackpad`), peripherals (`battery`, `bluetooth`, `wifi`), and graphics. |
-| **`platforms`** | `modules/platforms/` | Graphical environments: window managers & DEs (`niri`, `kde`, `gnome`, `cosmic`), addons (`displayManager`, `noctalia`, `waybar`, `swaync`, `idle`, `swaylock`), and centralized ricing/styling (`stylix`, `themes`, `skyNiri`, `gruvboxNiri`). |
+| **`platforms`** | `modules/platforms/` | Graphical environments: window managers & DEs (`niri`, `kde`, `gnome`, `cosmic`), addons (`displayManager`, `noctalia`, `waybar`, `swaync`, `idle`, `swaylock`), and centralized ricing/styling (`stylix`, `themes`, `flavors`). |
 | **`programs`** | `modules/programs/` | User-facing software: browsers (`firefox`, `zen`, `chrome`), terminal applications (`ghostty`, `helix`, `fastfetch`, `antigravity`, `nh`, `git`), media & gaming (`steam`, `obs`, `davinci`, `vlc`, `ani-cli`), office tools, and utilities (`bitwarden`, `social`, `vesktop`, `filemanager`, `spotify`). |
 | **`services`** | `modules/services/` | System daemons and background servers: multimedia (`audio`, `sunshine`), hardware utilities (`printing`, `udisks2`, `openrgb`), networking (`tailscale`, `resolved`, `syncthing`), and servers (`minecraft`, `joplin`, `trilium`, `samba`, `nfs`). |
 | **`darwin`** | `modules/darwin/` | macOS-specific system modules (`homebrew`, `system defaults`, `core`). |
@@ -134,10 +134,10 @@ ______________________________________________________________________
 
 ## 🎨 Centralized Styling & Theming
 
-Styling in Solar is orchestrated through **Stylix** and custom rice modules located in `modules/platforms/styling/`:
+Styling in Solar is orchestrated through **Stylix** and custom flavor modules located in `modules/platforms/styling/`:
 
 - **Themes**: Pre-packaged color palettes (`sky`, `gruvbox`, `strawberry`, `forest`, `space`) defined under `myFeatures.platforms.styling.themes.<name>`.
-- **Rices**: Complete composited desktop styles (e.g. `skyNiri`, `gruvboxNiri`, `skyNoctalia`) that configure window borders, rounded corners, blur effects, Noctalia shell integration, and keybindings.
+- **Flavors**: Universal composited desktop styles (e.g. `flavors.sky`, `flavors.gruvbox`) that configure window borders, rounded corners, blur effects, shell integration, and keybindings across active compositors.
 
 ______________________________________________________________________
 

@@ -78,7 +78,7 @@
           };
           styling = {
             stylix.enable = true;
-            skyNiri.enable = true;
+            flavors.sky.enable = true;
           };
           addons = {
             displayManager.manager = "regreet";

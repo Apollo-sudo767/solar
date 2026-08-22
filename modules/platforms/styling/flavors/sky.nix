@@ -5,28 +5,21 @@
 }:
 
 let
-  cfg = config.myFeatures.platforms.styling.skyNiri;
+  cfg = config.myFeatures.platforms.styling.flavors.sky;
 in
 {
-  options.myFeatures.platforms.styling.skyNiri.enable =
-    lib.mkEnableOption "Apollo's Sky Niri Rice (Centralized)";
+  options.myFeatures.platforms.styling.flavors.sky = {
+    enable = lib.mkEnableOption "Apollo's Sky Flavor (Universal across compositors & shells)";
+  };
 
   config = lib.mkIf cfg.enable {
     myFeatures.platforms = {
-      # Enable the Sky Theme (Stylix settings)
+      # 1. Base Theme (Stylix / Colors)
       styling.themes.sky.enable = true;
 
-      # Enable all the addons for this rice
-      addons = {
-        # swayosd.enable = true;
-        # fuzzel.enable = true;
-        # swaylock.enable = true;
-        # swaybg.enable = lib.mkForce false;
-      };
-
-      # Enable Niri and Keybinds
+      # 2. Compositor / Window Manager Styling
       desktops.niri = {
-        enable = true;
+        enable = lib.mkDefault true;
         settings = {
           layout = {
             default-column-width = lib.mkDefault { proportion = 0.5; };
@@ -49,10 +42,11 @@ in
           ];
         };
       };
-      styling.niriKeybinds.enable = true;
 
-      # Use the NEW Noctalia v5 Rice instead of defaults
-      styling.skyNoctalia.enable = true;
+      styling.niriKeybinds.enable = lib.mkDefault true;
+
+      # 3. Addon / Shell Integration
+      styling.skyNoctalia.enable = lib.mkDefault true;
     };
   };
 }

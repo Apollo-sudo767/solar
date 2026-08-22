@@ -103,34 +103,31 @@ let
             agenixRekeyModule
             preservationModule
             diskoModule
-            (
-              { config, ... }:
-              {
-                nixpkgs.hostPlatform = system;
-                networking.hostName = name;
-                nixpkgs.config.allowUnfree = true;
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
+            (_: {
+              nixpkgs.hostPlatform = system;
+              networking.hostName = name;
+              nixpkgs.config.allowUnfree = true;
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
 
-                # Set defaults for agenix-rekey so evaluation doesn't fail
-                age.rekey = {
-                  hostPubkey =
-                    let
-                      path = if hasPrivateSecrets then "${secretsInput}/hosts/${name}.pub" else "";
-                    in
-                    lib.mkDefault (
-                      if hasPrivateSecrets && (builtins.pathExists path) then
-                        lib.strings.trim (builtins.readFile path)
-                      else
-                        # Fallback to a guaranteed valid age public key (for bootstrapping)
-                        "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34"
-                    );
-                  storageMode = lib.mkDefault "local";
-                  localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
-                  masterIdentities = lib.mkDefault [ "dummy" ];
-                };
-              }
-            )
+              # Set defaults for agenix-rekey so evaluation doesn't fail
+              age.rekey = {
+                hostPubkey =
+                  let
+                    path = if hasPrivateSecrets then "${secretsInput}/hosts/${name}.pub" else "";
+                  in
+                  lib.mkDefault (
+                    if hasPrivateSecrets && (builtins.pathExists path) then
+                      lib.strings.trim (builtins.readFile path)
+                    else
+                      # Fallback to a guaranteed valid age public key (for bootstrapping)
+                      "age1vdk2uqhss7xuacntfx95rkcplluwzx33mcxr66rdhu0sh5a0e5rsffrf34"
+                  );
+                storageMode = lib.mkDefault "local";
+                localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
+                masterIdentities = lib.mkDefault [ "dummy" ];
+              };
+            })
           ]
           ++ lib.optional isDarwin {
             # Determinate Nix installer manages the Nix daemon and nix.conf on macOS.

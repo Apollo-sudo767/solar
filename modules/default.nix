@@ -31,23 +31,12 @@ let
             hasDarwin = args ? isDarwin;
             hasTotal = args ? isTotal;
 
-            # 4. Surgery: Explicit platform segregation
-            # Darwin modules are strictly in the darwin/ directory
+            # Platform segregation
             isInDarwin = lib.hasInfix "/modules/darwin/" (toString path);
             isInDisplayManager = lib.hasInfix "/displayManager/" (toString path);
 
             shouldImport =
-              if isDarwin then
-                # On Mac: Import if it has isDarwin OR isTotal flag, and never if it is a display manager
-                (hasDarwin || hasTotal) && !isInDisplayManager
-              else
-              # On Linux:
-              # - Never import anything from the darwin/ directory
-              # - Import if it has isTotal OR has no platform flags (Linux default)
-              if isInDarwin then
-                false
-              else
-                (hasTotal || (!hasDarwin && !hasTotal));
+              if isDarwin then (isInDarwin || hasDarwin || hasTotal) && !isInDisplayManager else !isInDarwin;
           in
           if shouldImport then path else [ ]
         else

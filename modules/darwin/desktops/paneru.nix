@@ -3,7 +3,6 @@
   lib,
   pkgs,
   inputs,
-  isDarwin,
   ...
 }:
 let
@@ -18,7 +17,7 @@ in
     enable = lib.mkEnableOption "Paneru scrollable tiling window manager for macOS";
   };
 
-  config = lib.mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
+  config = lib.mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isDarwin) {
     services.paneru = {
       enable = true;
       package = inputs.paneru.packages.${pkgs.stdenv.hostPlatform.system}.default;

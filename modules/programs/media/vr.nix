@@ -178,7 +178,7 @@ in
         environment.etc."openxr/1/openxr_wivrn.json".source =
           "${pkgs.wivrn}/share/openxr/1/openxr_wivrn.json";
 
-        environment.sessionVariables = {
+        environment.variables = {
           PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES = "1";
           XR_RUNTIME_JSON = "/etc/openxr/1/active_runtime.json";
         };

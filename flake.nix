@@ -140,7 +140,7 @@
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } (
-      { config, ... }:
+      { ... }:
       {
         imports = [
           ./parts
@@ -158,7 +158,6 @@
         perSystem =
           {
             system,
-            config,
             lib,
             pkgs,
             ...
@@ -208,6 +207,48 @@
                     else
                       exec ${lib.getExe pkgs.nh} os switch . "$@"
                     fi
+                  ''
+                );
+              };
+              bootstrap-host = {
+                type = "app";
+                program = lib.getExe (
+                  pkgs.writeShellScriptBin "bootstrap-host" ''
+                                        set -euo pipefail
+                                        HOST="''${1:-}"
+                                        if [ -z "$HOST" ]; then
+                                          echo "Usage: nix run .#bootstrap-host <hostname>"
+                                          exit 1
+                                        fi
+                                        HOST_DIR="modules/hosts/$HOST"
+                                        if [ -d "$HOST_DIR" ]; then
+                                          echo "Host '$HOST' already exists in $HOST_DIR."
+                                        else
+                                          mkdir -p "$HOST_DIR"
+                                          cat <<EOF > "$HOST_DIR/default.nix"
+                    { config, lib, pkgs, ... }:
+
+                    {
+                      meta = {
+                        system = "x86_64-linux";
+                        stable = false;
+                      };
+
+                      module = {
+                        imports = [ ./hardware-configuration.nix ];
+
+                        myFeatures = {
+                          core = {
+                            system.core-branch.enable = true;
+                            system.users.mainUser = "apollo";
+                          };
+                        };
+                      };
+                    }
+                    EOF
+                                          touch "$HOST_DIR/hardware-configuration.nix"
+                                          echo "Created $HOST_DIR template."
+                                        fi
                   ''
                 );
               };

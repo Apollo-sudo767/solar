@@ -2,7 +2,7 @@
   pkgs,
   lib,
   config,
-  isTotal,
+  isTotal ? true,
   ...
 }:
 

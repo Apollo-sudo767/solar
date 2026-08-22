@@ -7,7 +7,6 @@
 }:
 
 let
-  inherit isTotal;
   cfg = config.myFeatures.core.nix.nix-settings;
 in
 {
@@ -24,6 +23,8 @@ in
         ];
         auto-optimise-store = true;
         warn-dirty = false;
+        min-free = 10 * 1024 * 1024 * 1024; # 10GB auto-GC trigger threshold
+        max-free = 25 * 1024 * 1024 * 1024; # 25GB free space target
       };
 
       # FIX: Only enable Nix-managed GC on Linux using the built-in stdenv check.
@@ -39,7 +40,7 @@ in
       allowUnfree = true;
     };
     nixpkgs.overlays = [
-      (final: prev: {
+      (_final: prev: {
         yt-dlp = prev.yt-dlp.override { javascriptSupport = false; };
       })
     ];

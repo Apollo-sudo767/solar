@@ -8,31 +8,7 @@
 }:
 
 let
-  inherit isTotal;
   cfg = config.myFeatures.core.shell.shell;
-  host = config.networking.hostName;
-  secretsOverride =
-    let
-      secretsPath =
-        if pkgs.stdenv.hostPlatform.isDarwin then
-          "/Users/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets"
-        else
-          "/home/${config.myFeatures.core.system.users.mainUser}/src/solar-secrets";
-      hasLocalSecretsDir = builtins.pathExists secretsPath;
-      rekeyedFallback =
-        if inputs != null && (inputs ? self) then
-          "${inputs.self}/rekeyed/${host}"
-        else
-          "$HOME/src/solar/rekeyed/${host}";
-    in
-    if
-      (config.myFeatures.core.security.agenix.enable or false)
-      && (config.myFeatures.core.security.agenix.usePrivateSecrets or false)
-      && hasLocalSecretsDir
-    then
-      " --override-input solar-secrets path:${secretsPath}"
-    else
-      " --override-input solar-secrets path:${rekeyedFallback}";
 in
 {
   options.myFeatures.core.shell.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
@@ -46,6 +22,14 @@ in
     ];
 
     programs.zsh.enable = true;
+
+    environment.variables = {
+      NH_FLAKE =
+        if pkgs.stdenv.hostPlatform.isDarwin then
+          "/Users/${config.myFeatures.core.system.users.mainUser}/src/solar"
+        else
+          "/home/${config.myFeatures.core.system.users.mainUser}/src/solar";
+    };
 
     environment.shellAliases = {
       nrs = "nh os switch --no-nom";

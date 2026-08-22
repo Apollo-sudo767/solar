@@ -10,12 +10,13 @@ let
     lib.filterAttrs (name: type: type == "directory" && name != "shared") (builtins.readDir ./.)
   );
 
+  hostMetas = lib.genAttrs hostDirs (name: import ./${name}/default.nix);
+
   getPkgInput = isStable: if isStable then inputs.nixpkgs-stable else inputs.nixpkgs-unstable;
 
   mkHost =
-    name:
+    name: hostData:
     let
-      hostData = import ./${name}/default.nix;
       # Extract metadata from the host's 'meta' set
       system = hostData.meta.system or "x86_64-linux";
       isStable = hostData.meta.stable or false;
@@ -138,8 +139,6 @@ let
       };
     };
 
-  hostMetas = lib.genAttrs hostDirs (name: import ./${name}/default.nix);
-
   isHostDarwin =
     name:
     let
@@ -152,6 +151,6 @@ let
   darwinHosts = lib.filterAttrs (name: _: isHostDarwin name) hostMetas;
 in
 {
-  nixosConfigurations = lib.mapAttrs (name: _: (mkHost name).config) nixosHosts;
-  darwinConfigurations = lib.mapAttrs (name: _: (mkHost name).config) darwinHosts;
+  nixosConfigurations = lib.mapAttrs (name: hostData: (mkHost name hostData).config) nixosHosts;
+  darwinConfigurations = lib.mapAttrs (name: hostData: (mkHost name hostData).config) darwinHosts;
 }

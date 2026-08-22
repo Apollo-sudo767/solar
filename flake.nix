@@ -15,8 +15,14 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     # Home Manager
-    home-manager-unstable.url = "github:nix-community/home-manager/master";
-    home-manager-stable.url = "github:nix-community/home-manager/release-26.05";
+    home-manager-unstable = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    home-manager-stable = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
 
     # Darwin
     nix-darwin = {
@@ -25,8 +31,14 @@
     };
 
     # Stylix
-    stylix-unstable.url = "github:danth/stylix";
-    stylix-stable.url = "github:danth/stylix/release-26.05";
+    stylix-unstable = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    stylix-stable = {
+      url = "github:danth/stylix/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
 
     # Secrets Management
     agenix = {
@@ -184,6 +196,18 @@
                 program = lib.getExe (
                   pkgs.writeShellScriptBin "docs" ''
                     ${lib.getExe pkgs.mdbook} serve --open "$@"
+                  ''
+                );
+              };
+              rebuild = {
+                type = "app";
+                program = lib.getExe (
+                  pkgs.writeShellScriptBin "rebuild" ''
+                    if [ "$(uname)" = "Darwin" ]; then
+                      exec ${lib.getExe pkgs.nix-darwin or "darwin-rebuild"} switch --flake . "$@"
+                    else
+                      exec ${lib.getExe pkgs.nh} os switch . "$@"
+                    fi
                   ''
                 );
               };

@@ -55,12 +55,6 @@
       flake = false;
     };
 
-    # Paneru
-    paneru = {
-      url = "github:karinushka/paneru";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     # Disko & Impermanence
     disko = {
       url = "github:nix-community/disko";

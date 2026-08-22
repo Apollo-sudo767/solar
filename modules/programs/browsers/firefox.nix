@@ -16,9 +16,7 @@ let
     || (config.myFeatures.platforms.desktops.gnome.enable or false)
     || (config.myFeatures.platforms.desktops.cosmic.enable or false);
 
-  isTiling =
-    (config.myFeatures.platforms.desktops.niri.enable or false)
-    || (config.myFeatures.platforms.desktops.paneru.enable or false);
+  isTiling = config.myFeatures.platforms.desktops.niri.enable or false;
 in
 {
   options.myFeatures.programs.browsers.firefox = {

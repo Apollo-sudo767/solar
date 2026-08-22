@@ -11,13 +11,10 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.desktops.niri.settings = {
       input = {
-        mod-key = if cfg.modKey == "super" then "Super" else "Alt";
-        mod-key-nested = if cfg.modKey == "super" then "Alt" else "Super";
-
         touchpad = {
-          tap = true;
-          dwt = true;
-          natural-scroll = true;
+          tap = { };
+          dwt = { };
+          natural-scroll = { };
           accel-speed = 0.2;
           accel-profile = "adaptive";
           click-method = "clickfinger";
@@ -38,9 +35,7 @@ in
 
       gestures = {
         dnd-edge-workspace-switch = { };
-        hot-corners = {
-          enable = false;
-        };
+        hot-corners.off = { };
       };
     };
   };

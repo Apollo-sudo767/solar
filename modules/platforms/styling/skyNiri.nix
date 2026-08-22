@@ -27,25 +27,26 @@ in
       # Enable Niri and Keybinds
       desktops.niri = {
         enable = true;
-        settings.layout = {
-          default-column-width = lib.mkDefault { proportion = 0.5; };
-          preset-column-widths = lib.mkDefault [
-            { proportion = 0.33333; }
-            { proportion = 0.5; }
-            { proportion = 0.66667; }
+        settings = {
+          layout = {
+            default-column-width = lib.mkDefault { proportion = 0.5; };
+            background-color = "transparent";
+            gaps = 8;
+            focus-ring.off = { };
+            border = {
+              width = 2;
+              active-color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+              inactive-color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+            };
+          };
+          _children = [
+            {
+              window-rule._children = [
+                { geometry-corner-radius = 10.0; }
+                { clip-to-geometry = true; }
+              ];
+            }
           ];
-          background-color = "transparent";
-          gaps = 8;
-          focus-ring = {
-            enable = false;
-            width = 0;
-          };
-          border = {
-            enable = true;
-            width = 2;
-            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
-            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
-          };
         };
       };
       styling.niriKeybinds.enable = true;
@@ -53,88 +54,5 @@ in
       # Use the NEW Noctalia v5 Rice instead of defaults
       styling.skyNoctalia.enable = true;
     };
-
-    # Niri-specific aesthetic tweaks for the "Sky" look
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      programs.niri.settings = {
-        prefer-no-csd = true;
-        layer-rules = [
-          {
-            matches = [ { namespace = "noctalia-bar-default"; } ];
-            background-effect = {
-              blur = true;
-              xray = true;
-            };
-          }
-          {
-            matches = [ { namespace = "^wallpaper$"; } ];
-            place-within-backdrop = true;
-          }
-          {
-            matches = [ { namespace = "^noctalia-wallpaper$"; } ];
-            place-within-backdrop = true;
-          }
-          {
-            matches = [ { namespace = "^noctalia-overview$"; } ];
-            place-within-backdrop = true;
-          }
-        ];
-        window-rules = lib.mkForce [
-          {
-            geometry-corner-radius = {
-              top-left = 10.0;
-              top-right = 10.0;
-              bottom-left = 10.0;
-              bottom-right = 10.0;
-            };
-            clip-to-geometry = true;
-            focus-ring.enable = false;
-          }
-          {
-            matches = [ { app-id = "firefox"; } ];
-            border.enable = false;
-            focus-ring.enable = false;
-          }
-          {
-            matches = [ { app-id = "com.mitchellh.ghostty"; } ];
-            background-effect = {
-              blur = true;
-              xray = true;
-            };
-            draw-border-with-background = false;
-            border.enable = false;
-            focus-ring = {
-              enable = true;
-              width = 2;
-              active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
-              inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
-            };
-          }
-          {
-            matches = [
-              { app-id = "^steam_app_"; }
-              { app-id = "^gamescope$"; }
-            ];
-            open-fullscreen = true;
-          }
-          {
-            matches = [
-              {
-                app-id = "^steam$";
-                title = "^notificationtoasts_[0-9]+_desktop$";
-              }
-            ];
-            default-floating-position = {
-              x = 16;
-              y = 16;
-              relative-to = "bottom-right";
-            };
-            open-floating = true;
-            open-focused = false;
-          }
-        ];
-      };
-    });
-
   };
 }

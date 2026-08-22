@@ -10,99 +10,146 @@ in
 {
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.desktops.niri.settings = {
-      layer-rules = [
-        {
-          matches = [ { namespace = "noctalia-bar-default"; } ];
-          background-effect = {
-            blur = true;
-            xray = true;
-          };
-        }
-        {
-          matches = [ { namespace = "^wallpaper$"; } ];
-          place-within-backdrop = true;
-        }
-        {
-          matches = [ { namespace = "^noctalia-wallpaper$"; } ];
-          place-within-backdrop = true;
-        }
-        {
-          matches = [ { namespace = "^noctalia-overview$"; } ];
-          place-within-backdrop = true;
-        }
-      ];
+      prefer-no-csd = { };
+
       layout = {
         default-column-width = lib.mkDefault { proportion = 0.5; };
-        preset-column-widths = lib.mkDefault [
+        preset-column-widths._children = lib.mkDefault [
           { proportion = 0.33333; }
           { proportion = 0.5; }
           { proportion = 0.66667; }
         ];
         background-color = lib.mkDefault "transparent";
         gaps = lib.mkDefault 0;
-        focus-ring = {
-          enable = lib.mkDefault false;
-          width = lib.mkDefault 0;
-        };
-        border = {
-          enable = lib.mkDefault true;
-          width = lib.mkDefault 2;
-          active.color = lib.mkDefault (
-            if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598"
-          );
-          inactive.color = lib.mkDefault (
-            if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945"
-          );
+        focus-ring.off = lib.mkDefault { };
+        border = lib.mkDefault {
+          width = 2;
+          active-color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+          inactive-color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
         };
       };
-      window-rules = [
+
+      _children = [
         {
-          focus-ring.enable = false;
-        }
-        {
-          matches = [ { app-id = "firefox"; } ];
-          border.enable = false;
-          focus-ring.enable = false;
-        }
-        {
-          matches = [ { app-id = "com.mitchellh.ghostty"; } ];
-          background-effect = {
-            blur = true;
-            xray = true;
-          };
-          draw-border-with-background = false;
-          border.enable = false;
-          focus-ring = {
-            enable = true;
-            width = 2;
-            active.color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
-            inactive.color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
-          };
-        }
-        {
-          matches = [
-            { app-id = "^steam_app_"; }
-            { app-id = "^gamescope$"; }
-          ];
-          open-fullscreen = true;
-        }
-        {
-          matches = [
+          layer-rule._children = [
             {
-              app-id = "^steam$";
-              title = "^notificationtoasts_[0-9]+_desktop$";
+              match._props = {
+                namespace = "noctalia-bar-default";
+              };
+            }
+            {
+              background-effect = {
+                blur = true;
+                xray = true;
+              };
             }
           ];
-          default-floating-position = {
-            x = 16;
-            y = 16;
-            relative-to = "bottom-right";
-          };
-          open-floating = true;
-          open-focused = false;
+        }
+        {
+          layer-rule._children = [
+            {
+              match._props = {
+                namespace = "^wallpaper$";
+              };
+            }
+            { place-within-backdrop = true; }
+          ];
+        }
+        {
+          layer-rule._children = [
+            {
+              match._props = {
+                namespace = "^noctalia-wallpaper$";
+              };
+            }
+            { place-within-backdrop = true; }
+          ];
+        }
+        {
+          layer-rule._children = [
+            {
+              match._props = {
+                namespace = "^noctalia-overview$";
+              };
+            }
+            { place-within-backdrop = true; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { focus-ring.off = { }; }
+          ];
+        }
+        {
+          window-rule._children = [
+            {
+              match._props = {
+                app-id = "firefox";
+              };
+            }
+            { border.off = { }; }
+            { focus-ring.off = { }; }
+          ];
+        }
+        {
+          window-rule._children = [
+            {
+              match._props = {
+                app-id = "com.mitchellh.ghostty";
+              };
+            }
+            {
+              background-effect = {
+                blur = true;
+                xray = true;
+              };
+            }
+            { draw-border-with-background = false; }
+            { border.off = { }; }
+            {
+              focus-ring = {
+                width = 2;
+                active-color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#83a598";
+                inactive-color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#504945";
+              };
+            }
+          ];
+        }
+        {
+          window-rule._children = [
+            {
+              match._props = {
+                app-id = "^steam_app_";
+              };
+            }
+            {
+              match._props = {
+                app-id = "^gamescope$";
+              };
+            }
+            { open-fullscreen = true; }
+          ];
+        }
+        {
+          window-rule._children = [
+            {
+              match._props = {
+                app-id = "^steam$";
+                title = "^notificationtoasts_[0-9]+_desktop$";
+              };
+            }
+            {
+              default-floating-position._props = {
+                x = 16;
+                y = 16;
+                relative-to = "bottom-right";
+              };
+            }
+            { open-floating = true; }
+            { open-focused = false; }
+          ];
         }
       ];
-      prefer-no-csd = true;
     };
   };
 }

@@ -10,12 +10,26 @@ let
   cfg = config.myFeatures.platforms.desktops.niri;
 in
 {
-  imports = [ inputs.niri.nixosModules.niri ];
-
   options.myFeatures.platforms.desktops.niri = {
     enable = lib.mkEnableOption "Niri Window Manager";
     settings = lib.mkOption {
-      type = lib.types.attrsOf lib.types.anything;
+      type =
+        with lib.types;
+        let
+          valueType =
+            nullOr (oneOf [
+              bool
+              int
+              float
+              str
+              (attrsOf valueType)
+              (listOf valueType)
+            ])
+            // {
+              description = "KDL value";
+            };
+        in
+        attrsOf valueType;
       default = { };
       description = "Niri settings";
     };
@@ -39,13 +53,12 @@ in
     programs.niri = {
       enable = true;
       package = pkgs.niri;
-      # package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri-unstable;
     };
 
     myFeatures.platforms.desktops.niri.settings = {
-      spawn-at-startup = [
+      _children = [
         {
-          command = [
+          spawn-at-startup._args = [
             "sh"
             "-c"
             "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP && systemctl --user start graphical-session.target"
@@ -53,10 +66,10 @@ in
         }
       ]
       ++ (lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
-        { command = [ "noctalia-shell" ]; }
+        { spawn-at-startup._args = [ "noctalia-shell" ]; }
       ])
       ++ (lib.optionals config.myFeatures.platforms.addons.noctalia-v5.enable [
-        { command = [ "noctalia" ]; }
+        { spawn-at-startup._args = [ "noctalia" ]; }
       ]);
     };
 
@@ -113,9 +126,11 @@ in
           ];
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      programs.niri = {
+      wayland.windowManager.niri = {
+        enable = true;
+        package = pkgs.niri;
         inherit (cfg) settings;
-        config = lib.mkIf (cfg.extraConfig != [ ]) (lib.concatStringsSep "\n" cfg.extraConfig);
+        extraConfig = lib.mkIf (cfg.extraConfig != [ ]) (lib.concatStringsSep "\n" cfg.extraConfig);
       };
     });
 

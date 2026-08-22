@@ -30,7 +30,6 @@ in
           ) xdg-desktop-portal-cosmic;
         config = {
           common.default = [ "gtk" ];
-          niri.default = [ "gtk" ];
           plasma.default = [
             "kde"
             "gtk"

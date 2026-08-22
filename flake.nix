@@ -43,12 +43,6 @@
       flake = false;
     };
 
-    # Niri
-    niri = {
-      url = "github:epireyn/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     # Paneru
     paneru = {
       url = "github:karinushka/paneru";

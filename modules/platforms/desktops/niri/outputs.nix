@@ -140,41 +140,39 @@ let
   parseTransform =
     m:
     if m.transform != null then
-      m.transform
+      if m.transform.flipped then
+        if m.transform.rotation == 90 then
+          "flipped-90"
+        else if m.transform.rotation == 180 then
+          "flipped-180"
+        else if m.transform.rotation == 270 then
+          "flipped-270"
+        else
+          "flipped"
+      else if m.transform.rotation == 90 then
+        "90"
+      else if m.transform.rotation == 180 then
+        "180"
+      else if m.transform.rotation == 270 then
+        "270"
+      else
+        "normal"
     else
       let
         ori = lib.toLower (toString m.orientation);
       in
       if ori == "vertical" || ori == "portrait" || ori == "90" then
-        {
-          rotation = 90;
-          flipped = false;
-        }
+        "90"
       else if ori == "vertical-inverted" || ori == "portrait-inverted" || ori == "270" then
-        {
-          rotation = 270;
-          flipped = false;
-        }
+        "270"
       else if ori == "inverted" || ori == "180" then
-        {
-          rotation = 180;
-          flipped = false;
-        }
+        "180"
       else if ori == "flipped" || ori == "flipped-horizontal" then
-        {
-          rotation = 0;
-          flipped = true;
-        }
+        "flipped"
       else if ori == "flipped-vertical" || ori == "flipped-90" then
-        {
-          rotation = 90;
-          flipped = true;
-        }
+        "flipped-90"
       else
-        {
-          rotation = 0;
-          flipped = false;
-        };
+        "normal";
 
   parsePosition =
     m:
@@ -211,47 +209,48 @@ let
       pos = parsePosition m;
       res =
         if m.width != null && m.height != null then
-          { inherit (m) width height; }
+          "${toString m.width}x${toString m.height}"
         else if m.resolution != null && m.resolution != "auto" then
           let
             lower = lib.toLower (toString m.resolution);
+            common = commonResolutions.${lower} or null;
           in
-          commonResolutions.${lower} or (
-            if lib.hasInfix "x" lower then
-              let
-                parts = lib.splitString "x" lower;
-              in
-              {
-                width = lib.toInt (builtins.elemAt parts 0);
-                height = lib.toInt (builtins.elemAt parts 1);
-              }
-            else
-              null
-          )
+          if common != null then
+            "${toString common.width}x${toString common.height}"
+          else if lib.hasInfix "x" lower then
+            lower
+          else
+            null
         else
           null;
 
-      modeObj =
+      modeStr =
         if res != null then
-          {
-            inherit (res) width height;
-            refresh = if m.refresh != null then m.refresh * 1.0 else null;
-          }
+          (if m.refresh != null then "${res}@${toString (m.refresh * 1.0)}" else res)
         else
           null;
     in
     lib.filterAttrs (_: v: v != null) (
-      {
-        inherit (m) enable;
-        mode = modeObj;
-        position = pos;
-        scale = if m.scale != null then m.scale * 1.0 else null;
-        transform = tform;
-        variable-refresh-rate = m.vrr;
-        focus-at-startup = m.focusAtStartup;
-        backdrop-color = m.backdropColor;
+      (lib.optionalAttrs (!m.enable) { off = { }; })
+      // (lib.optionalAttrs (m.enable && modeStr != null) { mode = modeStr; })
+      // (lib.optionalAttrs (m.enable && pos != null) {
+        position._props = {
+          inherit (pos) x y;
+        };
+      })
+      // (lib.optionalAttrs (m.enable && m.scale != null) { scale = m.scale * 1.0; })
+      // (lib.optionalAttrs (m.enable && tform != "normal") { transform = tform; })
+      // (lib.optionalAttrs (m.enable && m.vrr == true) { variable-refresh-rate = { }; })
+      // (lib.optionalAttrs (m.enable && m.vrr == "on-demand") {
+        variable-refresh-rate._props = {
+          on-demand = true;
+        };
+      })
+      // (lib.optionalAttrs (m.enable && m.focusAtStartup) { focus-at-startup = { }; })
+      // (lib.optionalAttrs (m.enable && m.backdropColor != null) { backdrop-color = m.backdropColor; })
+      // (lib.optionalAttrs (m.enable && m.backgroundColor != null) {
         background-color = m.backgroundColor;
-      }
+      })
       // m.extraSettings
     );
 
@@ -445,19 +444,19 @@ let
       };
     };
 
-  outputsFromMonitors = lib.listToAttrs (
-    lib.concatMap (
-      m:
-      let
-        outCfg = buildOutputConfig m;
-        allNames = [ m.name ] ++ m.aliases;
-      in
-      map (name: {
-        inherit name;
-        value = outCfg;
-      }) allNames
-    ) cfg.monitors
-  );
+  outputChildren = lib.concatMap (
+    m:
+    let
+      outCfg = buildOutputConfig m;
+      allNames = [ m.name ] ++ m.aliases;
+    in
+    map (name: {
+      output = {
+        _args = [ name ];
+      }
+      // outCfg;
+    }) allNames
+  ) cfg.monitors;
 in
 {
   options.myFeatures.platforms.desktops.niri = {
@@ -498,7 +497,7 @@ in
 
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.desktops.niri.settings = {
-      outputs = lib.mkIf (cfg.monitors != [ ]) (lib.mkDefault outputsFromMonitors);
+      _children = lib.mkIf (cfg.monitors != [ ]) outputChildren;
     };
   };
 }

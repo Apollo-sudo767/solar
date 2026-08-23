@@ -10,16 +10,10 @@
 let
   cfg = config.myFeatures.programs.office.zotero;
 
-  # Derive Better BibTeX plugin (.xpi) for Zotero citekey generation
+  # Derive Better BibTeX plugin (.xpi) for Zotero citekey generation & auto-export
   betterBibtexXpi = pkgs.fetchurl {
-    url = "https://github.com/retorquere/zotero-better-bibtex/releases/download/v7.0.24/zotero-better-bibtex-7.0.24.xpi";
-    hash = "sha256-A9amheuaMQvoYd3kzVxm8LwWHwNcT76ClKXSXPwbCcY=";
-  };
-
-  # Derive Zutilo plugin (.xpi) for Zotero quick URI & shortcut utilities
-  zutiloXpi = pkgs.fetchurl {
-    url = "https://github.com/wshanks/Zutilo/releases/download/v3.10.0/zutilo.xpi";
-    hash = "sha256-cT8ibaJ29rJxxPpaDQ/yUZeZx8hbtV7xK+rMZ+UGb+Q=";
+    url = "https://github.com/retorquere/zotero-better-bibtex/releases/download/v9.0.58/zotero-better-bibtex-9.0.58.xpi";
+    hash = "sha256-IMyj3ic4txCZsvixJBdu+MgjGuOUSLJXxky+/H/Z3Ps=";
   };
 in
 {
@@ -33,12 +27,7 @@ in
     betterBibtex = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Enable Better BibTeX plugin support for static citekey generation (@smith2024).";
-    };
-    zutilo = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable Zutilo plugin for Zotero quick URI copying & shortcuts.";
+      description = "Enable Better BibTeX plugin support for static citekey generation and auto-export.";
     };
     connector = lib.mkOption {
       type = lib.types.bool;
@@ -73,15 +62,10 @@ in
               (lib.mkIf (cfg.gui && cfg.betterBibtex) {
                 ".local/share/zotero/plugins/better-bibtex@iris-advies.com.xpi".source = betterBibtexXpi;
               })
-              (lib.mkIf (cfg.gui && cfg.zutilo) {
-                ".local/share/zotero/plugins/zutilo@www.wesailatdawn.com.xpi".source = zutiloXpi;
-              })
               (lib.mkIf (isDarwin && cfg.gui && cfg.betterBibtex) {
-                "Library/Application Support/Zotero/plugins/better-bibtex@iris-advies.com.xpi".source =
+                "Library/Application Support/Zotero/Profiles/sliytu6c.default/extensions/better-bibtex@iris-advies.com.xpi".source =
                   betterBibtexXpi;
-              })
-              (lib.mkIf (isDarwin && cfg.gui && cfg.zutilo) {
-                "Library/Application Support/Zotero/plugins/zutilo@www.wesailatdawn.com.xpi".source = zutiloXpi;
+                "Downloads/zotero-better-bibtex.xpi".source = betterBibtexXpi;
               })
             ];
           }

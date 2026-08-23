@@ -26,21 +26,6 @@ let
         mv package/publish/jopdoc.nsharris247.jpl $out
       '';
 
-  # Derive Zotero Link Joplin Desktop plugin (.jpl) from official NPM package release
-  zoteroLinkJpl =
-    pkgs.runCommand "nz.magnusso.zotero-link.jpl"
-      {
-        src = pkgs.fetchurl {
-          url = "https://registry.npmjs.org/joplin-plugin-zotero-link/-/joplin-plugin-zotero-link-2.1.5.tgz";
-          hash = "sha256-BbvF7BDoIwkiEITFKmy2A00JXX580se9wCx23cD+bYE=";
-        };
-        nativeBuildInputs = [ pkgs.gnutar ];
-      }
-      ''
-        tar -xzf $src package/publish/nz.magnusso.zotero-link.jpl
-        mv package/publish/nz.magnusso.zotero-link.jpl $out
-      '';
-
   # Derive BibTeX Joplin Desktop plugin (.jpl) from official NPM package release
   bibtexJpl =
     pkgs.runCommand "com.xUser5000.bibtex.jpl"
@@ -103,17 +88,12 @@ in
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Enable Joplin desktop plugins (Jopdoc, Zotero Link, BibTeX, Outline, Rich Markdown).";
+        description = "Enable Joplin desktop plugins (Jopdoc, BibTeX, Outline, Rich Markdown).";
       };
       jopdoc = lib.mkOption {
         type = lib.types.bool;
         default = true;
         description = "Install Jopdoc export plugin for Joplin desktop.";
-      };
-      zoteroLink = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Install Zotero Link plugin for Joplin desktop.";
       };
       bibtex = lib.mkOption {
         type = lib.types.bool;
@@ -159,9 +139,6 @@ in
               (lib.mkIf cfg.plugins.jopdoc {
                 ".config/joplin-desktop/plugins/jopdoc.nsharris247.jpl".source = jopdocJpl;
               })
-              (lib.mkIf cfg.plugins.zoteroLink {
-                ".config/joplin-desktop/plugins/nz.magnusso.zotero-link.jpl".source = zoteroLinkJpl;
-              })
               (lib.mkIf cfg.plugins.bibtex {
                 ".config/joplin-desktop/plugins/com.xUser5000.bibtex.jpl".source = bibtexJpl;
               })
@@ -170,23 +147,6 @@ in
               })
               (lib.mkIf cfg.plugins.richMarkdown {
                 ".config/joplin-desktop/plugins/plugin.calebjohn.rich-markdown.jpl".source = richMarkdownJpl;
-              })
-              (lib.mkIf (isDarwin && cfg.plugins.jopdoc) {
-                "Library/Application Support/joplin-desktop/plugins/jopdoc.nsharris247.jpl".source = jopdocJpl;
-              })
-              (lib.mkIf (isDarwin && cfg.plugins.zoteroLink) {
-                "Library/Application Support/joplin-desktop/plugins/nz.magnusso.zotero-link.jpl".source =
-                  zoteroLinkJpl;
-              })
-              (lib.mkIf (isDarwin && cfg.plugins.bibtex) {
-                "Library/Application Support/joplin-desktop/plugins/com.xUser5000.bibtex.jpl".source = bibtexJpl;
-              })
-              (lib.mkIf (isDarwin && cfg.plugins.outline) {
-                "Library/Application Support/joplin-desktop/plugins/outline.jpl".source = outlineJpl;
-              })
-              (lib.mkIf (isDarwin && cfg.plugins.richMarkdown) {
-                "Library/Application Support/joplin-desktop/plugins/plugin.calebjohn.rich-markdown.jpl".source =
-                  richMarkdownJpl;
               })
             ];
           }

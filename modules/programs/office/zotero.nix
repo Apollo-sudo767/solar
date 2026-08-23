@@ -13,7 +13,7 @@ let
   # Derive Better BibTeX plugin (.xpi) for Zotero citekey generation & auto-export
   betterBibtexXpi = pkgs.fetchurl {
     url = "https://github.com/retorquere/zotero-better-bibtex/releases/download/v9.0.58/zotero-better-bibtex-9.0.58.xpi";
-    hash = "sha256-IMyj3ic4txCZsvixJBdu+MgjGuOUSLJXxky+/H/Z3Ps=";
+    hash = "sha256-/Dp8SnIi5zwMjjEHD5VXG+rEywn+cDaA3UX0NsQweeA=";
   };
 in
 {

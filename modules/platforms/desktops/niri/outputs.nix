@@ -254,195 +254,193 @@ let
       // m.extraSettings
     );
 
-  monitorSubmodule =
-    { name, ... }:
-    {
-      options = {
-        name = lib.mkOption {
-          type = lib.types.str;
-          description = "Output name/connector (e.g. DP-4, DP-5, eDP-1, HDMI-A-1) or EDID model string";
-          example = "DP-4";
-        };
+  monitorSubmodule = _: {
+    options = {
+      name = lib.mkOption {
+        type = lib.types.str;
+        description = "Output name/connector (e.g. DP-4, DP-5, eDP-1, HDMI-A-1) or EDID model string";
+        example = "DP-4";
+      };
 
-        aliases = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
-          default = [ ];
-          description = "Additional output names or EDID model strings that share this display configuration";
-          example = [ "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961" ];
-        };
+      aliases = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "Additional output names or EDID model strings that share this display configuration";
+        example = [ "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961" ];
+      };
 
-        enable = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "Whether to enable or disable this display output";
-        };
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to enable or disable this display output";
+      };
 
-        resolution = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-          description = ''
-            Display resolution preset (e.g. '1080p', '1440p', '4k', '720p', '1200p', '1600p', '5k',
-            'ultrawide-1080p', 'ultrawide-1440p', 'super-ultrawide', 'steam-deck') or custom 'WIDTHxHEIGHT'
-            string (e.g. '1920x1080', '2560x1440', '3840x2160'). Set to null or 'auto' for automatic mode.
-          '';
-          example = "1440p";
-        };
+      resolution = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = ''
+          Display resolution preset (e.g. '1080p', '1440p', '4k', '720p', '1200p', '1600p', '5k',
+          'ultrawide-1080p', 'ultrawide-1440p', 'super-ultrawide', 'steam-deck') or custom 'WIDTHxHEIGHT'
+          string (e.g. '1920x1080', '2560x1440', '3840x2160'). Set to null or 'auto' for automatic mode.
+        '';
+        example = "1440p";
+      };
 
-        width = lib.mkOption {
-          type = lib.types.nullOr lib.types.int;
-          default = null;
-          description = "Explicit monitor width in pixels. Overrides resolution preset if specified.";
-          example = 2560;
-        };
+      width = lib.mkOption {
+        type = lib.types.nullOr lib.types.int;
+        default = null;
+        description = "Explicit monitor width in pixels. Overrides resolution preset if specified.";
+        example = 2560;
+      };
 
-        height = lib.mkOption {
-          type = lib.types.nullOr lib.types.int;
-          default = null;
-          description = "Explicit monitor height in pixels. Overrides resolution preset if specified.";
-          example = 1440;
-        };
+      height = lib.mkOption {
+        type = lib.types.nullOr lib.types.int;
+        default = null;
+        description = "Explicit monitor height in pixels. Overrides resolution preset if specified.";
+        example = 1440;
+      };
 
-        refresh = lib.mkOption {
-          type = lib.types.nullOr (lib.types.either lib.types.float lib.types.int);
-          default = null;
-          description = "Refresh rate in Hz (e.g. 60.0, 144.0, 165.0, 180.0, 240.0). If null, Niri chooses highest supported.";
-          example = 180.0;
-        };
+      refresh = lib.mkOption {
+        type = lib.types.nullOr (lib.types.either lib.types.float lib.types.int);
+        default = null;
+        description = "Refresh rate in Hz (e.g. 60.0, 144.0, 165.0, 180.0, 240.0). If null, Niri chooses highest supported.";
+        example = 180.0;
+      };
 
-        orientation = lib.mkOption {
-          type = lib.types.enum [
-            "horizontal"
-            "vertical"
-            "vertical-inverted"
-            "inverted"
-            "landscape"
-            "portrait"
-            "portrait-inverted"
-            "flipped"
-            "flipped-horizontal"
-            "flipped-vertical"
-            "0"
-            "90"
-            "180"
-            "270"
-          ];
-          default = "horizontal";
-          description = ''
-            Monitor orientation / rotation:
-            - 'horizontal' / 'landscape' / '0': Normal horizontal orientation (0 deg)
-            - 'vertical' / 'portrait' / '90': Vertical / portrait orientation rotated 90 deg clockwise
-            - 'vertical-inverted' / 'portrait-inverted' / '270': Vertical / portrait orientation rotated 270 deg clockwise
-            - 'inverted' / '180': 180 deg upside-down orientation
-            - 'flipped' / 'flipped-horizontal': Horizontally flipped
-            - 'flipped-vertical': Vertically flipped 90 deg
-          '';
-          example = "vertical";
-        };
+      orientation = lib.mkOption {
+        type = lib.types.enum [
+          "horizontal"
+          "vertical"
+          "vertical-inverted"
+          "inverted"
+          "landscape"
+          "portrait"
+          "portrait-inverted"
+          "flipped"
+          "flipped-horizontal"
+          "flipped-vertical"
+          "0"
+          "90"
+          "180"
+          "270"
+        ];
+        default = "horizontal";
+        description = ''
+          Monitor orientation / rotation:
+          - 'horizontal' / 'landscape' / '0': Normal horizontal orientation (0 deg)
+          - 'vertical' / 'portrait' / '90': Vertical / portrait orientation rotated 90 deg clockwise
+          - 'vertical-inverted' / 'portrait-inverted' / '270': Vertical / portrait orientation rotated 270 deg clockwise
+          - 'inverted' / '180': 180 deg upside-down orientation
+          - 'flipped' / 'flipped-horizontal': Horizontally flipped
+          - 'flipped-vertical': Vertically flipped 90 deg
+        '';
+        example = "vertical";
+      };
 
-        transform = lib.mkOption {
-          type = lib.types.nullOr (
-            lib.types.submodule {
-              options = {
-                rotation = lib.mkOption {
-                  type = lib.types.enum [
-                    0
-                    90
-                    180
-                    270
-                  ];
-                  default = 0;
-                  description = "Rotation angle in degrees (0, 90, 180, 270)";
-                };
-                flipped = lib.mkOption {
-                  type = lib.types.bool;
-                  default = false;
-                  description = "Whether to flip vertically";
-                };
+      transform = lib.mkOption {
+        type = lib.types.nullOr (
+          lib.types.submodule {
+            options = {
+              rotation = lib.mkOption {
+                type = lib.types.enum [
+                  0
+                  90
+                  180
+                  270
+                ];
+                default = 0;
+                description = "Rotation angle in degrees (0, 90, 180, 270)";
               };
-            }
-          );
-          default = null;
-          description = "Detailed transform configuration. Overrides orientation if specified.";
-        };
-
-        scale = lib.mkOption {
-          type = lib.types.nullOr (lib.types.either lib.types.float lib.types.int);
-          default = null;
-          description = "Display scaling factor (e.g. 1.0, 1.25, 1.5, 2.0).";
-          example = 1.0;
-        };
-
-        position = lib.mkOption {
-          type = lib.types.nullOr (
-            lib.types.submodule {
-              options = {
-                x = lib.mkOption {
-                  type = lib.types.int;
-                  default = 0;
-                  description = "X position in logical pixels";
-                };
-                y = lib.mkOption {
-                  type = lib.types.int;
-                  default = 0;
-                  description = "Y position in logical pixels";
-                };
+              flipped = lib.mkOption {
+                type = lib.types.bool;
+                default = false;
+                description = "Whether to flip vertically";
               };
-            }
-          );
-          default = null;
-          description = "Monitor position in global coordinate space { x = 0; y = 0; }";
-          example = {
-            x = 0;
-            y = 0;
-          };
-        };
+            };
+          }
+        );
+        default = null;
+        description = "Detailed transform configuration. Overrides orientation if specified.";
+      };
 
-        x = lib.mkOption {
-          type = lib.types.nullOr lib.types.int;
-          default = null;
-          description = "Convenience X position in logical pixels (overrides position.x)";
-          example = 0;
-        };
+      scale = lib.mkOption {
+        type = lib.types.nullOr (lib.types.either lib.types.float lib.types.int);
+        default = null;
+        description = "Display scaling factor (e.g. 1.0, 1.25, 1.5, 2.0).";
+        example = 1.0;
+      };
 
-        y = lib.mkOption {
-          type = lib.types.nullOr lib.types.int;
-          default = null;
-          description = "Convenience Y position in logical pixels (overrides position.y)";
-          example = 0;
-        };
-
-        vrr = lib.mkOption {
-          type = lib.types.either lib.types.bool (lib.types.enum [ "on-demand" ]);
-          default = false;
-          description = "Variable Refresh Rate (VRR / FreeSync / G-Sync / Adaptive Sync). Can be true, false, or 'on-demand'.";
-          example = true;
-        };
-
-        focusAtStartup = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Whether this output should be focused when Niri starts.";
-        };
-
-        backdropColor = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-          description = "Backdrop color drawn behind workspaces or in overview.";
-        };
-
-        backgroundColor = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-          description = "Background solid color for this monitor.";
-        };
-
-        extraSettings = lib.mkOption {
-          type = lib.types.attrsOf lib.types.anything;
-          default = { };
-          description = "Extra raw Niri output settings passed directly to output config.";
+      position = lib.mkOption {
+        type = lib.types.nullOr (
+          lib.types.submodule {
+            options = {
+              x = lib.mkOption {
+                type = lib.types.int;
+                default = 0;
+                description = "X position in logical pixels";
+              };
+              y = lib.mkOption {
+                type = lib.types.int;
+                default = 0;
+                description = "Y position in logical pixels";
+              };
+            };
+          }
+        );
+        default = null;
+        description = "Monitor position in global coordinate space { x = 0; y = 0; }";
+        example = {
+          x = 0;
+          y = 0;
         };
       };
+
+      x = lib.mkOption {
+        type = lib.types.nullOr lib.types.int;
+        default = null;
+        description = "Convenience X position in logical pixels (overrides position.x)";
+        example = 0;
+      };
+
+      y = lib.mkOption {
+        type = lib.types.nullOr lib.types.int;
+        default = null;
+        description = "Convenience Y position in logical pixels (overrides position.y)";
+        example = 0;
+      };
+
+      vrr = lib.mkOption {
+        type = lib.types.either lib.types.bool (lib.types.enum [ "on-demand" ]);
+        default = false;
+        description = "Variable Refresh Rate (VRR / FreeSync / G-Sync / Adaptive Sync). Can be true, false, or 'on-demand'.";
+        example = true;
+      };
+
+      focusAtStartup = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether this output should be focused when Niri starts.";
+      };
+
+      backdropColor = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Backdrop color drawn behind workspaces or in overview.";
+      };
+
+      backgroundColor = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Background solid color for this monitor.";
+      };
+
+      extraSettings = lib.mkOption {
+        type = lib.types.attrsOf lib.types.anything;
+        default = { };
+        description = "Extra raw Niri output settings passed directly to output config.";
+      };
     };
+  };
 
   outputChildren = lib.concatMap (
     m:

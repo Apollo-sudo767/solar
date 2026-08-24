@@ -1,13 +1,9 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
-let
-  cfg = config.myFeatures.platforms.addons.displayManager;
-in
 {
   options.myFeatures.platforms.addons.displayManager = {
     manager = lib.mkOption {

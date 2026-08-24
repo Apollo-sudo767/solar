@@ -3,14 +3,13 @@
   lib,
   inputs,
   pkgs,
+  isStable ? false,
   ...
 }:
 
 let
   cfg = config.myFeatures.platforms.addons.noctalia-shell;
   inherit (config.myFeatures.core.system.users) usernames;
-  stylixEnabled = config.myFeatures.platforms.styling.stylix.enable;
-  iconFile = ../../../assets/icons/Apollo.jpg;
 in
 {
   options.myFeatures.platforms.addons.noctalia-shell.enable =
@@ -72,7 +71,7 @@ in
 
     home-manager.users = lib.genAttrs usernames (
       name: { config, ... }: {
-        imports = [ inputs.noctalia.homeModules.default ];
+        imports = lib.optional isStable inputs.noctalia.homeModules.default;
 
         programs.noctalia-shell = {
           enable = true;

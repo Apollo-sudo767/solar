@@ -1,5 +1,5 @@
 # parts/devshells.nix
-{ inputs, ... }:
+_:
 
 {
   perSystem =

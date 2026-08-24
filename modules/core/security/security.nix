@@ -44,9 +44,6 @@ in
           forcePageTableIsolation = true;
           protectKernelImage = true;
 
-          # Disabling unprivileged user namespaces
-          unprivilegedUsernsClone = true;
-
           sudo = {
             execWheelOnly = true;
             extraConfig = ''

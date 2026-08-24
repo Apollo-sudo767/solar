@@ -1,13 +1,11 @@
 {
   config,
   lib,
-  pkgs,
   isTotal,
   ...
 }:
 
 let
-  inherit isTotal;
   cfg = config.myFeatures.platforms.styling.themes.strawberry;
 in
 {

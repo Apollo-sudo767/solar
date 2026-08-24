@@ -10,7 +10,7 @@
 }:
 
 let
-  inherit isDarwin isTotal;
+  inherit isDarwin;
   cfg = config.myFeatures.platforms.styling.stylix;
   stylixInput = if isStable then inputs.stylix-stable else inputs.stylix-unstable;
 in

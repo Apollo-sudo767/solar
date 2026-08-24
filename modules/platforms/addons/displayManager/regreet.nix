@@ -4,7 +4,6 @@
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 

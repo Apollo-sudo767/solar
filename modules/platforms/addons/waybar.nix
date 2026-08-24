@@ -3,7 +3,6 @@
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 let

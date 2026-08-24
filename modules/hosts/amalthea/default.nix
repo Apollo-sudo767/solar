@@ -7,8 +7,6 @@
   module =
     {
       config,
-      lib,
-      pkgs,
       ...
     }:
     {

@@ -8,9 +8,7 @@
 
   module =
     {
-      config,
       lib,
-      pkgs,
       ...
     }:
     {

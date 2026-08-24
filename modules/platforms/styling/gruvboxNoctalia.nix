@@ -2,6 +2,7 @@
   config,
   lib,
   inputs,
+  isStable ? false,
   ...
 }:
 
@@ -22,7 +23,7 @@ in
     };
 
     home-manager.users = lib.genAttrs usernames (name: {
-      imports = [ inputs.noctalia.homeModules.default ];
+      imports = lib.optional isStable inputs.noctalia.homeModules.default;
 
       # Noctalia settings for the rice
       programs.noctalia-shell = {

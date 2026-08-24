@@ -1,5 +1,5 @@
 # parts/hosts.nix
-{ inputs, self, ... }:
+{ inputs, ... }:
 
 {
   flake =

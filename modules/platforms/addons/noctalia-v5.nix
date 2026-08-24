@@ -3,6 +3,7 @@
   lib,
   inputs,
   pkgs,
+  isStable ? false,
   ...
 }:
 
@@ -68,7 +69,7 @@ in
 
     home-manager.users = lib.genAttrs usernames (
       name: { config, ... }: {
-        imports = [ inputs.noctalia-v5.homeModules.default ];
+        imports = lib.optional isStable inputs.noctalia-v5.homeModules.default;
 
         programs.noctalia = {
           enable = true;

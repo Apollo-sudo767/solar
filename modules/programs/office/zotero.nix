@@ -33,25 +33,25 @@ let
         cp -r ${pkgs.zotero}/lib/distribution/* $out/lib/distribution/ 2>/dev/null || true
         ln -sf ${betterBibtexXpi} $out/lib/distribution/extensions/better-bibtex@iris-advies.com.xpi
 
-        cat << 'EOF' > $out/lib/zotero
-        #!/bin/bash
+        cat << EOF > $out/lib/zotero
+        #!${pkgs.runtimeShell}
         ulimit -n 4096
         export MOZ_ALLOW_DOWNGRADE=1
         export MOZ_LEGACY_PROFILES=1
         export MOZ_ENABLE_WAYLAND=1
 
         # Auto-link Better BibTeX into existing and default user profiles
-        if [ -d "$HOME/.zotero/zotero" ]; then
-          for profile in "$HOME/.zotero/zotero"/*/; do
-            if [ -d "$profile" ]; then
-              mkdir -p "$profile/extensions"
-              ln -sf "${betterBibtexXpi}" "$profile/extensions/better-bibtex@iris-advies.com.xpi"
+        if [ -d "\$HOME/.zotero/zotero" ]; then
+          for profile in "\$HOME/.zotero/zotero"/*/; do
+            if [ -d "\$profile" ]; then
+              mkdir -p "\$profile/extensions"
+              ln -sf "${betterBibtexXpi}" "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
             fi
           done
         fi
 
-        CALLDIR="$(dirname "$(readlink -f "$0")")"
-        "$CALLDIR/zotero-bin" -app "$CALLDIR/app/application.ini" "$@"
+        CALLDIR="\$(dirname "\$(readlink -f "\$0")")"
+        "\$CALLDIR/zotero-bin" -app "\$CALLDIR/app/application.ini" "\$@"
         EOF
         chmod +x $out/lib/zotero
 

@@ -22,10 +22,10 @@ in
   config = lib.mkIf cfg.enable {
     # On Darwin, we usually use Homebrew for GUI apps like Logseq
     # unless we want to use the Nix version.
-    environment.systemPackages = lib.optional (!pkgs.stdenv.isDarwin) pkgs.logseq;
+    environment.systemPackages = lib.optional (!pkgs.stdenv.hostPlatform.isDarwin) pkgs.logseq;
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.hostPlatform.isDarwin)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

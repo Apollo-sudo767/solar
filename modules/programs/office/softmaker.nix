@@ -43,10 +43,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = lib.optional (!pkgs.stdenv.isDarwin) smPkg;
+    environment.systemPackages = lib.optional (!pkgs.stdenv.hostPlatform.isDarwin) smPkg;
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.isLinux)
+      lib.mkIf
+        (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.hostPlatform.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

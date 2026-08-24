@@ -37,9 +37,9 @@ in
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages =
-      lib.optional (cfg.abiword && !pkgs.stdenv.isDarwin) pkgs.abiword
-      ++ lib.optional (cfg.gnumeric && !pkgs.stdenv.isDarwin) pkgs.gnumeric
-      ++ lib.optional (cfg.pdfarranger && !pkgs.stdenv.isDarwin) pkgs.pdfarranger
-      ++ lib.optional (cfg.evince && !pkgs.stdenv.isDarwin) pkgs.evince;
+      lib.optional (cfg.abiword && !pkgs.stdenv.hostPlatform.isDarwin) pkgs.abiword
+      ++ lib.optional (cfg.gnumeric && !pkgs.stdenv.hostPlatform.isDarwin) pkgs.gnumeric
+      ++ lib.optional (cfg.pdfarranger && !pkgs.stdenv.hostPlatform.isDarwin) pkgs.pdfarranger
+      ++ lib.optional (cfg.evince && !pkgs.stdenv.hostPlatform.isDarwin) pkgs.evince;
   };
 }

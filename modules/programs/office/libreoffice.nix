@@ -9,7 +9,7 @@
 let
   cfg = config.myFeatures.programs.office.libreoffice;
   loPkg =
-    if pkgs.stdenv.isDarwin then
+    if pkgs.stdenv.hostPlatform.isDarwin then
       pkgs.libreoffice-bin or pkgs.libreoffice
     else if cfg.variant == "fresh" then
       pkgs.libreoffice-fresh
@@ -117,7 +117,7 @@ in
     ++ lib.optional cfg.enableJava pkgs.jdk;
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      xdg.mimeApps = lib.mkIf (!pkgs.stdenv.isDarwin) {
+      xdg.mimeApps = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
         enable = true;
         defaultApplications = {
           "application/vnd.oasis.opendocument.text" = lib.mkIf cfg.components.writer [
@@ -146,13 +146,14 @@ in
         };
       };
 
-      home.sessionVariables = lib.mkIf (!pkgs.stdenv.isDarwin) {
+      home.sessionVariables = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
         SAL_USE_VCLPLUGIN = if config.myFeatures.platforms.niri.enable or false then "gtk3" else "qt5";
       };
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.isLinux)
+      lib.mkIf
+        (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.hostPlatform.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

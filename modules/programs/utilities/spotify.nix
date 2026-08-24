@@ -34,7 +34,7 @@ in
     };
 
   config = lib.mkIf anyEnabled {
-    services.gnome.gnome-keyring.enable = lib.mkDefault pkgs.stdenv.isLinux;
+    services.gnome.gnome-keyring.enable = lib.mkDefault pkgs.stdenv.hostPlatform.isLinux;
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       imports = [
@@ -66,7 +66,7 @@ in
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.hostPlatform.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories =

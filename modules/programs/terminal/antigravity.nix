@@ -24,7 +24,7 @@ in
 
     # 3. Persistence configuration for stateful data
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.isDarwin)
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && !pkgs.stdenv.hostPlatform.isDarwin)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

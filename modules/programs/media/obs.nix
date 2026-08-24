@@ -18,7 +18,7 @@ in
         enable = true;
         # Only load Wayland/VAAPI plugins if on Linux
         plugins =
-          if pkgs.stdenv.isLinux then
+          if pkgs.stdenv.hostPlatform.isLinux then
             (with pkgs.obs-studio-plugins; [
               wlrobs
               obs-vaapi
@@ -30,7 +30,7 @@ in
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.isLinux)
+      lib.mkIf (config.myFeatures.core.system.preservation.enable && pkgs.stdenv.hostPlatform.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

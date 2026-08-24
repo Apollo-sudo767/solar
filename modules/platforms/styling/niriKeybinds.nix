@@ -6,6 +6,27 @@
 
 let
   cfg = config.myFeatures.platforms.styling.niriKeybinds;
+
+  browsers = config.myFeatures.programs.browsers;
+  firefoxCfg = browsers.firefox;
+  zenCfg = browsers.zen;
+  chromeCfg = browsers.chrome;
+
+  defaultBrowserCmd =
+    if (firefoxCfg.enable || firefoxCfg.nightly.enable) && firefoxCfg.default then
+      (if firefoxCfg.nightly.enable then "firefox-nightly" else "firefox")
+    else if zenCfg.enable && zenCfg.default then
+      "zen"
+    else if chromeCfg.enable && chromeCfg.default then
+      (if chromeCfg.googleChrome.enable then "google-chrome" else "chromium")
+    else if firefoxCfg.enable || firefoxCfg.nightly.enable then
+      (if firefoxCfg.nightly.enable then "firefox-nightly" else "firefox")
+    else if zenCfg.enable then
+      "zen"
+    else if chromeCfg.enable then
+      (if chromeCfg.googleChrome.enable then "google-chrome" else "chromium")
+    else
+      "firefox";
 in
 {
   options.myFeatures.platforms.styling.niriKeybinds.enable =
@@ -16,7 +37,7 @@ in
       binds = {
         # --- Apps & System ---
         "Mod+Q".spawn = [ "ghostty" ];
-        "Mod+Shift+Q".spawn = [ "firefox" ];
+        "Mod+Shift+Q".spawn = [ defaultBrowserCmd ];
         "Mod+D".spawn =
           if config.myFeatures.platforms.addons.noctalia-v5.enable then
             [

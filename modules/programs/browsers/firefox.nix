@@ -95,6 +95,7 @@ in
         {
           programs.firefox = {
             enable = true;
+            package = lib.mkIf cfg.nightly.enable (lib.mkForce firefox-nightly);
             profiles = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
               isDefault = name == lib.head config.myFeatures.core.system.users.usernames;
               settings = {

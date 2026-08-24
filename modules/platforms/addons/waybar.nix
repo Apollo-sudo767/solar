@@ -149,6 +149,12 @@ in
                     default = "󰎆";
                     spotify = "";
                     firefox = "󰈹";
+                    firefox-nightly = "󰈹";
+                    Nightly = "󰈹";
+                    zen = "󰈹";
+                    chromium = "";
+                    google-chrome = "";
+                    vlc = "󰕼";
                   };
                   status-icons = {
                     playing = "󰐊";

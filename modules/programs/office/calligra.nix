@@ -57,7 +57,7 @@ in
       ++ lib.optional cfg.enableKrita pkgs.krita;
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-      xdg.mimeApps = lib.mkIf (!pkgs.stdenv.isDarwin) {
+      xdg.mimeApps = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
         enable = true;
         defaultApplications = {
           "application/vnd.oasis.opendocument.text" = lib.mkIf cfg.components.words [
@@ -74,7 +74,8 @@ in
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.isLinux)
+      lib.mkIf
+        (config.myFeatures.core.system.preservation.enable or false && pkgs.stdenv.hostPlatform.isLinux)
         {
           users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
             directories = [

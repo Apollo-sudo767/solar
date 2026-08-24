@@ -40,12 +40,16 @@ let
         export MOZ_LEGACY_PROFILES=1
         export MOZ_ENABLE_WAYLAND=1
 
-        # Auto-link Better BibTeX into existing and default user profiles
+        # Auto-link Better BibTeX and auto-enable extensions without manual approval prompts
         if [ -d "\$HOME/.zotero/zotero" ]; then
           for profile in "\$HOME/.zotero/zotero"/*/; do
             if [ -d "\$profile" ]; then
               mkdir -p "\$profile/extensions"
               ln -sf "${betterBibtexXpi}" "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
+              touch "\$profile/user.js"
+              if ! grep -q "extensions.autoDisableScopes" "\$profile/user.js"; then
+                printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\n' >> "\$profile/user.js"
+              fi
             fi
           done
         fi
@@ -120,6 +124,10 @@ in
                     if [ -d "$profile" ]; then
                       mkdir -p "$profile/extensions"
                       ln -sf "${betterBibtexXpi}" "$profile/extensions/better-bibtex@iris-advies.com.xpi"
+                      touch "$profile/user.js"
+                      if ! grep -q "extensions.autoDisableScopes" "$profile/user.js"; then
+                        printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\n' >> "$profile/user.js"
+                      fi
                     fi
                   done
                 fi

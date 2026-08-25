@@ -86,25 +86,31 @@
             modKey = "super";
             monitors = [
               {
-                name = "DP-4";
-                aliases = [ "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961" ];
+                name = "DP-1";
+                aliases = [
+                  "DP-4"
+                  "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961"
+                ];
                 resolution = "1440p";
                 refresh = 180.0;
                 orientation = "horizontal";
                 position = {
-                  x = 0;
+                  x = 1080;
                   y = 0;
                 };
                 vrr = true;
               }
               {
-                name = "DP-5";
-                aliases = [ "ASUSTek COMPUTER INC VG278 LBLMQS200546" ];
+                name = "DP-2";
+                aliases = [
+                  "DP-5"
+                  "ASUSTek COMPUTER INC VG278 LBLMQS200546"
+                ];
                 resolution = "1080p";
                 refresh = 165.0;
-                orientation = "horizontal";
+                orientation = "vertical";
                 position = {
-                  x = 2560;
+                  x = 0;
                   y = 0;
                 };
                 vrr = true;

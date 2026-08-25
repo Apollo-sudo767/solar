@@ -23,6 +23,11 @@ in
       default = true;
       description = "Include Zotero reference manager & PDF manager in AP Office Suite.";
     };
+    defaultPdf = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Set Zotero as the default PDF reader when AP Office is enabled.";
+    };
     pandoc = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -43,6 +48,7 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.programs.office.joplin.enable = lib.mkDefault cfg.joplin;
     myFeatures.programs.office.zotero.enable = lib.mkDefault cfg.zotero;
+    myFeatures.programs.office.zotero.defaultPdf = lib.mkDefault cfg.defaultPdf;
     myFeatures.programs.office.pandoc.enable = lib.mkDefault cfg.pandoc;
     myFeatures.programs.office.typst.enable = lib.mkDefault cfg.typst;
     myFeatures.programs.office.languagetool.enable = lib.mkDefault cfg.languagetool;

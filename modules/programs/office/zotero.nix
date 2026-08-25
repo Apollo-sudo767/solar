@@ -16,54 +16,57 @@ let
     hash = "sha256-/Dp8SnIi5zwMjjEHD5VXG+rEywn+cDaA3UX0NsQweeA=";
   };
   # Custom Zotero package bundled with Better BibTeX distribution extension and auto-profile linking
-  zoteroPkg =
-    if (!cfg.betterBibtex) then
-      pkgs.zotero
-    else
-      pkgs.runCommand "zotero-with-plugins-${pkgs.zotero.version}" { } ''
-        mkdir -p $out/lib $out/share $out/bin
-        cp -rs ${pkgs.zotero}/share/* $out/share/
-        for item in ${pkgs.zotero}/lib/*; do
-          base=$(basename "$item")
-          if [ "$base" != "distribution" ] && [ "$base" != "zotero" ]; then
-            ln -s "$item" "$out/lib/$base"
+  zoteroPkg = pkgs.runCommand "zotero-with-plugins-${pkgs.zotero.version}" { } ''
+    mkdir -p $out/lib $out/share $out/bin
+    cp -r ${pkgs.zotero}/share/* $out/share/
+    chmod -R +w $out/share
+    sed -i 's|^MimeType=.*|MimeType=x-scheme-handler/zotero;text/plain;application/pdf;application/x-pdf;|' $out/share/applications/zotero.desktop 2>/dev/null || true
+
+    for item in ${pkgs.zotero}/lib/*; do
+      base=$(basename "$item")
+      if [ "$base" != "distribution" ] && [ "$base" != "zotero" ]; then
+        ln -s "$item" "$out/lib/$base"
+      fi
+    done
+    mkdir -p $out/lib/distribution/extensions
+    cp -r ${pkgs.zotero}/lib/distribution/* $out/lib/distribution/ 2>/dev/null || true
+    ${lib.optionalString cfg.betterBibtex ''
+      ln -sf ${betterBibtexXpi} $out/lib/distribution/extensions/better-bibtex@iris-advies.com.xpi
+    ''}
+
+    cat << EOF > $out/lib/zotero
+    #!${pkgs.runtimeShell}
+    ulimit -n 4096
+    export MOZ_ALLOW_DOWNGRADE=1
+    export MOZ_LEGACY_PROFILES=1
+    export MOZ_ENABLE_WAYLAND=1
+
+    ${lib.optionalString cfg.betterBibtex ''
+      # Auto-link Better BibTeX and auto-enable extensions without manual approval prompts
+      if [ -d "\$HOME/.zotero/zotero" ]; then
+        for profile in "\$HOME/.zotero/zotero"/*/; do
+          if [ -d "\$profile" ]; then
+            mkdir -p "\$profile/extensions"
+            ln -sf "${betterBibtexXpi}" "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
+            touch "\$profile/user.js"
+            if ! grep -q "extensions.autoDisableScopes" "\$profile/user.js"; then
+              printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\n' >> "\$profile/user.js"
+            fi
           fi
         done
-        mkdir -p $out/lib/distribution/extensions
-        cp -r ${pkgs.zotero}/lib/distribution/* $out/lib/distribution/ 2>/dev/null || true
-        ln -sf ${betterBibtexXpi} $out/lib/distribution/extensions/better-bibtex@iris-advies.com.xpi
+      fi
+    ''}
 
-        cat << EOF > $out/lib/zotero
-        #!${pkgs.runtimeShell}
-        ulimit -n 4096
-        export MOZ_ALLOW_DOWNGRADE=1
-        export MOZ_LEGACY_PROFILES=1
-        export MOZ_ENABLE_WAYLAND=1
+    CALLDIR="\$(dirname "\$(readlink -f "\$0")")"
+    "\$CALLDIR/zotero-bin" -app "\$CALLDIR/app/application.ini" "\$@"
+    EOF
+    chmod +x $out/lib/zotero
 
-        # Auto-link Better BibTeX and auto-enable extensions without manual approval prompts
-        if [ -d "\$HOME/.zotero/zotero" ]; then
-          for profile in "\$HOME/.zotero/zotero"/*/; do
-            if [ -d "\$profile" ]; then
-              mkdir -p "\$profile/extensions"
-              ln -sf "${betterBibtexXpi}" "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
-              touch "\$profile/user.js"
-              if ! grep -q "extensions.autoDisableScopes" "\$profile/user.js"; then
-                printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\n' >> "\$profile/user.js"
-              fi
-            fi
-          done
-        fi
-
-        CALLDIR="\$(dirname "\$(readlink -f "\$0")")"
-        "\$CALLDIR/zotero-bin" -app "\$CALLDIR/app/application.ini" "\$@"
-        EOF
-        chmod +x $out/lib/zotero
-
-        ln -s $out/lib/zotero $out/bin/.zotero-wrapped
-        cp ${pkgs.zotero}/bin/zotero $out/bin/zotero
-        chmod +w $out/bin/zotero
-        sed -i "s|${pkgs.zotero}|$out|g" $out/bin/zotero
-      '';
+    ln -s $out/lib/zotero $out/bin/.zotero-wrapped
+    cp ${pkgs.zotero}/bin/zotero $out/bin/zotero
+    chmod +w $out/bin/zotero
+    sed -i "s|${pkgs.zotero}|$out|g" $out/bin/zotero
+  '';
 in
 {
   options.myFeatures.programs.office.zotero = {
@@ -72,6 +75,11 @@ in
       type = lib.types.bool;
       default = true;
       description = "Whether to install the Zotero GUI client application.";
+    };
+    defaultPdf = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Set Zotero as the default application for opening PDF files.";
     };
     betterBibtex = lib.mkOption {
       type = lib.types.bool;
@@ -133,6 +141,14 @@ in
                 fi
               ''
             );
+
+            xdg.mimeApps = lib.mkIf (!isDarwin && cfg.gui && cfg.defaultPdf) {
+              enable = true;
+              defaultApplications = {
+                "application/pdf" = [ "zotero.desktop" ];
+                "application/x-pdf" = [ "zotero.desktop" ];
+              };
+            };
           })
         ];
       }

@@ -84,6 +84,7 @@
         platforms = {
           desktops.niri = {
             modKey = "super";
+            defaultColumnWidth = 1.0;
             monitors = [
               {
                 name = "DP-1";

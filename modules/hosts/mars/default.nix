@@ -36,6 +36,7 @@
             enable = true;
             secureBoot.enable = true;
             kernel = "zen";
+            resolution = "2560x1440";
           };
           security.security = {
             enable = true;
@@ -87,10 +88,10 @@
             defaultColumnWidth = 1.0;
             monitors = [
               {
-                name = "DP-1";
+                name = "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961";
                 aliases = [
+                  "DP-2"
                   "DP-4"
-                  "ASUSTek COMPUTER INC VG27WQ3B TALMTR031961"
                 ];
                 resolution = "1440p";
                 refresh = 180.0;
@@ -100,12 +101,14 @@
                   y = 0;
                 };
                 vrr = true;
+                primary = true;
+                focusAtStartup = true;
               }
               {
-                name = "DP-2";
+                name = "ASUSTek COMPUTER INC VG278 LBLMQS200546";
                 aliases = [
+                  "DP-1"
                   "DP-5"
-                  "ASUSTek COMPUTER INC VG278 LBLMQS200546"
                 ];
                 resolution = "1080p";
                 refresh = 165.0;

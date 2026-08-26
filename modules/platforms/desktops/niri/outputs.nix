@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -246,7 +247,7 @@ let
           on-demand = true;
         };
       })
-      // (lib.optionalAttrs (m.enable && m.focusAtStartup) { focus-at-startup = { }; })
+      // (lib.optionalAttrs (m.enable && (m.focusAtStartup || m.primary)) { focus-at-startup = { }; })
       // (lib.optionalAttrs (m.enable && m.backdropColor != null) { backdrop-color = m.backdropColor; })
       // (lib.optionalAttrs (m.enable && m.backgroundColor != null) {
         background-color = m.backgroundColor;
@@ -422,6 +423,12 @@ let
         description = "Whether this output should be focused when Niri starts.";
       };
 
+      primary = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether this output should be designated as the primary display (focus at startup, Xwayland primary monitor).";
+      };
+
       backdropColor = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
@@ -455,6 +462,31 @@ let
       // outCfg;
     }) allNames
   ) cfg.monitors;
+
+  primaryMonitors = lib.filter (m: m.enable && (m.primary || m.focusAtStartup)) cfg.monitors;
+  primaryMonitor = if primaryMonitors != [ ] then lib.head primaryMonitors else null;
+
+  xrandrPrimaryScript =
+    if cfg.setXwaylandPrimary && primaryMonitor != null then
+      let
+        allPrimaryNames = [ primaryMonitor.name ] ++ primaryMonitor.aliases;
+        namesListStr = lib.concatMapStringsSep " " (n: "\"${n}\"") allPrimaryNames;
+      in
+      pkgs.writeShellScriptBin "niri-set-primary-output" ''
+        for _ in $(seq 1 30); do
+          if [ -n "$DISPLAY" ] && ${pkgs.xrandr}/bin/xrandr --display "$DISPLAY" >/dev/null 2>&1; then
+            for name in ${namesListStr}; do
+              if ${pkgs.xrandr}/bin/xrandr --display "$DISPLAY" 2>/dev/null | grep -q "^$name connected"; then
+                ${pkgs.xrandr}/bin/xrandr --display "$DISPLAY" --output "$name" --primary
+                exit 0
+              fi
+            done
+          fi
+          sleep 0.2
+        done
+      ''
+    else
+      null;
 in
 {
   options.myFeatures.platforms.desktops.niri = {
@@ -477,6 +509,7 @@ in
             y = 0;
           };
           vrr = true;
+          primary = true;
         }
         {
           name = "DP-5";
@@ -491,11 +524,30 @@ in
         }
       ];
     };
+
+    setXwaylandPrimary = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to automatically set the designated primary monitor in Xwayland at startup.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = [
+      pkgs.xrandr
+    ]
+    ++ lib.optional (xrandrPrimaryScript != null) xrandrPrimaryScript;
+
     myFeatures.platforms.desktops.niri.settings = {
-      _children = lib.mkIf (cfg.monitors != [ ]) outputChildren;
+      _children =
+        (lib.optionals (cfg.monitors != [ ]) outputChildren)
+        ++ (lib.optionals (xrandrPrimaryScript != null) [
+          {
+            spawn-at-startup._args = [
+              "${xrandrPrimaryScript}/bin/niri-set-primary-output"
+            ];
+          }
+        ]);
     };
   };
 }

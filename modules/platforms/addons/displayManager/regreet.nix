@@ -36,11 +36,104 @@ in
 
                     ${pkgs.sway}/bin/swaymsg exit
                   '';
-                  # We use sway to launch regreet. Using 'output * enable' ensures it works on all hosts
-                  # regardless of monitor count or output names (DP-1 vs eDP-1).
+                  # Build Sway monitor configs from desktop monitor configuration
+                  niriMonitors = config.myFeatures.platforms.desktops.niri.monitors or [ ];
+                  primaryNiriMonitors = lib.filter (
+                    m: m.enable && (m.primary or false || m.focusAtStartup or false)
+                  ) niriMonitors;
+                  primaryNiriMonitor = if primaryNiriMonitors != [ ] then lib.head primaryNiriMonitors else null;
+
+                  commonResolutions = {
+                    "720p" = "1280x720";
+                    "1080p" = "1920x1080";
+                    "fhd" = "1920x1080";
+                    "1440p" = "2560x1440";
+                    "2k" = "2560x1440";
+                    "qhd" = "2560x1440";
+                    "4k" = "3840x2160";
+                    "uhd" = "3840x2160";
+                  };
+
+                  swayOutputLines = lib.concatMapStringsSep "\n" (
+                    m:
+                    let
+                      allNames = [ m.name ] ++ m.aliases;
+                      res =
+                        if m.width != null && m.height != null then
+                          "${toString m.width}x${toString m.height}"
+                        else if m.resolution != null && m.resolution != "auto" then
+                          let
+                            lower = lib.toLower (toString m.resolution);
+                          in
+                          commonResolutions.${lower} or (if lib.hasInfix "x" lower then lower else null)
+                        else
+                          null;
+                      modeStr =
+                        if res != null then
+                          (if m.refresh != null then "${res}@${toString (m.refresh * 1.0)}Hz" else res)
+                        else
+                          null;
+                      posX =
+                        if m.x != null then
+                          m.x
+                        else if m.position != null then
+                          m.position.x
+                        else
+                          null;
+                      posY =
+                        if m.y != null then
+                          m.y
+                        else if m.position != null then
+                          m.position.y
+                        else
+                          null;
+                      pos = if posX != null && posY != null then "${toString posX} ${toString posY}" else null;
+                      ori = lib.toLower (toString m.orientation);
+                      transformStr =
+                        if ori == "vertical" || ori == "portrait" || ori == "90" then
+                          "90"
+                        else if ori == "vertical-inverted" || ori == "portrait-inverted" || ori == "270" then
+                          "270"
+                        else if ori == "inverted" || ori == "180" then
+                          "180"
+                        else
+                          "normal";
+                    in
+                    lib.concatMapStringsSep "\n" (
+                      name:
+                      "output \"${name}\" "
+                      + (lib.optionalString (modeStr != null) "mode ${modeStr} ")
+                      + (lib.optionalString (pos != null) "pos ${pos} ")
+                      + (lib.optionalString (transformStr != "normal") "transform ${transformStr} ")
+                      + "enable"
+                    ) allNames
+                  ) (lib.filter (m: m.enable) niriMonitors);
+
+                  targetPrimaryOutput =
+                    if cfg.primaryOutput != null then
+                      cfg.primaryOutput
+                    else if primaryNiriMonitor != null then
+                      primaryNiriMonitor.name
+                    else
+                      null;
+
+                  swayPrimaryFocus =
+                    if targetPrimaryOutput != null then
+                      ''
+                        focus output "${targetPrimaryOutput}"
+                        for_window [app_id="regreet"] move to output "${targetPrimaryOutput}"
+                      ''
+                    else
+                      "";
+
+                  # We use sway to launch regreet. Using 'output * enable' ensures fallback works on all hosts
+                  swayExtraLines = lib.concatStringsSep "\n" cfg.extraConfig;
                   swayConfig = pkgs.writeText "greetd-sway-config" ''
                     output * enable
                     output * bg #000000 solid_color
+                    ${lib.optionalString cfg.syncOutputs swayOutputLines}
+                    ${lib.optionalString cfg.syncOutputs swayPrimaryFocus}
+                    ${swayExtraLines}
                     exec "${regreetLauncher}"
                   '';
                   greetdSession = pkgs.writeShellScript "greetd-session" ''

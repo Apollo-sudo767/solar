@@ -25,6 +25,9 @@ in
           wallpapers = lib.mkForce [ wallpaperPath ];
           wallpaperStyle = "stretched";
         };
+      }
+      // lib.optionalAttrs (cfg.resolution != null) {
+        inherit (cfg) resolution;
       };
 
       environment.systemPackages = with pkgs; [

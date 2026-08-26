@@ -33,6 +33,23 @@ in
       default = "default";
       description = "The kernel package to use.";
     };
+    resolution = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Framebuffer / GOP display resolution for the bootloader (e.g. '2560x1440', '1920x1080'). If null, bootloader chooses default.";
+    };
+    timeout = lib.mkOption {
+      type = lib.types.int;
+      default = 1;
+      description = "Bootloader menu timeout in seconds.";
+    };
+    plymouth = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to enable Plymouth graphical boot splash.";
+      };
+    };
   };
 
   config = lib.mkIf (cfg.enable && cfg.boot.enable) {
@@ -61,8 +78,8 @@ in
     # Enable UEFI support
     boot.loader.efi.canTouchEfiVariables = true;
 
-    # Bootloader timeout optimization (1 second wait time)
-    boot.loader.timeout = lib.mkDefault 1;
+    # Bootloader timeout optimization
+    boot.loader.timeout = lib.mkDefault cfg.timeout;
 
     # Fast boot optimizations
     systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
@@ -101,7 +118,7 @@ in
       "net.ipv4.tcp_congestion_control" = "bbr";
     };
 
-    boot.plymouth.enable = true;
+    boot.plymouth.enable = lib.mkDefault cfg.plymouth.enable;
 
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;

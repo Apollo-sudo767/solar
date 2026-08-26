@@ -11,7 +11,11 @@ in
     enable = lib.mkEnableOption "TTY Resolution configuration";
     resolution = lib.mkOption {
       type = lib.types.str;
-      default = "2560x1440";
+      default =
+        if config.myFeatures.core.boot.resolution != null then
+          config.myFeatures.core.boot.resolution
+        else
+          "2560x1440";
       description = "The resolution to set for the TTY (e.g., 2560x1440)";
     };
   };

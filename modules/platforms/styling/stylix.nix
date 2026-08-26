@@ -52,6 +52,7 @@ in
             helix.enable = config.myFeatures.programs.terminal.helix.enable or false;
             ghostty.enable = config.myFeatures.programs.terminal.ghostty.enable or false;
             noctalia-shell.enable = config.myFeatures.platforms.addons.noctalia-shell.enable or false;
+            spicetify.enable = config.myFeatures.programs.utilities.spotify.enable or false;
           };
         })
       ]

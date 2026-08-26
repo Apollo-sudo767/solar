@@ -2,6 +2,7 @@
   meta = {
     system = "x86_64-linux";
     stable = false;
+    useSolarSecrets = false;
   };
 
   module =
@@ -53,15 +54,7 @@
           browsers.firefox.enable = true;
           media = {
             gaming.enable = true;
-            vr = {
-              enable = true;
-              quest = {
-                enable = true;
-                wired = true;
-              };
-            };
             media.enable = true;
-            obs.enable = true;
             vlc.enable = true;
           };
           utilities = {

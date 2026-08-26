@@ -29,7 +29,8 @@
           shell.shell-branch.enable = true;
           boot = {
             enable = true;
-            kernel = "latest";
+            loader = "systemd";
+            kernel = "default";
           };
         };
         platforms = {

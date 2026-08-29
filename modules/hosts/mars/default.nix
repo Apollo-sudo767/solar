@@ -153,6 +153,8 @@
                 autoWrap = false;
               };
             };
+            tf2.enable = true;
+            mumble.enable = true;
             media.enable = true;
             obs.enable = true;
             davinci.enable = true;

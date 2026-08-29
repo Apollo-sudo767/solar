@@ -7,7 +7,7 @@ ______________________________________________________________________
 - **Architecture**: AMD CPU + Nvidia GPU.
 - **Desktop Environment**: Niri scrollable tiling Wayland compositor, ReGreet greeter, Stylix Sky theme.
 - **Storage Topology**: Wipe-on-boot `tmpfs` root with Disko Btrfs subvolumes across 2x NVMe speed pool + 2x HDD bulk pool.
-- **Workloads**: Steam Proton with Gamescope, DaVinci Resolve video editing, Sunshine game streaming server, Wooting analog keyboard support.
+- **Workloads**: Steam Proton with Gamescope, Competitive TF2 suite & Mumble VoIP, DaVinci Resolve video editing, Sunshine game streaming server, Wooting analog keyboard support.
 
 ______________________________________________________________________
 

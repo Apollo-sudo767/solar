@@ -215,6 +215,8 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
                 autoWrap = false;
               };
             };
+            # tf2.enable = true;            # Competitive TF2 suite (configs, VPK tools, RCON)
+            # mumble.enable = true;         # Mumble VoIP with Wayland push-to-talk
             media.enable = true;
             obs.enable = true;
             davinci.enable = true;

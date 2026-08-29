@@ -1,29 +1,31 @@
 # Fleet Overview 🪐
 
-Solar manages a constellation of specialized machines across Linux and macOS, named after celestial bodies in the solar system.
+Solar orchestrates an entire constellation of 11 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
 
 ______________________________________________________________________
 
-## 🧭 Machine Categories
+## 🗺️ The Constellation Map
 
-### 🌕 [The Jupiter Moon Stack](jupiter-stack.md)
+| Host | Form Factor | Architecture | Primary Role | Platform & UI | Storage Tier |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`mars`** | Desktop Workstation | `x86_64-linux` | Primary Workstation & Esports Rig | Niri (Sky Theme) | Ephemeral `tmpfs` + 2x NVMe + 2x HDD |
+| **`mercury`** | Laptop | `x86_64-linux` | Portable Development | Niri (Sky Theme) | Ephemeral `tmpfs` + 1x NVMe |
+| **`phobos`** | MacBook | `aarch64-darwin` | macOS Mobility & Apple Silicon | macOS + Homebrew | APFS Encrypted |
+| **`elara`** | Gaming Rig | `x86_64-linux` | 4K Gaming & Live Streaming | KDE Plasma 6 (Strawberry) | Standard Btrfs + 1x SSD |
+| **`europa`** | VR Workstation | `x86_64-linux` | VR Streaming & Video Production | KDE Plasma 6 (Forest) | Standard Btrfs + 1x SSD |
+| **`amalthea`** | Handheld Console | `x86_64-linux` | Portable Steam Gaming | Steam Big Picture (Gamescope) | Standard Btrfs + eMMC/SD |
+| **`thebe`** | Mac Mini Node | `x86_64-linux` | Compact Desktop / Server Node | Headless / Limine | Standard Btrfs + LUKS2 |
+| **`ganymede`** | Storage Server | `x86_64-linux` | Dedicated NAS (Samba / NFS) | Headless Server | Standard Btrfs + 1x NVMe + 2x HDD |
+| **`callisto`** | Backup Server | `x86_64-linux` | Backup & Syncthing Node | Headless Server | Standard Btrfs + 1x NVMe + 1x HDD |
+| **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
+| **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
 
-Self-contained, standalone storage nodes and microservers configured with **Universal Disko**, **LUKS Encryption**, **Btrfs**, and **zero dependencies on private secret repositories**:
+______________________________________________________________________
 
-- **`thebe`**: Intel Mac Mini compact server & desktop node.
-- **`ganymede`**: Dedicated high-capacity NAS server (Samba SMB3, NFSv4, Avahi mDNS).
-- **`callisto`**: General storage & backup node (Syncthing, Restic, Borg).
+## 🏛️ Fleet Subsections
 
-### 🚀 [Workstations, Laptops & Portable Devices](workstations.md)
-
-- **`mars`**: Primary dual-GPU workstation with Niri scrollable Wayland compositor.
-- **`mercury`**: Portable laptop with battery optimizations and Niri.
-- **`elara`**: Gaming and streaming rig with KDE Plasma and Steam Gamescope.
-- **`europa`**: VR and media workstation with Meta Quest wired VR integration.
-- **`amalthea`**: Handheld gaming console auto-booting to Steam Big Picture.
-- **`phobos`**: Apple Silicon MacBook managed via `nix-darwin`.
-- **`io`**: COSMIC Desktop Environment testbed.
-
-### 🌐 [Server & Cloud Infrastructure](servers.md)
-
-- **`venus`**: Multi-service home server hosting Joplin, Zotero, LanguageTool, Nginx reverse proxy, and game servers.
+- **[Workstations & Portables](workstations.md)**: Details for **Mars**, **Mercury**, and **Phobos**.
+- **[Gaming, VR & Rigs](gaming-vr.md)**: Details for **Elara**, **Europa**, and **Amalthea**.
+- **[The Jupiter Moon Stack](jupiter-stack.md)**: Details for standalone storage nodes **Thebe**, **Ganymede**, and **Callisto**.
+- **[Server & Cloud Infrastructure](servers.md)**: Multi-service web and game server **Venus**.
+- **[Testbeds & Experimental](testbeds.md)**: Experimental COSMIC workstation **Io**.

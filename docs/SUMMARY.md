@@ -6,20 +6,44 @@
 # The Fleet
 
 - [Fleet Overview](fleet/overview.md)
+- [Workstations & Portables](fleet/workstations.md)
+- [Gaming, VR & Rigs](fleet/gaming-vr.md)
 - [The Jupiter Moon Stack](fleet/jupiter-stack.md)
-- [Workstations & Portable Devices](fleet/workstations.md)
-- [Server Infrastructure](fleet/servers.md)
+- [Server & Cloud Infrastructure](fleet/servers.md)
+- [Testbeds & Experimental](fleet/testbeds.md)
 
-# Storage & Partitioning
+# Platforms, Desktops & Theming
+
+- [Desktop Environments](platforms/desktops.md)
+- [Shell, Bar & Addons](platforms/addons.md)
+- [Styling & Flavors](platforms/styling.md)
+
+# Software Suites & Toolchains
+
+- [Gaming & Esports Suite](programs/gaming.md)
+- [Virtual Reality Suite](programs/vr.md)
+- [Terminal & Developer Tools](programs/terminal.md)
+- [Media Production & Creation](programs/media.md)
+- [Productivity & Office](programs/productivity.md)
+
+# Services & Infrastructure
+
+- [Networking & Mesh VPN](services/networking.md)
+- [Multimedia & Streaming](services/multimedia.md)
+- [Dedicated Servers](services/servers.md)
+
+# Storage & Impermanence
 
 - [Universal Hardware-Aware Disko](storage/disko.md)
+- [Wipe-on-Boot & Preservation](storage/preservation.md)
 - [Drive Swapping & Storage Expansion](storage/drive-swapping.md)
 
 # Security & Cryptography
 
-- [Full-Disk LUKS Encryption](security/luks.md)
+- [Full-Disk LUKS2 Encryption](security/luks.md)
 - [Native Secure Boot with Limine](security/secureboot.md)
 - [TPM 2.0 Tamper-Proof Auto-Unlock](security/tpm2.md)
+- [Encrypted Secrets with Agenix](security/agenix.md)
 
 # Deployment & Operations
 

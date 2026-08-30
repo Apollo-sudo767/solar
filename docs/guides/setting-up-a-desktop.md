@@ -69,7 +69,21 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
 
       myFeatures = {
         # -------------------------------------------------------------
-        # 1. CORE FOUNDATION
+        # 1. 🌲 COMPOSABLE DENDRITIC SUITES
+        # -------------------------------------------------------------
+        suites = {
+          workstation.enable = true;      # Ghostty, Helix, NH, Fastfetch, Bitwarden, Portals, Audio
+          gaming.enable = true;           # Steam + Proton installer, GameScope, Controllers, Mumble, TF2
+          creator.enable = true;          # DaVinci Resolve, OBS Studio, VLC, Ani-CLI, Media tools
+          streaming.enable = true;        # Sunshine 48000 + Moonlight Game Streaming Host
+          productivity.enable = true;     # AP-Office authoring + CUPS printing subsystem
+          hardened.enable = true;         # AppArmor security profiles + Systemd OOMD daemon
+          networking.enable = true;       # Tailscale mesh VPN + Resolved DNS
+          desktops.niri.enable = true;    # Niri scrollable compositor + Noctalia v5 + Keybinds
+        };
+
+        # -------------------------------------------------------------
+        # 2. 🎛️ CORE STORAGE, BOOTLOADER & SECRETS
         # -------------------------------------------------------------
         core = {
           system = {
@@ -79,7 +93,7 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
             };
             users = {
               usernames = [ "apollo" ];
-              agenixPassword = true;  # Manage user password via encrypted secrets
+              agenixPassword = true;
             };
             disko = {
               enable = true;
@@ -87,28 +101,17 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
               # bulkDisks = [ "/dev/sda" ];     # Optional secondary bulk storage disk
             };
           };
-          shell.shell-branch.enable = true; # Zsh, Starship, and essential CLI tools
           boot = {
             enable = true;
             loader = "limine";              # Fast, modern bootloader
-            secureBoot.enable = true;       # Native Secure Boot with lanzaboote
+            secureBoot.enable = true;       # Native Secure Boot with Lanzaboote
             kernel = "zen";                 # Zen kernel optimized for low-latency desktop/gaming
           };
-          security = {
-            security = {
-              enable = true;
-              useAppArmor = true;
-            };
-            agenix = {
-              enable = true;
-              usePrivateSecrets = true;
-            };
-          };
-          nix.lix.enable = true;            # Modern, fast Lix Nix implementation
+          security.agenix.usePrivateSecrets = true;
         };
 
         # -------------------------------------------------------------
-        # 2. HARDWARE & DRIVERS
+        # 3. ⚙️ HARDWARE & DRIVERS
         # -------------------------------------------------------------
         hardware = {
           cpu-gpu = {
@@ -118,37 +121,26 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
               open = true;                  # Use open kernel modules (Turing+)
             };
           };
-          system = {
-            graphics.enable = true;
-            ttyResolution = {
-              enable = true;
-              resolution = "2560x1440";     # High-resolution TTY on boot
-            };
+          system.ttyResolution = {
+            enable = true;
+            resolution = "2560x1440";       # High-resolution TTY on boot
           };
           peripherals = {
-            bluetooth = {
-              enable = true;
-              gaming.enable = true;
-            };
+            bluetooth.gaming.enable = true;
             wifi = {
               enable = true;
               persistence = true;
             };
-            # battery.enable = true;         # Enable for laptops
+            # battery.fullCharge = true;    # Enable for laptops
           };
           input = {
-            controllers = {
-              enable = true;
-              xbox = true;
-              nintendo = true;
-            };
             wooting.enable = true;          # Wooting analog keyboard support
             # trackpad.enable = true;       # Enable for laptops
           };
         };
 
         # -------------------------------------------------------------
-        # 3. DESKTOP ENVIRONMENT & MONITORS
+        # 4. 🖥️ OUTPUT TOPOLOGY, STYLING & GREETER (Strictly Host-Managed)
         # -------------------------------------------------------------
         platforms = {
           desktops.niri = {
@@ -161,12 +153,13 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
                 orientation = "horizontal"; # "horizontal", "vertical", "vertical-inverted", "inverted"
                 position = { x = 0; y = 0; };
                 vrr = true;                 # Variable Refresh Rate (G-Sync / FreeSync)
+                primary = true;
               }
               {
                 name = "DP-2";
                 resolution = "1080p";
                 refresh = 165.0;
-                orientation = "vertical";   # Secondary vertical monitor!
+                orientation = "vertical";   # Secondary vertical monitor
                 position = { x = 2560; y = 0; };
                 vrr = true;
               }
@@ -174,94 +167,24 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
           };
           styling = {
             stylix.enable = true;
-            flavors.sky.enable = true;          # Complete Sky flavor preset for compositors & Noctalia
+            flavors.sky.enable = true;          # Complete Sky flavor preset
           };
-          addons = {
-            displayManager.manager = "regreet"; # Modern GTK4 Wayland greeter
-          };
+          addons.displayManager.manager = "regreet"; # Modern GTK4 Wayland greeter
         };
 
         # -------------------------------------------------------------
-        # 4. USER SOFTWARE & WORKSPACE
+        # 5. 👤 PERSONAL CREDENTIALS & SPECIALIZED APPS
         # -------------------------------------------------------------
         programs = {
-          terminal = {
-            git = {
-              enable = true;
-              userName = "YourName";
-              userEmail = "you@example.com";
-            };
-            ghostty.enable = true;          # GPU-accelerated terminal
-            fastfetch.enable = true;
-            helix.enable = true;            # Modal text editor
-            antigravity.enable = true;      # AI coding assistant
-            nh.enable = true;               # Modern Nix helper (`nh os switch`)
-            direnv.enable = true;
-            nix-ld.enable = true;           # Run unpatched dynamic binaries
+          terminal.git = {
+            userName = "YourName";
+            userEmail = "you@example.com";
           };
-          browsers = {
-            firefox = {
-              nightly.enable = true;
-              extensions.enable = true;
-            };
-            # zen.enable = true;            # Zen Browser alternative
+          browsers.firefox = {
+            nightly.enable = true;
+            extensions.enable = true;
           };
-          media = {
-            gaming.enable = true;
-            steam = {
-              protonInstaller.enable = true;
-              gamescope = {
-                enable = true;
-                autoWrap = false;
-              };
-            };
-            # tf2.enable = true;            # Competitive TF2 suite (configs, VPK tools, RCON)
-            # mumble.enable = true;         # Mumble VoIP with Wayland push-to-talk
-            media.enable = true;
-            obs.enable = true;
-            davinci.enable = true;
-            vlc.enable = true;
-            ani-cli.enable = true;
-          };
-          utilities = {
-            bitwarden.enable = true;        # Password manager
-            stylePackages.enable = true;
-            social.enable = true;           # Discord / Vesktop
-            filemanager.enable = true;      # Thunar or Dolphin
-            spotify = {
-              enable = true;
-              tui.enable = true;
-            };
-          };
-          office = {
-            ap-office.enable = true;        # Office document suite
-          };
-        };
-
-        # -------------------------------------------------------------
-        # 5. SYSTEM SERVICES
-        # -------------------------------------------------------------
-        services = {
-          multimedia = {
-            audio.enable = true;            # PipeWire audio stack
-            sunshine = {
-              enable = true;                # Moonlight game streaming host
-              port = 48000;
-            };
-          };
-          system = {
-            flatpak.enable = true;
-            xdgPortals.enable = true;       # Wayland screen-sharing & open dialogs
-          };
-          hardware = {
-            printing.enable = true;         # CUPS printing daemon
-            udisks2.enable = true;          # Automatic USB mounting
-          };
-          networking = {
-            enable = true;
-            resolved.enable = true;
-            tailscale.enable = true;        # Mesh VPN
-          };
+          utilities.spotify.tui.enable = true;
         };
       };
     };
@@ -270,38 +193,46 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-r
 
 ______________________________________________________________________
 
-## 🖥️ Choosing an Alternative Desktop Environment
+## 🖥️ Choosing an Alternative Desktop Suite
 
-If you prefer KDE Plasma, GNOME, or COSMIC instead of Niri:
+Solar provides dedicated desktop suites for all 18 major window managers and desktop environments:
 
-### KDE Plasma 6
-
+### Wayland Compositor Suites
 ```nix
-platforms = {
-  desktops.kde.enable = true;
-  addons.displayManager.manager = "sddm";
-  styling = {
-    stylix.enable = true;
-    themes.strawberry.enable = true;
-  };
+suites.desktops = {
+  niri.enable = true;       # Scrollable tiling Wayland compositor
+  hyprland.enable = true;   # Dynamic tiling Wayland compositor with smooth animations
+  sway.enable = true;       # i3-compatible Wayland compositor
+  mangowc.enable = true;    # Ultra-lightweight modern Wayland compositor
+  wayfire.enable = true;    # 3D Compiz-style Wayland compositor
+  labwc.enable = true;      # Openbox-inspired lightweight Wayland stacking WM
+  qtile.enable = true;      # Hackable Python tiling WM
 };
 ```
 
-### GNOME
-
+### X11 Window Manager Suites
 ```nix
-platforms = {
-  desktops.gnome.enable = true;
-  addons.displayManager.manager = "gdm";
+suites.desktops = {
+  i3.enable = true;         # Classic manual tiling WM
+  bspwm.enable = true;      # Binary space partitioning WM
+  awesome.enable = true;    # Highly configurable Lua-driven WM
+  xmonad.enable = true;     # Dynamic tiling WM written in Haskell
+  dwm.enable = true;        # Dynamic window manager for X
+  openbox.enable = true;    # Highly configurable stacking WM
 };
 ```
 
-### COSMIC Desktop
-
+### Full Desktop Environment Suites
 ```nix
-platforms = {
-  desktops.cosmic.enable = true;
-  addons.displayManager.manager = "cosmic-greeter";
+suites.desktops = {
+  plasma.enable = true;     # KDE Plasma 6 Desktop
+  gnome.enable = true;      # GNOME Desktop Environment
+  cosmic.enable = true;     # Next-gen Rust-based COSMIC Desktop
+  xfce.enable = true;       # Lightweight and modular XFCE Desktop
+  cinnamon.enable = true;   # Elegant traditional Cinnamon Desktop
+  mate.enable = true;       # Traditional MATE Desktop Environment
+  lxqt.enable = true;       # Ultra-lightweight Qt Desktop
+  budgie.enable = true;     # Modern and clean Budgie Desktop
 };
 ```
 

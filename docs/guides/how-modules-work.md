@@ -18,11 +18,36 @@ config.myFeatures.<category>.<subcategory>.<feature>
 | :--- | :--- | :--- |
 | **`core`** | `modules/core/` | Foundational system settings: bootloaders (`limine`, `grub`, `systemd`), Nix settings (`lix`, `cachix`, `automation`), security (`agenix`, `ssh`), shell (`zsh`, `starship`, `cli`), and system management (`users`, `disko`, `preservation`). |
 | **`hardware`** | `modules/hardware/` | Hardware drivers and hardware-specific toggles: CPU/GPU (`amd`, `intel`, `nvidia`, `prime`), input devices (`controllers`, `wooting`, `trackpad`), peripherals (`battery`, `bluetooth`, `wifi`), and graphics. |
-| **`platforms`** | `modules/platforms/` | Graphical environments: window managers & DEs (`niri`, `kde`, `gnome`, `cosmic`), addons (`displayManager`, `noctalia`, `waybar`, `swaync`, `idle`, `swaylock`), and centralized ricing/styling (`stylix`, `themes`, `flavors`). |
+| **`platforms`** | `modules/platforms/` | Graphical environments: window managers & DEs (`niri`, `hyprland`, `sway`, `mangowc`, `kde`, `gnome`, `cosmic`, etc.), addons (`displayManager`, `noctalia`, `waybar`, `swaync`, `idle`, `swaylock`), and centralized ricing/styling (`stylix`, `themes`, `flavors`). |
+| **`suites`** | `modules/suites/` | Composable dendritic suites bundling complete roles and workflows (`workstation`, `gaming`, `creator`, `streaming`, `productivity`, `hardened`, `networking`, `laptop`, `server`, and 18 desktop suites) with `lib.mkDefault`. |
 | **`programs`** | `modules/programs/` | User-facing software: browsers (`firefox`, `zen`, `chrome`), terminal applications (`ghostty`, `helix`, `fastfetch`, `antigravity`, `nh`, `git`), media & gaming (`steam`, `tf2`, `mumble`, `vr`, `obs`, `davinci`, `prism`, `vlc`, `ani-cli`), office tools (`ap-office`), and utilities (`bitwarden`, `social`, `vesktop`, `filemanager`, `spotify`, `logseq`). |
 | **`services`** | `modules/services/` | System daemons and background servers: multimedia (`audio`, `sunshine`), hardware utilities (`printing`, `udisks2`, `openrgb`), networking (`tailscale`, `resolved`, `syncthing`), and servers (`minecraft`, `joplin`, `trilium`, `samba`, `nfs`). |
-| **`darwin`** | `modules/darwin/` | macOS-specific system modules (`homebrew`, `system defaults`, `core`). |
+| **`darwin`** | `modules/darwin/` | macOS-specific system modules (`homebrew`, `system defaults`, `core`, `suites/workstation`). |
 | **`hosts`** | `modules/hosts/` | Host definitions and hardware configurations (the terminal leaves of the dendritic tree). |
+
+______________________________________________________________________
+
+## 🌲 The Dendritic Suites Architecture (`modules/suites/`)
+
+Suites act as **composite neural branches** in the dendritic tree. Instead of a host file manually declaring dozens of individual package and service toggles, hosts can activate domain suites:
+
+```nix
+myFeatures.suites = {
+  workstation.enable = true;      # Development tools, terminal, browser, password manager, audio
+  gaming.enable = true;           # Steam, Proton installer, GameScope, controllers, multiplayer
+  creator.enable = true;          # DaVinci Resolve, OBS Studio, VLC, Ani-CLI, media tools
+  streaming.enable = true;        # Sunshine 48000 streaming host & Moonlight client
+  productivity.enable = true;     # AP-Office authoring & CUPS printing
+  hardened.enable = true;         # AppArmor security profiles & Systemd OOMD
+  networking.enable = true;       # Tailscale mesh VPN & Resolved DNS
+  desktops.niri.enable = true;    # Niri compositor + Noctalia v5 + Keybinds
+};
+```
+
+### Critical Rules for Suites
+1. **Always Use `lib.mkDefault`**: All configurations within suites use `lib.mkDefault` so that individual host leaves can override or disable any specific sub-option without conflict.
+2. **Never Impose Aesthetic Identity in a Suite**: Themes (`themes.sky`, `themes.forest`, `flavors.sky`), Stylix schemes, wallpapers, and Display Managers (`regreet`, `sddm`, `gdm`) are strictly decided in the **host file**, preserving full aesthetic ownership per machine.
+
 
 ______________________________________________________________________
 

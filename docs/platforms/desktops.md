@@ -134,29 +134,43 @@ ______________________________________________________________________
 
 ## 📦 14. Preconfigured Suites (`modules/suites/`)
 
-Solar provides high-level suites for a **dendritic workflow**, allowing machines to bundle entire stacks with a single toggle:
+Solar provides high-level suites for a **dendritic workflow**, allowing machines to bundle entire stacks with a single toggle while keeping themes and greeters strictly host-managed:
 
+### Desktop Environment Suites
 | Suite | Option | Included Components |
 | :--- | :--- | :--- |
-| **Niri Desktop Suite** | `myFeatures.suites.desktops.niri` | Niri, Noctalia/Waybar, ReGreet, SwayOSD, Nautilus, Yazi, Audio, Portals |
-| **Hyprland Desktop Suite** | `myFeatures.suites.desktops.hyprland` | Hyprland, Waybar, SwayNC, SwayOSD, ReGreet, Nautilus, Yazi, Audio |
-| **Sway Desktop Suite** | `myFeatures.suites.desktops.sway` | Sway, Waybar, SwayNC, SwayOSD, ReGreet, Nautilus, Yazi, Audio |
-| **MangoWC Desktop Suite** | `myFeatures.suites.desktops.mangowc` | MangoWC, ReGreet, SwayOSD, Nautilus, Yazi, Audio, Portals |
-| **Wayfire Desktop Suite** | `myFeatures.suites.desktops.wayfire` | Wayfire, ReGreet, Nautilus, Yazi, Audio, Portals |
-| **Labwc Desktop Suite** | `myFeatures.suites.desktops.labwc` | Labwc, Waybar, ReGreet, Nautilus, Yazi, Audio, Portals |
-| **Qtile Desktop Suite** | `myFeatures.suites.desktops.qtile` | Qtile, ReGreet, Nautilus, Yazi, Audio, Portals |
-| **Bspwm Desktop Suite** | `myFeatures.suites.desktops.bspwm` | Bspwm, sxhkd, ReGreet, Nautilus, Yazi, Audio |
-| **Awesome Desktop Suite** | `myFeatures.suites.desktops.awesome` | AwesomeWM, ReGreet, Nautilus, Yazi, Audio |
-| **i3 Desktop Suite** | `myFeatures.suites.desktops.i3` | i3, Picom, ReGreet, Nautilus, Yazi, Audio |
-| **XFCE Desktop Suite** | `myFeatures.suites.desktops.xfce` | XFCE, Thunar, Yazi, Audio, Printing |
-| **Cinnamon Desktop Suite** | `myFeatures.suites.desktops.cinnamon` | Cinnamon, Nemo, Yazi, Audio, Printing |
-| **MATE Desktop Suite** | `myFeatures.suites.desktops.mate` | MATE, Nautilus, Yazi, Audio, Printing |
-| **LXQt Desktop Suite** | `myFeatures.suites.desktops.lxqt` | LXQt, PCManFM, Yazi, Audio, Printing |
-| **Budgie Desktop Suite** | `myFeatures.suites.desktops.budgie` | Budgie, Nautilus, Yazi, Audio, Printing |
-| **Plasma Desktop Suite** | `myFeatures.suites.desktops.plasma` | KDE Plasma 6, Dolphin, Audio, Printing |
-| **GNOME Desktop Suite** | `myFeatures.suites.desktops.gnome` | GNOME Desktop, Nautilus, Audio, Printing |
-| **Workstation Suite** | `myFeatures.suites.workstation` | Ghostty, Helix, Git, Fastfetch, Firefox, Bitwarden, Social, Audio, Portals |
-| **Gaming Suite** | `myFeatures.suites.gaming` | Steam, GameScope, Controllers, Discord, Audio |
+| **Niri Desktop Suite** | `myFeatures.suites.desktops.niri` | Niri, Noctalia/Waybar, SwayOSD, Nautilus, Yazi, Audio, Portals |
+| **Hyprland Desktop Suite** | `myFeatures.suites.desktops.hyprland` | Hyprland, Waybar, SwayNC, SwayOSD, Nautilus, Yazi, Audio, Portals |
+| **Sway Desktop Suite** | `myFeatures.suites.desktops.sway` | Sway, Waybar, SwayNC, SwayOSD, Nautilus, Yazi, Audio, Portals |
+| **MangoWC Desktop Suite** | `myFeatures.suites.desktops.mangowc` | MangoWC, SwayOSD, Nautilus, Yazi, Audio, Portals |
+| **Wayfire Desktop Suite** | `myFeatures.suites.desktops.wayfire` | Wayfire, Nautilus, Yazi, Audio, Portals |
+| **Labwc Desktop Suite** | `myFeatures.suites.desktops.labwc` | Labwc, Waybar, Nautilus, Yazi, Audio, Portals |
+| **Qtile Desktop Suite** | `myFeatures.suites.desktops.qtile` | Qtile, Nautilus, Yazi, Audio, Portals |
+| **Bspwm Desktop Suite** | `myFeatures.suites.desktops.bspwm` | Bspwm, sxhkd, Nautilus, Yazi, Audio |
+| **Awesome Desktop Suite** | `myFeatures.suites.desktops.awesome` | AwesomeWM, Nautilus, Yazi, Audio |
+| **i3 Desktop Suite** | `myFeatures.suites.desktops.i3` | i3, Picom, Nautilus, Yazi, Audio |
+| **XFCE Desktop Suite** | `myFeatures.suites.desktops.xfce` | XFCE, Thunar, Yazi, Audio, Portals |
+| **Cinnamon Desktop Suite** | `myFeatures.suites.desktops.cinnamon` | Cinnamon, Nemo, Yazi, Audio, Portals |
+| **MATE Desktop Suite** | `myFeatures.suites.desktops.mate` | MATE, Nautilus, Yazi, Audio, Portals |
+| **LXQt Desktop Suite** | `myFeatures.suites.desktops.lxqt` | LXQt, PCManFM, Yazi, Audio, Portals |
+| **Budgie Desktop Suite** | `myFeatures.suites.desktops.budgie` | Budgie, Nautilus, Yazi, Audio, Portals |
+| **Plasma Desktop Suite** | `myFeatures.suites.desktops.plasma` | KDE Plasma 6, Dolphin, Audio, Portals |
+| **GNOME Desktop Suite** | `myFeatures.suites.desktops.gnome` | GNOME Desktop, Nautilus, Audio, Portals |
+| **COSMIC Desktop Suite** | `myFeatures.suites.desktops.cosmic` | COSMIC Desktop, Audio, Portals |
+
+### Role & Domain Suites
+| Suite | Option | Included Components |
+| :--- | :--- | :--- |
+| **Workstation Suite** | `myFeatures.suites.workstation` | Ghostty, Helix, Git, Fastfetch, Firefox, Bitwarden, Social, Audio, Udisks2, Portals |
+| **Gaming Suite** | `myFeatures.suites.gaming` | Steam + Proton installer, GameScope, Controllers, Mumble, TF2, Social, Audio |
+| **Creator Suite** | `myFeatures.suites.creator` | DaVinci Resolve, OBS Studio, VLC, Ani-CLI, Media Tools |
+| **Streaming Suite** | `myFeatures.suites.streaming` | Sunshine 48000 streaming host & Moonlight client |
+| **Productivity Suite** | `myFeatures.suites.productivity` | AP-Office document authoring & CUPS printing subsystem |
+| **Hardened Suite** | `myFeatures.suites.hardened` | AppArmor security profiles & Systemd OOMD daemon |
+| **Networking Suite** | `myFeatures.suites.networking` | Tailscale mesh VPN & Systemd-Resolved DNS |
 | **Laptop Suite** | `myFeatures.suites.laptop` | Battery management, Bluetooth, WiFi, Trackpad, Idle daemon |
-| **Server Suite** | `myFeatures.suites.server` | Hardened SSH, Tailscale, CLI tools, Automated maintenance |
+| **Server Suite** | `myFeatures.suites.server` | Hardened SSH, Tailscale, Lix, automated maintenance, CLI tools |
+| **Virtualization Suite**| `myFeatures.suites.virtualization` | Podman/Docker, QEMU/KVM, Libvirt, Virt-Manager |
+| **Development Suite** | `myFeatures.suites.development` | Direnv, Nix-LD, Git, Helix, NH, Antigravity, Fastfetch |
+| **Darwin Workstation** | `myFeatures.suites.darwinWorkstation` | Homebrew, Ghostty, Helix, Antigravity, Fastfetch, AP-Office |
 

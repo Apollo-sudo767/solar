@@ -31,15 +31,26 @@ Solar
 │   │   ├── peripherals/    # Connectivity (Bluetooth, WiFi, Battery)
 │   │   └── system/         # Graphics stack & TTY resolution
 │   ├── platforms/          # Compositors, Window Managers & Styling
-│   │   ├── desktops/       # DEs & WMs (Niri, KDE Plasma 6, GNOME, COSMIC)
-│   │   ├── addons/         # Greeters, bars, widgets (ReGreet, Noctalia, Waybar)
+│   │   ├── desktops/       # 18 WMs & DEs (Niri, Hyprland, Sway, MangoWC, KDE, GNOME, etc.)
+│   │   ├── addons/         # Greeters, bars, widgets (ReGreet, Noctalia, Waybar, SwayOSD)
 │   │   └── styling/        # Stylix, themes & desktop flavor presets
-│   ├── programs/           # Applications & suites
+│   ├── suites/             # Dendritic Composite Suites (Roles & Workflows)
+│   │   ├── workstation.nix # Development, CLI, browser, utilities, audio, portals
+│   │   ├── gaming.nix      # Steam, Proton installer, GameScope, controllers, Mumble
+│   │   ├── creator.nix     # DaVinci Resolve, OBS Studio, VLC, Ani-CLI, media tools
+│   │   ├── streaming.nix   # Sunshine 48000 streaming host & Moonlight client
+│   │   ├── productivity.nix# AP-Office suite & CUPS printing subsystem
+│   │   ├── hardened.nix    # AppArmor security profiles & Systemd OOMD daemon
+│   │   ├── networking.nix  # Tailscale mesh VPN & Systemd-Resolved DNS
+│   │   ├── laptop.nix      # Battery, trackpad, Bluetooth, WiFi & idle power management
+│   │   ├── server.nix      # Headless profile with hardened SSH & maintenance
+│   │   └── desktops/       # Pre-bundled environment suites for every WM & DE
+│   ├── programs/           # Applications & packages
 │   │   ├── browsers/       # Web browsers (Firefox Nightly, Zen, Chrome)
 │   │   ├── media/          # Gaming, VR & Creation (Steam, TF2, VR, OBS, DaVinci)
 │   │   ├── office/         # Productivity & Office (AP-Office, Joplin, Trilium)
 │   │   ├── terminal/       # Shell applications (Ghostty, Helix, Antigravity, NH)
-│   │   └── utilities/      # Utilities (Bitwarden, Vesktop, Spotify, Thunar)
+│   │   └── utilities/      # Utilities (Bitwarden, Vesktop, Spotify, Nautilus, Yazi)
 │   ├── services/           # System daemons & background workloads
 │   │   ├── hardware/       # Hardware utilities (Udisks2, Printing, OpenRGB)
 │   │   ├── multimedia/     # Audio & Game Streaming (PipeWire, Sunshine, Moonlight)
@@ -56,7 +67,12 @@ ______________________________________________________________________
 
 ## 🔄 How the Dendritic Tree Works
 
-In traditional Nix flakes, every single module and host must be manually registered in an imports list. Solar eliminates this boilerplate through two automated loader engines:
+In traditional Nix flakes, every single module and host must be manually registered in an imports list. Solar eliminates this boilerplate through automated loader engines and a **three-tier dendritic hierarchy**:
+
+1. **Root & Autoscanner (`modules/default.nix`)**: Dynamically traverses and registers all modules with platform reflection (`isDarwin` & `isTotal`).
+2. **Domain Branches (`core/`, `hardware/`, `platforms/`, `programs/`, `services/`)**: Provide atomic, fine-grained capability switches.
+3. **Composite Suites (`suites/`)**: Bundle complementary domain branches together using non-invasive `lib.mkDefault` values for instant machine roles.
+4. **Host Leaves (`hosts/<name>/default.nix`)**: Concise declarations that activate high-level suites and specify machine-unique hardware, storage pools, display outputs, and visual themes.
 
 ### 1. The Global Module Autoscanner (`modules/default.nix`)
 

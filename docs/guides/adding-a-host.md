@@ -55,23 +55,25 @@ Define the host metadata (`system`, `stable`, `useSolarSecrets`) and enable feat
     system.stateVersion = "26.11";
 
     myFeatures = {
-      core = {
-        system.core-branch.enable = true;
-        system.disko.speedDisks = [ "/dev/nvme0n1" ];
-        system.users.usernames = [ "apollo" ];
-        boot = {
-          enable = true;
-          loader = "limine";
-        };
-        security.security.enable = true;
-        security.ssh.enable = true;
-        security.agenix.enable = false;
-        nix.lix.enable = true;
+      # 🌲 High-Level Functional Suites
+      suites = {
+        workstation.enable = true;
+        gaming.enable = true;
+        desktops.niri.enable = true;
       };
 
+      # 🎛️ Host Storage & Disks
+      core.system.disko.speedDisks = [ "/dev/nvme0n1" ];
+
+      # ⚙️ Hardware Drivers
       hardware.cpu-gpu.intel.enable = true;
-      programs.terminal.ghostty.enable = true;
-      services.networking.tailscale.enable = true;
+
+      # 🎨 Host Styling & Display Manager (Strictly Host-Managed)
+      platforms.styling = {
+        stylix.enable = true;
+        flavors.sky.enable = true;
+      };
+      platforms.addons.displayManager.manager = "regreet";
     };
   };
 }

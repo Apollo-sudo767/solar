@@ -75,7 +75,14 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-g
 
       myFeatures = {
         # -------------------------------------------------------------
-        # 1. HEADLESS CORE FOUNDATION
+        # 1. 🌲 COMPOSABLE SERVER SUITE
+        # -------------------------------------------------------------
+        # Enables hardened SSH, AppArmor, Tailscale, Lix, automated GC,
+        # modern shell (Zsh/Starship), Helix, NH, and Udisks2 storage daemons.
+        suites.server.enable = true;
+
+        # -------------------------------------------------------------
+        # 2. 🎛️ HOST STORAGE & SECRETS
         # -------------------------------------------------------------
         core = {
           system = {
@@ -97,104 +104,43 @@ Create `modules/hosts/<hostname>/default.nix`. Below is a complete, production-g
               ];
             };
           };
-          shell = {
-            shell-branch.enable = true; # Zsh, Starship prompt, and CLI toolkit
-            cli.enable = true;
-          };
           boot = {
             enable = true;
             loader = "limine";        # Modern, reliable bootloader
             kernel = "latest";        # Latest LTS/stable kernel for broad hardware support
-            secureBoot.enable = false; # Optional: enable if motherboard supports enrolled keys
           };
-          security = {
-            security = {
-              enable = true;
-              useAppArmor = true;
-              useOOMD = true;         # Protect against out-of-memory lockups
-            };
-            ssh.enable = true;
-            agenix = {
-              enable = true;
-              usePrivateSecrets = true;
-            };
-            nix = {
-              lix.enable = true;
-              automation.enable = true; # Automated daily garbage collection
-            };
-          };
+          security.agenix.usePrivateSecrets = true;
         };
 
         # -------------------------------------------------------------
-        # 2. HARDWARE & POWER
+        # 3. ⚙️ HARDWARE & TRANSCODING
         # -------------------------------------------------------------
         hardware = {
           cpu-gpu.intel.enable = true;  # Intel QuickSync / hardware transcoding
-          peripherals.bluetooth.enable = false; # Disabled on headless servers to save resources
-          peripherals.wifi.enable = false;      # Prefer wired Ethernet on servers
         };
 
         # -------------------------------------------------------------
-        # 3. ESSENTIAL SERVER UTILITIES
+        # 4. 🌐 SERVER WORKLOADS & SHARES
         # -------------------------------------------------------------
-        programs = {
-          terminal = {
-            ghostty.enable = false;    # No GUI terminal needed
-            helix.enable = true;       # Fast terminal editor
-            fastfetch.enable = true;
-            nh.enable = true;          # CLI management helper
-            direnv.enable = true;
-            nix-ld.enable = true;      # Run dynamic binaries without patching
-          };
-        };
-
-        # -------------------------------------------------------------
-        # 4. SERVER SERVICES & DAEMONS
-        # -------------------------------------------------------------
-        services = {
-          # Storage & Hardware Monitoring
-          hardware = {
-            udisks2.enable = true;
-          };
-
-          # Networking & Remote Access
-          networking = {
+        services.servers = {
+          # Samba / SMB Network File Shares
+          samba = {
             enable = true;
-            tailscale.enable = true;   # Private WireGuard mesh access
-            resolved.enable = true;
-          };
-
-          # Application Workloads
-          servers = {
-            # Minecraft Dedicated Server (via nix-minecraft)
-            minecraft = {
-              enable = true;
-              eula = true;
-              openFirewall = true;
-            };
-
-            # Joplin Sync Server / Note Syncing
-            joplin = {
-              enable = false;
-              port = 22300;
-            };
-
-            # Samba / SMB Network File Shares
-            samba = {
-              enable = true;
-              shares = {
-                storage = {
-                  path = "/storage/bulk";
-                  browseable = "yes";
-                  "read only" = "no";
-                  "guest ok" = "no";
-                };
+            shares = {
+              storage = {
+                path = "/storage/bulk";
+                browseable = "yes";
+                "read only" = "no";
+                "guest ok" = "no";
               };
             };
+          };
 
-            # NFS Exports
-            nfs = {
-              enable = false;
+          # Minecraft Dedicated Server (optional)
+          minecraft = {
+            sllv = {
+              enable = true;
+              port = 25565;
             };
           };
         };

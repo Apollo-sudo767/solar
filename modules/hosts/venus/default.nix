@@ -15,66 +15,44 @@
       system.stateVersion = "26.11";
 
       myFeatures = {
+        # 🌲 Dendritic Suites
+        suites.server.enable = true;
+
+        # 🎛️ Host Specifics
         core = {
-          system.core-branch.enable = true;
-          system.disko.enable = false;
-          system.users = {
-            usernames = [
-              "apollo"
-            ];
-            agenixPassword = false;
+          system = {
+            core-branch.enable = true;
+            disko.enable = false;
+            users = {
+              usernames = [ "apollo" ];
+              agenixPassword = false;
+            };
           };
-          shell.shell-branch.enable = true;
           boot = {
             enable = true;
             secureBoot.enable = true;
           };
-          security.security = {
-            enable = true;
-            useAppArmor = true;
+          security = {
+            security.useAppArmor = true;
+            agenix.enable = false;
           };
-          security.agenix.enable = false;
-          nix.lix.enable = true;
         };
 
-        hardware = {
-          cpu-gpu.amd.enable = true;
-        };
-        programs = {
-          terminal = {
-            ghostty.enable = true;
-            fastfetch.enable = true;
-            helix.enable = true;
-            nh.enable = true;
-            direnv.enable = true;
-            nix-ld.enable = true;
-          };
-          utilities = {
-            lego.enable = true;
-            filemanager.enable = true;
-          };
-        };
+        hardware.cpu-gpu.amd.enable = true;
+
+        programs.utilities.lego.enable = true;
+
         services = {
-          nginx = {
+          nginx.enable = true;
+          networking.ddns = {
             enable = true;
-          };
-          hardware.udisks2.enable = true;
-          networking = {
-            enable = true;
-            tailscale.enable = true;
-            cloudflare = {
-              enable = false;
-            };
-            ddns = {
-              enable = true;
-              domains = [
-                "create-aero.apollan.cc"
-                "factorio.apollan.cc"
-                "joplin.apollan.cc"
-                "zotero.apollan.cc"
-                "languagetool.apollan.cc"
-              ];
-            };
+            domains = [
+              "create-aero.apollan.cc"
+              "factorio.apollan.cc"
+              "joplin.apollan.cc"
+              "zotero.apollan.cc"
+              "languagetool.apollan.cc"
+            ];
           };
           servers = {
             joplin = {
@@ -90,9 +68,6 @@
             languagetool = {
               enable = true;
               baseUrl = "https://languagetool.apollan.cc";
-            };
-            trilium = {
-              enable = false;
             };
             factorio = {
               enable = true;

@@ -22,66 +22,41 @@
 
       # Callisto: General Storage & Backup Host
       myFeatures = {
+        # 🌲 Dendritic Suites
+        suites.server.enable = true;
+
+        # 🎛️ Host & Storage Specifics
         core = {
-          system.core-branch = {
-            enable = true;
-            usePersistence = false;
+          system = {
+            core-branch = {
+              enable = true;
+              usePersistence = false;
+            };
+            disko = {
+              enable = true;
+              enableLuks = true;
+              speedDisks = [ "/dev/nvme0n1" ];
+              bulkDisks = [ "/dev/sda" ];
+            };
+            users = {
+              usernames = [ "apollo" ];
+              agenixPassword = false;
+            };
           };
-          system.disko = {
-            enable = true;
-            enableLuks = true;
-            speedDisks = [ "/dev/nvme0n1" ]; # High-speed primary pool (Btrfs)
-            bulkDisks = [
-              "/dev/sda"
-            ]; # Bulk Storage pool (Btrfs)
-          };
-          system.users = {
-            usernames = [ "apollo" ];
-            agenixPassword = false;
-          };
-          shell.shell-branch.enable = true;
           boot = {
             enable = true;
             loader = "limine";
             kernel = "latest";
             secureBoot.enable = false;
           };
-          security.security = {
-            enable = true;
-            useAppArmor = true;
-            useOOMD = true;
-          };
-          security.ssh.enable = true;
-          security.agenix.enable = false;
-          nix.lix.enable = true;
-        };
-
-        hardware = {
-          cpu-gpu.intel.enable = true;
-        };
-
-        programs = {
-          terminal = {
-            ghostty.enable = true;
-            fastfetch.enable = true;
-            helix.enable = true;
-            nh.enable = true;
-            direnv.enable = true;
-            nix-ld.enable = true;
-          };
-          utilities = {
-            filemanager.enable = true;
+          security = {
+            security.useAppArmor = true;
+            security.useOOMD = true;
+            agenix.enable = false;
           };
         };
 
-        services = {
-          hardware.udisks2.enable = true;
-          networking = {
-            enable = true;
-            tailscale.enable = true;
-            syncthing.enable = false;
-          };
-        };
+        hardware.cpu-gpu.intel.enable = true;
       };
 
       # --- Btrfs Storage Maintenance & SMART Monitoring ---
@@ -99,7 +74,7 @@
         autodetect = true;
       };
 
-      # General storage, backup & recovery tools
+      # Storage, backup & recovery tools
       environment.systemPackages = with pkgs; [
         btrfs-progs
         smartmontools
@@ -111,7 +86,6 @@
         ncdu
       ];
 
-      # --- Storage & Backup Services ---
       # Syncthing for encrypted/continuous peer folder synchronization
       services.syncthing = {
         enable = true;
@@ -122,7 +96,7 @@
         guiAddress = "127.0.0.1:8384";
       };
 
-      # --- Network Security & Hardening ---
+      # Network Security & Hardening
       networking.firewall = {
         enable = lib.mkDefault true;
         allowedTCPPorts = [ 22 ];
@@ -134,7 +108,6 @@
         PasswordAuthentication = lib.mkDefault true;
       };
 
-      # Automatically provision Syncthing data directory
       systemd.tmpfiles.rules = [
         "d /persist/bulk/syncthing 0770 ${config.myFeatures.core.system.users.mainUser} users - -"
       ];

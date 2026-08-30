@@ -22,66 +22,44 @@
 
       # Ganymede: Dedicated Network Attached Storage (NAS)
       myFeatures = {
+        # 🌲 Dendritic Suites
+        suites.server.enable = true;
+
+        # 🎛️ Host & Storage Specifics
         core = {
-          system.core-branch = {
-            enable = true;
-            usePersistence = false;
+          system = {
+            core-branch = {
+              enable = true;
+              usePersistence = false;
+            };
+            disko = {
+              enable = true;
+              enableLuks = true;
+              speedDisks = [ "/dev/nvme0n1" ];
+              bulkDisks = [
+                "/dev/sda"
+                "/dev/sdb"
+              ];
+            };
+            users = {
+              usernames = [ "apollo" ];
+              agenixPassword = false;
+            };
           };
-          system.disko = {
-            enable = true;
-            enableLuks = true;
-            speedDisks = [ "/dev/nvme0n1" ]; # High-speed OS & Cache pool (Btrfs)
-            bulkDisks = [
-              "/dev/sda"
-              "/dev/sdb"
-            ]; # Bulk Storage pool (Btrfs)
-          };
-          system.users = {
-            usernames = [ "apollo" ];
-            agenixPassword = false;
-          };
-          shell.shell-branch.enable = true;
           boot = {
             enable = true;
             loader = "limine";
             kernel = "latest";
             secureBoot.enable = false;
           };
-          security.security = {
-            enable = true;
-            useAppArmor = true;
-            useOOMD = true;
-          };
-          security.ssh.enable = true;
-          security.agenix.enable = false;
-          nix.lix.enable = true;
-        };
-
-        hardware = {
-          cpu-gpu.intel.enable = true;
-        };
-
-        programs = {
-          terminal = {
-            ghostty.enable = true;
-            fastfetch.enable = true;
-            helix.enable = true;
-            nh.enable = true;
-            direnv.enable = true;
-            nix-ld.enable = true;
-          };
-          utilities = {
-            filemanager.enable = true;
+          security = {
+            security.useAppArmor = true;
+            security.useOOMD = true;
+            agenix.enable = false;
           };
         };
 
-        services = {
-          hardware.udisks2.enable = true;
-          networking = {
-            enable = true;
-            tailscale.enable = true;
-          };
-        };
+        hardware.cpu-gpu.intel.enable = true;
       };
 
       # --- Btrfs Storage Maintenance & SMART Monitoring ---
@@ -99,7 +77,7 @@
         autodetect = true;
       };
 
-      # Useful NAS & disk management packages
+      # NAS & disk management packages
       environment.systemPackages = with pkgs; [
         btrfs-progs
         smartmontools
@@ -111,8 +89,7 @@
         nfs-utils
       ];
 
-      # --- NAS File Sharing Services ---
-      # Samba / SMB File Sharing (Secured with SMB3 minimum)
+      # Samba / SMB File Sharing
       services.samba = {
         enable = true;
         openFirewall = true;
@@ -124,7 +101,7 @@
             "security" = "user";
             "server min protocol" = "SMB3";
             "client min protocol" = "SMB3";
-            "hosts allow" = "192.168. 10. 127.0.0.1 localhost 100."; # Local LAN and Tailscale
+            "hosts allow" = "192.168. 10. 127.0.0.1 localhost 100.";
             "hosts deny" = "0.0.0.0/0";
             "guest account" = "nobody";
             "map to guest" = "never";
@@ -140,7 +117,7 @@
         };
       };
 
-      # NFS Server (Secured)
+      # NFS Server
       services.nfs.server = {
         enable = true;
         exports = ''
@@ -148,7 +125,7 @@
         '';
       };
 
-      # Avahi / mDNS for Local Network Discovery
+      # Avahi / mDNS
       services.avahi = {
         enable = true;
         nssmdns4 = true;
@@ -160,15 +137,15 @@
         };
       };
 
-      # --- Network Security & Hardening ---
+      # Network Security & Hardening
       networking.firewall = {
         enable = lib.mkDefault true;
         allowedTCPPorts = [
-          22 # SSH
-          2049 # NFS
+          22
+          2049
         ];
         allowedUDPPorts = [
-          2049 # NFS
+          2049
         ];
       };
 
@@ -178,7 +155,6 @@
         PasswordAuthentication = lib.mkDefault true;
       };
 
-      # Automatically provision storage directory with appropriate share permissions
       systemd.tmpfiles.rules = [
         "d /persist/bulk/storage 0775 ${config.myFeatures.core.system.users.mainUser} users - -"
       ];

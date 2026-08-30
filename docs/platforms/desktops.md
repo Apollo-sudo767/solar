@@ -55,3 +55,108 @@ The next-generation Rust-based desktop environment by System76, featured on the 
 - Powered by `cosmic-comp`, `cosmic-panel`, and `cosmic-applets`.
 - Native **COSMIC Greeter** integration.
 - Stylix color palette theming across all native iced GUI widgets.
+
+______________________________________________________________________
+
+## ✨ 5. Hyprland (Dynamic Tiling Wayland Compositor)
+
+**Hyprland** brings modern dynamic tiling, fluid animations, background blur, and customizable decorations:
+
+- Declarative monitor list with VRR and scaling.
+- Inner and outer gaps, corner rounding, and drop shadows.
+- XDG Desktop Portal for Hyprland integration.
+- Stylix gradient active and inactive borders.
+
+______________________________________________________________________
+
+## 🪵 6. Sway (i3-Compatible Wayland Tiling WM)
+
+**Sway** provides a rock-solid, minimalist tiling environment:
+
+- Full i3 compatibility with Wayland performance.
+- Declarative monitor outputs and multi-monitor workspace assignments.
+- Built-in `swaybg`, `swayidle`, `swaylock`, and `fuzzel` launcher integration.
+
+______________________________________________________________________
+
+## 🌊 7. River (Dynamic Tagging Compositor)
+
+**River** is a flexible, tag-based tiling compositor with `rivertile` layout generator and Stylix color theming.
+
+______________________________________________________________________
+
+## 🥭 8. MangoWC / MangoWM (SceneFX Wayland Compositor)
+
+**MangoWC** is an ultra-fast, dwl-inspired Wayland compositor accelerated by SceneFX for smooth animations and rounded corners with minimal overhead.
+
+______________________________________________________________________
+
+## 🌀 9. Wayfire (3D Compiz-style Wayland Compositor)
+
+**Wayfire** brings 3D effects, desktop cubes, wobbly windows, and fluid animations to Wayland.
+
+______________________________________________________________________
+
+## 🪟 10. Labwc (Openbox-inspired Wayland Stacking Compositor)
+
+**Labwc** provides a lightweight, Openbox-like stacking experience on Wayland.
+
+______________________________________________________________________
+
+## 🐍 11. Qtile (Python-based Dynamic Tiling WM)
+
+**Qtile** is a hackable, highly customizable tiling window manager configured purely in Python with both Wayland and X11 backends.
+
+______________________________________________________________________
+
+## 🧱 12. Classic X11 Window Managers (i3, Bspwm, AwesomeWM, XMonad, DWM, Openbox)
+
+Solar provides modular, out-of-the-box support for the classic X11 window manager pantheon:
+- **i3**: Manual tiling with `dmenu` and `picom`.
+- **Bspwm**: Binary space partitioning with `sxhkd`.
+- **AwesomeWM**: Dynamic Lua-configurable tiling.
+- **XMonad**: Haskell dynamic tiling.
+- **DWM**: Suckless dynamic tiling.
+- **Openbox**: Classic minimalist stacking WM.
+
+______________________________________________________________________
+
+## 🖥️ 13. Traditional Desktop Environments (XFCE, Cinnamon, MATE, LXQt, Budgie)
+
+Solar includes full support for traditional modular desktop environments:
+- **XFCE**: Rock-solid modular GTK desktop.
+- **Cinnamon**: Modern, feature-rich Linux Mint desktop.
+- **MATE**: Traditional GNOME 2 workflow.
+- **LXQt**: Ultra-lightweight Qt desktop environment.
+- **Budgie**: Elegant Solus-inspired desktop.
+
+______________________________________________________________________
+
+## 📦 14. Preconfigured Suites (`modules/suites/`)
+
+Solar provides high-level suites for a **dendritic workflow**, allowing machines to bundle entire stacks with a single toggle:
+
+| Suite | Option | Included Components |
+| :--- | :--- | :--- |
+| **Niri Desktop Suite** | `myFeatures.suites.desktops.niri` | Niri, Noctalia/Waybar, ReGreet, SwayOSD, Nautilus, Yazi, Audio, Portals |
+| **Hyprland Desktop Suite** | `myFeatures.suites.desktops.hyprland` | Hyprland, Waybar, SwayNC, SwayOSD, ReGreet, Nautilus, Yazi, Audio |
+| **Sway Desktop Suite** | `myFeatures.suites.desktops.sway` | Sway, Waybar, SwayNC, SwayOSD, ReGreet, Nautilus, Yazi, Audio |
+| **MangoWC Desktop Suite** | `myFeatures.suites.desktops.mangowc` | MangoWC, ReGreet, SwayOSD, Nautilus, Yazi, Audio, Portals |
+| **Wayfire Desktop Suite** | `myFeatures.suites.desktops.wayfire` | Wayfire, ReGreet, Nautilus, Yazi, Audio, Portals |
+| **Labwc Desktop Suite** | `myFeatures.suites.desktops.labwc` | Labwc, Waybar, ReGreet, Nautilus, Yazi, Audio, Portals |
+| **Qtile Desktop Suite** | `myFeatures.suites.desktops.qtile` | Qtile, ReGreet, Nautilus, Yazi, Audio, Portals |
+| **Bspwm Desktop Suite** | `myFeatures.suites.desktops.bspwm` | Bspwm, sxhkd, ReGreet, Nautilus, Yazi, Audio |
+| **Awesome Desktop Suite** | `myFeatures.suites.desktops.awesome` | AwesomeWM, ReGreet, Nautilus, Yazi, Audio |
+| **i3 Desktop Suite** | `myFeatures.suites.desktops.i3` | i3, Picom, ReGreet, Nautilus, Yazi, Audio |
+| **XFCE Desktop Suite** | `myFeatures.suites.desktops.xfce` | XFCE, Thunar, Yazi, Audio, Printing |
+| **Cinnamon Desktop Suite** | `myFeatures.suites.desktops.cinnamon` | Cinnamon, Nemo, Yazi, Audio, Printing |
+| **MATE Desktop Suite** | `myFeatures.suites.desktops.mate` | MATE, Nautilus, Yazi, Audio, Printing |
+| **LXQt Desktop Suite** | `myFeatures.suites.desktops.lxqt` | LXQt, PCManFM, Yazi, Audio, Printing |
+| **Budgie Desktop Suite** | `myFeatures.suites.desktops.budgie` | Budgie, Nautilus, Yazi, Audio, Printing |
+| **Plasma Desktop Suite** | `myFeatures.suites.desktops.plasma` | KDE Plasma 6, Dolphin, Audio, Printing |
+| **GNOME Desktop Suite** | `myFeatures.suites.desktops.gnome` | GNOME Desktop, Nautilus, Audio, Printing |
+| **Workstation Suite** | `myFeatures.suites.workstation` | Ghostty, Helix, Git, Fastfetch, Firefox, Bitwarden, Social, Audio, Portals |
+| **Gaming Suite** | `myFeatures.suites.gaming` | Steam, GameScope, Controllers, Discord, Audio |
+| **Laptop Suite** | `myFeatures.suites.laptop` | Battery management, Bluetooth, WiFi, Trackpad, Idle daemon |
+| **Server Suite** | `myFeatures.suites.server` | Hardened SSH, Tailscale, CLI tools, Automated maintenance |
+

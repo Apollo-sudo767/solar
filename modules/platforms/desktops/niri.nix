@@ -105,9 +105,9 @@ in
         lock-screen
         xwayland-satellite
         networkmanagerapplet
-        thunar
-        awww
         brightnessctl
+        wl-clipboard
+        libnotify
       ]
       ++
         lib.optionals

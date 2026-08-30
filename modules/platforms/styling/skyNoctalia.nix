@@ -56,44 +56,48 @@ in
             widgetSpacing = 6;
 
             default = {
-              center = [ "group:g1" ];
               contact_shadow = true;
-              end = [
-                "tray"
-                "notifications"
-                "clock"
-                "volume"
-                "brightness"
-                "battery"
-              ];
               margin_edge = 0;
               margin_ends = 0;
               position = "bottom";
               shadow = false;
+
               start = [
-                "group:g2"
                 "launcher"
                 "workspaces"
+              ];
+
+              center = [
+                "group:media_group"
+              ];
+
+              end = [
+                "group:hardware_group"
+                "tray"
+                "notifications"
+                "clock"
+                "control-center"
               ];
 
               capsule_group = [
                 {
                   fill = "surface_variant";
-                  id = "g1";
+                  id = "media_group";
                   members = [
-                    "control-center"
                     "media"
-                    "session"
                   ];
                   opacity = 0.6;
                   padding = 6.0;
                 }
                 {
                   fill = "surface_variant";
-                  id = "g2";
+                  id = "hardware_group";
                   members = [
                     "network"
                     "bluetooth"
+                    "volume"
+                    "brightness"
+                    "battery"
                   ];
                   opacity = 0.6;
                   padding = 6.0;

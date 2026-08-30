@@ -1,6 +1,4 @@
 {
-  # NO FUNCTION WRAPPER AT THE TOP.
-  # This makes 'meta' a top-level attribute that 'import' can see instantly.
   meta = {
     system = "aarch64-darwin";
     stable = false;
@@ -8,10 +6,13 @@
 
   module = _: {
     system.stateVersion = 5;
-
     system.primaryUser = "apollo";
 
     myFeatures = {
+      # 🌲 Dendritic Suites
+      suites.darwinWorkstation.enable = true;
+
+      # 🎛️ Host & Darwin Specifics
       core = {
         system = {
           core-branch = {
@@ -24,57 +25,20 @@
             usernames = [ "apollo" ];
           };
         };
-        nix = {
-          lix.enable = true;
-          nix-settings.enable = true;
-        };
-        security = {
-          ssh.enable = true;
-          # Ensure agenix stays explicitly disabled for this host so it ignores secrets
-          agenix.enable = false;
-        };
-        shell.shell-branch.enable = true;
+        security.agenix.enable = false;
       };
 
-      darwin = {
-        system = {
-          core.enable = true;
-          homebrew.enable = true;
-        };
-      };
       programs = {
-        terminal = {
-          fastfetch.enable = true;
-          helix.enable = true;
-          antigravity.enable = true;
-          nh.enable = true;
-          direnv.enable = true;
-        };
-        utilities = {
-          logseq.enable = true;
-          filemanager.enable = true;
-        };
-        office = {
-          ap-office.enable = true;
-        };
+        terminal.nh.enable = true;
+        utilities.logseq.enable = true;
       };
-      platforms = {
-        styling = {
-          stylix.enable = true;
-          themes.sky.enable = true;
-        };
+
+      platforms.styling = {
+        stylix.enable = true;
+        themes.sky.enable = true;
       };
-      services = {
-        networking = {
-          tailscale.enable = true;
-          syncthing.enable = false;
-        };
-        servers = {
-          trilium = {
-            enable = false;
-          };
-        };
-      };
+
+      services.networking.tailscale.enable = true;
     };
   };
 }

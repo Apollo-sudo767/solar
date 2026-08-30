@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  isDarwin,
   ...
 }:
 
@@ -23,11 +22,9 @@ in
   };
 
   # Shield everything
-  config = lib.mkIf cfg.enable (
-    lib.mkMerge [
-      (lib.optionalAttrs (!isDarwin) {
-        services.xserver.enable = true;
-        services.desktopManager.plasma6.enable = true;
+  config = lib.mkIf cfg.enable {
+    services.xserver.enable = true;
+    services.desktopManager.plasma6.enable = true;
         programs.kde-pim.enable = false;
 
         environment.variables = {
@@ -168,7 +165,5 @@ in
                 "/home/${name}/.config/kwinrc"
               ]) config.myFeatures.core.system.users.usernames;
             };
-      })
-    ]
-  );
+  };
 }

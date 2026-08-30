@@ -15,40 +15,47 @@
       system.stateVersion = "26.11";
 
       myFeatures = {
+        # 🌲 1. Composite Domain Suites
+        suites = {
+          workstation.enable = true;
+          gaming.enable = true;
+          creator.enable = true;
+          streaming.enable = true;
+          productivity.enable = true;
+          hardened.enable = true;
+          networking.enable = true;
+          desktops.niri.enable = true;
+        };
+
+        # 🎛️ 2. Core Storage, Bootloader & Secrets
         core = {
-          system.core-branch = {
-            enable = true;
-            usePersistence = true;
+          system = {
+            core-branch = {
+              enable = true;
+              usePersistence = true;
+            };
+            users.agenixPassword = true;
+            disko = {
+              speedDisks = [
+                "/dev/nvme1n1"
+                "/dev/nvme0n1"
+              ];
+              bulkDisks = [
+                "/dev/sdb"
+                "/dev/sda"
+              ];
+            };
           };
-          system.users.agenixPassword = true;
-          system.disko = {
-            speedDisks = [
-              "/dev/nvme1n1"
-              "/dev/nvme0n1"
-            ];
-            bulkDisks = [
-              "/dev/sdb"
-              "/dev/sda"
-            ];
-          };
-          shell.shell-branch.enable = true;
           boot = {
             enable = true;
             secureBoot.enable = true;
             kernel = "zen";
             resolution = "2560x1440";
           };
-          security.security = {
-            enable = true;
-            useAppArmor = true;
-          };
-          security.agenix = {
-            enable = true;
-            usePrivateSecrets = true;
-          };
-          nix.lix.enable = true;
+          security.agenix.usePrivateSecrets = true;
         };
 
+        # ⚙️ 3. Hardware Drivers & Peripherals
         hardware = {
           cpu-gpu = {
             amd.enable = true;
@@ -57,31 +64,21 @@
               open = true;
             };
           };
-          system = {
-            ttyResolution = {
-              enable = true;
-              resolution = "2560x1440";
-            };
+          system.ttyResolution = {
+            enable = true;
+            resolution = "2560x1440";
           };
           peripherals = {
-            bluetooth = {
-              enable = true;
-              gaming.enable = true;
-            };
+            bluetooth.gaming.enable = true;
             wifi = {
               enable = true;
               persistence = true;
             };
           };
-          input = {
-            controllers = {
-              enable = true;
-              xbox = true;
-              nintendo = true;
-            };
-            wooting.enable = true;
-          };
+          input.wooting.enable = true;
         };
+
+        # 🖥️ 4. Output Topology, Host Styling & Display Manager
         platforms = {
           desktops.niri = {
             modKey = "super";
@@ -125,84 +122,20 @@
             stylix.enable = true;
             flavors.sky.enable = true;
           };
-          addons = {
-            displayManager.manager = "regreet";
-          };
+          addons.displayManager.manager = "regreet";
         };
+
+        # 👤 5. Host Credentials & Nightly Browser
         programs = {
-          terminal = {
-            git = {
-              enable = true;
-              userName = "Apollo-sudo767";
-              userEmail = "fireshifter767@gmail.com";
-            };
-            ghostty.enable = true;
-            fastfetch.enable = true;
-            helix.enable = true;
-            antigravity.enable = true;
-            nh.enable = true;
-            direnv.enable = true;
-            nix-ld.enable = true;
+          terminal.git = {
+            userName = "Apollo-sudo767";
+            userEmail = "fireshifter767@gmail.com";
           };
-          media = {
-            gaming.enable = true;
-            steam = {
-              protonInstaller.enable = true;
-              gamescope = {
-                enable = true;
-                autoWrap = false;
-              };
-            };
-            tf2.enable = true;
-            mumble.enable = true;
-            media.enable = true;
-            obs.enable = true;
-            davinci.enable = true;
-            vlc.enable = true;
-            ani-cli.enable = true;
+          browsers.firefox = {
+            nightly.enable = true;
+            extensions.enable = true;
           };
-          browsers = {
-            firefox = {
-              nightly.enable = true;
-              extensions.enable = true;
-            };
-          };
-          utilities = {
-            stylePackages.enable = true;
-            bitwarden.enable = true;
-            social.enable = true;
-            webcord.enable = false;
-            filemanager.enable = true;
-            spotify = {
-              enable = false;
-              tui.enable = true;
-            };
-          };
-          office = {
-            ap-office.enable = true;
-          };
-        };
-        services = {
-          multimedia = {
-            audio.enable = true;
-            sunshine = {
-              enable = true;
-              port = 48000;
-            };
-          };
-          system = {
-            flatpak.enable = true;
-            xdgPortals.enable = true;
-          };
-          hardware = {
-            printing.enable = true;
-            udisks2.enable = true;
-          };
-          networking = {
-            enable = true;
-            resolved.enable = true;
-            tailscale.enable = true;
-          };
+          utilities.spotify.tui.enable = true;
         };
       };
     };

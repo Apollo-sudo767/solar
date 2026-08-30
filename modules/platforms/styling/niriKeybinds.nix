@@ -85,6 +85,27 @@ in
           "noctalia-shell"
           "--toggle-dashboard"
         ];
+        "Mod+Y".spawn = [
+          "noctalia-shell"
+          "ipc"
+          "call"
+          "launcher"
+          "clipboard"
+        ];
+        "Mod+N".spawn = [
+          "noctalia-shell"
+          "ipc"
+          "call"
+          "notifications"
+          "toggle"
+        ];
+        "Mod+Escape".spawn = [
+          "noctalia-shell"
+          "ipc"
+          "call"
+          "session"
+          "toggle"
+        ];
       }
       // lib.optionalAttrs config.myFeatures.platforms.addons.noctalia-v5.enable {
         "Mod+S".spawn = [
@@ -92,6 +113,24 @@ in
           "msg"
           "panel-toggle"
           "dashboard"
+        ];
+        "Mod+Y".spawn = [
+          "noctalia"
+          "msg"
+          "launcher"
+          "clipboard"
+        ];
+        "Mod+N".spawn = [
+          "noctalia"
+          "msg"
+          "panel-toggle"
+          "notifications"
+        ];
+        "Mod+Escape".spawn = [
+          "noctalia"
+          "msg"
+          "panel-toggle"
+          "session"
         ];
       }
       // {
@@ -121,11 +160,19 @@ in
         "Mod+TouchpadScrollDown".focus-workspace-down = { };
         "Mod+TouchpadScrollUp".focus-workspace-up = { };
 
-        # --- Layout Management ---
+        # --- Layout & Window Management ---
         "Mod+Comma".consume-window-into-column = { };
         "Mod+Period".expel-window-from-column = { };
+        "Mod+BracketLeft".consume-or-expel-window-left = { };
+        "Mod+BracketRight".consume-or-expel-window-right = { };
+        "Mod+W".toggle-column-tabbed-display = { };
         "Mod+K".center-column = { };
+        "Mod+Ctrl+C".center-visible-columns = { };
         "Mod+R".switch-preset-column-width = { };
+        "Mod+Shift+R".switch-preset-column-width-back = { };
+        "Mod+Ctrl+R".reset-window-height = { };
+        "Mod+E".expand-column-to-available-width = { };
+        "Mod+Ctrl+F".expand-column-to-available-width = { };
 
         # --- Show Keybinds ---
         "Mod+Shift+slash".show-hotkey-overlay = { };
@@ -136,8 +183,18 @@ in
         "Mod+Shift+Minus".set-window-height = "-10%";
         "Mod+Shift+Equal".set-window-height = "+10%";
         "Mod+F".maximize-column = { };
+        "Mod+M".maximize-window-to-edges = { };
         "Mod+Shift+F".fullscreen-window = { };
         "Mod+V".toggle-window-floating = { };
+        "Mod+Shift+V".switch-focus-between-floating-and-tiling = { };
+
+        # --- Workspace Navigation & Controls ---
+        "Mod+Page_Down".focus-workspace-down = { };
+        "Mod+Page_Up".focus-workspace-up = { };
+        "Mod+Shift+Page_Down".move-workspace-down = { };
+        "Mod+Shift+Page_Up".move-workspace-up = { };
+        "Mod+Ctrl+Page_Down".move-column-to-workspace-down = { };
+        "Mod+Ctrl+Page_Up".move-column-to-workspace-up = { };
 
         # --- 9 Workspaces (Focus) ---
         "Mod+1".focus-workspace = 1;
@@ -150,7 +207,7 @@ in
         "Mod+8".focus-workspace = 8;
         "Mod+9".focus-workspace = 9;
 
-        # --- 9 Workspaces (Move) ---
+        # --- 9 Workspaces (Move Column) ---
         "Mod+Shift+1".move-column-to-workspace = 1;
         "Mod+Shift+2".move-column-to-workspace = 2;
         "Mod+Shift+3".move-column-to-workspace = 3;
@@ -162,48 +219,105 @@ in
         "Mod+Shift+9".move-column-to-workspace = 9;
 
         # --- Brightness & Audio (Media) ---
-        "XF86MonBrightnessUp".spawn = [
-          "brightnessctl"
-          "set"
-          "5%+"
-        ];
-        "XF86MonBrightnessDown".spawn = [
-          "brightnessctl"
-          "set"
-          "5%-"
-        ];
-        "XF86AudioRaiseVolume".spawn = [
-          "wpctl"
-          "set-volume"
-          "-l"
-          "1.0"
-          "@DEFAULT_AUDIO_SINK@"
-          "5%+"
-        ];
-        "XF86AudioLowerVolume".spawn = [
-          "wpctl"
-          "set-volume"
-          "@DEFAULT_AUDIO_SINK@"
-          "5%-"
-        ];
-        "XF86AudioMute".spawn = [
-          "wpctl"
-          "set-mute"
-          "@DEFAULT_AUDIO_SINK@"
-          "toggle"
-        ];
-        "XF86AudioPlay".spawn = [
-          "playerctl"
-          "play-pause"
-        ];
-        "XF86AudioNext".spawn = [
-          "playerctl"
-          "next"
-        ];
-        "XF86AudioPrev".spawn = [
-          "playerctl"
-          "previous"
-        ];
+        "XF86MonBrightnessUp" = {
+          allow-when-locked = true;
+          spawn =
+            if config.myFeatures.platforms.addons.swayosd.enable then
+              [ "swayosd-client" "--brightness" "+5" ]
+            else
+              [
+                "brightnessctl"
+                "set"
+                "5%+"
+              ];
+        };
+        "XF86MonBrightnessDown" = {
+          allow-when-locked = true;
+          spawn =
+            if config.myFeatures.platforms.addons.swayosd.enable then
+              [ "swayosd-client" "--brightness" "-5" ]
+            else
+              [
+                "brightnessctl"
+                "set"
+                "5%-"
+              ];
+        };
+        "XF86AudioRaiseVolume" = {
+          allow-when-locked = true;
+          spawn =
+            if config.myFeatures.platforms.addons.swayosd.enable then
+              [ "swayosd-client" "--output-volume" "raise" ]
+            else
+              [
+                "wpctl"
+                "set-volume"
+                "-l"
+                "1.0"
+                "@DEFAULT_AUDIO_SINK@"
+                "5%+"
+              ];
+        };
+        "XF86AudioLowerVolume" = {
+          allow-when-locked = true;
+          spawn =
+            if config.myFeatures.platforms.addons.swayosd.enable then
+              [ "swayosd-client" "--output-volume" "lower" ]
+            else
+              [
+                "wpctl"
+                "set-volume"
+                "@DEFAULT_AUDIO_SINK@"
+                "5%-"
+              ];
+        };
+        "XF86AudioMute" = {
+          allow-when-locked = true;
+          spawn =
+            if config.myFeatures.platforms.addons.swayosd.enable then
+              [ "swayosd-client" "--output-volume" "mute-toggle" ]
+            else
+              [
+                "wpctl"
+                "set-mute"
+                "@DEFAULT_AUDIO_SINK@"
+                "toggle"
+              ];
+        };
+        "XF86AudioMicMute" = {
+          allow-when-locked = true;
+          spawn =
+            if config.myFeatures.platforms.addons.swayosd.enable then
+              [ "swayosd-client" "--input-volume" "mute-toggle" ]
+            else
+              [
+                "wpctl"
+                "set-mute"
+                "@DEFAULT_AUDIO_SOURCE@"
+                "toggle"
+              ];
+        };
+        "XF86AudioPlay" = {
+          allow-when-locked = true;
+          spawn = [
+            "playerctl"
+            "play-pause"
+          ];
+        };
+        "XF86AudioNext" = {
+          allow-when-locked = true;
+          spawn = [
+            "playerctl"
+            "next"
+          ];
+        };
+        "XF86AudioPrev" = {
+          allow-when-locked = true;
+          spawn = [
+            "playerctl"
+            "previous"
+          ];
+        };
 
         # --- Screenshots ---
         "Print".screenshot = { };

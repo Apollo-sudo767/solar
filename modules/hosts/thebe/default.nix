@@ -20,67 +20,47 @@
 
       # Thebe: Intel Mac Mini (Moon of Jupiter)
       myFeatures = {
+        # 🌲 Dendritic Suites
+        suites.server.enable = true;
+
+        # 🎛️ Host Specifics
         core = {
-          system.core-branch = {
-            enable = true;
-            usePersistence = false;
+          system = {
+            core-branch = {
+              enable = true;
+              usePersistence = false;
+            };
+            disko = {
+              enable = true;
+              enableLuks = true;
+              speedDisks = [ "/dev/sda" ];
+            };
+            users = {
+              usernames = [ "apollo" ];
+              agenixPassword = false;
+            };
           };
-          system.disko = {
-            enable = true;
-            enableLuks = true;
-            speedDisks = [ "/dev/sda" ]; # Internal disk for Intel Mac Mini
-          };
-          system.users = {
-            usernames = [ "apollo" ];
-            agenixPassword = false;
-          };
-          shell.shell-branch.enable = true;
           boot = {
             enable = true;
             loader = "limine";
             kernel = "latest";
             secureBoot.enable = false;
           };
-          security.security = {
-            enable = true;
-            useAppArmor = true;
-            useOOMD = true;
+          security = {
+            security.useAppArmor = true;
+            security.useOOMD = true;
+            agenix.enable = false;
           };
-          security.ssh.enable = true;
-          security.agenix.enable = false;
-          nix.lix.enable = true;
         };
 
         hardware = {
           cpu-gpu.intel.enable = true;
-          system.graphics.enable = true;
-          peripherals.bluetooth.enable = true;
-          peripherals.wifi = {
-            enable = true;
-            persistence = true;
-          };
-        };
-
-        programs = {
-          terminal = {
-            ghostty.enable = true;
-            fastfetch.enable = true;
-            helix.enable = true;
-            nh.enable = true;
-            direnv.enable = true;
-            nix-ld.enable = true;
-          };
-          utilities = {
-            filemanager.enable = true;
-          };
-        };
-
-        services = {
-          multimedia.audio.enable = true;
-          hardware.udisks2.enable = true;
-          networking = {
-            enable = true;
-            tailscale.enable = true;
+          peripherals = {
+            bluetooth.enable = true;
+            wifi = {
+              enable = true;
+              persistence = true;
+            };
           };
         };
       };

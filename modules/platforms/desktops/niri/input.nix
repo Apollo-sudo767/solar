@@ -11,6 +11,12 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.desktops.niri.settings = {
       input = {
+        focus-follows-mouse._props = {
+          max-scroll-amount = "0%";
+        };
+        warp-mouse-to-focus = { };
+        workspace-auto-back-and-forth = { };
+
         touchpad = {
           tap = { };
           dwt = { };
@@ -23,19 +29,16 @@ in
         mouse = {
           accel-profile = "flat";
         };
-
-        touch = {
-          map-to-output = "eDP-1";
-        };
-
-        tablet = {
-          map-to-output = "eDP-1";
-        };
       };
 
       gestures = {
         dnd-edge-workspace-switch = { };
         hot-corners.off = { };
+      };
+
+      cursor = {
+        hide-when-typing = { };
+        hide-after-inactive-ms = 3000;
       };
     };
   };

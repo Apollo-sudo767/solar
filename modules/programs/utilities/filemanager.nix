@@ -17,14 +17,14 @@ let
       "nautilus"
     else if cfg.dolphin.enable then
       "dolphin"
-    else if cfg.yazi.enable then
-      "yazi"
     else if cfg.nemo.enable then
       "nemo"
     else if cfg.pcmanfm.enable then
       "pcmanfm"
+    else if cfg.selection != null then
+      cfg.selection
     else
-      cfg.selection;
+      "nautilus";
 
   managerConfig =
     {
@@ -78,7 +78,12 @@ in
         "pcmanfm"
       ];
       default =
-        if (config.myFeatures.platforms.desktops.kde.enable or false) then "dolphin" else "thunar";
+        if (config.myFeatures.platforms.desktops.kde.enable or false) then
+          "dolphin"
+        else if (config.myFeatures.platforms.desktops.gnome.enable or false) then
+          "nautilus"
+        else
+          "nautilus";
       description = "Select the active file manager to install and set as default.";
     };
 
@@ -115,7 +120,7 @@ in
       enable = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable Yazi TUI File Manager.";
+        description = "Enable Yazi TUI File Manager (can be enabled alongside GUI file managers).";
       };
     };
 
@@ -170,7 +175,7 @@ in
               ark
             ]
           )
-          ++ lib.optionals (activeManager == "yazi") [ pkgs.yazi ]
+          ++ lib.optionals (activeManager == "yazi" || cfg.yazi.enable) [ pkgs.yazi ]
           ++ lib.optionals (activeManager == "nemo") [ pkgs.nemo-with-extensions ]
           ++ lib.optionals (activeManager == "pcmanfm") [ pkgs.pcmanfm ];
 
@@ -211,7 +216,7 @@ in
                     ".config/dolphin"
                     ".local/share/dolphin"
                   ]
-                  ++ lib.optionals (activeManager == "yazi") [
+                  ++ lib.optionals (activeManager == "yazi" || cfg.yazi.enable) [
                     ".config/yazi"
                   ]
                   ++ lib.optionals (activeManager == "nemo") [

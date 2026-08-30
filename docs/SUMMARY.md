@@ -3,6 +3,14 @@
 [Welcome to Solar](index.md)
 [System Architecture](architecture.md)
 
+# Wiki & Knowledge Base
+
+- [Wiki Overview](wiki/index.md)
+- [Quick Reference & Cheatsheet](wiki/quick-reference.md)
+- [Universal Keybindings](wiki/keybinds.md)
+- [Troubleshooting & Diagnostics](wiki/troubleshooting.md)
+- [Frequently Asked Questions](wiki/faq.md)
+
 # The Fleet
 
 - [Fleet Overview](fleet/overview.md)

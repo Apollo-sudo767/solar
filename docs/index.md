@@ -34,11 +34,21 @@ Use the sidebar on the left or press <kbd>S</kbd> to search anywhere in this boo
 - **[The Jupiter Moon Stack](fleet/jupiter-stack.md)**: Thebe (Compact server), Ganymede (NAS), and Callisto (Storage & Backup).
 - **[Server & Cloud Infrastructure](fleet/servers.md)**: Venus (Multi-service cloud) and Io (COSMIC testbed).
 
-### 🎨 Platforms & Theming
+### 🌲 Dendritic Suites & Profiles
 
-- **[Desktop Environments](platforms/desktops.md)**: Niri scrollable tiling compositor, KDE Plasma 6, GNOME, and COSMIC Desktop.
-- **[Shell, Bar & Addons](platforms/addons.md)**: ReGreet greeter, SDDM, Noctalia Shell, Waybar, Ironbar, SwayNC notifications, and SwayOSD.
-- **[Styling & Flavors](platforms/styling.md)**: Stylix color schemes, desktop flavor presets, and custom ricing.
+- **[Suites Architecture Overview](suites/overview.md)**: The 3-tier dendritic philosophy, `lib.mkDefault`, and host styling separation.
+- **[Role & Workflow Suites](suites/roles.md)**: Workstation, Gaming, Creator, Streaming, Productivity, Hardened, Networking, Laptop, and Server suites.
+- **[Desktop Environment Suites](suites/desktops.md)**: Turn-key preconfigured suites for all 18 window managers and desktop environments.
+
+### 🖥️ Platforms, Window Managers & Desktops
+
+- **[Compositors & WMs Overview](platforms/desktops.md)**: Comprehensive guide to the Solar graphical pantheon.
+- **[Wayland Compositors](platforms/wayland.md)**: Niri, Hyprland, Sway, River, MangoWC, Wayfire, Labwc, and Qtile.
+- **[Classic X11 Window Managers](platforms/x11.md)**: i3, Bspwm, AwesomeWM, XMonad, DWM, and Openbox.
+- **[Full Desktop Environments](platforms/desktop-environments.md)**: KDE Plasma 6, GNOME, COSMIC, XFCE, Cinnamon, MATE, LXQt, and Budgie.
+- **[Display Managers & Greeters](platforms/display-managers.md)**: ReGreet, SDDM, GDM, COSMIC Greeter, Tuigreet, and LightDM.
+- **[Shell, Bar & Addons](platforms/addons.md)**: Noctalia Shell, Waybar, Ironbar, SwayNC notifications, and SwayOSD.
+- **[Styling & Flavors](platforms/styling.md)**: Stylix color palettes, desktop flavors, and custom ricing.
 
 ### 🎮 Software Suites & Toolchains
 

@@ -20,9 +20,19 @@
 - [Server & Cloud Infrastructure](fleet/servers.md)
 - [Testbeds & Experimental](fleet/testbeds.md)
 
-# Platforms, Desktops & Theming
+# Dendritic Suites & Profiles
 
-- [Desktop Environments](platforms/desktops.md)
+- [Suites Architecture Overview](suites/overview.md)
+- [Role & Workflow Suites](suites/roles.md)
+- [Desktop Environment Suites](suites/desktops.md)
+
+# Platforms, Window Managers & Desktops
+
+- [Compositors & WMs Overview](platforms/desktops.md)
+- [Wayland Compositors](platforms/wayland.md)
+- [Classic X11 Window Managers](platforms/x11.md)
+- [Full Desktop Environments](platforms/desktop-environments.md)
+- [Display Managers & Greeters](platforms/display-managers.md)
 - [Shell, Bar & Addons](platforms/addons.md)
 - [Styling & Flavors](platforms/styling.md)
 

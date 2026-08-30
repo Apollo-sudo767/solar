@@ -57,3 +57,7 @@
 - [Setting Up a Basic Server](guides/setting-up-a-server.md)
 - [Adding a New Host](guides/adding-a-host.md)
 - [Adding a New Feature Module](guides/adding-a-feature.md)
+
+# Community & Contributing
+
+- [Contributing Guide](contributing.md)

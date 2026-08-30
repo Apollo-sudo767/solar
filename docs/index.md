@@ -73,3 +73,7 @@ Use the sidebar on the left or press <kbd>S</kbd> to search anywhere in this boo
 - **[Setting Up a Server](guides/setting-up-a-server.md)**: Step-by-step headless server blueprint.
 - **[Adding a Host](guides/adding-a-host.md)**: Creating and deploying a new machine.
 - **[Adding a Feature Module](guides/adding-a-feature.md)**: Building composable NixOS/Home Manager features.
+
+### 🤝 Community & Contributing
+
+- **[Contributing Guide](contributing.md)**: Guidelines for contributing code, modules, and documentation directly to the GitHub Pages wiki.

@@ -52,7 +52,13 @@
             kernel = "zen";
             resolution = "2560x1440";
           };
-          security.agenix.usePrivateSecrets = true;
+          security = {
+            security.useAppArmor = true;
+            agenix = {
+              enable = true;
+              usePrivateSecrets = true;
+            };
+          };
         };
 
         # ⚙️ 3. Hardware Drivers & Peripherals

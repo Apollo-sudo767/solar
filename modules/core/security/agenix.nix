@@ -23,7 +23,11 @@ let
 in
 {
   options.myFeatures.core.security.agenix = {
-    enable = lib.mkEnableOption "agenix-rekey for secret management";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = config.myFeatures.core.system.users.agenixPassword;
+      description = "agenix-rekey for secret management";
+    };
     usePrivateSecrets = lib.mkOption {
       type = lib.types.bool;
       default = true;

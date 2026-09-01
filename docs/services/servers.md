@@ -8,6 +8,7 @@ ______________________________________________________________________
 
 ### Minecraft (via `nix-minecraft`)
 
+- **No Man's Land (`no-mans-land.nix`)**: PhasMC No Man's Land 1.21.1 NeoForge modpack server on port 25565 with Simple Voice Chat on UDP port 24454 and automated BorgBackup.
 - **Create Aero (`create-aero.nix`)**: Heavy modded Minecraft server on port 19132 with optimized garbage collection flags.
 - **SLLV (`sllv.nix`)**: Vanilla/survival multiplayer server on port 25565.
 - **Minecraft Admin (`admin.nix`)**: Dedicated administrative user and toolchain.

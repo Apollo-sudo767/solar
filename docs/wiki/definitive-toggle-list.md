@@ -1,6 +1,6 @@
 # ☀️ Definitive Flake Toggle & Option Reference
 
-Welcome to the definitive, complete catalog of all **532 declarative toggles and configuration options** available across the Solar flake.
+Welcome to the definitive, complete catalog of all **538 declarative toggles and configuration options** available across the Solar flake.
 
 All options live under the unified `myFeatures` hierarchy (`modules/`) and can be declared in any host configuration leaf (`modules/hosts/<hostname>/default.nix`).
 
@@ -862,9 +862,9 @@ ______________________________________________________________________
 
 ## 🖧 Services: Server Stack & Self-Hosted
 
-> Server daemons including Nginx, Prometheus, Grafana, Nextcloud, Forgejo, Vaultwarden, and MinIO.
+> Server daemons including Nginx, Minecraft (No Man's Land, Create Aero, SLLV), Prometheus, Grafana, Nextcloud, Forgejo, Vaultwarden, and MinIO.
 
-**Total Options**: 34
+**Total Options**: 40
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -883,6 +883,12 @@ ______________________________________________________________________
 | `myFeatures.services.servers.minecraft.create-aero.enable` | bool | `false` | Whether to enable Create Aeronautics Minecraft 1.21.1 Neoforge Modpack. |
 | `myFeatures.services.servers.minecraft.create-aero.mapPort` | `unsignedInt16` | `8100` | The port for the BlueMap web interface. |
 | `myFeatures.services.servers.minecraft.create-aero.port` | `unsignedInt16` | `25565` | Configure myFeatures.services.servers.minecraft.create-aero.port. |
+| `myFeatures.services.servers.minecraft.no-mans-land.autoBackup` | bool | `true` | Enable automated BorgBackup snapshots for the server world data. |
+| `myFeatures.services.servers.minecraft.no-mans-land.enable` | bool | `false` | Whether to enable PhasMC No Man's Land Minecraft 1.21.1 NeoForge Modpack Server. |
+| `myFeatures.services.servers.minecraft.no-mans-land.jvmOpts` | `str` | `"-Xmx12G -Xms12G -XX:+UseZGC -XX:+ZGenerational -XX:+UnlockExperimentalVMOptions -Dneoforge.forceignoreConfigMismatch=true -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:+PerfDisableSharedMem"` | JVM execution flags and memory allocation. |
+| `myFeatures.services.servers.minecraft.no-mans-land.motd` | `str` | `"PhasMC No Man's Land 1.21.1"` | Message of the day displayed in the server list. |
+| `myFeatures.services.servers.minecraft.no-mans-land.port` | `unsignedInt16` | `25565` | The port for the Minecraft server. |
+| `myFeatures.services.servers.minecraft.no-mans-land.voicePort` | `unsignedInt16` | `24454` | The UDP port for Simple Voice Chat communication. |
 | `myFeatures.services.servers.minecraft.sllv.enable` | bool | `false` | Whether to enable Minecraft MCA Fabric Server (1.21.1). |
 | `myFeatures.services.servers.minecraft.sllv.port` | `unsignedInt16` | `25565` | Configure myFeatures.services.servers.minecraft.sllv.port. |
 | `myFeatures.services.servers.terraria.enable` | bool | `false` | Whether to enable Terraria Dedicated Server (Solar Managed). |

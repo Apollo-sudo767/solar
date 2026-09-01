@@ -5,6 +5,7 @@ Solar provides first-class, declarative support for the leading modern Wayland w
 ______________________________________________________________________
 
 ## 1. Niri (Infinite Scrollable Tiling)
+
 **Niri** is the flagship compositor for Solar workstations (**Mars** and **Mercury**). It features an infinite horizontal ribbon layout where windows are tiled onto scrollable columns.
 
 - **Option**: `myFeatures.platforms.desktops.niri.enable = true;` (or `suites.desktops.niri.enable = true;`)
@@ -32,6 +33,7 @@ myFeatures.platforms.desktops.niri = {
 ______________________________________________________________________
 
 ## 2. Hyprland (Dynamic Tiling with Fluid Animations)
+
 **Hyprland** provides a highly customizable dynamic tiling environment with smooth physics-based animations, background blur, rounded corners, and drop shadows.
 
 - **Option**: `myFeatures.platforms.desktops.hyprland.enable = true;` (or `suites.desktops.hyprland.enable = true;`)
@@ -57,6 +59,7 @@ myFeatures.platforms.desktops.hyprland = {
 ______________________________________________________________________
 
 ## 3. Sway (i3-Compatible Wayland Tiling WM)
+
 **Sway** provides a drop-in Wayland replacement for the classic i3 window manager.
 
 - **Option**: `myFeatures.platforms.desktops.sway.enable = true;` (or `suites.desktops.sway.enable = true;`)
@@ -68,6 +71,7 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 ## 4. MangoWC / MangoWM (Ultra-Fast SceneFX Compositor)
+
 **MangoWC** is a lightweight, modern Wayland compositor built with wlroots and SceneFX, delivering smooth animations and rounded corners with minimal CPU overhead.
 
 - **Option**: `myFeatures.platforms.desktops.mangowc.enable = true;` (or `suites.desktops.mangowc.enable = true;`)
@@ -79,6 +83,7 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 ## 5. River (Dynamic Tag-Based Compositor)
+
 **River** is a flexible, dynamic tiling Wayland compositor that uses tags instead of traditional static workspaces.
 
 - **Option**: `myFeatures.platforms.desktops.river.enable = true;`
@@ -90,6 +95,7 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 ## 6. Wayfire (3D Compiz-Style Wayland Compositor)
+
 **Wayfire** brings classic 3D effects, desktop cubes, wobbly windows, and fluid animations to modern Wayland.
 
 - **Option**: `myFeatures.platforms.desktops.wayfire.enable = true;`
@@ -100,6 +106,7 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 ## 7. Labwc (Openbox-Inspired Stacking Compositor)
+
 **Labwc** is a lightweight, stacking Wayland compositor inspired by Openbox with low resource consumption.
 
 - **Option**: `myFeatures.platforms.desktops.labwc.enable = true;`
@@ -110,6 +117,7 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 ## 8. Qtile Wayland (Python-Scripted Tiling WM)
+
 **Qtile** is a full-featured, hackable tiling window manager configured purely in Python with both Wayland and X11 backends.
 
 - **Option**: `myFeatures.platforms.desktops.qtile.enable = true;`

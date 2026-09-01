@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "Bspwm Desktop Suite";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     myFeatures = {
       platforms = {
         desktops.bspwm.enable = true;

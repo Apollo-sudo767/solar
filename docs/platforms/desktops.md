@@ -112,6 +112,7 @@ ______________________________________________________________________
 ## 🧱 12. Classic X11 Window Managers (i3, Bspwm, AwesomeWM, XMonad, DWM, Openbox)
 
 Solar provides modular, out-of-the-box support for the classic X11 window manager pantheon:
+
 - **i3**: Manual tiling with `dmenu` and `picom`.
 - **Bspwm**: Binary space partitioning with `sxhkd`.
 - **AwesomeWM**: Dynamic Lua-configurable tiling.
@@ -124,6 +125,7 @@ ______________________________________________________________________
 ## 🖥️ 13. Traditional Desktop Environments (XFCE, Cinnamon, MATE, LXQt, Budgie)
 
 Solar includes full support for traditional modular desktop environments:
+
 - **XFCE**: Rock-solid modular GTK desktop.
 - **Cinnamon**: Modern, feature-rich Linux Mint desktop.
 - **MATE**: Traditional GNOME 2 workflow.
@@ -137,6 +139,7 @@ ______________________________________________________________________
 Solar provides high-level suites for a **dendritic workflow**, allowing machines to bundle entire stacks with a single toggle while keeping themes and greeters strictly host-managed:
 
 ### Desktop Environment Suites
+
 | Suite | Option | Included Components |
 | :--- | :--- | :--- |
 | **Niri Desktop Suite** | `myFeatures.suites.desktops.niri` | Niri, Noctalia/Waybar, SwayOSD, Nautilus, Yazi, Audio, Portals |
@@ -159,6 +162,7 @@ Solar provides high-level suites for a **dendritic workflow**, allowing machines
 | **COSMIC Desktop Suite** | `myFeatures.suites.desktops.cosmic` | COSMIC Desktop, Audio, Portals |
 
 ### Role & Domain Suites
+
 | Suite | Option | Included Components |
 | :--- | :--- | :--- |
 | **Workstation Suite** | `myFeatures.suites.workstation` | Ghostty, Helix, Git, Fastfetch, Firefox, Bitwarden, Social, Audio, Udisks2, Portals |
@@ -173,4 +177,3 @@ Solar provides high-level suites for a **dendritic workflow**, allowing machines
 | **Virtualization Suite**| `myFeatures.suites.virtualization` | Podman/Docker, QEMU/KVM, Libvirt, Virt-Manager |
 | **Development Suite** | `myFeatures.suites.development` | Direnv, Nix-LD, Git, Helix, NH, Antigravity, Fastfetch |
 | **Darwin Workstation** | `myFeatures.suites.darwinWorkstation` | Homebrew, Ghostty, Helix, Antigravity, Fastfetch, AP-Office |
-

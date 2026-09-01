@@ -20,7 +20,7 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.services.multimedia.sunshine = {
       enable = true;
-      port = cfg.port;
+      inherit (cfg) port;
     };
   };
 }

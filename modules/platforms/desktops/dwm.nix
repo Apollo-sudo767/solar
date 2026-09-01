@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption "DWM (Suckless Dynamic X11 Tiling Window Manager)";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       windowManager.dwm.enable = true;

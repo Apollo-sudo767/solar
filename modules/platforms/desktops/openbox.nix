@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption "Openbox (Classic Lightweight X11 Stacking Window Manager)";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       windowManager.openbox.enable = true;

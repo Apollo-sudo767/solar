@@ -198,6 +198,7 @@ ______________________________________________________________________
 Solar provides dedicated desktop suites for all 18 major window managers and desktop environments:
 
 ### Wayland Compositor Suites
+
 ```nix
 suites.desktops = {
   niri.enable = true;       # Scrollable tiling Wayland compositor
@@ -211,6 +212,7 @@ suites.desktops = {
 ```
 
 ### X11 Window Manager Suites
+
 ```nix
 suites.desktops = {
   i3.enable = true;         # Classic manual tiling WM
@@ -223,6 +225,7 @@ suites.desktops = {
 ```
 
 ### Full Desktop Environment Suites
+
 ```nix
 suites.desktops = {
   plasma.enable = true;     # KDE Plasma 6 Desktop

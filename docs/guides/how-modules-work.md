@@ -45,9 +45,9 @@ myFeatures.suites = {
 ```
 
 ### Critical Rules for Suites
-1. **Always Use `lib.mkDefault`**: All configurations within suites use `lib.mkDefault` so that individual host leaves can override or disable any specific sub-option without conflict.
-2. **Never Impose Aesthetic Identity in a Suite**: Themes (`themes.sky`, `themes.forest`, `flavors.sky`), Stylix schemes, wallpapers, and Display Managers (`regreet`, `sddm`, `gdm`) are strictly decided in the **host file**, preserving full aesthetic ownership per machine.
 
+1. **Always Use `lib.mkDefault`**: All configurations within suites use `lib.mkDefault` so that individual host leaves can override or disable any specific sub-option without conflict.
+1. **Never Impose Aesthetic Identity in a Suite**: Themes (`themes.sky`, `themes.forest`, `flavors.sky`), Stylix schemes, wallpapers, and Display Managers (`regreet`, `sddm`, `gdm`) are strictly decided in the **host file**, preserving full aesthetic ownership per machine.
 
 ______________________________________________________________________
 

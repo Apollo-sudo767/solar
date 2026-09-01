@@ -30,10 +30,10 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     programs.wayfire = {
       enable = true;
-      plugins = cfg.plugins;
+      inherit (cfg) plugins;
     };
 
     environment.systemPackages = with pkgs; [
@@ -58,7 +58,7 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       wayland.windowManager.wayfire = {
         enable = true;
-        plugins = cfg.plugins;
+        inherit (cfg) plugins;
         settings = {
           core = {
             plugins = "alpha animate autostart command cube expo fast-switcher fisheye grid idle move osd place resize switcher vswitch window-rules wobbly wrot zoom";

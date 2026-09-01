@@ -220,10 +220,14 @@ in
 
         # --- Brightness & Audio (Media) ---
         "XF86MonBrightnessUp" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn =
             if config.myFeatures.platforms.addons.swayosd.enable then
-              [ "swayosd-client" "--brightness" "+5" ]
+              [
+                "swayosd-client"
+                "--brightness"
+                "+5"
+              ]
             else
               [
                 "brightnessctl"
@@ -232,10 +236,14 @@ in
               ];
         };
         "XF86MonBrightnessDown" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn =
             if config.myFeatures.platforms.addons.swayosd.enable then
-              [ "swayosd-client" "--brightness" "-5" ]
+              [
+                "swayosd-client"
+                "--brightness"
+                "-5"
+              ]
             else
               [
                 "brightnessctl"
@@ -244,10 +252,14 @@ in
               ];
         };
         "XF86AudioRaiseVolume" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn =
             if config.myFeatures.platforms.addons.swayosd.enable then
-              [ "swayosd-client" "--output-volume" "raise" ]
+              [
+                "swayosd-client"
+                "--output-volume"
+                "raise"
+              ]
             else
               [
                 "wpctl"
@@ -259,10 +271,14 @@ in
               ];
         };
         "XF86AudioLowerVolume" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn =
             if config.myFeatures.platforms.addons.swayosd.enable then
-              [ "swayosd-client" "--output-volume" "lower" ]
+              [
+                "swayosd-client"
+                "--output-volume"
+                "lower"
+              ]
             else
               [
                 "wpctl"
@@ -272,10 +288,14 @@ in
               ];
         };
         "XF86AudioMute" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn =
             if config.myFeatures.platforms.addons.swayosd.enable then
-              [ "swayosd-client" "--output-volume" "mute-toggle" ]
+              [
+                "swayosd-client"
+                "--output-volume"
+                "mute-toggle"
+              ]
             else
               [
                 "wpctl"
@@ -285,10 +305,14 @@ in
               ];
         };
         "XF86AudioMicMute" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn =
             if config.myFeatures.platforms.addons.swayosd.enable then
-              [ "swayosd-client" "--input-volume" "mute-toggle" ]
+              [
+                "swayosd-client"
+                "--input-volume"
+                "mute-toggle"
+              ]
             else
               [
                 "wpctl"
@@ -298,21 +322,21 @@ in
               ];
         };
         "XF86AudioPlay" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn = [
             "playerctl"
             "play-pause"
           ];
         };
         "XF86AudioNext" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn = [
             "playerctl"
             "next"
           ];
         };
         "XF86AudioPrev" = {
-          allow-when-locked = true;
+          _props.allow-when-locked = true;
           spawn = [
             "playerctl"
             "previous"

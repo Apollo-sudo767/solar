@@ -219,7 +219,6 @@ in
                 app-id = "^(1Password|org.keepassxc.KeePassXC|bitwarden|org.gnome.World.Secrets)$";
               };
             }
-            { block-out-from = "screencast"; }
             { block-out-from = "screen-capture"; }
           ];
         }

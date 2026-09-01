@@ -20,7 +20,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     programs.labwc.enable = true;
 
     environment.systemPackages = with pkgs; [

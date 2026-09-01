@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "XFCE Desktop Suite";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     myFeatures = {
       platforms.desktops.xfce.enable = true;
 

@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "Labwc Desktop Suite";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     myFeatures = {
       platforms = {
         desktops.labwc.enable = true;

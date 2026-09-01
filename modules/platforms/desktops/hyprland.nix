@@ -112,7 +112,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     programs.hyprland = {
       enable = true;
       xwayland.enable = true;
@@ -150,10 +150,7 @@ in
                 m:
                 let
                   modeStr =
-                    if m.refresh != null then
-                      "${m.resolution}@${toString (m.refresh * 1.0)}"
-                    else
-                      m.resolution;
+                    if m.refresh != null then "${m.resolution}@${toString (m.refresh * 1.0)}" else m.resolution;
                   vrrFlag = if m.vrr then ",vrr,1" else "";
                 in
                 "${m.name},${modeStr},${m.position},${toString (m.scale * 1.0)}${vrrFlag}"
@@ -172,17 +169,14 @@ in
               else
                 "rgba(33ccffee) rgba(00ff99ee) 45deg";
             "col.inactive_border" =
-              if stylixEnabled then
-                "rgb(${config.lib.stylix.colors.base02})"
-              else
-                "rgba(595959aa)";
+              if stylixEnabled then "rgb(${config.lib.stylix.colors.base02})" else "rgba(595959aa)";
             layout = "dwindle";
             allow_tearing = false;
           };
 
           # Decoration & Visuals
           decoration = {
-            rounding = cfg.rounding;
+            inherit (cfg) rounding;
             active_opacity = 1.0;
             inactive_opacity = 0.95;
             drop_shadow = cfg.shadow;

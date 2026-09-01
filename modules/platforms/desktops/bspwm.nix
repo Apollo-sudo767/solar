@@ -32,7 +32,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       windowManager.bspwm.enable = true;
@@ -58,10 +58,8 @@ in
           split_ratio = 0.52;
           borderless_monocle = true;
           gapless_monocle = true;
-          normal_border_color =
-            if stylixEnabled then "#${config.lib.stylix.colors.base02}" else "#4c566a";
-          focused_border_color =
-            if stylixEnabled then "#${config.lib.stylix.colors.base0D}" else "#88c0d0";
+          normal_border_color = if stylixEnabled then "#${config.lib.stylix.colors.base02}" else "#4c566a";
+          focused_border_color = if stylixEnabled then "#${config.lib.stylix.colors.base0D}" else "#88c0d0";
         };
         extraConfig = lib.concatStringsSep "\n" cfg.extraConfig;
       };

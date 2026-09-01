@@ -70,9 +70,9 @@ ______________________________________________________________________
 In traditional Nix flakes, every single module and host must be manually registered in an imports list. Solar eliminates this boilerplate through automated loader engines and a **three-tier dendritic hierarchy**:
 
 1. **Root & Autoscanner (`modules/default.nix`)**: Dynamically traverses and registers all modules with platform reflection (`isDarwin` & `isTotal`).
-2. **Domain Branches (`core/`, `hardware/`, `platforms/`, `programs/`, `services/`)**: Provide atomic, fine-grained capability switches.
-3. **Composite Suites (`suites/`)**: Bundle complementary domain branches together using non-invasive `lib.mkDefault` values for instant machine roles.
-4. **Host Leaves (`hosts/<name>/default.nix`)**: Concise declarations that activate high-level suites and specify machine-unique hardware, storage pools, display outputs, and visual themes.
+1. **Domain Branches (`core/`, `hardware/`, `platforms/`, `programs/`, `services/`)**: Provide atomic, fine-grained capability switches.
+1. **Composite Suites (`suites/`)**: Bundle complementary domain branches together using non-invasive `lib.mkDefault` values for instant machine roles.
+1. **Host Leaves (`hosts/<name>/default.nix`)**: Concise declarations that activate high-level suites and specify machine-unique hardware, storage pools, display outputs, and visual themes.
 
 ### 1. The Global Module Autoscanner (`modules/default.nix`)
 

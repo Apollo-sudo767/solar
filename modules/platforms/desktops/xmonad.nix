@@ -25,12 +25,12 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       windowManager.xmonad = {
         enable = true;
-        enableContribAndExtras = cfg.enableContribAndExtras;
+        inherit (cfg) enableContribAndExtras;
       };
     };
 
@@ -47,7 +47,7 @@ in
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       xsession.windowManager.xmonad = {
         enable = true;
-        enableContribAndExtras = cfg.enableContribAndExtras;
+        inherit (cfg) enableContribAndExtras;
       };
     });
 

@@ -34,7 +34,9 @@ Set your machine's display manager under `platforms.addons.displayManager.manage
 ```
 
 ### Auto-Login Configuration
+
 For handheld devices or kiosks (**Amalthea**):
+
 ```nix
 services.displayManager.autoLogin = {
   enable = true;

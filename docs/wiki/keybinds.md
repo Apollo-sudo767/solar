@@ -9,6 +9,7 @@ ______________________________________________________________________
 `Mod` key is `Super` (Windows key) on PC, and `Command` on macOS.
 
 ### Window Navigation & Movement
+
 | Action | Keybinding |
 | :--- | :--- |
 | **Focus Left / Right Column** | <kbd>Mod</kbd> + <kbd>H</kbd> / <kbd>L</kbd> or <kbd>←</kbd> / <kbd>→</kbd> |
@@ -19,6 +20,7 @@ ______________________________________________________________________
 | **Center Focused Column** | <kbd>Mod</kbd> + <kbd>C</kbd> |
 
 ### Window Sizing & Layout
+
 | Action | Keybinding |
 | :--- | :--- |
 | **Set Width (Preset 1/3, 1/2, 2/3, Full)** | <kbd>Mod</kbd> + <kbd>R</kbd> |
@@ -28,6 +30,7 @@ ______________________________________________________________________
 | **Close Window** | <kbd>Mod</kbd> + <kbd>Q</kbd> |
 
 ### Workspace Navigation
+
 | Action | Keybinding |
 | :--- | :--- |
 | **Switch to Workspace 1–9** | <kbd>Mod</kbd> + <kbd>1</kbd> .. <kbd>9</kbd> |
@@ -35,6 +38,7 @@ ______________________________________________________________________
 | **Switch Workspace Up / Down** | <kbd>Mod</kbd> + <kbd>U</kbd> / <kbd>D</kbd> or <kbd>PageUp</kbd> / <kbd>PageDown</kbd> |
 
 ### Multi-Monitor Focus
+
 | Action | Keybinding |
 | :--- | :--- |
 | **Focus Left Monitor** | <kbd>Mod</kbd> + <kbd>Shift</kbd> + <kbd>Left</kbd> |

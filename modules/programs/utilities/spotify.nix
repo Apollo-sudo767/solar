@@ -18,8 +18,12 @@ let
     '';
   });
 
+  tuiPlayerCfg = config.myFeatures.programs.utilities.spotify_player.enable or false;
+  tuiPlayerHyphenCfg = config.myFeatures.programs.utilities.spotify-player.enable or false;
+  tuiEnabled = tuiCfg.enable || tuiPlayerCfg || tuiPlayerHyphenCfg;
+
   guiEnabled = cfg.gui.enable || cfg.enable;
-  anyEnabled = guiEnabled || tuiCfg.enable;
+  anyEnabled = guiEnabled || tuiEnabled;
 in
 {
   options.myFeatures.programs.utilities.spotify = {
@@ -27,6 +31,10 @@ in
     gui.enable = lib.mkEnableOption "Spotify GUI client";
     tui.enable = lib.mkEnableOption "Spotify TUI client (spotify-player)";
   };
+  options.myFeatures.programs.utilities.spotify_player.enable =
+    lib.mkEnableOption "Spotify TUI client (spotify-player)";
+  options.myFeatures.programs.utilities.spotify-player.enable =
+    lib.mkEnableOption "Spotify TUI client (spotify-player)";
   options.myFeatures.programs.utilities.spicetify.enable =
     lib.mkEnableOption "Spicetify Integration"
     // {
@@ -43,7 +51,7 @@ in
 
       home.packages = lib.optional (guiEnabled && !spicetifyCfg.enable) spotify-wrapped;
 
-      programs.spotify-player = lib.mkIf tuiCfg.enable {
+      programs.spotify-player = lib.mkIf tuiEnabled {
         enable = true;
       };
 
@@ -75,7 +83,7 @@ in
                 ".cache/spotify"
                 ".local/share/spotify"
               ])
-              ++ (lib.optionals tuiCfg.enable [
+              ++ (lib.optionals tuiEnabled [
                 ".cache/spotify-player"
               ]);
           });

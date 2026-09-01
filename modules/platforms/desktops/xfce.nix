@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption "XFCE Desktop Environment";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       desktopManager.xfce.enable = true;

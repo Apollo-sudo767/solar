@@ -1,6 +1,6 @@
 # Desktop Environment Suites 🖥️
 
-Solar provides preconfigured desktop suites located under [`modules/suites/desktops/`](file:///Users/apollo/src/solar/modules/suites/desktops) that bundle the window manager, complementary status bars, on-screen displays, file managers, portals, and audio routing into a single declarative toggle.
+Solar provides preconfigured desktop suites located under \[`modules/suites/desktops/`\](file:///Users/apollo/src/solar/modules/suites/desktops) that bundle the window manager, complementary status bars, on-screen displays, file managers, portals, and audio routing into a single declarative toggle.
 
 ______________________________________________________________________
 
@@ -56,6 +56,7 @@ When you enable a desktop suite, it configures the full graphic stack with non-i
 ```
 
 ### What You Don't Have to Configure Manually:
+
 1. **File Managers**: Installs and configures complementary GUI and TUI file managers (Nautilus + Yazi, Dolphin, or Thunar) with full thumbnail generation.
-2. **Audio & Media Routing**: Automatically links PipeWire audio routing and volume keys to on-screen feedback (`swayosd`).
-3. **Screen Sharing & Portals**: Automatically configures the appropriate XDG Desktop Portal backend (e.g. `xdg-desktop-portal-gnome`, `xdg-desktop-portal-wlr`, `xdg-desktop-portal-kde`, or `xdg-desktop-portal-hyprland`).
+1. **Audio & Media Routing**: Automatically links PipeWire audio routing and volume keys to on-screen feedback (`swayosd`).
+1. **Screen Sharing & Portals**: Automatically configures the appropriate XDG Desktop Portal backend (e.g. `xdg-desktop-portal-gnome`, `xdg-desktop-portal-wlr`, `xdg-desktop-portal-kde`, or `xdg-desktop-portal-hyprland`).

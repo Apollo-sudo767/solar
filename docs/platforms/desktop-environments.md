@@ -22,6 +22,7 @@ ______________________________________________________________________
 ## ⚙️ Configuration Examples
 
 ### 1. KDE Plasma 6
+
 ```nix
 myFeatures.platforms = {
   desktops.kde = {
@@ -37,6 +38,7 @@ myFeatures.platforms = {
 ```
 
 ### 2. GNOME
+
 ```nix
 myFeatures.platforms = {
   desktops.gnome.enable = true;
@@ -49,6 +51,7 @@ myFeatures.platforms = {
 ```
 
 ### 3. COSMIC Desktop
+
 ```nix
 myFeatures.platforms = {
   desktops.cosmic.enable = true;

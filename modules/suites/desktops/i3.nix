@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "i3 X11 Desktop Suite (i3 + Picom + ReGreet + Nautilus + Yazi + Audio)";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     myFeatures = {
       platforms = {
         desktops.i3.enable = true;

@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "LXQt Desktop Suite";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     myFeatures = {
       platforms.desktops.lxqt.enable = true;
 

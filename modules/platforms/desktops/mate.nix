@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption "MATE Desktop Environment";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       desktopManager.mate.enable = true;

@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption "LXQt Lightweight Qt Desktop Environment";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver = {
       enable = true;
       desktopManager.lxqt.enable = true;

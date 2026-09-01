@@ -83,7 +83,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     programs.sway = {
       enable = true;
       wrapperFeatures.gtk = true;
@@ -138,13 +138,10 @@ in
 
           output = lib.listToAttrs (
             map (m: {
-              name = m.name;
+              inherit (m) name;
               value = {
                 mode =
-                  if m.refresh != null then
-                    "${m.resolution}@${toString (m.refresh * 1.0)}Hz"
-                  else
-                    m.resolution;
+                  if m.refresh != null then "${m.resolution}@${toString (m.refresh * 1.0)}Hz" else m.resolution;
                 pos = m.position;
                 scale = toString (m.scale * 1.0);
               };
@@ -161,8 +158,7 @@ in
               "${mod}+space" = "exec fuzzel";
               "${mod}+d" = "exec fuzzel";
               "${mod}+c" = "kill";
-              "${mod}+Shift+e" =
-                "exec swaynag -t warning -m 'Exit Sway?' -B 'Yes, exit sway' 'swaymsg exit'";
+              "${mod}+Shift+e" = "exec swaynag -t warning -m 'Exit Sway?' -B 'Yes, exit sway' 'swaymsg exit'";
               "${mod}+v" = "floating toggle";
               "${mod}+f" = "fullscreen toggle";
 

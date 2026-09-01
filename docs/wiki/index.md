@@ -30,8 +30,8 @@ ______________________________________________________________________
 
 ## 🤝 Editing the Wiki
 
-Because the wiki is part of the main Git repository in [`docs/wiki/`](file:///Users/apollo/src/solar/docs/wiki), you can propose edits directly:
+Because the wiki is part of the main Git repository in \[`docs/wiki/`\](file:///Users/apollo/src/solar/docs/wiki), you can propose edits directly:
 
 1. Click the **Suggest an edit** pencil icon at the top right of any wiki page.
-2. Edit the markdown file on GitHub and submit a Pull Request.
-3. Once merged into `main`, GitHub Pages automatically rebuilds and deploys the update.
+1. Edit the markdown file on GitHub and submit a Pull Request.
+1. Once merged into `main`, GitHub Pages automatically rebuilds and deploys the update.

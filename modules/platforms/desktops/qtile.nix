@@ -28,10 +28,10 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     services.xserver.windowManager.qtile = {
       enable = true;
-      backend = cfg.backend;
+      inherit (cfg) backend;
     };
 
     environment.systemPackages = with pkgs; [

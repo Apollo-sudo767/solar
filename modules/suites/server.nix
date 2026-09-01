@@ -66,6 +66,14 @@ in
         description = "Enable Udisks2 storage daemon.";
       };
     };
+
+    nh = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable nh (Nix Helper) CLI for fast rebuilds and automated cleaning.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -84,6 +92,10 @@ in
           automation.enable = lib.mkIf cfg.automation.enable (lib.mkDefault true);
           lix.enable = lib.mkIf cfg.lix.enable (lib.mkDefault true);
         };
+      };
+
+      programs = {
+        terminal.nh.enable = lib.mkIf cfg.nh.enable (lib.mkDefault true);
       };
 
       services = {

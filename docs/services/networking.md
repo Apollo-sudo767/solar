@@ -20,7 +20,7 @@ ______________________________________________________________________
   - `zotero.apollan.cc`
   - `languagetool.apollan.cc`
   - `factorio.apollan.cc`
-  - `create-aero.apollan.cc`
+  - `nomansland.apollan.cc`
 
 ______________________________________________________________________
 

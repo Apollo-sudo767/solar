@@ -14,7 +14,7 @@ ______________________________________________________________________
   - `zotero.apollan.cc`
   - `languagetool.apollan.cc`
   - `factorio.apollan.cc`
-  - `create-aero.apollan.cc`
+  - `nomansland.apollan.cc`
 
 ### 📚 Self-Hosted Productivity
 
@@ -25,5 +25,5 @@ ______________________________________________________________________
 ### 🎮 Dedicated Game Servers
 
 - **Factorio**: Dedicated game server listening on UDP port 34197.
-- **Minecraft Create Aero**: Modded Minecraft server listening on port 19132.
+- **Minecraft No Man's Land**: PhasMC 1.21.1 NeoForge modpack server listening on port 19132 (Simple Voice Chat on UDP 24454).
 - **Minecraft SLLV**: Dedicated survival server listening on port 25565.

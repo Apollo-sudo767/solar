@@ -47,7 +47,7 @@
           networking.ddns = {
             enable = true;
             domains = [
-              "create-aero.apollan.cc"
+              "nomansland.apollan.cc"
               "factorio.apollan.cc"
               "joplin.apollan.cc"
               "zotero.apollan.cc"
@@ -79,9 +79,10 @@
                 enable = true;
                 port = 25565;
               };
-              create-aero = {
+              no-mans-land = {
                 enable = true;
                 port = 19132;
+                voicePort = 24454;
               };
             };
           };

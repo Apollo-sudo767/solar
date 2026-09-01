@@ -119,16 +119,22 @@ in
               (lib.mkIf (cfg.gui && cfg.betterBibtex) {
                 "Downloads/zotero-better-bibtex.xpi".source = betterBibtexXpi;
               })
-              (lib.mkIf (isDarwin && cfg.gui && cfg.betterBibtex) {
-                "Library/Application Support/Zotero/Profiles/sliytu6c.default/extensions/better-bibtex@iris-advies.com.xpi".source =
-                  betterBibtexXpi;
-              })
             ];
 
-            home.activation.linkZoteroPlugins = lib.mkIf (cfg.gui && cfg.betterBibtex && !isDarwin) (
+            home.activation.linkZoteroPlugins = lib.mkIf (cfg.gui && cfg.betterBibtex) (
               config.lib.dag.entryAfter [ "writeBoundary" ] ''
-                if [ -d "$HOME/.zotero/zotero" ]; then
-                  for profile in "$HOME/.zotero/zotero"/*/; do
+                ${
+                  if isDarwin then
+                    ''
+                      zpath="$HOME/Library/Application Support/Zotero/Profiles"
+                    ''
+                  else
+                    ''
+                      zpath="$HOME/.zotero/zotero"
+                    ''
+                }
+                if [ -d "$zpath" ]; then
+                  for profile in "$zpath"/*/; do
                     if [ -d "$profile" ]; then
                       mkdir -p "$profile/extensions"
                       ln -sf "${betterBibtexXpi}" "$profile/extensions/better-bibtex@iris-advies.com.xpi"

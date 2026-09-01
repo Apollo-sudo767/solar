@@ -6,6 +6,7 @@
 # Wiki & Knowledge Base
 
 - [Wiki Overview](wiki/index.md)
+- [Definitive Toggle Reference](wiki/definitive-toggle-list.md)
 - [Quick Reference & Cheatsheet](wiki/quick-reference.md)
 - [Universal Keybindings](wiki/keybinds.md)
 - [Troubleshooting & Diagnostics](wiki/troubleshooting.md)

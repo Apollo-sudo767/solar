@@ -7,6 +7,7 @@ ______________________________________________________________________
 ## 🌟 Quick Links
 
 - 🌲 **[Architecture](Architecture.md)**: Deep dive into the Dendritic Tree and automatic module discovery.
+- 📜 **[Definitive Toggle Reference](Definitive-Toggle-List.md)**: Complete catalog of all 532 flake configuration options and toggles.
 - ⚙️ **[How Modules Work](How-Modules-Work.md)**: Comprehensive guide to options, multi-user Home Manager, and styling.
 - 🖥️ **[Setting Up a Basic Desktop](Setting-Up-a-Basic-Desktop.md)**: Blueprint for configuring a workstation or laptop.
 - 🖧 **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**: Blueprint for configuring a headless storage or application server.

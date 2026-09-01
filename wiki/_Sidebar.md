@@ -7,6 +7,7 @@ ______________________________________________________________________
 #### 📖 **Documentation**
 
 - **[Architecture](Architecture.md)**
+- **[Definitive Toggle Reference](Definitive-Toggle-List.md)**
 - **[Fleet Overview](Fleet-Overview.md)**
 - **[Installation & Deployment](Installation-&-Deployment.md)**
 - **[Storage & Disko](Storage-&-Disko.md)**

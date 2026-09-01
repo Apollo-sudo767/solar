@@ -73,6 +73,9 @@ in
               "server-icon.png" = iconFile;
               "config" = "${modpack}/pack-src/overrides/config";
               "defaultconfigs" = "${modpack}/pack-src/overrides/defaultconfigs";
+              ".sable" = "${modpack}/pack-src/overrides/.sable";
+              ".mixin.out" = "${modpack}/pack-src/overrides/.mixin.out";
+              "data" = "${modpack}/pack-src/overrides/data";
 
               # Simple Voice Chat port override if modified from default 24454
               "config/voicechat/voicechat-server.properties" = lib.mkIf (cfg.voicePort != 24454) (

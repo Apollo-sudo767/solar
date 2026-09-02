@@ -77,6 +77,24 @@ in
               ".mixin.out" = "${modpack}/pack-src/overrides/.mixin.out";
               "data" = "${modpack}/pack-src/overrides/data";
 
+              # Disable Sable UDP pipeline to prevent client-side NullPointerException on join
+              "config/sable-common.toml" = pkgs.writeText "sable-common.toml" ''
+                sub_level_splitting = true
+                sub_level_splitting_heatmap_steps = 200
+                sub_level_tracking_range = 320.0
+                sub_levels_with_players_cannot_unload = true
+                sub_level_remove_min = -10000.0
+                sub_level_remove_max = 100000.0
+                sub_level_velocity_retained_on_load = 0.9
+                sub_level_punch_strength_multiplier = 2.1
+                sub_level_punch_downward_strength_multiplier = 0.175
+                sub_level_punch_cooldown_ticks = 3
+                disable_udp_pipeline = true
+                attempt_udp_networking = false
+                sub_level_saving_log_message = true
+                verbose_serialization_logging = false
+              '';
+
               # Simple Voice Chat port override if modified from default 24454
               "config/voicechat/voicechat-server.properties" = lib.mkIf (cfg.voicePort != 24454) (
                 pkgs.writeText "voicechat-server.properties" ''

@@ -54,29 +54,30 @@ Configured via `myFeatures.programs.media.steam`:
 
 ______________________________________________________________________
 
-## ⛏️ 4. Prism Launcher (`prism.nix`)
+## ⛏️ 4. Minecraft Suite (`minecraft.nix`)
 
-Open-source Minecraft launcher with multi-instance support and automatic JDK runtime packaging:
+Unified Minecraft module providing declarative Java and Bedrock Edition launchers (`myFeatures.programs.media.minecraft`):
 
-- **Temurin JDK 21**: Modern Minecraft (1.20.5+).
-- **Temurin JDK 17**: Intermediate versions (1.17 - 1.20.4).
-- **OpenJDK 8**: Classic and legacy modpacks (1.16.5 and below).
+### Java Edition (`minecraft.java`):
 
-______________________________________________________________________
+- **Prism Launcher**: Open-source launcher with multi-instance support and automatic JDK runtime packaging:
+  - **Temurin JDK 21**: Modern Minecraft (1.20.5+).
+  - **Temurin JDK 17**: Intermediate versions (1.17 - 1.20.4).
+  - **OpenJDK 8**: Classic and legacy modpacks (1.16.5 and below).
+- **State Preservation**: Persists instances and configurations in `~/.local/share/PrismLauncher` and `~/.config/PrismLauncher`.
 
-## 🧱 5. MCPELauncher (`mcpelauncher.nix`)
+### Bedrock Edition (`minecraft.bedrock`):
 
-Unofficial launcher for **Minecraft: Bedrock Edition** on Linux (`myFeatures.programs.media.mcpelauncher`):
-
-- **Declarative Flatpak Management**: Managed via `nix-flatpak` using the `io.mrarm.mcpelauncher` Flathub package.
+- **MCPELauncher**: Unofficial launcher for **Minecraft: Bedrock Edition** on Linux.
+- **Declarative Flatpak Management**: Installed declaratively via `nix-flatpak` using the `io.mrarm.mcpelauncher` Flathub package.
 - **CLI Wrappers**: Provides convenient `mcpelauncher` and `mcpelauncher-ui-qt` wrapper scripts.
 - **State Preservation**: Persists game data, worlds, and settings in `~/.var/app/io.mrarm.mcpelauncher` across reboots on ephemeral roots.
 
 ______________________________________________________________________
 
-## 🤖 6. Sober (`sober.nix`)
+## 🤖 5. Roblox (`roblox.nix`)
 
-Native Linux runtime for **Roblox** (`myFeatures.programs.media.sober`):
+Native Linux runtime for **Roblox** (`myFeatures.programs.media.roblox`):
 
 - **Declarative Flatpak Management**: Managed via `nix-flatpak` using the `org.vinegarhq.Sober` Flathub package.
 - **CLI Wrapper**: Provides convenient `sober` command forwarding arguments and URLs directly to the runtime.

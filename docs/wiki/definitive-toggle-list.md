@@ -102,9 +102,12 @@ ______________________________________________________________________
 | `myFeatures.suites.gaming.controllers.playstation` | bool | `false` | Enable PlayStation DualSense controller drivers. |
 | `myFeatures.suites.gaming.controllers.xbox` | bool | `true` | Enable Xbox One & Series controller drivers and xpadneo. |
 | `myFeatures.suites.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam, GameScope, Controllers, Audio & Communication). |
-| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable MCPELauncher (Minecraft Bedrock) via Flatpak. |
-| `myFeatures.suites.gaming.games.prism` | bool | `false` | Enable Prism Minecraft launcher. |
-| `myFeatures.suites.gaming.games.sober` | bool | `false` | Enable Sober (Roblox) via Flatpak. |
+| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable MCPELauncher (alias for games.minecraft.bedrock). |
+| `myFeatures.suites.gaming.games.minecraft.bedrock` | bool | `false` | Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.suites.gaming.games.minecraft.java` | bool | `false` | Enable Minecraft: Java Edition (Prism Launcher). |
+| `myFeatures.suites.gaming.games.prism` | bool | `false` | Enable Prism Minecraft launcher (alias for games.minecraft.java). |
+| `myFeatures.suites.gaming.games.roblox` | bool | `false` | Enable Roblox (Sober via Flatpak). |
+| `myFeatures.suites.gaming.games.sober` | bool | `false` | Enable Sober (alias for games.roblox). |
 | `myFeatures.suites.gaming.games.tf2` | bool | `true` | Enable Team Fortress 2 competitive suite. |
 | `myFeatures.suites.gaming.social.enable` | bool | `true` | Enable social communication suite (Vesktop & Spotify Player). |
 | `myFeatures.suites.gaming.social.minimal` | bool | `true` | Use minimal/lightweight social suite clients. |
@@ -295,12 +298,17 @@ ______________________________________________________________________
 | `myFeatures.programs.media.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam + Prism Launcher). |
 | `myFeatures.programs.media.media.enable` | bool | `false` | Whether to enable Apollo's Media Suite. |
 | `myFeatures.programs.media.media.mpv.enable` | bool | `true` | Whether to enable MPV with 1440p GPU acceleration. |
-| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak. |
+| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak (alias). |
+| `myFeatures.programs.media.minecraft.bedrock.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.programs.media.minecraft.enable` | bool | `false` | Whether to enable Minecraft Suite. |
+| `myFeatures.programs.media.minecraft.java.enable` | bool | `false` | Whether to enable Minecraft: Java Edition (Prism Launcher with Java 8/17/21). |
 | `myFeatures.programs.media.mumble.enable` | bool | `false` | Whether to enable Mumble VoIP client. |
 | `myFeatures.programs.media.mumble.overlay.enable` | bool | `true` | Enable Mumble in-game overlay support |
 | `myFeatures.programs.media.obs.enable` | bool | `false` | Whether to enable OBS Studio. |
-| `myFeatures.programs.media.prism.enable` | bool | `false` | Whether to enable Prism Launcher. |
-| `myFeatures.programs.media.sober.enable` | bool | `false` | Whether to enable Sober (Roblox) via Flatpak. |
+| `myFeatures.programs.media.prism.enable` | bool | `false` | Whether to enable Prism Launcher (alias for minecraft.java). |
+| `myFeatures.programs.media.roblox.enable` | bool | `false` | Whether to enable Roblox Suite (Sober via Flatpak). |
+| `myFeatures.programs.media.roblox.sober.enable` | bool | `false` | Whether to enable Sober (Roblox runtime via Flatpak). |
+| `myFeatures.programs.media.sober.enable` | bool | `false` | Whether to enable Sober (Roblox) via Flatpak (alias). |
 | `myFeatures.programs.media.steam.enable` | bool | `false` | Whether to enable Steam. |
 | `myFeatures.programs.media.steam.gamescope.args` | `listOf` | `[]` | Arguments to pass to Gamescope |
 | `myFeatures.programs.media.steam.gamescope.autoWrap` | bool | `true` | Automatically launch Steam inside Gamescope when running under Wayland/Niri |

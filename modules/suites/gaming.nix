@@ -43,20 +43,39 @@ in
         default = true;
         description = "Enable Team Fortress 2 competitive suite.";
       };
+      minecraft = {
+        java = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft: Java Edition (Prism Launcher).";
+        };
+        bedrock = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak).";
+        };
+      };
+      roblox = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Roblox (Sober via Flatpak).";
+      };
+
+      # Convenience / legacy aliases
       prism = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable Prism Minecraft launcher.";
+        description = "Enable Prism Minecraft launcher (alias for games.minecraft.java).";
       };
       mcpelauncher = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable MCPELauncher (Minecraft Bedrock) via Flatpak.";
+        description = "Enable MCPELauncher (alias for games.minecraft.bedrock).";
       };
       sober = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable Sober (Roblox) via Flatpak.";
+        description = "Enable Sober (alias for games.roblox).";
       };
     };
 
@@ -117,9 +136,13 @@ in
         };
         mumble.enable = lib.mkIf cfg.voip.mumble (lib.mkDefault true);
         tf2.enable = lib.mkIf cfg.games.tf2 (lib.mkDefault true);
-        prism.enable = lib.mkIf cfg.games.prism (lib.mkDefault true);
-        mcpelauncher.enable = lib.mkIf cfg.games.mcpelauncher (lib.mkDefault true);
-        sober.enable = lib.mkIf cfg.games.sober (lib.mkDefault true);
+        minecraft = {
+          java.enable = lib.mkIf (cfg.games.minecraft.java || cfg.games.prism) (lib.mkDefault true);
+          bedrock.enable = lib.mkIf (cfg.games.minecraft.bedrock || cfg.games.mcpelauncher) (
+            lib.mkDefault true
+          );
+        };
+        roblox.enable = lib.mkIf (cfg.games.roblox || cfg.games.sober) (lib.mkDefault true);
       };
 
       hardware.input.controllers = lib.mkIf cfg.controllers.enable {

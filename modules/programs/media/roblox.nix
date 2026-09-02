@@ -6,14 +6,25 @@
 }:
 
 let
-  cfg = config.myFeatures.programs.media.sober;
-  flatpakCfg = config.myFeatures.services.system.flatpak.sober;
-  enabled = cfg.enable || (flatpakCfg.enable or false);
+  cfg = config.myFeatures.programs.media.roblox;
+  soberCfg = config.myFeatures.programs.media.sober;
+  flatpakSoberCfg = config.myFeatures.services.system.flatpak.sober;
+
+  enabled =
+    cfg.enable || cfg.sober.enable || (soberCfg.enable or false) || (flatpakSoberCfg.enable or false);
 in
 {
   options = {
+    myFeatures.programs.media.roblox = {
+      enable = lib.mkEnableOption "Roblox Suite (Sober via Flatpak)";
+      sober = {
+        enable = lib.mkEnableOption "Sober (Roblox runtime via Flatpak)";
+      };
+    };
+
+    # Backwards compatibility and convenience aliases
     myFeatures.programs.media.sober = {
-      enable = lib.mkEnableOption "Sober (Roblox) via Flatpak";
+      enable = lib.mkEnableOption "Sober (alias for roblox.sober)";
     };
     myFeatures.services.system.flatpak.sober = {
       enable = lib.mkEnableOption "Sober (Roblox) via Flatpak";

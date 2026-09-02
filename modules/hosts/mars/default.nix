@@ -18,7 +18,10 @@
         # 🌲 1. Composite Domain Suites
         suites = {
           workstation.enable = true;
-          gaming.enable = true;
+          gaming = {
+            enable = true;
+            games.trinity = true;
+          };
           creator.enable = true;
           streaming.enable = true;
           productivity.enable = true;

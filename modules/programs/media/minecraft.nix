@@ -103,7 +103,7 @@ in
         }
       ];
 
-      # CLI launcher wrappers
+      # CLI launcher wrappers & Desktop Entry
       environment.systemPackages = [
         (pkgs.writeShellScriptBin "trinity-launcher" ''
           exec flatpak run com.trench.trinity.launcher "$@"
@@ -116,6 +116,25 @@ in
         '')
         (pkgs.writeShellScriptBin "mcpelauncher-ui-qt" ''
           exec flatpak run com.trench.trinity.launcher "$@"
+        '')
+        (pkgs.makeDesktopItem {
+          name = "trinity";
+          desktopName = "Trinity Launcher";
+          genericName = "Minecraft: Bedrock Edition Launcher";
+          comment = "Launch Minecraft: Bedrock Edition via Trinity Launcher";
+          icon = "trinity";
+          exec = "trinity-launcher %U";
+          terminal = false;
+          type = "Application";
+          categories = [
+            "Game"
+          ];
+          startupNotify = true;
+        })
+        (pkgs.runCommand "trinity-icon" { } ''
+          mkdir -p $out/share/icons/hicolor/scalable/apps $out/share/pixmaps
+          cp ${../../../assets/icons/trinity.svg} $out/share/icons/hicolor/scalable/apps/trinity.svg
+          cp ${../../../assets/icons/trinity.svg} $out/share/pixmaps/trinity.svg
         '')
       ];
 

@@ -13,8 +13,8 @@ let
   iconFile = ../../../../assets/icons/no-mans-land.png;
 
   modpack = pkgs.fetchModrinthModpack {
-    url = "https://github.com/Phas-MC/NoMansLand/releases/download/Alpha/PhasMC.s.No.Man.s.Land.mrpack";
-    packHash = "sha256-+NgKjmcHA6eFudGGj8vPogZcz2P4lVtMazkVZhM03bE=";
+    url = "https://github.com/Phas-MC/NoMansLand/releases/download/Alpha2/PhasMC.s.No.Man.s.Land.mrpack";
+    packHash = "sha256-pfVWRbMMck7aovjOlU+A2JhU0haNTys2GfcmO+K/p/E=";
     side = "server";
   };
 in

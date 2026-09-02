@@ -69,7 +69,7 @@ ______________________________________________________________________
 
 > High-level composite suites bundling related applications, subsystems, and services with `lib.mkDefault`.
 
-**Total Options**: 94
+**Total Options**: 97
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -110,6 +110,9 @@ ______________________________________________________________________
 | `myFeatures.suites.gaming.games.roblox` | bool | `false` | Enable Roblox (Sober via Flatpak). |
 | `myFeatures.suites.gaming.games.sober` | bool | `false` | Enable Sober (alias for games.roblox). |
 | `myFeatures.suites.gaming.games.tf2` | bool | `true` | Enable Team Fortress 2 competitive suite. |
+| `myFeatures.suites.gaming.minecraft.bedrock.enable` | bool | `false` | Enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak). |
+| `myFeatures.suites.gaming.minecraft.enable` | bool | `false` | Enable Minecraft gaming suite. |
+| `myFeatures.suites.gaming.minecraft.java.enable` | bool | `false` | Enable Minecraft: Java Edition (Prism Launcher). |
 | `myFeatures.suites.gaming.social.enable` | bool | `true` | Enable social communication suite (Vesktop & Spotify Player). |
 | `myFeatures.suites.gaming.social.minimal` | bool | `true` | Use minimal/lightweight social suite clients. |
 | `myFeatures.suites.gaming.steam.enable` | bool | `true` | Enable native Steam gaming platform. |

@@ -20,7 +20,7 @@
           workstation.enable = true;
           gaming = {
             enable = true;
-            games.trinity = true;
+            minecraft.bedrock.enable = true;
           };
           creator.enable = true;
           streaming.enable = true;

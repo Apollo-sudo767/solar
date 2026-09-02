@@ -37,6 +37,28 @@ in
       };
     };
 
+    minecraft = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Minecraft gaming suite.";
+      };
+      java = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft: Java Edition (Prism Launcher).";
+        };
+      };
+      bedrock = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak).";
+        };
+      };
+    };
+
     games = {
       tf2 = lib.mkOption {
         type = lib.types.bool;
@@ -142,9 +164,15 @@ in
         mumble.enable = lib.mkIf cfg.voip.mumble (lib.mkDefault true);
         tf2.enable = lib.mkIf cfg.games.tf2 (lib.mkDefault true);
         minecraft = {
-          java.enable = lib.mkIf (cfg.games.minecraft.java || cfg.games.prism) (lib.mkDefault true);
+          enable = lib.mkIf cfg.minecraft.enable (lib.mkDefault true);
+          java.enable = lib.mkIf (cfg.minecraft.java.enable || cfg.games.minecraft.java || cfg.games.prism) (
+            lib.mkDefault true
+          );
           bedrock.enable = lib.mkIf (
-            cfg.games.minecraft.bedrock || cfg.games.trinity || cfg.games.mcpelauncher
+            cfg.minecraft.bedrock.enable
+            || cfg.games.minecraft.bedrock
+            || cfg.games.trinity
+            || cfg.games.mcpelauncher
           ) (lib.mkDefault true);
         };
         roblox.enable = lib.mkIf (cfg.games.roblox || cfg.games.sober) (lib.mkDefault true);

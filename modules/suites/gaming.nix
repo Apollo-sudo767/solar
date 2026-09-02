@@ -52,7 +52,7 @@ in
         bedrock = lib.mkOption {
           type = lib.types.bool;
           default = false;
-          description = "Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak).";
+          description = "Enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak).";
         };
       };
       roblox = lib.mkOption {
@@ -67,10 +67,15 @@ in
         default = false;
         description = "Enable Prism Minecraft launcher (alias for games.minecraft.java).";
       };
+      trinity = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Trinity Launcher (alias for games.minecraft.bedrock).";
+      };
       mcpelauncher = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable MCPELauncher (alias for games.minecraft.bedrock).";
+        description = "Enable Trinity Launcher (legacy alias for games.minecraft.bedrock).";
       };
       sober = lib.mkOption {
         type = lib.types.bool;
@@ -138,9 +143,9 @@ in
         tf2.enable = lib.mkIf cfg.games.tf2 (lib.mkDefault true);
         minecraft = {
           java.enable = lib.mkIf (cfg.games.minecraft.java || cfg.games.prism) (lib.mkDefault true);
-          bedrock.enable = lib.mkIf (cfg.games.minecraft.bedrock || cfg.games.mcpelauncher) (
-            lib.mkDefault true
-          );
+          bedrock.enable = lib.mkIf (
+            cfg.games.minecraft.bedrock || cfg.games.trinity || cfg.games.mcpelauncher
+          ) (lib.mkDefault true);
         };
         roblox.enable = lib.mkIf (cfg.games.roblox || cfg.games.sober) (lib.mkDefault true);
       };

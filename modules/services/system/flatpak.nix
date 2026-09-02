@@ -16,8 +16,11 @@ in
       default = [ ];
       description = "Declarative Flatpak packages to install via nix-flatpak.";
       example = [
-        "io.mrarm.mcpelauncher"
         "org.vinegarhq.Sober"
+        {
+          appId = "com.trench.trinity.launcher";
+          origin = "trinity";
+        }
       ];
     };
 
@@ -58,7 +61,13 @@ in
     services.flatpak = {
       enable = true;
       inherit (cfg) packages;
-      remotes = lib.mkIf (cfg.remotes != [ ]) (lib.mkOptionDefault cfg.remotes);
+      remotes = [
+        {
+          name = "flathub";
+          location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+        }
+      ]
+      ++ cfg.remotes;
       update = {
         onActivation = cfg.update.onActivation;
         auto = {

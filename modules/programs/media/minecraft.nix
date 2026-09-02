@@ -8,12 +8,18 @@
 let
   cfg = config.myFeatures.programs.media.minecraft;
   prismCfg = config.myFeatures.programs.media.prism;
+  trinityCfg = config.myFeatures.programs.media.trinity;
+  flatpakTrinityCfg = config.myFeatures.services.system.flatpak.trinity;
   mcpelauncherCfg = config.myFeatures.programs.media.mcpelauncher;
   flatpakMcpeCfg = config.myFeatures.services.system.flatpak.mcpelauncher;
 
   javaEnabled = cfg.java.enable || (prismCfg.enable or false);
   bedrockEnabled =
-    cfg.bedrock.enable || (mcpelauncherCfg.enable or false) || (flatpakMcpeCfg.enable or false);
+    cfg.bedrock.enable
+    || (trinityCfg.enable or false)
+    || (flatpakTrinityCfg.enable or false)
+    || (mcpelauncherCfg.enable or false)
+    || (flatpakMcpeCfg.enable or false);
 in
 {
   options = {
@@ -23,7 +29,7 @@ in
         enable = lib.mkEnableOption "Minecraft: Java Edition (Prism Launcher with Java 8/17/21)";
       };
       bedrock = {
-        enable = lib.mkEnableOption "Minecraft: Bedrock Edition (MCPELauncher via Flatpak)";
+        enable = lib.mkEnableOption "Minecraft: Bedrock Edition (Trinity Launcher via Flatpak)";
       };
     };
 
@@ -31,11 +37,17 @@ in
     myFeatures.programs.media.prism = {
       enable = lib.mkEnableOption "Prism Launcher (alias for minecraft.java)";
     };
+    myFeatures.programs.media.trinity = {
+      enable = lib.mkEnableOption "Trinity Launcher (alias for minecraft.bedrock)";
+    };
+    myFeatures.services.system.flatpak.trinity = {
+      enable = lib.mkEnableOption "Trinity Launcher (Minecraft Bedrock Edition) via Flatpak";
+    };
     myFeatures.programs.media.mcpelauncher = {
-      enable = lib.mkEnableOption "MCPELauncher (alias for minecraft.bedrock)";
+      enable = lib.mkEnableOption "Trinity Launcher (legacy alias for minecraft.bedrock)";
     };
     myFeatures.services.system.flatpak.mcpelauncher = {
-      enable = lib.mkEnableOption "MCPELauncher (Minecraft Bedrock Edition) via Flatpak";
+      enable = lib.mkEnableOption "Trinity Launcher (legacy alias for minecraft.bedrock)";
     };
   };
 
@@ -70,33 +82,50 @@ in
           };
     })
 
-    # Bedrock Edition: MCPELauncher via Flatpak with nix-flatpak
+    # Bedrock Edition: Trinity Launcher via Flatpak with nix-flatpak
     (lib.mkIf bedrockEnabled {
       # Ensure Flatpak support is active
       myFeatures.services.system.flatpak.enable = lib.mkDefault true;
 
+      # Declarative repository remote via nix-flatpak
+      services.flatpak.remotes = [
+        {
+          name = "trinity";
+          location = "https://github.com/Trinity-LA/Trinity-Launcher/releases/download/flatpak/com.trench.trinity.launcher.flatpakrepo";
+        }
+      ];
+
       # Declarative package installation via nix-flatpak
       services.flatpak.packages = [
-        "io.mrarm.mcpelauncher"
+        {
+          appId = "com.trench.trinity.launcher";
+          origin = "trinity";
+        }
       ];
 
       # CLI launcher wrappers
       environment.systemPackages = [
+        (pkgs.writeShellScriptBin "trinity-launcher" ''
+          exec flatpak run com.trench.trinity.launcher "$@"
+        '')
+        (pkgs.writeShellScriptBin "trinity" ''
+          exec flatpak run com.trench.trinity.launcher "$@"
+        '')
         (pkgs.writeShellScriptBin "mcpelauncher" ''
-          exec flatpak run io.mrarm.mcpelauncher "$@"
+          exec flatpak run com.trench.trinity.launcher "$@"
         '')
         (pkgs.writeShellScriptBin "mcpelauncher-ui-qt" ''
-          exec flatpak run io.mrarm.mcpelauncher "$@"
+          exec flatpak run com.trench.trinity.launcher "$@"
         '')
       ];
 
-      # State preservation for Minecraft Bedrock & MCPELauncher
+      # State preservation for Minecraft Bedrock & Trinity Launcher
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
         lib.mkIf config.myFeatures.core.system.preservation.enable
           {
             users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
               directories = [
-                ".var/app/io.mrarm.mcpelauncher"
+                ".var/app/com.trench.trinity.launcher"
               ];
             });
           };

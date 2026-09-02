@@ -69,7 +69,7 @@ ______________________________________________________________________
 
 > High-level composite suites bundling related applications, subsystems, and services with `lib.mkDefault`.
 
-**Total Options**: 93
+**Total Options**: 94
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -102,9 +102,10 @@ ______________________________________________________________________
 | `myFeatures.suites.gaming.controllers.playstation` | bool | `false` | Enable PlayStation DualSense controller drivers. |
 | `myFeatures.suites.gaming.controllers.xbox` | bool | `true` | Enable Xbox One & Series controller drivers and xpadneo. |
 | `myFeatures.suites.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam, GameScope, Controllers, Audio & Communication). |
-| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable MCPELauncher (alias for games.minecraft.bedrock). |
-| `myFeatures.suites.gaming.games.minecraft.bedrock` | bool | `false` | Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable Trinity Launcher (legacy alias for games.minecraft.bedrock). |
+| `myFeatures.suites.gaming.games.minecraft.bedrock` | bool | `false` | Enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak). |
 | `myFeatures.suites.gaming.games.minecraft.java` | bool | `false` | Enable Minecraft: Java Edition (Prism Launcher). |
+| `myFeatures.suites.gaming.games.trinity` | bool | `false` | Enable Trinity Launcher (alias for games.minecraft.bedrock). |
 | `myFeatures.suites.gaming.games.prism` | bool | `false` | Enable Prism Minecraft launcher (alias for games.minecraft.java). |
 | `myFeatures.suites.gaming.games.roblox` | bool | `false` | Enable Roblox (Sober via Flatpak). |
 | `myFeatures.suites.gaming.games.sober` | bool | `false` | Enable Sober (alias for games.roblox). |
@@ -289,7 +290,7 @@ ______________________________________________________________________
 
 > Steam ecosystem, GameScope, voice chat, media players, streaming tools, and video editors.
 
-**Total Options**: 34
+**Total Options**: 35
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -298,9 +299,10 @@ ______________________________________________________________________
 | `myFeatures.programs.media.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam + Prism Launcher). |
 | `myFeatures.programs.media.media.enable` | bool | `false` | Whether to enable Apollo's Media Suite. |
 | `myFeatures.programs.media.media.mpv.enable` | bool | `true` | Whether to enable MPV with 1440p GPU acceleration. |
-| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak (alias). |
-| `myFeatures.programs.media.minecraft.bedrock.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable Trinity Launcher (legacy alias for minecraft.bedrock). |
+| `myFeatures.programs.media.minecraft.bedrock.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak). |
 | `myFeatures.programs.media.minecraft.enable` | bool | `false` | Whether to enable Minecraft Suite. |
+| `myFeatures.programs.media.trinity.enable` | bool | `false` | Whether to enable Trinity Launcher (alias for minecraft.bedrock). |
 | `myFeatures.programs.media.minecraft.java.enable` | bool | `false` | Whether to enable Minecraft: Java Edition (Prism Launcher with Java 8/17/21). |
 | `myFeatures.programs.media.mumble.enable` | bool | `false` | Whether to enable Mumble VoIP client. |
 | `myFeatures.programs.media.mumble.overlay.enable` | bool | `true` | Enable Mumble in-game overlay support |
@@ -861,12 +863,13 @@ ______________________________________________________________________
 
 > Flatpak universal application runtime and XDG Desktop Portals.
 
-**Total Options**: 10
+**Total Options**: 11
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `myFeatures.services.system.flatpak.enable` | bool | `false` | Whether to enable Flatpak Support. |
-| `myFeatures.services.system.flatpak.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak. |
+| `myFeatures.services.system.flatpak.mcpelauncher.enable` | bool | `false` | Whether to enable Trinity Launcher (legacy alias for minecraft.bedrock). |
+| `myFeatures.services.system.flatpak.trinity.enable` | bool | `false` | Whether to enable Trinity Launcher (Minecraft Bedrock Edition) via Flatpak. |
 | `myFeatures.services.system.flatpak.overrides` | `attrs` | `{}` | Flatpak overrides to configure via nix-flatpak. |
 | `myFeatures.services.system.flatpak.packages` | `listOf` | `[]` | Declarative Flatpak packages to install via nix-flatpak. |
 | `myFeatures.services.system.flatpak.remotes` | `listOf` | `[]` | Additional Flatpak remotes to configure via nix-flatpak. |

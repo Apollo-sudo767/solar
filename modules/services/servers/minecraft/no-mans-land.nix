@@ -75,7 +75,6 @@ in
               "defaultconfigs" = "${modpack}/pack-src/overrides/defaultconfigs";
               ".sable" = "${modpack}/pack-src/overrides/.sable";
               ".mixin.out" = "${modpack}/pack-src/overrides/.mixin.out";
-              "data" = "${modpack}/pack-src/overrides/data";
 
               # Disable Sable UDP pipeline to prevent client-side NullPointerException on join
               "config/sable-common.toml" = pkgs.writeText "sable-common.toml" ''

@@ -23,7 +23,8 @@ in
 
       # 2. Linux-only configuration
       (lib.optionalAttrs (!isDarwin) {
-        # You could add things like --accept-dns=false here if needed
+        services.tailscale.useRoutingFeatures = lib.mkDefault "both";
+
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {

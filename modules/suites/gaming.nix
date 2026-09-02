@@ -54,7 +54,7 @@ in
         enable = lib.mkOption {
           type = lib.types.bool;
           default = false;
-          description = "Enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak).";
+          description = "Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak).";
         };
       };
     };
@@ -74,7 +74,7 @@ in
         bedrock = lib.mkOption {
           type = lib.types.bool;
           default = false;
-          description = "Enable Minecraft: Bedrock Edition (Trinity Launcher via Flatpak).";
+          description = "Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak).";
         };
       };
       roblox = lib.mkOption {
@@ -89,15 +89,15 @@ in
         default = false;
         description = "Enable Prism Minecraft launcher (alias for games.minecraft.java).";
       };
-      trinity = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable Trinity Launcher (alias for games.minecraft.bedrock).";
-      };
       mcpelauncher = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable Trinity Launcher (legacy alias for games.minecraft.bedrock).";
+        description = "Enable MCPELauncher (alias for minecraft.bedrock.enable).";
+      };
+      trinity = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Trinity Launcher (alias for minecraft.bedrock.enable).";
       };
       sober = lib.mkOption {
         type = lib.types.bool;

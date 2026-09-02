@@ -29,7 +29,7 @@ in
         enable = lib.mkEnableOption "Minecraft: Java Edition (Prism Launcher with Java 8/17/21)";
       };
       bedrock = {
-        enable = lib.mkEnableOption "Minecraft: Bedrock Edition (Trinity Launcher via Flatpak)";
+        enable = lib.mkEnableOption "Minecraft: Bedrock Edition (MCPELauncher via Flatpak)";
       };
     };
 
@@ -37,17 +37,17 @@ in
     myFeatures.programs.media.prism = {
       enable = lib.mkEnableOption "Prism Launcher (alias for minecraft.java)";
     };
+    myFeatures.programs.media.mcpelauncher = {
+      enable = lib.mkEnableOption "MCPELauncher (alias for minecraft.bedrock)";
+    };
+    myFeatures.services.system.flatpak.mcpelauncher = {
+      enable = lib.mkEnableOption "MCPELauncher (Minecraft Bedrock Edition) via Flatpak";
+    };
     myFeatures.programs.media.trinity = {
       enable = lib.mkEnableOption "Trinity Launcher (alias for minecraft.bedrock)";
     };
     myFeatures.services.system.flatpak.trinity = {
       enable = lib.mkEnableOption "Trinity Launcher (Minecraft Bedrock Edition) via Flatpak";
-    };
-    myFeatures.programs.media.mcpelauncher = {
-      enable = lib.mkEnableOption "Trinity Launcher (legacy alias for minecraft.bedrock)";
-    };
-    myFeatures.services.system.flatpak.mcpelauncher = {
-      enable = lib.mkEnableOption "Trinity Launcher (legacy alias for minecraft.bedrock)";
     };
   };
 
@@ -82,69 +82,33 @@ in
           };
     })
 
-    # Bedrock Edition: Trinity Launcher via Flatpak with nix-flatpak
+    # Bedrock Edition: MCPELauncher via Flatpak with nix-flatpak
     (lib.mkIf bedrockEnabled {
       # Ensure Flatpak support is active
       myFeatures.services.system.flatpak.enable = lib.mkDefault true;
 
-      # Declarative repository remote via nix-flatpak
-      services.flatpak.remotes = [
-        {
-          name = "trinity";
-          location = "https://github.com/Trinity-LA/Trinity-Launcher/releases/download/flatpak/com.trench.trinity.launcher.flatpakrepo";
-        }
-      ];
-
       # Declarative package installation via nix-flatpak
       services.flatpak.packages = [
-        {
-          appId = "com.trench.trinity.launcher";
-          origin = "trinity";
-        }
+        "io.mrarm.mcpelauncher"
       ];
 
-      # CLI launcher wrappers & Desktop Entry
+      # CLI launcher wrappers
       environment.systemPackages = [
-        (pkgs.writeShellScriptBin "trinity-launcher" ''
-          exec flatpak run com.trench.trinity.launcher "$@"
-        '')
-        (pkgs.writeShellScriptBin "trinity" ''
-          exec flatpak run com.trench.trinity.launcher "$@"
-        '')
         (pkgs.writeShellScriptBin "mcpelauncher" ''
-          exec flatpak run com.trench.trinity.launcher "$@"
+          exec flatpak run io.mrarm.mcpelauncher "$@"
         '')
         (pkgs.writeShellScriptBin "mcpelauncher-ui-qt" ''
-          exec flatpak run com.trench.trinity.launcher "$@"
-        '')
-        (pkgs.makeDesktopItem {
-          name = "trinity";
-          desktopName = "Trinity Launcher";
-          genericName = "Minecraft: Bedrock Edition Launcher";
-          comment = "Launch Minecraft: Bedrock Edition via Trinity Launcher";
-          icon = "trinity";
-          exec = "trinity-launcher %U";
-          terminal = false;
-          type = "Application";
-          categories = [
-            "Game"
-          ];
-          startupNotify = true;
-        })
-        (pkgs.runCommand "trinity-icon" { } ''
-          mkdir -p $out/share/icons/hicolor/scalable/apps $out/share/pixmaps
-          cp ${../../../assets/icons/trinity.svg} $out/share/icons/hicolor/scalable/apps/trinity.svg
-          cp ${../../../assets/icons/trinity.svg} $out/share/pixmaps/trinity.svg
+          exec flatpak run io.mrarm.mcpelauncher "$@"
         '')
       ];
 
-      # State preservation for Minecraft Bedrock & Trinity Launcher
+      # State preservation for Minecraft Bedrock & MCPELauncher
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
         lib.mkIf config.myFeatures.core.system.preservation.enable
           {
             users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
               directories = [
-                ".var/app/com.trench.trinity.launcher"
+                ".var/app/io.mrarm.mcpelauncher"
               ];
             });
           };

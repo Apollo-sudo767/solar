@@ -68,10 +68,10 @@ Unified Minecraft module providing declarative Java and Bedrock Edition launcher
 
 ### Bedrock Edition (`minecraft.bedrock`):
 
-- **Trinity Launcher**: Modern modular launcher for **Minecraft: Bedrock Edition** on Linux.
-- **Declarative Flatpak Management**: Installed declaratively via `nix-flatpak` using the `com.trench.trinity.launcher` package from the official Trinity Flatpak repository.
-- **CLI Wrappers**: Provides convenient `trinity-launcher`, `trinity`, and legacy `mcpelauncher` wrapper scripts.
-- **State Preservation**: Persists game data, worlds, and settings in `~/.var/app/com.trench.trinity.launcher` across reboots on ephemeral roots.
+- **MCPELauncher**: Unofficial launcher for **Minecraft: Bedrock Edition** on Linux.
+- **Declarative Flatpak Management**: Installed declaratively via `nix-flatpak` using the `io.mrarm.mcpelauncher` Flathub package.
+- **CLI Wrappers**: Provides convenient `mcpelauncher` and `mcpelauncher-ui-qt` wrapper scripts.
+- **State Preservation**: Persists game data, worlds, and settings in `~/.var/app/io.mrarm.mcpelauncher` across reboots on ephemeral roots.
 
 ______________________________________________________________________
 

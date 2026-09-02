@@ -16,11 +16,8 @@ in
       default = [ ];
       description = "Declarative Flatpak packages to install via nix-flatpak.";
       example = [
+        "io.mrarm.mcpelauncher"
         "org.vinegarhq.Sober"
-        {
-          appId = "com.trench.trinity.launcher";
-          origin = "trinity";
-        }
       ];
     };
 

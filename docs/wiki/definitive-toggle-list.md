@@ -102,7 +102,9 @@ ______________________________________________________________________
 | `myFeatures.suites.gaming.controllers.playstation` | bool | `false` | Enable PlayStation DualSense controller drivers. |
 | `myFeatures.suites.gaming.controllers.xbox` | bool | `true` | Enable Xbox One & Series controller drivers and xpadneo. |
 | `myFeatures.suites.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam, GameScope, Controllers, Audio & Communication). |
+| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable MCPELauncher (Minecraft Bedrock) via Flatpak. |
 | `myFeatures.suites.gaming.games.prism` | bool | `false` | Enable Prism Minecraft launcher. |
+| `myFeatures.suites.gaming.games.sober` | bool | `false` | Enable Sober (Roblox) via Flatpak. |
 | `myFeatures.suites.gaming.games.tf2` | bool | `true` | Enable Team Fortress 2 competitive suite. |
 | `myFeatures.suites.gaming.social.enable` | bool | `true` | Enable social communication suite (Vesktop & Spotify Player). |
 | `myFeatures.suites.gaming.social.minimal` | bool | `true` | Use minimal/lightweight social suite clients. |
@@ -293,10 +295,12 @@ ______________________________________________________________________
 | `myFeatures.programs.media.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam + Prism Launcher). |
 | `myFeatures.programs.media.media.enable` | bool | `false` | Whether to enable Apollo's Media Suite. |
 | `myFeatures.programs.media.media.mpv.enable` | bool | `true` | Whether to enable MPV with 1440p GPU acceleration. |
+| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak. |
 | `myFeatures.programs.media.mumble.enable` | bool | `false` | Whether to enable Mumble VoIP client. |
 | `myFeatures.programs.media.mumble.overlay.enable` | bool | `true` | Enable Mumble in-game overlay support |
 | `myFeatures.programs.media.obs.enable` | bool | `false` | Whether to enable OBS Studio. |
 | `myFeatures.programs.media.prism.enable` | bool | `false` | Whether to enable Prism Launcher. |
+| `myFeatures.programs.media.sober.enable` | bool | `false` | Whether to enable Sober (Roblox) via Flatpak. |
 | `myFeatures.programs.media.steam.enable` | bool | `false` | Whether to enable Steam. |
 | `myFeatures.programs.media.steam.gamescope.args` | `listOf` | `[]` | Arguments to pass to Gamescope |
 | `myFeatures.programs.media.steam.gamescope.autoWrap` | bool | `true` | Automatically launch Steam inside Gamescope when running under Wayland/Niri |
@@ -849,11 +853,19 @@ ______________________________________________________________________
 
 > Flatpak universal application runtime and XDG Desktop Portals.
 
-**Total Options**: 2
+**Total Options**: 10
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `myFeatures.services.system.flatpak.enable` | bool | `false` | Whether to enable Flatpak Support. |
+| `myFeatures.services.system.flatpak.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak. |
+| `myFeatures.services.system.flatpak.overrides` | `attrs` | `{}` | Flatpak overrides to configure via nix-flatpak. |
+| `myFeatures.services.system.flatpak.packages` | `listOf` | `[]` | Declarative Flatpak packages to install via nix-flatpak. |
+| `myFeatures.services.system.flatpak.remotes` | `listOf` | `[]` | Additional Flatpak remotes to configure via nix-flatpak. |
+| `myFeatures.services.system.flatpak.sober.enable` | bool | `false` | Whether to enable Sober (Roblox) via Flatpak. |
+| `myFeatures.services.system.flatpak.update.auto.enable` | bool | `false` | Enable periodic automatic Flatpak updates via systemd timer. |
+| `myFeatures.services.system.flatpak.update.auto.onCalendar` | string | `"weekly"` | Frequency of periodic Flatpak updates. |
+| `myFeatures.services.system.flatpak.update.onActivation` | bool | `false` | Whether to upgrade Flatpak applications during system activation. |
 | `myFeatures.services.system.xdgPortals.enable` | bool | `false` | Whether to enable XDG Portals for Wayland/Desktop. |
 
 ______________________________________________________________________

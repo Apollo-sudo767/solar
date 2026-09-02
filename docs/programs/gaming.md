@@ -61,3 +61,23 @@ Open-source Minecraft launcher with multi-instance support and automatic JDK run
 - **Temurin JDK 21**: Modern Minecraft (1.20.5+).
 - **Temurin JDK 17**: Intermediate versions (1.17 - 1.20.4).
 - **OpenJDK 8**: Classic and legacy modpacks (1.16.5 and below).
+
+______________________________________________________________________
+
+## 🧱 5. MCPELauncher (`mcpelauncher.nix`)
+
+Unofficial launcher for **Minecraft: Bedrock Edition** on Linux (`myFeatures.programs.media.mcpelauncher`):
+
+- **Declarative Flatpak Management**: Managed via `nix-flatpak` using the `io.mrarm.mcpelauncher` Flathub package.
+- **CLI Wrappers**: Provides convenient `mcpelauncher` and `mcpelauncher-ui-qt` wrapper scripts.
+- **State Preservation**: Persists game data, worlds, and settings in `~/.var/app/io.mrarm.mcpelauncher` across reboots on ephemeral roots.
+
+______________________________________________________________________
+
+## 🤖 6. Sober (`sober.nix`)
+
+Native Linux runtime for **Roblox** (`myFeatures.programs.media.sober`):
+
+- **Declarative Flatpak Management**: Managed via `nix-flatpak` using the `org.vinegarhq.Sober` Flathub package.
+- **CLI Wrapper**: Provides convenient `sober` command forwarding arguments and URLs directly to the runtime.
+- **State Preservation**: Persists authentication and configuration in `~/.var/app/org.vinegarhq.Sober` across reboots on ephemeral roots.

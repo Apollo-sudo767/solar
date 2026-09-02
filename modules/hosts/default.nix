@@ -82,6 +82,7 @@ let
           inputs.preservation.nixosModules.default;
 
       diskoModule = if isDarwin then { } else inputs.disko.nixosModules.disko;
+      flatpakModule = if isDarwin then { } else inputs.nix-flatpak.nixosModules.nix-flatpak;
     in
     {
       inherit isDarwin;
@@ -103,6 +104,7 @@ let
             agenixRekeyModule
             preservationModule
             diskoModule
+            flatpakModule
             (_: {
               nixpkgs.hostPlatform = system;
               networking.hostName = name;

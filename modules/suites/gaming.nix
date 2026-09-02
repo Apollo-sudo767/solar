@@ -48,6 +48,16 @@ in
         default = false;
         description = "Enable Prism Minecraft launcher.";
       };
+      mcpelauncher = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable MCPELauncher (Minecraft Bedrock) via Flatpak.";
+      };
+      sober = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Sober (Roblox) via Flatpak.";
+      };
     };
 
     controllers = {
@@ -108,6 +118,8 @@ in
         mumble.enable = lib.mkIf cfg.voip.mumble (lib.mkDefault true);
         tf2.enable = lib.mkIf cfg.games.tf2 (lib.mkDefault true);
         prism.enable = lib.mkIf cfg.games.prism (lib.mkDefault true);
+        mcpelauncher.enable = lib.mkIf cfg.games.mcpelauncher (lib.mkDefault true);
+        sober.enable = lib.mkIf cfg.games.sober (lib.mkDefault true);
       };
 
       hardware.input.controllers = lib.mkIf cfg.controllers.enable {

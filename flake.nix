@@ -86,6 +86,9 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Declarative Flatpak Management
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
+
     # Firefox Nightly
     firefox = {
       url = "github:nix-community/flake-firefox-nightly";

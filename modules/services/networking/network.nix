@@ -21,10 +21,10 @@ in
         networking.networkmanager.enable = lib.mkDefault true;
 
         # Optimization: Prioritize IPv4 over IPv6 to avoid Steam CDN bottlenecks
-        # and use Cloudflare DNS for faster lookups.
+        # and use Cloudflare/Quad9 DNS for faster lookups (avoiding 1.1.1.1 hijacked by Calix routers).
         networking.nameservers = [
-          "1.1.1.1"
           "1.0.0.1"
+          "9.9.9.9"
         ];
         environment.etc."gai.conf".text = ''
           precedence ::ffff:0:0/96  100

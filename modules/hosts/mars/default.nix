@@ -23,7 +23,7 @@
             minecraft.bedrock.enable = true;
           };
           creator.enable = true;
-          streaming.enable = true;
+          streaming.enable = false;
           productivity.enable = true;
           hardened.enable = true;
           networking.enable = true;

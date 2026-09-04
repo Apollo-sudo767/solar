@@ -20,6 +20,9 @@
           workstation.enable = true;
           gaming = {
             enable = true;
+            games.tf2 = false;
+            voip.mumble = false;
+            controllers.nintendo = false;
             minecraft = {
               java.enable = true;
               bedrock = {
@@ -30,7 +33,10 @@
           };
           creator.enable = true;
           streaming.enable = false;
-          productivity.enable = true;
+          productivity = {
+            enable = true;
+            printing.enable = false;
+          };
           hardened.enable = true;
           networking.enable = true;
           desktops.niri.enable = true;

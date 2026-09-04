@@ -102,15 +102,22 @@ ______________________________________________________________________
 | `myFeatures.suites.gaming.controllers.playstation` | bool | `false` | Enable PlayStation DualSense controller drivers. |
 | `myFeatures.suites.gaming.controllers.xbox` | bool | `true` | Enable Xbox One & Series controller drivers and xpadneo. |
 | `myFeatures.suites.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam, GameScope, Controllers, Audio & Communication). |
-| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable MCPELauncher (alias for minecraft.bedrock.enable). |
-| `myFeatures.suites.gaming.games.minecraft.bedrock` | bool | `false` | Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.suites.gaming.games.bedrockOnLinux` | bool | `false` | Enable BedrockOnLinux (alias for minecraft.bedrock.windows). |
+| `myFeatures.suites.gaming.games.mcpelauncher` | bool | `false` | Enable MCPELauncher (alias for minecraft.bedrock.android). |
+| `myFeatures.suites.gaming.games.minecraft.android` | bool | `false` | Enable Minecraft Bedrock for Android (MCPELauncher via Flatpak). |
+| `myFeatures.suites.gaming.games.minecraft.bedrock` | bool | `false` | Enable Minecraft: Bedrock Edition. |
+| `myFeatures.suites.gaming.games.minecraft.bedrockOnLinux` | bool | `false` | Enable BedrockOnLinux (Minecraft Bedrock for Windows). |
 | `myFeatures.suites.gaming.games.minecraft.java` | bool | `false` | Enable Minecraft: Java Edition (Prism Launcher). |
-| `myFeatures.suites.gaming.games.trinity` | bool | `false` | Enable Trinity Launcher (alias for minecraft.bedrock.enable). |
+| `myFeatures.suites.gaming.games.minecraft.windows` | bool | `false` | Enable Minecraft Bedrock for Windows (BedrockOnLinux). |
 | `myFeatures.suites.gaming.games.prism` | bool | `false` | Enable Prism Minecraft launcher (alias for games.minecraft.java). |
 | `myFeatures.suites.gaming.games.roblox` | bool | `false` | Enable Roblox (Sober via Flatpak). |
 | `myFeatures.suites.gaming.games.sober` | bool | `false` | Enable Sober (alias for games.roblox). |
 | `myFeatures.suites.gaming.games.tf2` | bool | `true` | Enable Team Fortress 2 competitive suite. |
-| `myFeatures.suites.gaming.minecraft.bedrock.enable` | bool | `false` | Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.suites.gaming.minecraft.bedrock.android` | bool | `false` | Enable Minecraft Bedrock for Android (MCPELauncher via Flatpak). |
+| `myFeatures.suites.gaming.minecraft.bedrock.bedrockOnLinux` | bool | `false` | Enable BedrockOnLinux (Minecraft Bedrock for Windows). |
+| `myFeatures.suites.gaming.minecraft.bedrock.edition` | `enum` | `"windows"` | Minecraft Bedrock Edition toggle: 'windows' (BedrockOnLinux) or 'android' (MCPELauncher). |
+| `myFeatures.suites.gaming.minecraft.bedrock.enable` | bool | `false` | Enable Minecraft: Bedrock Edition. |
+| `myFeatures.suites.gaming.minecraft.bedrock.windows` | bool | `false` | Enable Minecraft Bedrock for Windows (BedrockOnLinux). |
 | `myFeatures.suites.gaming.minecraft.enable` | bool | `false` | Enable Minecraft gaming suite. |
 | `myFeatures.suites.gaming.minecraft.java.enable` | bool | `false` | Enable Minecraft: Java Edition (Prism Launcher). |
 | `myFeatures.suites.gaming.social.enable` | bool | `true` | Enable social communication suite (Vesktop & Spotify Player). |
@@ -302,10 +309,14 @@ ______________________________________________________________________
 | `myFeatures.programs.media.gaming.enable` | bool | `false` | Whether to enable Gaming Suite (Steam + Prism Launcher). |
 | `myFeatures.programs.media.media.enable` | bool | `false` | Whether to enable Apollo's Media Suite. |
 | `myFeatures.programs.media.media.mpv.enable` | bool | `true` | Whether to enable MPV with 1440p GPU acceleration. |
-| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak (alias). |
-| `myFeatures.programs.media.minecraft.bedrock.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak). |
+| `myFeatures.programs.media.bedrockOnLinux.enable` | bool | `false` | Whether to enable BedrockOnLinux (Minecraft Bedrock for Windows, alias). |
+| `myFeatures.programs.media.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (alias for minecraft.bedrock.android). |
+| `myFeatures.programs.media.minecraft.bedrock.android.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition for Android (MCPELauncher via Flatpak). |
+| `myFeatures.programs.media.minecraft.bedrock.bedrockOnLinux.enable` | bool | `false` | Whether to enable BedrockOnLinux (alias for minecraft.bedrock.windows.enable). |
+| `myFeatures.programs.media.minecraft.bedrock.edition` | `enum` | `"windows"` | Minecraft Bedrock Edition toggle: 'windows' (BedrockOnLinux) or 'android' (MCPELauncher via Flatpak). |
+| `myFeatures.programs.media.minecraft.bedrock.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition. |
+| `myFeatures.programs.media.minecraft.bedrock.windows.enable` | bool | `false` | Whether to enable Minecraft: Bedrock Edition for Windows (BedrockOnLinux). |
 | `myFeatures.programs.media.minecraft.enable` | bool | `false` | Whether to enable Minecraft Suite. |
-| `myFeatures.programs.media.trinity.enable` | bool | `false` | Whether to enable Trinity Launcher (alias for minecraft.bedrock). |
 | `myFeatures.programs.media.minecraft.java.enable` | bool | `false` | Whether to enable Minecraft: Java Edition (Prism Launcher with Java 8/17/21). |
 | `myFeatures.programs.media.mumble.enable` | bool | `false` | Whether to enable Mumble VoIP client. |
 | `myFeatures.programs.media.mumble.overlay.enable` | bool | `true` | Enable Mumble in-game overlay support |
@@ -866,13 +877,12 @@ ______________________________________________________________________
 
 > Flatpak universal application runtime and XDG Desktop Portals.
 
-**Total Options**: 11
+**Total Options**: 10
 
 | Option Path | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `myFeatures.services.system.flatpak.enable` | bool | `false` | Whether to enable Flatpak Support. |
 | `myFeatures.services.system.flatpak.mcpelauncher.enable` | bool | `false` | Whether to enable MCPELauncher (Minecraft Bedrock Edition) via Flatpak. |
-| `myFeatures.services.system.flatpak.trinity.enable` | bool | `false` | Whether to enable Trinity Launcher (Minecraft Bedrock Edition) via Flatpak. |
 | `myFeatures.services.system.flatpak.overrides` | `attrs` | `{}` | Flatpak overrides to configure via nix-flatpak. |
 | `myFeatures.services.system.flatpak.packages` | `listOf` | `[]` | Declarative Flatpak packages to install via nix-flatpak. |
 | `myFeatures.services.system.flatpak.remotes` | `listOf` | `[]` | Additional Flatpak remotes to configure via nix-flatpak. |

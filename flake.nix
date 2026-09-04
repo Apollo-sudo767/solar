@@ -86,6 +86,12 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Bedrock On Linux (Minecraft Bedrock for Windows)
+    bedrock-on-linux = {
+      url = "github:Wyze3306/BedrockOnLinux";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # Declarative Flatpak Management
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 

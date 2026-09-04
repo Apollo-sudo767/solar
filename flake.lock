@@ -183,6 +183,26 @@
         "type": "github"
       }
     },
+    "bedrock-on-linux": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788198912,
+        "narHash": "sha256-EF0+TSXeDh1Jz8qPPqf+nsiRrZvZ17lU+Aj449OyO+o=",
+        "owner": "Wyze3306",
+        "repo": "BedrockOnLinux",
+        "rev": "85b3ce95da2bda4a07823019865495719be9bcf0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Wyze3306",
+        "repo": "BedrockOnLinux",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1787326676,
@@ -1060,6 +1080,7 @@
       "inputs": {
         "agenix": "agenix",
         "agenix-rekey": "agenix-rekey",
+        "bedrock-on-linux": "bedrock-on-linux",
         "disko": "disko",
         "firefox": "firefox",
         "flake-parts": "flake-parts_2",

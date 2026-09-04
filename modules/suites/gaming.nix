@@ -54,7 +54,31 @@ in
         enable = lib.mkOption {
           type = lib.types.bool;
           default = false;
-          description = "Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak).";
+          description = "Enable Minecraft: Bedrock Edition.";
+        };
+        edition = lib.mkOption {
+          type = lib.types.enum [
+            "windows"
+            "android"
+            "both"
+          ];
+          default = "windows";
+          description = "Minecraft Bedrock Edition toggle: 'windows' (BedrockOnLinux - Windows GDK) or 'android' (MCPELauncher via Flatpak).";
+        };
+        windows = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft Bedrock for Windows (BedrockOnLinux).";
+        };
+        android = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft Bedrock for Android (MCPELauncher via Flatpak).";
+        };
+        bedrockOnLinux = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable BedrockOnLinux (Minecraft Bedrock for Windows).";
         };
       };
     };
@@ -74,7 +98,22 @@ in
         bedrock = lib.mkOption {
           type = lib.types.bool;
           default = false;
-          description = "Enable Minecraft: Bedrock Edition (MCPELauncher via Flatpak).";
+          description = "Enable Minecraft: Bedrock Edition.";
+        };
+        windows = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft Bedrock for Windows (BedrockOnLinux).";
+        };
+        android = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable Minecraft Bedrock for Android (MCPELauncher via Flatpak).";
+        };
+        bedrockOnLinux = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Enable BedrockOnLinux (Minecraft Bedrock for Windows).";
         };
       };
       roblox = lib.mkOption {
@@ -89,15 +128,15 @@ in
         default = false;
         description = "Enable Prism Minecraft launcher (alias for games.minecraft.java).";
       };
+      bedrockOnLinux = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable BedrockOnLinux (alias for minecraft.bedrock.windows).";
+      };
       mcpelauncher = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Enable MCPELauncher (alias for minecraft.bedrock.enable).";
-      };
-      trinity = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable Trinity Launcher (alias for minecraft.bedrock.enable).";
+        description = "Enable MCPELauncher (alias for minecraft.bedrock.android).";
       };
       sober = lib.mkOption {
         type = lib.types.bool;
@@ -168,12 +207,33 @@ in
           java.enable = lib.mkIf (cfg.minecraft.java.enable || cfg.games.minecraft.java || cfg.games.prism) (
             lib.mkDefault true
           );
-          bedrock.enable = lib.mkIf (
-            cfg.minecraft.bedrock.enable
-            || cfg.games.minecraft.bedrock
-            || cfg.games.trinity
-            || cfg.games.mcpelauncher
-          ) (lib.mkDefault true);
+          bedrock = {
+            enable = lib.mkIf (
+              cfg.minecraft.bedrock.enable
+              || cfg.games.minecraft.bedrock
+              || cfg.minecraft.bedrock.windows
+              || cfg.minecraft.bedrock.android
+              || cfg.minecraft.bedrock.bedrockOnLinux
+              || cfg.games.minecraft.windows
+              || cfg.games.minecraft.android
+              || cfg.games.minecraft.bedrockOnLinux
+              || cfg.games.bedrockOnLinux
+              || cfg.games.mcpelauncher
+            ) (lib.mkDefault true);
+            edition = lib.mkIf (cfg.minecraft.bedrock.enable || cfg.games.minecraft.bedrock) (
+              lib.mkDefault cfg.minecraft.bedrock.edition
+            );
+            windows.enable = lib.mkIf (
+              cfg.minecraft.bedrock.windows
+              || cfg.minecraft.bedrock.bedrockOnLinux
+              || cfg.games.minecraft.windows
+              || cfg.games.minecraft.bedrockOnLinux
+              || cfg.games.bedrockOnLinux
+            ) (lib.mkDefault true);
+            android.enable = lib.mkIf (
+              cfg.minecraft.bedrock.android || cfg.games.minecraft.android || cfg.games.mcpelauncher
+            ) (lib.mkDefault true);
+          };
         };
         roblox.enable = lib.mkIf (cfg.games.roblox || cfg.games.sober) (lib.mkDefault true);
       };

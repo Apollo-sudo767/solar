@@ -68,10 +68,18 @@ Unified Minecraft module providing declarative Java and Bedrock Edition launcher
 
 ### Bedrock Edition (`minecraft.bedrock`):
 
-- **MCPELauncher**: Unofficial launcher for **Minecraft: Bedrock Edition** on Linux.
-- **Declarative Flatpak Management**: Installed declaratively via `nix-flatpak` using the `io.mrarm.mcpelauncher` Flathub package.
-- **CLI Wrappers**: Provides convenient `mcpelauncher` and `mcpelauncher-ui-qt` wrapper scripts.
-- **State Preservation**: Persists game data, worlds, and settings in `~/.var/app/io.mrarm.mcpelauncher` across reboots on ephemeral roots.
+Supports both native Windows Bedrock (via BedrockOnLinux) and Android Bedrock (via MCPELauncher):
+
+- **Edition Toggle (`minecraft.bedrock.edition`)**:
+  - `windows` (Default): Uses **BedrockOnLinux** to run native Minecraft Bedrock for Windows (GDK) on Linux with official Xbox Live login, Realms, servers, and Friends.
+  - `android`: Uses **MCPELauncher** via Flatpak (`io.mrarm.mcpelauncher`) running the Google Play Android build.
+  - `both`: Installs and configures both runtimes side by side.
+- **BedrockOnLinux (`minecraft.bedrock.windows` / `bedrockOnLinux`)**:
+  - Native Python/Proton GDK launcher with `bedrock-on-linux` and `bedrockonlinux` CLI commands and desktop entry.
+  - **State Preservation**: Persists game installations, prefix, and settings in `~/.local/share/bedrock-on-linux` and `~/.config/bedrock-on-linux`.
+- **MCPELauncher (`minecraft.bedrock.android` / `mcpelauncher`)**:
+  - Declarative Flatpak package (`io.mrarm.mcpelauncher`) with `mcpelauncher` and `mcpelauncher-ui-qt` wrapper scripts.
+  - **State Preservation**: Persists game data, worlds, and settings in `~/.var/app/io.mrarm.mcpelauncher`.
 
 ______________________________________________________________________
 

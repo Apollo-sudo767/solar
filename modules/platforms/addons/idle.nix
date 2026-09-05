@@ -32,7 +32,12 @@ in
         ];
       }
       (lib.optionalAttrs (!isDarwin) {
-        services.logind.settings.Login.HandlelidSwitch = "suspend";
+        services.logind.settings.Login = {
+          HandleLidSwitch = "suspend";
+          HandleLidSwitchExternalPower = "suspend";
+          HandleLidSwitchDocked = "ignore";
+          LidSwitchIgnoreInhibited = "yes";
+        };
       })
     ]
   );

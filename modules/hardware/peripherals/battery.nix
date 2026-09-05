@@ -107,9 +107,11 @@ in
       '';
 
       # 5. Sleep Stability
-      services.logind = {
-        settings.Login.HandleLidSwitch = "suspend";
-        settings.Login.HandleLidSwitchExternalPower = "lock";
+      services.logind.settings.Login = {
+        HandleLidSwitch = "suspend";
+        HandleLidSwitchExternalPower = "suspend";
+        HandleLidSwitchDocked = "ignore";
+        LidSwitchIgnoreInhibited = "yes";
       };
 
       # 6. System Packages

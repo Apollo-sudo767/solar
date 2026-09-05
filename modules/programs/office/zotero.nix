@@ -12,8 +12,8 @@ let
 
   # Derive Better BibTeX plugin (.xpi) for Zotero citekey generation & auto-export
   betterBibtexXpi = pkgs.fetchurl {
-    url = "https://github.com/retorquere/zotero-better-bibtex/releases/download/v9.0.58/zotero-better-bibtex-9.0.58.xpi";
-    hash = "sha256-/Dp8SnIi5zwMjjEHD5VXG+rEywn+cDaA3UX0NsQweeA=";
+    url = "https://github.com/retorquere/zotero-better-bibtex/releases/download/v9.0.63/zotero-better-bibtex-9.0.63.xpi";
+    hash = "sha256-Ok0IDslBU6jCS/gnVonF+UbZnjFLauD6tQYNaXD1Y4g=";
   };
   # Custom Zotero package bundled with Better BibTeX distribution extension and auto-profile linking
   zoteroPkg = pkgs.runCommand "zotero-with-plugins-${pkgs.zotero.version}" { } ''
@@ -31,7 +31,8 @@ let
     mkdir -p $out/lib/distribution/extensions
     cp -r ${pkgs.zotero}/lib/distribution/* $out/lib/distribution/ 2>/dev/null || true
     ${lib.optionalString cfg.betterBibtex ''
-      ln -sf ${betterBibtexXpi} $out/lib/distribution/extensions/better-bibtex@iris-advies.com.xpi
+      cp -f ${betterBibtexXpi} $out/lib/distribution/extensions/better-bibtex@iris-advies.com.xpi
+      chmod 644 $out/lib/distribution/extensions/better-bibtex@iris-advies.com.xpi
     ''}
 
     cat << EOF > $out/lib/zotero
@@ -47,10 +48,14 @@ let
         for profile in "\$HOME/.zotero/zotero"/*/; do
           if [ -d "\$profile" ]; then
             mkdir -p "\$profile/extensions"
-            ln -sf "${betterBibtexXpi}" "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
+            if [ -L "\$profile/extensions/better-bibtex@iris-advies.com.xpi" ]; then
+              rm -f "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
+            fi
+            cp -f "${betterBibtexXpi}" "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
+            chmod 644 "\$profile/extensions/better-bibtex@iris-advies.com.xpi"
             touch "\$profile/user.js"
             if ! grep -q "extensions.autoDisableScopes" "\$profile/user.js"; then
-              printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\n' >> "\$profile/user.js"
+              printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\nuser_pref("xpinstall.signatures.required", false);\nuser_pref("extensions.experiments.enabled", true);\n' >> "\$profile/user.js"
             fi
           fi
         done
@@ -105,6 +110,7 @@ in
                 directories = [
                   ".zotero"
                   "Zotero"
+                  ".config/zotero"
                 ];
               });
             };
@@ -137,10 +143,14 @@ in
                   for profile in "$zpath"/*/; do
                     if [ -d "$profile" ]; then
                       mkdir -p "$profile/extensions"
-                      ln -sf "${betterBibtexXpi}" "$profile/extensions/better-bibtex@iris-advies.com.xpi"
+                      if [ -L "$profile/extensions/better-bibtex@iris-advies.com.xpi" ]; then
+                        rm -f "$profile/extensions/better-bibtex@iris-advies.com.xpi"
+                      fi
+                      cp -f "${betterBibtexXpi}" "$profile/extensions/better-bibtex@iris-advies.com.xpi"
+                      chmod 644 "$profile/extensions/better-bibtex@iris-advies.com.xpi"
                       touch "$profile/user.js"
                       if ! grep -q "extensions.autoDisableScopes" "$profile/user.js"; then
-                        printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\n' >> "$profile/user.js"
+                        printf '\nuser_pref("extensions.autoDisableScopes", 0);\nuser_pref("extensions.enabledScopes", 15);\nuser_pref("xpinstall.signatures.required", false);\nuser_pref("extensions.experiments.enabled", true);\n' >> "$profile/user.js"
                       fi
                     fi
                   done

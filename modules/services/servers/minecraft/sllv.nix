@@ -10,7 +10,10 @@
 
 let
   cfg = config.myFeatures.services.servers.minecraft.sllv;
-  iconFile = ../../../../assets/icons/heelsBoots.png;
+  iconFile = builtins.path {
+    path = ../../../../assets/icons/heelsBoots.png;
+    name = "server-icon.png";
+  };
 
   fetchMod =
     {

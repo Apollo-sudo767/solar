@@ -10,7 +10,10 @@
 
 let
   cfg = config.myFeatures.services.servers.minecraft.no-mans-land;
-  iconFile = ../../../../assets/icons/no-mans-land.png;
+  iconFile = builtins.path {
+    path = ../../../../assets/icons/no-mans-land.png;
+    name = "server-icon.png";
+  };
 
   modpack = pkgs.fetchModrinthModpack {
     url = "https://github.com/Phas-MC/NoMansLand/releases/download/Release/PhasMC.s.No.Man.s.Land.mrpack";

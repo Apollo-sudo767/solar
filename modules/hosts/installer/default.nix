@@ -67,6 +67,10 @@
             if [[ -d "$dir" ]]; then
                 h=$(basename "$dir")
                 if [[ "$h" != "shared" && "$h" != "installer" ]]; then
+                    # Exclude macOS / Darwin hosts (e.g. phobos)
+                    if grep -q "darwin" "$dir/default.nix" 2>/dev/null; then
+                        continue
+                    fi
                     HOSTS+=("$h")
                 fi
             fi
@@ -143,25 +147,67 @@
             else
                 echo -e "''${YELLOW}Directory not found, proceeding with dummy secrets bypass.''${NC}"
                 DUMMY_DIR=$(mktemp -d)
+                DUMMY_DIR=$(realpath "$DUMMY_DIR" 2>/dev/null || echo "$DUMMY_DIR")
                 OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$DUMMY_DIR")
             fi
         else
             DUMMY_DIR=$(mktemp -d)
+            DUMMY_DIR=$(realpath "$DUMMY_DIR" 2>/dev/null || echo "$DUMMY_DIR")
             OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$DUMMY_DIR")
         fi
 
-        # 7. Disko Partitioning & Warning
-        echo -e "\n''${RED}''${BOLD}⚠️  WARNING: Target drives for '$SELECTED_HOST' will be COMPLETELY WIPED!''${NC}"
-        echo -e "All existing partitions and data will be destroyed."
-        read -r -p "Type 'yes' to proceed with disk formatting and installation: " CONFIRM
-        if [[ "$CONFIRM" != "yes" ]]; then
-            echo "Installation aborted."
-            exit 0
+        # 7. Storage Preparation (Disko or Manual Layout)
+        HAS_DISKO=true
+        if grep -qE "disko\.enable\s*=\s*false" "$HOST_DIR/default.nix" 2>/dev/null; then
+            HAS_DISKO=false
         fi
 
-        # 8. Run Disko
-        echo -e "\n''${CYAN}🚀 Phase 1/3: Partitioning and mounting storage via Disko...''${NC}"
-        disko --mode disko --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}"
+        if [[ "$HAS_DISKO" == "true" ]]; then
+            echo -e "\n''${RED}''${BOLD}⚠️  WARNING: Target drives configured in Disko for '$SELECTED_HOST' will be COMPLETELY WIPED!''${NC}"
+            echo -e "All existing partitions and data will be destroyed."
+            read -r -p "Type 'yes' to proceed with Disko partitioning and installation: " CONFIRM
+            if [[ "$CONFIRM" != "yes" ]]; then
+                echo "Installation aborted."
+                exit 0
+            fi
+
+            # 8. Run Disko
+            echo -e "\n''${CYAN}🚀 Phase 1/3: Partitioning and mounting storage via Disko...''${NC}"
+            disko --mode disko --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}"
+        else
+            echo -e "\n''${YELLOW}ℹ️  Notice: Disko is not configured for '$SELECTED_HOST' (disko.enable = false).''${NC}"
+            echo -e "This host expects filesystems defined via hardware-configuration.nix or manual mounts."
+
+            if findmnt /mnt >/dev/null 2>&1; then
+                echo -e "''${GREEN}✓ Active root filesystem mount detected at /mnt.''${NC}"
+                read -r -p "Install $SELECTED_HOST directly into currently mounted /mnt? (Y/n): " PROCEED_MOUNT
+                PROCEED_MOUNT="''${PROCEED_MOUNT:-y}"
+                if [[ ! "$PROCEED_MOUNT" =~ ^[Yy]$ ]]; then
+                    echo "Installation aborted."
+                    exit 0
+                fi
+            else
+                echo -e "\n''${RED}⚠️  No filesystem is mounted at /mnt.''${NC}"
+                echo "To install $SELECTED_HOST without Disko, please prepare storage:"
+                echo "  1) Partition and format drives (e.g. using GParted or parted/fdisk)"
+                echo "  2) Mount root filesystem to /mnt (e.g. mount /dev/... /mnt)"
+                echo "  3) Mount boot/ESP partition to /mnt/boot (e.g. mount /dev/... /mnt/boot)"
+                echo ""
+                if command -v gparted &>/dev/null && [[ -n "$DISPLAY" ]]; then
+                    read -r -p "Launch GParted now? (y/N): " LAUNCH_GP
+                    if [[ "$LAUNCH_GP" =~ ^[Yy]$ ]]; then
+                        gparted &
+                    fi
+                fi
+                echo -e "Mount your target partitions to /mnt, then press Enter to continue (or Ctrl+C to exit)..."
+                read -r
+                if ! findmnt /mnt >/dev/null 2>&1; then
+                    echo -e "''${RED}❌ No filesystem mounted at /mnt. Aborting installation.''${NC}"
+                    exit 1
+                fi
+            fi
+            echo -e "\n''${CYAN}🚀 Phase 1/3: Storage verified at /mnt (manual layout). Skipping Disko...''${NC}"
+        fi
 
         # 9. Run NixOS Install
         echo -e "\n''${CYAN}🚀 Phase 2/3: Installing NixOS system ($SELECTED_HOST)...''${NC}"

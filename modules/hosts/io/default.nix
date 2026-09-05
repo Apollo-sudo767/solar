@@ -24,8 +24,15 @@
         # 🎛️ Host Specifics
         core = {
           system = {
-            core-branch.enable = true;
-            disko.enable = false;
+            core-branch = {
+              enable = true;
+              usePersistence = false;
+            };
+            disko = {
+              enable = true;
+              enableLuks = false;
+              speedDisks = [ "/dev/nvme0n1" ];
+            };
             users.usernames = [ "apollo" ];
           };
           boot = {

@@ -18,17 +18,7 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
-    fsType = "vfat";
-  };
-
-  swapDevices = [ ];
+  # Disko handles fileSystems and swapDevices declaratively.
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

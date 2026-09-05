@@ -11,4 +11,5 @@ ______________________________________________________________________
 - **Hardware Profile**: 64-bit x86 architecture.
 - **Desktop Environment**: **COSMIC Desktop Environment** (System76 Rust-based Wayland desktop) with **COSMIC Greeter**.
 - **Theme & Styling**: **Stylix Space** theme with custom wallpaper and cosmic panel integration.
+- **Storage Topology**: Standard Btrfs storage managed via Disko (`/dev/nvme0n1`) with automatic subvolume mapping (`/root`, `/nix`, `/persist`).
 - **Role**: Validating new Rust-based Wayland compositors, applets, and bleeding-edge upstream Linux kernel features.

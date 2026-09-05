@@ -63,3 +63,51 @@ sudo nixos-install --flake "github:Apollo-sudo767/solar#<hostname>"
 ```bash
 reboot
 ```
+
+______________________________________________________________________
+
+## 💿 Method 3: Dedicated Solar Live Installer ISO
+
+Solar includes a custom live installer host (`modules/hosts/installer`) equipped with a graphical XFCE desktop, GParted, web browser, Wi-Fi configuration (`nmtui`), remote SSH authorization, and a built-in on-device installer tool (`solar-install`).
+
+### 1. Build the Live ISO
+
+From any machine with Nix and Linux build capability (or remote builder):
+
+```bash
+nix build .#nixosConfigurations.installer.config.system.build.isoImage
+```
+
+The resulting ISO image will be available at:
+`./result/iso/solar-installer-*.iso`
+
+### 2. Flash to USB Drive
+
+```bash
+sudo dd if=result/iso/solar-installer-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
+```
+
+*(Replace `/dev/sdX` with your USB drive block device).*
+
+### 3. Boot & Install
+
+The ISO boot menu provides two startup options:
+
+1. **Graphical Desktop (XFCE)** (Default): Full desktop with browser, GParted, and terminal.
+1. **Console / Text Mode**: Direct text console prompt with auto-login.
+
+#### On-Device Installation
+
+Launch the interactive installer directly from the desktop shortcut **"Install Solar"** or run in terminal:
+
+```bash
+sudo solar-install
+```
+
+The wizard will:
+
+- Present all available hosts configured in the repository.
+- Optionally generate a fresh `hardware-configuration.nix` for the detected hardware.
+- Partition and format drives automatically via Disko.
+- Install the NixOS system and configure initial user credentials.
+- Prompt to reboot into your newly installed system.

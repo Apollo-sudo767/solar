@@ -70,17 +70,6 @@ let
         tar -xzf $src package/publish/plugin.calebjohn.rich-markdown.jpl
         mv package/publish/plugin.calebjohn.rich-markdown.jpl $out
       '';
-
-  # Wrap Joplin Desktop with Ozone Wayland flags for smooth rendering on Wayland compositors (like Niri)
-  joplinDesktopWrapped = pkgs.symlinkJoin {
-    name = "joplin-desktop-wrapped";
-    paths = [ pkgs.joplin-desktop ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/joplin-desktop \
-        --add-flags "--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations"
-    '';
-  };
 in
 {
   options.myFeatures.programs.office.joplin = {
@@ -92,7 +81,7 @@ in
     };
     cli = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
       description = "Whether to install the Joplin CLI client.";
     };
     plugins = {
@@ -128,7 +117,7 @@ in
     lib.mkMerge [
       (lib.optionalAttrs (!isDarwin) {
         environment.systemPackages =
-          (lib.optional cfg.gui joplinDesktopWrapped) ++ (lib.optional cfg.cli pkgs.joplin-cli);
+          (lib.optional cfg.gui pkgs.joplin-desktop) ++ (lib.optional cfg.cli pkgs.joplin-cli);
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable

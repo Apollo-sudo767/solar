@@ -96,6 +96,7 @@
 
         services = {
           hardware.firmware.enable = true;
+          networking.surfshark.enable = true;
         };
       };
     };

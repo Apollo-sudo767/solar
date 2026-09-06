@@ -16,7 +16,20 @@ in
 
   config = lib.mkIf cfg.enable (
     lib.optionalAttrs (!isDarwin) {
-      services.resolved.enable = true;
+      services.resolved = {
+        enable = true;
+        settings.Resolve = {
+          DNSSEC = "false";
+          FallbackDNS = [
+            "1.0.0.1"
+            "9.9.9.9"
+          ];
+        };
+      };
+
+      networking.networkmanager.dns = lib.mkIf config.networking.networkmanager.enable (
+        lib.mkDefault "systemd-resolved"
+      );
     }
   );
 }

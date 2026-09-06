@@ -32,7 +32,7 @@
             };
             disko = {
               enable = true;
-              enableLuks = true;
+              enableLuks = false;
               speedDisks = [ "/dev/sda" ];
             };
             users = {
@@ -72,5 +72,9 @@
         PermitRootLogin = lib.mkDefault "prohibit-password";
         PasswordAuthentication = lib.mkDefault true;
       };
+
+      # Apple Mac EFI Quirk: Apple NVRAM is slow/unreliable with efibootmgr.
+      # Limine installs to /boot/EFI/BOOT/BOOTX64.EFI which Apple EFI boots automatically.
+      boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
     };
 }

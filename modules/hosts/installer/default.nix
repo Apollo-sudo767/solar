@@ -209,21 +209,31 @@
             echo -e "\n''${CYAN}🚀 Phase 1/3: Storage verified at /mnt (manual layout). Skipping Disko...''${NC}"
         fi
 
-        # 9. Run NixOS Install
-        echo -e "\n''${CYAN}🚀 Phase 2/3: Installing NixOS system ($SELECTED_HOST)...''${NC}"
-        nixos-install --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}" --no-root-password
-
-        # 10. Write Initial User Password and Persistence
-        echo -e "\n''${CYAN}🚀 Phase 3/3: Finalizing system configuration...''${NC}"
+        # Stage Initial User Password before activation
         mkdir -p /mnt/etc
-        echo "$PASSWORD_HASH" > /mnt/etc/user-password
-        chmod 600 /mnt/etc/user-password
+        if [ -n "$PASSWORD_HASH" ]; then
+            echo "$PASSWORD_HASH" > /mnt/etc/user-password
+            chmod 600 /mnt/etc/user-password
+        fi
 
-        if [[ -d "/mnt/persist" ]]; then
+        if [[ -d "/mnt/persist" ]] && [ -n "$PASSWORD_HASH" ]; then
             mkdir -p /mnt/persist/etc
             echo "$PASSWORD_HASH" > /mnt/persist/etc/user-password
             chmod 600 /mnt/persist/etc/user-password
             echo -e "''${GREEN}✓ Mirrored user password to /persist/etc/user-password''${NC}"
+        fi
+
+        # 9. Run NixOS Install
+        echo -e "\n''${CYAN}🚀 Phase 2/3: Installing NixOS system ($SELECTED_HOST)...''${NC}"
+        nixos-install --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}" --no-root-password
+
+        # 10. Finalize User Credentials
+        echo -e "\n''${CYAN}🚀 Phase 3/3: Finalizing system configuration...''${NC}"
+        PRIMARY_USER=$(grep -oE 'usernames\s*=\s*\[\s*"[^"]+"' "$HOST_DIR/default.nix" 2>/dev/null | head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || echo "apollo")
+        PRIMARY_USER="''${PRIMARY_USER:-apollo}"
+        if [ -n "$PASSWORD_HASH" ]; then
+            nixos-enter --root /mnt -c "echo '$PRIMARY_USER:$PASSWORD_HASH' | chpasswd -e" 2>/dev/null || true
+            echo -e "''${GREEN}✓ Account '$PRIMARY_USER' password initialized in /etc/shadow''${NC}"
         fi
 
         sync

@@ -76,7 +76,7 @@ in
         "bzImage";
 
     # Enable UEFI support
-    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
 
     # Bootloader timeout optimization
     boot.loader.timeout = lib.mkDefault cfg.timeout;

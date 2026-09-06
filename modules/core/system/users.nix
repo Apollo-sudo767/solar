@@ -62,6 +62,11 @@ in
             "video"
           ];
           # Password Logic
+          initialHashedPassword =
+            if !useAgenixPassword then
+              "$6$/Edi4zjoQYa81MQL$MD/BacUUKnb3jdHCnAzRG5s2Vh7KUIYh4s0h/5SQzMLVpbJ7T6XKCvYMuMZ2Sqt91quxmHATBEzkuyQKzQ/K5/"
+            else
+              null;
           hashedPasswordFile =
             if
               useAgenixPassword
@@ -76,7 +81,7 @@ in
             then
               config.age.secrets."password-apollo.age".path
             else
-              "/etc/user-password";
+              null;
         }
       );
 

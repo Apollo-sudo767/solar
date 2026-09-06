@@ -22,6 +22,7 @@
           workstation.enable = true;
           gaming.enable = true;
           laptop.enable = true;
+          networking.enable = true;
           desktops.niri.enable = true;
         };
 
@@ -95,7 +96,6 @@
 
         services = {
           hardware.firmware.enable = true;
-          networking.tailscale.enable = true;
         };
       };
     };

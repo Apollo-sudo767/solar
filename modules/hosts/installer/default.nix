@@ -16,7 +16,7 @@
     let
       solarInstallScript = pkgs.writeShellScriptBin "solar-install" ''
         #!/usr/bin/env bash
-        set -euo pipefail
+        set -Eeuo pipefail
 
         # Colors
         BOLD='\033[1m'
@@ -27,8 +27,20 @@
         CYAN='\033[0;36m'
         NC='\033[0m'
 
+        # Trap unexpected errors and keep the terminal open for debugging
+        on_exit() {
+            local exit_code=$1
+            local line_no=$2
+            if [[ $exit_code -ne 0 ]]; then
+                echo -e "\n''${RED}''${BOLD}❌ Installation failed at line $line_no (Exit code: $exit_code)''${NC}"
+                echo -e "''${YELLOW}Review the errors above. The terminal will remain open for debugging.''${NC}"
+                read -r -p "Press Enter to exit..." dummy || true
+            fi
+        }
+        trap 'on_exit $? $LINENO' EXIT
+
         echo -e "''${CYAN}''${BOLD}"
-        echo "  ☀️  ====================================================="
+        echo "  ☀️  ========================================================="
         echo "      SOLAR ON-DEVICE SYSTEM INSTALLER"
         echo "  ========================================================="
         echo -e "''${NC}"
@@ -39,24 +51,57 @@
             exit 1
         fi
 
-        # 1. Locate Flake Repository
-        FLAKE_DIR=""
-        if [[ -d "/home/nixos/solar" && -f "/home/nixos/solar/flake.nix" ]]; then
-            FLAKE_DIR="/home/nixos/solar"
-        elif [[ -d "/etc/solar" && -f "/etc/solar/flake.nix" ]]; then
-            # Copy to writable directory
-            echo -e "''${BLUE}📁 Copying Solar repository to writable workspace in /tmp/solar...''${NC}"
-            mkdir -p /tmp/solar
-            cp -r /etc/solar/. /tmp/solar/
-            chmod -R u+w /tmp/solar
+        # 1. Locate / Prepare Flake Repository
+        echo -e "''${BOLD}📁 Solar Configuration Source:''${NC}"
+        echo "  1) Pull latest from GitHub (Recommended - apollo-sudo767/solar) [Default]"
+        echo "  2) Use bundled offline repository (/home/nixos/solar)"
+        echo "  3) Use current directory ($PWD)"
+        read -r -p "Select source [1-3] (default 1): " REPO_CHOICE
+        REPO_CHOICE="''${REPO_CHOICE:-1}"
+
+        FLAKE_DIR="/tmp/solar"
+        case "$REPO_CHOICE" in
+            2)
+                if [[ -d "/home/nixos/solar" ]]; then
+                    echo -e "''${BLUE}📁 Copying bundled repository to /tmp/solar...''${NC}"
+                    rm -rf /tmp/solar
+                    cp -r /home/nixos/solar /tmp/solar
+                    chmod -R u+w /tmp/solar
+                else
+                    echo -e "''${YELLOW}Bundled repo not found, falling back to GitHub...''${NC}"
+                    REPO_CHOICE="1"
+                fi
+                ;;
+            3)
+                if [[ -f "./flake.nix" ]]; then
+                    echo -e "''${BLUE}📁 Using current directory ($PWD)...''${NC}"
+                    FLAKE_DIR="$PWD"
+                else
+                    echo -e "''${YELLOW}No flake.nix in current directory, falling back to GitHub...''${NC}"
+                    REPO_CHOICE="1"
+                fi
+                ;;
+        esac
+
+        if [[ "$REPO_CHOICE" == "1" ]]; then
+            echo -e "''${BLUE}🌐 Fetching latest Solar repository from GitHub...''${NC}"
+            if [[ -d "/tmp/solar/.git" ]]; then
+                echo "Updating existing clone in /tmp/solar..."
+                git -C /tmp/solar fetch origin 2>/dev/null || true
+                git -C /tmp/solar reset --hard origin/main 2>/dev/null || true
+            else
+                rm -rf /tmp/solar
+                git clone https://github.com/Apollo-sudo767/solar.git /tmp/solar
+            fi
             FLAKE_DIR="/tmp/solar"
-        elif [[ -f "./flake.nix" ]]; then
-            FLAKE_DIR="$PWD"
-        else
-            echo -e "''${YELLOW}⚠️  Local Solar repository not found in standard paths.''${NC}"
-            echo -e "''${BLUE}Cloning latest Solar from GitHub...''${NC}"
-            git clone https://github.com/Apollo-sudo767/solar.git /tmp/solar
-            FLAKE_DIR="/tmp/solar"
+        fi
+
+        # Ensure FLAKE_DIR is initialized as a git repository so Nix Flakes can evaluate it
+        if [[ ! -d "$FLAKE_DIR/.git" ]]; then
+            echo -e "''${BLUE}🔧 Initializing git repository in $FLAKE_DIR...''${NC}"
+            git -C "$FLAKE_DIR" init >/dev/null 2>&1 || true
+            git -C "$FLAKE_DIR" add -A >/dev/null 2>&1 || true
+            git -C "$FLAKE_DIR" -c user.name="Solar" -c user.email="solar@localhost" commit -m "solar install staging" >/dev/null 2>&1 || true
         fi
 
         echo -e "''${GREEN}✓ Using Solar repository:''${NC} $FLAKE_DIR\n"
@@ -77,7 +122,7 @@
         done
 
         if [[ ''${#HOSTS[@]} -eq 0 ]]; then
-            echo -e "''${RED}❌ No hosts found in $FLAKE_DIR/modules/hosts/''${NC}"
+            echo -e "''${RED}❌ No Linux hosts found in $FLAKE_DIR/modules/hosts/''${NC}"
             exit 1
         fi
 
@@ -113,15 +158,9 @@
             echo -e "''${BLUE}⚙️  Generating hardware configuration...''${NC}"
             mkdir -p /tmp/hw-gen
             nixos-generate-config --no-filesystems --dir /tmp/hw-gen
-            if [[ ! -w "$HOST_DIR/hardware-configuration.nix" ]]; then
-                mkdir -p /tmp/solar-workspace
-                cp -r "$FLAKE_DIR/." /tmp/solar-workspace/
-                chmod -R u+w /tmp/solar-workspace
-                FLAKE_DIR="/tmp/solar-workspace"
-                HOST_DIR="$FLAKE_DIR/modules/hosts/$SELECTED_HOST"
-            fi
             cp /tmp/hw-gen/hardware-configuration.nix "$HOST_DIR/hardware-configuration.nix"
-            echo -e "''${GREEN}✓ hardware-configuration.nix updated for $SELECTED_HOST.''${NC}\n"
+            git -C "$FLAKE_DIR" add "$HOST_DIR/hardware-configuration.nix" >/dev/null 2>&1 || true
+            echo -e "''${GREEN}✓ hardware-configuration.nix updated and staged for $SELECTED_HOST.''${NC}\n"
         fi
 
         # 5. User Password Setup
@@ -147,69 +186,65 @@
             else
                 echo -e "''${YELLOW}Directory not found, proceeding with dummy secrets bypass.''${NC}"
                 DUMMY_DIR=$(mktemp -d)
-                DUMMY_DIR=$(realpath "$DUMMY_DIR" 2>/dev/null || echo "$DUMMY_DIR")
                 OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$DUMMY_DIR")
             fi
         else
             DUMMY_DIR=$(mktemp -d)
-            DUMMY_DIR=$(realpath "$DUMMY_DIR" 2>/dev/null || echo "$DUMMY_DIR")
             OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$DUMMY_DIR")
         fi
 
-        # 7. Storage Preparation (Disko or Manual Layout)
+        # 7. Storage Preparation & Cleanup
         HAS_DISKO=true
         if grep -qE "disko\.enable\s*=\s*false" "$HOST_DIR/default.nix" 2>/dev/null; then
             HAS_DISKO=false
         fi
 
+        # Clean up any active mounts, swap, and LUKS device-mapper locks
+        echo -e "\n''${BLUE}🧹 Performing pre-flight storage cleanup (unmounting /mnt, disabling swap)...''${NC}"
+        umount -R /mnt 2>/dev/null || true
+        swapoff -a 2>/dev/null || true
+
+        # Close any active dm-crypt devices
+        for dev in /dev/mapper/crypted-*; do
+            if [[ -e "$dev" ]]; then
+                echo "Closing active crypt device: $(basename "$dev")"
+                cryptsetup close "$(basename "$dev")" 2>/dev/null || true
+            fi
+        done
+
         if [[ "$HAS_DISKO" == "true" ]]; then
             echo -e "\n''${RED}''${BOLD}⚠️  WARNING: Target drives configured in Disko for '$SELECTED_HOST' will be COMPLETELY WIPED!''${NC}"
-            echo -e "All existing partitions and data will be destroyed."
+            echo -e "All existing partitions and data on target disk(s) will be destroyed."
             read -r -p "Type 'yes' to proceed with Disko partitioning and installation: " CONFIRM
             if [[ "$CONFIRM" != "yes" ]]; then
-                echo "Installation aborted."
+                echo "Installation aborted by user."
                 exit 0
             fi
 
+            # Stage all changes in git so Disko and Nix Flakes see them
+            git -C "$FLAKE_DIR" add -A 2>/dev/null || true
+
             # 8. Run Disko
             echo -e "\n''${CYAN}🚀 Phase 1/3: Partitioning and mounting storage via Disko...''${NC}"
-            disko --mode disko --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}"
-        else
-            echo -e "\n''${YELLOW}ℹ️  Notice: Disko is not configured for '$SELECTED_HOST' (disko.enable = false).''${NC}"
-            echo -e "This host expects filesystems defined via hardware-configuration.nix or manual mounts."
+            disko --mode disko --yes-wipe-all-disks --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}"
 
-            if findmnt /mnt >/dev/null 2>&1; then
-                echo -e "''${GREEN}✓ Active root filesystem mount detected at /mnt.''${NC}"
-                read -r -p "Install $SELECTED_HOST directly into currently mounted /mnt? (Y/n): " PROCEED_MOUNT
-                PROCEED_MOUNT="''${PROCEED_MOUNT:-y}"
-                if [[ ! "$PROCEED_MOUNT" =~ ^[Yy]$ ]]; then
-                    echo "Installation aborted."
-                    exit 0
-                fi
-            else
-                echo -e "\n''${RED}⚠️  No filesystem is mounted at /mnt.''${NC}"
-                echo "To install $SELECTED_HOST without Disko, please prepare storage:"
-                echo "  1) Partition and format drives (e.g. using GParted or parted/fdisk)"
-                echo "  2) Mount root filesystem to /mnt (e.g. mount /dev/... /mnt)"
-                echo "  3) Mount boot/ESP partition to /mnt/boot (e.g. mount /dev/... /mnt/boot)"
-                echo ""
-                if command -v gparted &>/dev/null && [[ -n "$DISPLAY" ]]; then
-                    read -r -p "Launch GParted now? (y/N): " LAUNCH_GP
-                    if [[ "$LAUNCH_GP" =~ ^[Yy]$ ]]; then
-                        gparted &
-                    fi
-                fi
-                echo -e "Mount your target partitions to /mnt, then press Enter to continue (or Ctrl+C to exit)..."
-                read -r
-                if ! findmnt /mnt >/dev/null 2>&1; then
-                    echo -e "''${RED}❌ No filesystem mounted at /mnt. Aborting installation.''${NC}"
-                    exit 1
-                fi
+            # Verify that Disko mounted the root filesystem to /mnt
+            if ! findmnt /mnt >/dev/null 2>&1; then
+                echo -e "''${RED}❌ Disko failed to mount target filesystem to /mnt. Aborting.''${NC}"
+                exit 1
+            fi
+            echo -e "''${GREEN}✓ Storage partitioned and mounted at /mnt successfully.''${NC}"
+        else
+            echo -e "\n''${YELLOW}ℹ️  Notice: Disko is disabled for '$SELECTED_HOST'.''${NC}"
+            if ! findmnt /mnt >/dev/null 2>&1; then
+                echo -e "''${RED}❌ No filesystem mounted at /mnt. Please mount target storage to /mnt first.''${NC}"
+                exit 1
             fi
             echo -e "\n''${CYAN}🚀 Phase 1/3: Storage verified at /mnt (manual layout). Skipping Disko...''${NC}"
         fi
 
         # Stage Initial User Password before activation
+        echo -e "\n''${CYAN}🔑 Staging credentials before NixOS install...''${NC}"
         mkdir -p /mnt/etc
         if [ -n "$PASSWORD_HASH" ]; then
             echo "$PASSWORD_HASH" > /mnt/etc/user-password
@@ -225,6 +260,7 @@
 
         # 9. Run NixOS Install
         echo -e "\n''${CYAN}🚀 Phase 2/3: Installing NixOS system ($SELECTED_HOST)...''${NC}"
+        git -C "$FLAKE_DIR" add -A 2>/dev/null || true
         nixos-install --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}" --no-root-password
 
         # 10. Finalize User Credentials
@@ -245,6 +281,19 @@
             reboot
         fi
       '';
+
+      desktopLauncher = pkgs.makeDesktopItem {
+        name = "solar-install";
+        desktopName = "Install Solar";
+        comment = "Install Solar on this computer";
+        exec = "x-terminal-emulator -T 'Solar Installer' -e sudo solar-install || xfce4-terminal -T 'Solar Installer' --maximize -e sudo solar-install || konsole -e sudo solar-install || foot sudo solar-install";
+        icon = "system-software-install";
+        terminal = false;
+        categories = [
+          "System"
+          "Utility"
+        ];
+      };
     in
     {
       imports = [
@@ -272,11 +321,17 @@
       networking.networkmanager.enable = true;
       networking.wireless.enable = lib.mkForce false;
 
-      # Graphical Desktop: Lightweight XFCE for universal hardware compatibility
+      # Graphical Desktops: XFCE, GNOME, and KDE Plasma 6
       services.xserver = {
         enable = true;
         desktopManager.xfce.enable = true;
       };
+      services.desktopManager.gnome.enable = true;
+      services.desktopManager.plasma6.enable = true;
+
+      # Resolve conflict between GNOME seahorse and KDE ksshaskpass
+      programs.ssh.askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+
       services.displayManager.defaultSession = "xfce";
       services.displayManager.autoLogin = {
         enable = true;
@@ -319,50 +374,72 @@
       isoImage = {
         volumeID = lib.mkDefault "SOLAR_INSTALL";
         edition = lib.mkDefault "solar";
-        configurationName = "Graphical Desktop (XFCE)";
+        configurationName = "Graphical Desktop (XFCE - Universal Safe Mode)";
         makeEfiBootable = true;
         makeUsbBootable = true;
         squashfsCompression = "zstd -Xcompression-level 6";
       };
 
-      # Specialisation entry in boot menu for Console / Text Mode
-      specialisation.textMode = {
-        configuration = {
-          isoImage.configurationName = lib.mkForce "Console / Text Mode";
-          services.xserver.enable = lib.mkForce false;
-          services.displayManager.autoLogin.enable = lib.mkForce false;
+      # Specialisation entries in ISO boot menu
+      specialisation = {
+        plasma = {
+          configuration = {
+            isoImage.configurationName = lib.mkForce "KDE Plasma 6 Desktop";
+            services.displayManager.defaultSession = lib.mkForce "plasma";
+          };
+        };
+        gnome = {
+          configuration = {
+            isoImage.configurationName = lib.mkForce "GNOME Desktop";
+            services.displayManager.defaultSession = lib.mkForce "gnome";
+          };
+        };
+        textMode = {
+          configuration = {
+            isoImage.configurationName = lib.mkForce "Console / Text Mode";
+            services.xserver.enable = lib.mkForce false;
+            services.desktopManager.gnome.enable = lib.mkForce false;
+            services.desktopManager.plasma6.enable = lib.mkForce false;
+            services.displayManager.autoLogin.enable = lib.mkForce false;
+          };
         };
       };
 
-      # Bundle Solar repository and desktop launcher
+      # Bundle Solar repository and desktop launcher applet
       system.activationScripts.copySolarRepo = ''
-        if [ ! -d /home/nixos/solar ]; then
-          mkdir -p /home/nixos
-          cp -r ${inputs.self.outPath} /home/nixos/solar
-          chown -R nixos:users /home/nixos/solar
-          chmod -R u+w /home/nixos/solar
-        fi
+                if [ ! -d /home/nixos/solar ]; then
+                  mkdir -p /home/nixos
+                  cp -r ${inputs.self.outPath} /home/nixos/solar
+                  chown -R nixos:users /home/nixos/solar
+                  chmod -R u+w /home/nixos/solar
 
-        mkdir -p /home/nixos/Desktop
-        cat << 'DESKTOP_EOF' > /home/nixos/Desktop/solar-install.desktop
+                  # Initialize as a valid Git repository so Nix Flakes can evaluate it offline
+                  ${pkgs.git}/bin/git -C /home/nixos/solar init >/dev/null 2>&1 || true
+                  ${pkgs.git}/bin/git -C /home/nixos/solar add -A >/dev/null 2>&1 || true
+                  ${pkgs.git}/bin/git -C /home/nixos/solar -c user.name="Solar" -c user.email="solar@localhost" commit -m "solar iso bundle" >/dev/null 2>&1 || true
+                fi
+
+                mkdir -p /home/nixos/Desktop
+                cat << 'DESKTOP_EOF' > /home/nixos/Desktop/solar-install.desktop
         [Desktop Entry]
         Version=1.0
         Type=Application
         Name=Install Solar
         Comment=Install Solar on this computer
-        Exec=xfce4-terminal -T "Solar Installer" --maximize -e "sudo solar-install"
+        Exec=sh -c "exec xfce4-terminal -T 'Solar Installer' --maximize -e sudo solar-install || konsole -e sudo solar-install || foot sudo solar-install || alacritty -e sudo solar-install"
         Icon=system-software-install
         Terminal=false
         StartupNotify=true
-        Categories=System;
+        Categories=System;Utility;
         DESKTOP_EOF
-        chmod +x /home/nixos/Desktop/solar-install.desktop
-        chown -R nixos:users /home/nixos/Desktop
+                chmod +x /home/nixos/Desktop/solar-install.desktop
+                chown -R nixos:users /home/nixos/Desktop
       '';
 
       # Environment Packages & Tools
       environment.systemPackages = with pkgs; [
         solarInstallScript
+        desktopLauncher
         inputs.disko.packages.${pkgs.system}.disko
         inputs.agenix.packages.${pkgs.system}.default
         gparted

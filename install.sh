@@ -8,7 +8,15 @@ FLAKE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMP_DIR=$(mktemp -d)
 
 # Ensure cleanup on exit
-trap 'rm -rf "$TEMP_DIR"' EXIT
+on_exit() {
+    local exit_code=$1
+    local line_no=$2
+    rm -rf "$TEMP_DIR" 2>/dev/null || true
+    if [[ $exit_code -ne 0 ]]; then
+        echo -e "\n\033[0;31m❌ Installation script failed at line $line_no (Exit code: $exit_code)\033[0m"
+    fi
+}
+trap 'on_exit $? $LINENO' EXIT
 
 echo "☀️ Solar Installation Script"
 echo "==================================="
@@ -39,20 +47,38 @@ while [[ -z "$TARGET_IP" ]]; do
     fi
 done
 
-# 3. Build Mode Selection
+# 3. Build Mode & Target State Selection
 echo ""
-echo "🏗️  Build location:"
-echo "1) Build LOCALLY and copy to target (Recommended) [Default]"
-echo "2) Build REMOTE-ly on target machine (Useful if local machine is low on resources/architecture difference)"
-while true; do
-    read -p "Select build mode [1-2] (default 1): " BUILD_CHOICE
-    BUILD_CHOICE=${BUILD_CHOICE:-1}
-    case "$BUILD_CHOICE" in
-        1) REMOTE_BUILD=false; break ;;
-        2) REMOTE_BUILD=true; break ;;
-        *) echo "❌ Invalid selection. Please enter 1 or 2." ;;
-    esac
-done
+LOCAL_OS=$(uname -s)
+TARGET_SYSTEM=$(grep -oE 'system\s*=\s*"[^"]+"' "$FLAKE_DIR/modules/hosts/$HOST/default.nix" 2>/dev/null | head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || echo "x86_64-linux")
+
+if [[ "$LOCAL_OS" == "Darwin" && "$TARGET_SYSTEM" =~ linux ]]; then
+    echo "⚠️  Detected macOS host ($LOCAL_OS) targeting Linux ($TARGET_SYSTEM)."
+    echo "   Local build requires a Linux remote builder. Defaulting build mode to Remote (on target)."
+    REMOTE_BUILD=true
+else
+    echo "🏗️  Build location:"
+    echo "1) Build LOCALLY and copy to target (Recommended) [Default]"
+    echo "2) Build REMOTE-ly on target machine (Useful if local machine is low on resources/architecture difference)"
+    while true; do
+        read -p "Select build mode [1-2] (default 1): " BUILD_CHOICE
+        BUILD_CHOICE=${BUILD_CHOICE:-1}
+        case "$BUILD_CHOICE" in
+            1) REMOTE_BUILD=false; break ;;
+            2) REMOTE_BUILD=true; break ;;
+            *) echo "❌ Invalid selection. Please enter 1 or 2." ;;
+        esac
+    done
+fi
+
+echo ""
+read -p "Is target already booted into a NixOS / Solar Live USB? (Y/n): " IN_INSTALLER
+IN_INSTALLER=${IN_INSTALLER:-y}
+if [[ "$IN_INSTALLER" =~ ^[Yy]$ ]]; then
+    PHASES_ARG=(--phases disko,install,reboot)
+else
+    PHASES_ARG=(--phases kexec,disko,install,reboot)
+fi
 
 # 4. Agenix Setting Selection
 echo ""
@@ -257,62 +283,23 @@ fi
 EXTRA_FILES_ARG=(--extra-files "$PAYLOAD_DIR")
 
 # Build and Execute
-echo "🏗️ Building system and disko script..."
+echo "🏗️ Initiating nixos-anywhere deployment for $HOST to $TARGET_IP..."
 
+BUILD_ARGS=()
 if [[ "$REMOTE_BUILD" == "true" ]]; then
-    echo "📡 Phase 1: kexec into target to prepare build environment..."
-    if ! nix run github:nix-community/nixos-anywhere -- --print-build-logs --flake ".#$HOST" --phases kexec "root@$TARGET_IP"; then
-        echo "❌ Phase 1 (kexec) failed. Please check the logs above."
-        exit 1
-    fi
-
-    echo "⏳ Waiting for target to become reachable again..."
-    while ! nc -z -w 2 "$TARGET_IP" 22 2>/dev/null; do
-        echo -n "."
-        sleep 2
-    done
-    echo " Online!"
-
-    echo "🔑 Authorizing your SSH key on the target installer for the build phase..."
-    echo "You may be prompted for the target's root password (usually 'nixos')."
-    ssh-copy-id -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@$TARGET_IP"
-
-    echo "🏗️ Phase 2: Building closures ON the target machine..."
-    export NIX_SSHOPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-    
-    sudo mkdir -p /root/.ssh
-    sudo ssh-keyscan -H "$TARGET_IP" | sudo tee /root/.ssh/known_hosts > /dev/null
-
-    DISKO_PATH=$(sudo env NIX_SSHOPTS="$NIX_SSHOPTS" HOME=/root nix build ".#nixosConfigurations.$HOST.config.system.build.diskoScript" \
-        --override-input solar-secrets "path:$OVERRIDE_SECRETS_DIR" \
-        --builders "ssh://root@$TARGET_IP" --max-jobs 0 \
-        --no-link --print-out-paths --no-write-lock-file)
-    
-    SYSTEM_PATH=$(sudo env NIX_SSHOPTS="$NIX_SSHOPTS" HOME=/root nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" \
-        --override-input solar-secrets "path:$OVERRIDE_SECRETS_DIR" \
-        --builders "ssh://root@$TARGET_IP" --max-jobs 0 \
-        --no-link --print-out-paths --no-write-lock-file)
-
-    echo "📡 Phase 3: Executing disko and installation..."
-    echo "💡 Note: If prompted for LUKS passphrases on multiple disks, use the SAME passphrase across all drives."
-    nix run github:nix-community/nixos-anywhere -- \
-        --phases disko,install,reboot \
-        --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
-        "${EXTRA_FILES_ARG[@]}" \
-        "root@$TARGET_IP"
-else
-    echo "🏗️ Building closures locally..."
-    DISKO_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.diskoScript" --override-input solar-secrets "path:$OVERRIDE_SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
-    SYSTEM_PATH=$(nix build ".#nixosConfigurations.$HOST.config.system.build.toplevel" --override-input solar-secrets "path:$OVERRIDE_SECRETS_DIR" --no-link --print-out-paths --no-write-lock-file)
-
-    echo "📡 Executing nixos-anywhere..."
-    echo "💡 Note: If prompted for LUKS passphrases on multiple disks, use the SAME passphrase across all drives."
-    echo "If you set a password on the live USB, nixos-anywhere will prompt for it now."
-    nix run github:nix-community/nixos-anywhere -- \
-        --store-paths "$DISKO_PATH" "$SYSTEM_PATH" \
-        "${EXTRA_FILES_ARG[@]}" \
-        "root@$TARGET_IP"
+    BUILD_ARGS=(--build-on-remote)
 fi
+
+OVERRIDE_SECRETS_ARGS=(--override-input solar-secrets "path:$OVERRIDE_SECRETS_DIR")
+
+echo "📡 Executing nixos-anywhere (${PHASES_ARG[*]} via $( [ "$REMOTE_BUILD" == "true" ] && echo "remote build" || echo "local build" ))..."
+nix run github:nix-community/nixos-anywhere -- \
+    --flake "$FLAKE_DIR#$HOST" \
+    "${BUILD_ARGS[@]}" \
+    "${OVERRIDE_SECRETS_ARGS[@]}" \
+    "${PHASES_ARG[@]}" \
+    "${EXTRA_FILES_ARG[@]}" \
+    "root@$TARGET_IP"
 
 echo ""
 echo "✅ Installation of $HOST initiated!"

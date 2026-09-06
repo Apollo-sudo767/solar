@@ -70,6 +70,17 @@ let
         tar -xzf $src package/publish/plugin.calebjohn.rich-markdown.jpl
         mv package/publish/plugin.calebjohn.rich-markdown.jpl $out
       '';
+
+  # Wrap Joplin Desktop with Ozone Wayland flags for smooth rendering on Wayland compositors (like Niri)
+  joplinDesktopWrapped = pkgs.symlinkJoin {
+    name = "joplin-desktop-wrapped";
+    paths = [ pkgs.joplin-desktop ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/joplin-desktop \
+        --add-flags "--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations"
+    '';
+  };
 in
 {
   options.myFeatures.programs.office.joplin = {
@@ -117,7 +128,7 @@ in
     lib.mkMerge [
       (lib.optionalAttrs (!isDarwin) {
         environment.systemPackages =
-          (lib.optional cfg.gui pkgs.joplin-desktop) ++ (lib.optional cfg.cli pkgs.joplin-cli);
+          (lib.optional cfg.gui joplinDesktopWrapped) ++ (lib.optional cfg.cli pkgs.joplin-cli);
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
@@ -134,22 +145,48 @@ in
       })
       {
         home-manager.sharedModules = lib.mkIf hasPlugins [
-          {
-            home.file = lib.mkMerge [
-              (lib.mkIf cfg.plugins.jopdoc {
-                ".config/joplin-desktop/plugins/jopdoc.nsharris247.jpl".source = jopdocJpl;
-              })
-              (lib.mkIf cfg.plugins.bibtex {
-                ".config/joplin-desktop/plugins/com.xUser5000.bibtex.jpl".source = bibtexJpl;
-              })
-              (lib.mkIf cfg.plugins.outline {
-                ".config/joplin-desktop/plugins/outline.jpl".source = outlineJpl;
-              })
-              (lib.mkIf cfg.plugins.richMarkdown {
-                ".config/joplin-desktop/plugins/plugin.calebjohn.rich-markdown.jpl".source = richMarkdownJpl;
-              })
-            ];
-          }
+          ({ config, ... }: {
+            home.activation.installJoplinPlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+              ${
+                if isDarwin then
+                  ''
+                    jpath="$HOME/Library/Application Support/joplin-desktop/plugins"
+                  ''
+                else
+                  ''
+                    jpath="$HOME/.config/joplin-desktop/plugins"
+                  ''
+              }
+              mkdir -p "$jpath"
+
+              # Remove old read-only symlinks if present from previous Home Manager setups
+              for f in "$jpath"/*.jpl; do
+                if [ -L "$f" ]; then
+                  rm -f "$f"
+                fi
+              done
+
+              ${lib.optionalString cfg.plugins.jopdoc ''
+                cp -f "${jopdocJpl}" "$jpath/jopdoc.nsharris247.jpl"
+                chmod 644 "$jpath/jopdoc.nsharris247.jpl"
+              ''}
+
+              ${lib.optionalString cfg.plugins.bibtex ''
+                cp -f "${bibtexJpl}" "$jpath/com.xUser5000.bibtex.jpl"
+                chmod 644 "$jpath/com.xUser5000.bibtex.jpl"
+              ''}
+
+              ${lib.optionalString cfg.plugins.outline ''
+                cp -f "${outlineJpl}" "$jpath/outline.jpl"
+                chmod 644 "$jpath/outline.jpl"
+              ''}
+
+              ${lib.optionalString cfg.plugins.richMarkdown ''
+                cp -f "${richMarkdownJpl}" "$jpath/plugin.calebjohn.rich-markdown.jpl"
+                chmod 644 "$jpath/plugin.calebjohn.rich-markdown.jpl"
+              ''}
+            '';
+          })
         ];
       }
     ]

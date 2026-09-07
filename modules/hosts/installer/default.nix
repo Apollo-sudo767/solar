@@ -282,16 +282,34 @@
         fi
       '';
 
+      solarInstallLauncher = pkgs.writeShellScriptBin "solar-install-gui" ''
+        #!/usr/bin/env bash
+        if command -v xfce4-terminal >/dev/null 2>&1; then
+          exec xfce4-terminal --title="Solar Installer" --maximize --execute sudo solar-install
+        elif command -v konsole >/dev/null 2>&1; then
+          exec konsole --title "Solar Installer" -e sudo solar-install
+        elif command -v gnome-terminal >/dev/null 2>&1; then
+          exec gnome-terminal --title="Solar Installer" --maximize -- sudo solar-install
+        elif command -v foot >/dev/null 2>&1; then
+          exec foot --title="Solar Installer" sudo solar-install
+        elif command -v alacritty >/dev/null 2>&1; then
+          exec alacritty --title "Solar Installer" -e sudo solar-install
+        elif command -v x-terminal-emulator >/dev/null 2>&1; then
+          exec x-terminal-emulator -T "Solar Installer" -e sudo solar-install
+        else
+          exec sudo solar-install
+        fi
+      '';
+
       desktopLauncher = pkgs.makeDesktopItem {
         name = "solar-install";
         desktopName = "Install Solar";
         comment = "Install Solar on this computer";
-        exec = "x-terminal-emulator -T 'Solar Installer' -e sudo solar-install || xfce4-terminal -T 'Solar Installer' --maximize -e sudo solar-install || konsole -e sudo solar-install || foot sudo solar-install";
+        exec = "solar-install-gui";
         icon = "system-software-install";
         terminal = false;
         categories = [
           "System"
-          "Utility"
         ];
       };
     in
@@ -420,18 +438,7 @@
                 fi
 
                 mkdir -p /home/nixos/Desktop
-                cat << 'DESKTOP_EOF' > /home/nixos/Desktop/solar-install.desktop
-        [Desktop Entry]
-        Version=1.0
-        Type=Application
-        Name=Install Solar
-        Comment=Install Solar on this computer
-        Exec=sh -c "exec xfce4-terminal -T 'Solar Installer' --maximize -e sudo solar-install || konsole -e sudo solar-install || foot sudo solar-install || alacritty -e sudo solar-install"
-        Icon=system-software-install
-        Terminal=false
-        StartupNotify=true
-        Categories=System;Utility;
-        DESKTOP_EOF
+                cp ${desktopLauncher}/share/applications/solar-install.desktop /home/nixos/Desktop/solar-install.desktop
                 chmod +x /home/nixos/Desktop/solar-install.desktop
                 chown -R nixos:users /home/nixos/Desktop
       '';
@@ -439,9 +446,10 @@
       # Environment Packages & Tools
       environment.systemPackages = with pkgs; [
         solarInstallScript
+        solarInstallLauncher
         desktopLauncher
-        inputs.disko.packages.${pkgs.system}.disko
-        inputs.agenix.packages.${pkgs.system}.default
+        inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
+        inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
         gparted
         firefox
         foot

@@ -51,6 +51,9 @@ The **Pluto Cluster** is a 3-node, High-Availability Kubernetes (K3s) control pl
 
 To protect the etcd quorum from simultaneous failure during maintenance, all nodes run automated weekly system upgrades and reboots on Sunday, staggered precisely 30 minutes apart.
 
+> [!TIP]
+> For GitOps deployment, workload manifests, dynamic NFS provisioner configuration, and the step-by-step cluster bootstrapping guide, see the dedicated [**Pluto Cluster GitOps Repository**](https://github.com/Apollo-sudo767/pluto-cluster) and [**Comprehensive Setup & Operations Guide**](https://github.com/Apollo-sudo767/pluto-cluster/blob/main/docs/SETUP_GUIDE.md).
+
 ### 🪐 Pluto (Bootstrap Master — Slot 1: Sun 03:00)
 
 - **Celestial Namesake**: Dwarf Planet Pluto (134340 Pluto)

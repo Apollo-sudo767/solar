@@ -165,7 +165,7 @@ To create a brand-new secret and encrypt it with your master keys (`apollo_user`
 nano /tmp/my-secret.txt
 
 # 2. Encrypt it into solar-secrets with age
-nix shell nixpkgs#age -c age \
+nix shell nixpkgs#age nixpkgs#age-plugin-yubikey -c age \
   -R ~/src/solar-secrets/master/apollo_user.pub \
   -R ~/src/solar-secrets/master/yubikey.pub \
   -o ~/src/solar-secrets/secrets/<secret-name>.age \

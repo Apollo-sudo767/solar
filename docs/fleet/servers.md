@@ -92,7 +92,7 @@ ______________________________________________________________________
 
 ## 📦 Cluster GitOps & Core Workloads (Flux CD)
 
-The cluster workloads and dynamic storage are declaratively synchronized via **Flux CD** from [`kubernetes/`](../../kubernetes/):
+The cluster workloads and dynamic storage are declaratively synchronized via **Flux CD** from the dedicated [`pluto-cluster`](https://github.com/Apollo-sudo767/pluto-cluster) repository:
 
 1. **Dynamic Storage (`nfs-client`)**: `nfs-subdir-external-provisioner` provisions persistent volumes dynamically from Sol's ZFS mirror pool (`sol.local:/tank/k3s-volumes`).
 1. **Minecraft Server**: Running `itzg/minecraft-server` with 8GB RAM allocated, pinned to Beelink EQR5 (`node.type=compute`), with a `playit-agent` sidecar for portless external friend access.

@@ -1,6 +1,6 @@
 # Fleet Overview 🪐
 
-Solar orchestrates an entire constellation of 14 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
+Solar orchestrates an entire constellation of 15 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
 
 ______________________________________________________________________
 
@@ -19,8 +19,9 @@ ______________________________________________________________________
 | **`ganymede`** | Storage Server | `x86_64-linux` | Dedicated NAS (Samba / NFS) | Headless Server | Standard Btrfs + 1x NVMe + 2x HDD |
 | **`callisto`** | Backup Server | `x86_64-linux` | Backup & Syncthing Node | Headless Server | Standard Btrfs + 1x NVMe + 1x HDD |
 | **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
-| **`phosphorus`** | Repurposed Node | `x86_64-linux` | K3s Cluster Node (16GB RAM) | Headless / Limine | Ephemeral `tmpfs` + 1x NVMe |
-| **`hesperus`** | Tiny PC (M920q) | `x86_64-linux` | K3s Cluster Node (32GB RAM) | Headless / Limine | Ephemeral `tmpfs` + 1x NVMe |
+| **`pluto`** | Tiny PC (M920q) | `x86_64-linux` | K3s HA Bootstrap Master (32GB RAM) | Headless Server | Ephemeral `tmpfs` + 1x NVMe |
+| **`charon`** | Repurposed Node | `x86_64-linux` | K3s HA Master Node 2 (16GB RAM) | Headless Server | Ephemeral `tmpfs` + 1x NVMe |
+| **`hydra`** | Tiny PC (M920q) | `x86_64-linux` | K3s HA Master Node 3 (16GB RAM) | Headless Server | Ephemeral `tmpfs` + 1x NVMe |
 | **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
 
 ______________________________________________________________________
@@ -30,5 +31,5 @@ ______________________________________________________________________
 - **[Workstations & Portables](workstations.md)**: Details for **Mars**, **Mercury**, and **Phobos**.
 - **[Gaming, VR & Rigs](gaming-vr.md)**: Details for **Elara**, **Europa**, and **Amalthea**.
 - **[The Jupiter Moon Stack](jupiter-stack.md)**: Details for standalone storage nodes **Thebe**, **Ganymede**, and **Callisto**.
-- **[Server & Cloud Infrastructure](servers.md)**: Central NAS **Sol**, multi-service server **Venus**, and K3s cluster nodes **Phosphorus** and **Hesperus**.
+- **[Server & Cloud Infrastructure](servers.md)**: Central NAS **Sol**, multi-service server **Venus**, and High-Availability K3s cluster nodes **Pluto**, **Charon**, and **Hydra**.
 - **[Testbeds & Experimental](testbeds.md)**: Experimental COSMIC workstation **Io**.

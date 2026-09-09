@@ -18,7 +18,7 @@
 
       system.stateVersion = "26.11";
 
-      # Phosphorus: Lenovo ThinkCentre M720q Tiny (16GB RAM) - k3s Cluster Node
+      # Phosphorus: Lenovo ThinkCentre M920q Tiny (16GB RAM) - k3s Cluster Node
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;

@@ -35,5 +35,5 @@ ______________________________________________________________________
 | Host | Celestial Body | Role | Hosted Services |
 | :--- | :--- | :--- | :--- |
 | **`venus`** | Planet Venus | **Multi-Service Server**<br>• AMD CPU | Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool grammar server, dedicated Factorio & Minecraft servers. |
-| **`phosphorus`** | Morning Star (Venus) | **K3s Cluster Node**<br>• Lenovo M720q Tiny (16GB RAM) | Headless server, Limine bootloader, Disko Btrfs on NVMe, K3s control-plane/worker peer, Tailscale mesh connectivity. |
+| **`phosphorus`** | Morning Star (Venus) | **K3s Cluster Node**<br>• Lenovo M920q Tiny (16GB RAM) | Headless server, Limine bootloader, Disko Btrfs on NVMe, K3s control-plane/worker peer, Tailscale mesh connectivity. |
 | **`hesperus`** | Evening Star (Venus) | **K3s Cluster Node**<br>• Lenovo M920q Tiny (32GB RAM) | Headless server, Limine bootloader, Disko Btrfs on NVMe, K3s control-plane/worker peer, Tailscale mesh connectivity. |

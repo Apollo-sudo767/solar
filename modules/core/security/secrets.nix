@@ -73,5 +73,16 @@ in
         age.secrets."cloudflared-credentials.age".rekeyFile = "${secretsDir}/cloudflared-credentials.age";
       }
     )
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/surfshark-vpn.age")
+      )
+      {
+        age.secrets."surfshark-vpn.age".rekeyFile = "${secretsDir}/surfshark-vpn.age";
+      }
+    )
   ];
 }

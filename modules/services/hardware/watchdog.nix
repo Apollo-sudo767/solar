@@ -29,5 +29,10 @@ in
       RebootWatchdogSec = cfg.rebootTime;
       KExecWatchdogSec = cfg.kexecTime;
     };
+
+    boot.kernel.sysctl = {
+      "kernel.panic" = 10; # Reboot automatically 10 seconds after kernel panic
+      "kernel.panic_on_oops" = 1;
+    };
   };
 }

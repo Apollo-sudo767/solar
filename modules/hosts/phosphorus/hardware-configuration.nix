@@ -13,11 +13,13 @@
 
   boot.initrd.availableKernelModules = [
     "xhci_pci"
-    "ahci"
+    "thunderbolt"
     "nvme"
     "usb_storage"
     "sd_mod"
-    "e1000e" # Intel I219-V/LM Gigabit Ethernet
+    "sdhci_pci"
+    "ahci"
+    "e1000e"
   ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];

@@ -9,6 +9,7 @@
   module =
     {
       lib,
+      pkgs,
       ...
     }:
     {
@@ -18,7 +19,7 @@
 
       system.stateVersion = "26.11";
 
-      # Phosphorus: Lenovo ThinkCentre M920q Tiny (16GB RAM) - k3s Cluster Node
+      # Phosphorus: Repurposed Intel Hardware (16GB RAM) - k3s Cluster Node
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;
@@ -64,6 +65,57 @@
           };
         };
       };
+
+      # --- Repurposed Laptop Server Settings ---
+      # 1. Prevent node from sleeping when lid is closed
+      services.logind.settings.Login = {
+        HandleLidSwitch = "ignore";
+        HandleLidSwitchExternalPower = "ignore";
+        HandleLidSwitchDocked = "ignore";
+        LidSwitchIgnoreInhibited = "no";
+      };
+
+      # 2. Battery Conservation: Cap charge at 50% to prevent degradation when plugged in 24/7
+      systemd.services.battery-charge-limit = {
+        description = "Cap battery charge threshold at 50% to prevent battery degradation";
+        after = [ "multi-user.target" ];
+        wantedBy = [
+          "multi-user.target"
+          "post-resume.target"
+        ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = pkgs.writeShellScript "cap-battery-50" ''
+            for bat in /sys/class/power_supply/BAT* /sys/class/power_supply/battery; do
+              [ -d "$bat" ] || continue
+              if [ -f "$bat/charge_control_end_threshold" ]; then
+                echo 50 > "$bat/charge_control_end_threshold" 2>/dev/null || true
+              fi
+              if [ -f "$bat/charge_control_start_threshold" ]; then
+                echo 45 > "$bat/charge_control_start_threshold" 2>/dev/null || true
+              fi
+              if [ -f "$bat/charge_stop_threshold" ]; then
+                echo 50 > "$bat/charge_stop_threshold" 2>/dev/null || true
+              fi
+              if [ -f "$bat/charge_start_threshold" ]; then
+                echo 45 > "$bat/charge_start_threshold" 2>/dev/null || true
+              fi
+            done
+          '';
+        };
+      };
+
+      # Re-apply battery threshold whenever AC power status changes
+      services.udev.extraRules = ''
+        SUBSYSTEM=="power_supply", ACTION=="change", RUN+="${pkgs.writeShellScript "cap-battery-udev" ''
+          for bat in /sys/class/power_supply/BAT* /sys/class/power_supply/battery; do
+            [ -d "$bat" ] || continue
+            [ -f "$bat/charge_control_end_threshold" ] && echo 50 > "$bat/charge_control_end_threshold" 2>/dev/null || true
+            [ -f "$bat/charge_stop_threshold" ] && echo 50 > "$bat/charge_stop_threshold" 2>/dev/null || true
+          done
+        ''}"
+      '';
 
       # Firewall & k3s cluster networking
       services.fail2ban.enable = true;

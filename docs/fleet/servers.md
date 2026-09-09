@@ -30,11 +30,11 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## ⚡ Phosphorus (Lenovo ThinkCentre M920q Tiny)
+## ⚡ Phosphorus (Repurposed Intel Node)
 
 **Phosphorus** (*Morning Star / Φωσφόρος*) is a dedicated K3s cluster node.
 
-- **Hardware**: Lenovo ThinkCentre M920q Tiny (Intel Core CPU with vPro / Intel UHD 630 Graphics, PCIe expansion capable)
+- **Hardware**: Repurposed 16GB Intel Node (Intel Core CPU, Thunderbolt, NVMe)
 - **Memory**: 16 GB DDR4 SODIMM
 - **Storage**: Universal Disko Btrfs on NVMe (`/dev/nvme0n1`)
 - **Bootloader**: Limine UEFI

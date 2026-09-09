@@ -18,7 +18,7 @@ ______________________________________________________________________
 | **`ganymede`** | Storage Server | `x86_64-linux` | Dedicated NAS (Samba / NFS) | Headless Server | Standard Btrfs + 1x NVMe + 2x HDD |
 | **`callisto`** | Backup Server | `x86_64-linux` | Backup & Syncthing Node | Headless Server | Standard Btrfs + 1x NVMe + 1x HDD |
 | **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
-| **`phosphorus`** | Tiny PC (M920q) | `x86_64-linux` | K3s Cluster Node (16GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
+| **`phosphorus`** | Repurposed Node | `x86_64-linux` | K3s Cluster Node (16GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
 | **`hesperus`** | Tiny PC (M920q) | `x86_64-linux` | K3s Cluster Node (32GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
 | **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
 

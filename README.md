@@ -40,7 +40,9 @@ Solar
 │       ├── amalthea/       # Handheld Console (Gaming Suite, Steam Big Picture)
 │       ├── io/             # COSMIC DE Testbed Node (Workstation, COSMIC Suite)
 │       ├── phobos/         # Apple Silicon MacBook (Darwin Workstation Suite)
-│       └── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
+│       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
+│       ├── phosphorus/     # K3s Cluster Node (Lenovo M720q Tiny, Server Suite, Limine)
+│       └── hesperus/       # K3s Cluster Node (Lenovo M920q Tiny, Server Suite, Limine)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features
 ```
@@ -68,6 +70,8 @@ Self-contained, standalone hosts with **zero dependencies on private secret repo
 ### 🌐 Home Server & Cloud Services
 
 - **`venus`** — *Multi-Service Cloud Server*: `suites.server`, Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool server, dedicated Factorio & Minecraft servers.
+- **`phosphorus`** — *K3s Cluster Node*: Lenovo ThinkCentre M720q Tiny (16GB RAM), `suites.server`, Limine bootloader, Disko Btrfs on NVMe, K3s control-plane/worker peer, Tailscale mesh connectivity.
+- **`hesperus`** — *K3s Cluster Node*: Lenovo ThinkCentre M920q Tiny (32GB RAM), `suites.server`, Limine bootloader, Disko Btrfs on NVMe, K3s control-plane/worker peer, Tailscale mesh connectivity.
 
 ## 🎨 Visual Styling
 

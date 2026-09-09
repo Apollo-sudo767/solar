@@ -1,6 +1,6 @@
 # Fleet Overview 🪐
 
-Solar orchestrates an entire constellation of 11 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
+Solar orchestrates an entire constellation of 13 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
 
 ______________________________________________________________________
 
@@ -18,6 +18,8 @@ ______________________________________________________________________
 | **`ganymede`** | Storage Server | `x86_64-linux` | Dedicated NAS (Samba / NFS) | Headless Server | Standard Btrfs + 1x NVMe + 2x HDD |
 | **`callisto`** | Backup Server | `x86_64-linux` | Backup & Syncthing Node | Headless Server | Standard Btrfs + 1x NVMe + 1x HDD |
 | **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
+| **`phosphorus`** | Tiny PC (M720q) | `x86_64-linux` | K3s Cluster Node (16GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
+| **`hesperus`** | Tiny PC (M920q) | `x86_64-linux` | K3s Cluster Node (32GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
 | **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
 
 ______________________________________________________________________
@@ -27,5 +29,5 @@ ______________________________________________________________________
 - **[Workstations & Portables](workstations.md)**: Details for **Mars**, **Mercury**, and **Phobos**.
 - **[Gaming, VR & Rigs](gaming-vr.md)**: Details for **Elara**, **Europa**, and **Amalthea**.
 - **[The Jupiter Moon Stack](jupiter-stack.md)**: Details for standalone storage nodes **Thebe**, **Ganymede**, and **Callisto**.
-- **[Server & Cloud Infrastructure](servers.md)**: Multi-service web and game server **Venus**.
+- **[Server & Cloud Infrastructure](servers.md)**: Multi-service server **Venus** and K3s cluster nodes **Phosphorus** and **Hesperus**.
 - **[Testbeds & Experimental](testbeds.md)**: Experimental COSMIC workstation **Io**.

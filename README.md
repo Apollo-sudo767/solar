@@ -150,6 +150,64 @@ nrb  # (nixos-rebuild boot - apply on next reboot)
 drs  # (darwin-rebuild switch)
 ```
 
+---
+
+## 🔐 Secret Management (`agenix-rekey`)
+
+Secrets are managed via [`agenix-rekey`](https://github.com/oddlama/agenix-rekey) and stored encrypted in [`solar-secrets`](https://github.com/Apollo-sudo767/solar-secrets). Nodes decrypt secrets locally on boot using their SSH host keys.
+
+### 1. Creating a New Secret from Scratch
+
+To create a brand-new secret and encrypt it with your master keys (`apollo_user` and `yubikey`):
+
+```bash
+# 1. Write the secret content to a temporary file
+nano /tmp/my-secret.txt
+
+# 2. Encrypt it into solar-secrets with age
+nix shell nixpkgs#age -c age \
+  -R ~/src/solar-secrets/master/apollo_user.pub \
+  -R ~/src/solar-secrets/master/yubikey.pub \
+  -o ~/src/solar-secrets/secrets/<secret-name>.age \
+  /tmp/my-secret.txt
+
+# 3. Clean up the plaintext file
+rm -f /tmp/my-secret.txt
+
+# 4. Commit the new secret in solar-secrets
+cd ~/src/solar-secrets
+git add secrets/<secret-name>.age
+git commit -m "feat(secrets): add <secret-name>"
+```
+
+### 2. Rekeying Secrets for Target Nodes
+
+Whenever you add or modify a secret, rekey it so all target cluster machines can decrypt it:
+
+```bash
+cd ~/src/solar
+
+# Rekey for all machines (touch your YubiKey if prompted):
+s-rekey
+
+# Commit and push the rekeyed files:
+git add rekeyed/
+git commit -m "chore(secrets): rekey <secret-name>"
+git push origin main
+```
+
+### 3. Viewing or Editing Existing Rekeyed Secrets
+
+To view or edit secrets that are already tracked and rekeyed in the flake:
+
+```bash
+cd ~/src/solar
+s-edit
+# (Opens interactive fzf picker to decrypt and view with your master identity)
+```
+
+---
+
 ## 🍼 Creating New Hosts
 
 Use the provided templates to quickly spin up new configurations:

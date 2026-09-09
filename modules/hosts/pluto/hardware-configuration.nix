@@ -17,13 +17,13 @@
     "nvme"
     "usb_storage"
     "sd_mod"
-    "e1000e" # Intel I219-LM Gigabit Ethernet
+    "r8169" # Realtek Gigabit / 2.5GbE Ethernet
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   # Platform & Microcode
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

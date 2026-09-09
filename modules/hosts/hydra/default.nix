@@ -19,7 +19,7 @@
 
       system.stateVersion = "26.11";
 
-      # Hydra: Lenovo ThinkCentre M920q Tiny (16GB RAM) - K3s HA Control-Plane Master (Node 3)
+      # Hydra: Lenovo ThinkCentre M920q Tiny (i5-8500T, 16GB RAM) - K3s HA Control-Plane Master (Node 3)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;
@@ -69,13 +69,44 @@
         };
       };
 
+      # --- Intel GPU & QuickSync Configuration ---
+      hardware.graphics = {
+        enable = true;
+        extraPackages = with pkgs; [
+          intel-media-driver # iHD driver for Gen 9+ (i5-8500T UHD 630)
+          intel-vaapi-driver # i965 fallback
+          libvdpau-va-gl
+          intel-compute-runtime # OpenCL support
+        ];
+      };
+
+      # Ensure permissions for containerized Intel QuickSync access (/dev/dri)
+      users.users.apollo.extraGroups = [
+        "video"
+        "render"
+      ];
+
+      services.udev.extraRules = ''
+        KERNEL=="renderD*", GROUP="render", MODE="0666"
+        KERNEL=="card*", GROUP="video", MODE="0666"
+      '';
+
+      # Wake on LAN across ethernet interfaces
+      networking.interfaces = {
+        eno1.wakeOnLan.enable = true;
+        eth0.wakeOnLan.enable = true;
+      };
+
+      # Kernel hardware watchdog timers for auto-recovery on system freezes
+      services.watchdog.enable = true;
+
       # --- K3s HA Multi-Master Configuration (Joining Master 3) ---
       services.k3s = {
         enable = true;
-        role = "server"; # Master node participating in etcd quorum
+        role = "server";
         serverAddr = "https://pluto:6443";
         tokenFile = lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
-        extraFlags = "--disable traefik --flannel-backend=vxlan --node-name=hydra";
+        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=hydra --node-label gpu.vendor=intel";
       };
 
       # Ensure cluster token directory exists on boot

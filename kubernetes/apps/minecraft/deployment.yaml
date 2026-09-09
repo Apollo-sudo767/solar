@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft
+  namespace: games
+  labels:
+    app: minecraft
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      nodeSelector:
+        node.type: compute
+      containers:
+        - name: minecraft-server
+          image: itzg/minecraft-server:latest
+          ports:
+            - containerPort: 25565
+              name: minecraft
+          env:
+            - name: EULA
+              value: "TRUE"
+            - name: VERSION
+              value: "1.21.1"
+            - name: TYPE
+              value: "PAPER"
+            - name: MEMORY
+              value: "8G"
+            - name: JVM_XX_OPTS
+              value: "-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch"
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "2"
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        # Playit.gg Sidecar container for portless friend access without port-forwarding
+        - name: playit-agent
+          image: playitgg/playit-agent:latest
+          env:
+            - name: PLAYIT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: playit-secret
+                  key: PLAYIT_SECRET_KEY
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minecraft-data

@@ -19,7 +19,7 @@
 
       system.stateVersion = "26.11";
 
-      # Charon: Repurposed Intel Hardware (16GB RAM) - K3s HA Control-Plane Master (Node 2)
+      # Styx: Lenovo ThinkPad T14 Gen 2 (16GB RAM) - K3s HA Control-Plane Master (Node 2)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;
@@ -69,8 +69,8 @@
         };
       };
 
-      # --- Repurposed Laptop Server Settings ---
-      # 1. Prevent node from sleeping when lid is closed
+      # --- Hardware & Power Configurations ---
+      # 1. Disable lid-close suspend
       services.logind.settings.Login = {
         HandleLidSwitch = "ignore";
         HandleLidSwitchExternalPower = "ignore";
@@ -78,9 +78,24 @@
         LidSwitchIgnoreInhibited = "no";
       };
 
-      # 2. Battery Conservation: Cap charge at 50% to prevent degradation when plugged in 24/7
+      # 2. Battery thresholding (40–50%) via TLP & sysfs
+      services.tlp = {
+        enable = true;
+        settings = {
+          START_CHARGE_THRESH_BAT0 = 40;
+          STOP_CHARGE_THRESH_BAT0 = 50;
+          # 3. Disable network card power saving
+          WIFI_PWR_ON_AC = "off";
+          WIFI_PWR_ON_BAT = "off";
+          PCIE_ASPM_ON_AC = "performance";
+          PCIE_ASPM_ON_BAT = "performance";
+        };
+      };
+
+      networking.networkmanager.wifi.powersave = false;
+
       systemd.services.battery-charge-limit = {
-        description = "Cap battery charge threshold at 50% to prevent battery degradation";
+        description = "Cap battery charge threshold at 40-50% via sysfs";
         after = [ "multi-user.target" ];
         wantedBy = [
           "multi-user.target"
@@ -92,41 +107,31 @@
           ExecStart = pkgs.writeShellScript "cap-battery-50" ''
             for bat in /sys/class/power_supply/BAT* /sys/class/power_supply/battery; do
               [ -d "$bat" ] || continue
-              if [ -f "$bat/charge_control_end_threshold" ]; then
-                echo 50 > "$bat/charge_control_end_threshold" 2>/dev/null || true
-              fi
-              if [ -f "$bat/charge_control_start_threshold" ]; then
-                echo 45 > "$bat/charge_control_start_threshold" 2>/dev/null || true
-              fi
-              if [ -f "$bat/charge_stop_threshold" ]; then
-                echo 50 > "$bat/charge_stop_threshold" 2>/dev/null || true
-              fi
-              if [ -f "$bat/charge_start_threshold" ]; then
-                echo 45 > "$bat/charge_start_threshold" 2>/dev/null || true
-              fi
+              [ -f "$bat/charge_control_end_threshold" ] && echo 50 > "$bat/charge_control_end_threshold" 2>/dev/null || true
+              [ -f "$bat/charge_control_start_threshold" ] && echo 40 > "$bat/charge_control_start_threshold" 2>/dev/null || true
+              [ -f "$bat/charge_stop_threshold" ] && echo 50 > "$bat/charge_stop_threshold" 2>/dev/null || true
+              [ -f "$bat/charge_start_threshold" ] && echo 40 > "$bat/charge_start_threshold" 2>/dev/null || true
             done
           '';
         };
       };
 
-      # Re-apply battery threshold whenever AC power status changes
-      services.udev.extraRules = ''
-        SUBSYSTEM=="power_supply", ACTION=="change", RUN+="${pkgs.writeShellScript "cap-battery-udev" ''
-          for bat in /sys/class/power_supply/BAT* /sys/class/power_supply/battery; do
-            [ -d "$bat" ] || continue
-            [ -f "$bat/charge_control_end_threshold" ] && echo 50 > "$bat/charge_control_end_threshold" 2>/dev/null || true
-            [ -f "$bat/charge_stop_threshold" ] && echo 50 > "$bat/charge_stop_threshold" 2>/dev/null || true
-          done
-        ''}"
-      '';
+      # 4. Wake on LAN across ethernet interfaces
+      networking.interfaces = {
+        eno1.wakeOnLan.enable = true;
+        eth0.wakeOnLan.enable = true;
+      };
+
+      # 5. Kernel hardware watchdog timers for auto-recovery on system freezes
+      services.watchdog.enable = true;
 
       # --- K3s HA Multi-Master Configuration (Joining Master 2) ---
       services.k3s = {
         enable = true;
-        role = "server"; # Master node participating in etcd quorum
+        role = "server";
         serverAddr = "https://pluto:6443";
         tokenFile = lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
-        extraFlags = "--disable traefik --flannel-backend=vxlan --node-name=charon";
+        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=styx";
       };
 
       # Ensure cluster token directory exists on boot
@@ -155,7 +160,7 @@
       };
 
       systemd.timers.weekly-cluster-reboot = {
-        description = "Weekly staggered cluster reboot timer (Charon @ Sun 03:30)";
+        description = "Weekly staggered cluster reboot timer (Styx @ Sun 03:30)";
         wantedBy = [ "timers.target" ];
         timerConfig = {
           OnCalendar = "Sun 03:30";

@@ -19,7 +19,7 @@
 
       system.stateVersion = "26.11";
 
-      # Pluto: Lenovo ThinkCentre M920q Tiny (32GB RAM) - K3s Bootstrap Master (HA Node 1)
+      # Pluto: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) - K3s Bootstrap Master (HA Node 1)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;
@@ -58,7 +58,7 @@
         };
 
         hardware = {
-          cpu-gpu.intel.enable = true;
+          cpu-gpu.amd.enable = true;
           peripherals = {
             bluetooth.enable = false;
             wifi = {
@@ -69,13 +69,22 @@
         };
       };
 
+      # Wake on LAN across ethernet interfaces
+      networking.interfaces = {
+        eno1.wakeOnLan.enable = true;
+        eth0.wakeOnLan.enable = true;
+      };
+
+      # Kernel hardware watchdog timers for auto-recovery on system freezes
+      services.watchdog.enable = true;
+
       # --- K3s HA Multi-Master Configuration (Bootstrap Master) ---
       services.k3s = {
         enable = true;
         role = "server";
         clusterInit = true; # Initializes the embedded etcd HA cluster
         tokenFile = lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
-        extraFlags = "--disable traefik --flannel-backend=vxlan --node-name=pluto";
+        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=pluto --node-label node.type=compute";
       };
 
       # Ensure cluster token directory exists on boot

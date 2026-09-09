@@ -40,11 +40,11 @@ Solar
 │       ├── amalthea/       # Handheld Console (Gaming Suite, Steam Big Picture)
 │       ├── io/             # COSMIC DE Testbed Node (Workstation, COSMIC Suite)
 │       ├── phobos/         # Apple Silicon MacBook (Darwin Workstation Suite)
-│       ├── sol/            # Central Fleet NAS & Storage Hub (Server Suite, Limine, Btrfs Pool)
+│       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
 │       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
-│       ├── pluto/          # K3s HA Bootstrap Master (Lenovo M920q Tiny 32GB, Preservation, Agenix)
-│       ├── charon/         # K3s HA Master Node 2 (Repurposed Intel 16GB, Battery Cap, Agenix)
-│       └── hydra/          # K3s HA Master Node 3 (Lenovo M920q Tiny 16GB, Preservation, Agenix)
+│       ├── pluto/          # K3s HA Bootstrap Master (Beelink EQR5 Ryzen 7 32GB, Preservation, Agenix)
+│       ├── styx/           # K3s HA Master Node 2 (ThinkPad T14 Gen 2 16GB, Battery Cap, Agenix)
+│       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q 16GB, QuickSync GPU, Agenix)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features
 ```
@@ -71,11 +71,11 @@ Self-contained, standalone hosts with **zero dependencies on private secret repo
 
 ### 🌐 Home Server & Cloud Services
 
-- **`sol`** — *Central Fleet NAS & Storage Hub*: `suites.server`, wipe-on-boot tmpfs root with Btrfs multi-HDD pool (`/persist/bulk`), Samba (SMB3 enforced), NFSv4 server, Avahi mDNS, Agenix private secrets, SMART monitoring, weekly Btrfs scrubs.
+- **`sol`** — *Central Fleet ZFS NAS & Storage Hub*: `suites.server`, wipe-on-boot tmpfs root with Disko ZFS mirrored HDD pool (`/tank`), NFS dynamic k3s volume export (`/tank/k3s-volumes`), Samba (SMB3 enforced), Avahi mDNS, Agenix private secrets, SMART monitoring, weekly ZFS scrubs & snapshots.
 - **`venus`** — *Multi-Service Cloud Server*: `suites.server`, Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool server, dedicated Factorio & Minecraft servers.
-- **`pluto`** — *K3s HA Bootstrap Master*: Lenovo ThinkCentre M920q Tiny (32GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, K3s HA control-plane cluster bootstrap master with embedded etcd, weekly autoupgrade and staggered reboot (Sunday 03:00).
-- **`charon`** — *K3s HA Master Node 2*: Repurposed Intel Node (16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, 50% battery threshold conservation, lid switch ignore, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 03:30).
-- **`hydra`** — *K3s HA Master Node 3*: Lenovo ThinkCentre M920q Tiny (16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 04:00).
+- **`pluto`** — *K3s HA Bootstrap Master*: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, K3s HA control-plane cluster bootstrap master (`node.type=compute`, stateless `--disable=local-storage`), Wake-on-LAN, watchdog timer, weekly autoupgrade and staggered reboot (Sunday 03:00).
+- **`styx`** — *K3s HA Master Node 2*: Lenovo ThinkPad T14 Gen 2 (16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, 40–50% battery threshold conservation, lid switch ignore, NIC power save disabled, Wake-on-LAN, watchdog timer, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 03:30).
+- **`hydra`** — *K3s HA Master Node 3*: Lenovo ThinkCentre M920q Tiny (Intel i5-8500T, 16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, Intel QuickSync `/dev/dri` video transcoding (`gpu.vendor=intel`), Wake-on-LAN, watchdog timer, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 04:00).
 
 ## 🎨 Visual Styling
 

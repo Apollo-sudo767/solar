@@ -130,7 +130,11 @@
         enable = true;
         role = "server";
         serverAddr = "https://pluto:6443";
-        tokenFile = lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
+        tokenFile =
+          if (config.age.secrets ? "k3s-token.age") then
+            config.age.secrets."k3s-token.age".path
+          else
+            lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
         extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=styx";
       };
 

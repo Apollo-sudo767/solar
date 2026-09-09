@@ -79,11 +79,17 @@
       services.watchdog.enable = true;
 
       # --- K3s HA Multi-Master Configuration (Bootstrap Master) ---
+      myFeatures.services.k3s.secretSync.enable = true;
+
       services.k3s = {
         enable = true;
         role = "server";
         clusterInit = true; # Initializes the embedded etcd HA cluster
-        tokenFile = lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
+        tokenFile =
+          if (config.age.secrets ? "k3s-token.age") then
+            config.age.secrets."k3s-token.age".path
+          else
+            lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
         extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=pluto --node-label node.type=compute";
       };
 

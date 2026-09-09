@@ -38,5 +38,40 @@ in
     (lib.mkIf (cfg.enable && cfg.usePrivateSecrets && hasPrivateSecrets) {
       age.secrets."wifi.age".rekeyFile = "${secretsDir}/maximus-wifi.age";
     })
+
+    # 3. K3s Cluster & Workload Secrets (Nix-managed)
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/k3s-token.age")
+      )
+      {
+        age.secrets."k3s-token.age".rekeyFile = "${secretsDir}/k3s-token.age";
+      }
+    )
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/playit-secret.age")
+      )
+      {
+        age.secrets."playit-secret.age".rekeyFile = "${secretsDir}/playit-secret.age";
+      }
+    )
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/cloudflared-credentials.age")
+      )
+      {
+        age.secrets."cloudflared-credentials.age".rekeyFile = "${secretsDir}/cloudflared-credentials.age";
+      }
+    )
   ];
 }

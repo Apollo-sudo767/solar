@@ -2,12 +2,12 @@
   meta = {
     system = "x86_64-linux";
     stable = false;
-    useSolarSecrets = false;
-    useSecrets = false;
+    useSolarSecrets = true;
   };
 
   module =
     {
+      config,
       lib,
       pkgs,
       ...
@@ -29,7 +29,7 @@
           system = {
             core-branch = {
               enable = true;
-              usePersistence = false;
+              usePersistence = true;
             };
             disko = {
               enable = true;
@@ -38,7 +38,7 @@
             };
             users = {
               usernames = [ "apollo" ];
-              agenixPassword = false;
+              agenixPassword = true;
             };
           };
           boot = {
@@ -50,7 +50,10 @@
           security = {
             security.useAppArmor = true;
             security.useOOMD = true;
-            agenix.enable = false;
+            agenix = {
+              enable = true;
+              usePrivateSecrets = true;
+            };
           };
         };
 
@@ -60,10 +63,18 @@
             bluetooth.enable = false;
             wifi = {
               enable = true;
-              persistence = false;
+              persistence = true;
             };
           };
         };
+      };
+
+      # Preserve k3s state across wipe-on-boot ephemeral root
+      preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" = {
+        directories = [
+          "/var/lib/rancher"
+          "/etc/rancher"
+        ];
       };
 
       # --- Repurposed Laptop Server Settings ---

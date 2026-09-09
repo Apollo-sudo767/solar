@@ -2,6 +2,18 @@
 
 ______________________________________________________________________
 
+## ☀️ Sol (Central Fleet NAS & Storage Hub)
+
+**Sol** (*The Sun*) is the central storage and file-sharing backbone of the Solar constellation, configured with wipe-on-boot preservation, full LUKS encryption, and private secrets management via Agenix.
+
+- **Hardware**: Dedicated Storage Server (Intel Core CPU, multi-NIC Gigabit/10GbE, SAS/SATA HBA)
+- **Storage**: Universal Disko Btrfs with NVMe OS cache (`/dev/nvme0n1`) + Multi-HDD encrypted bulk pool (`/persist/bulk`)
+- **Bootloader**: Limine UEFI
+- **Role**: Central Fleet NAS (Samba SMB3, NFSv4, Avahi mDNS, SMART diagnostics, weekly Btrfs scrub)
+- **Preservation & Secrets**: Ephemeral tmpfs root with state preserved at `/persist` and `/persist/bulk`, automated Agenix password and key management.
+
+______________________________________________________________________
+
 ## ☁️ Venus (Multi-Service Home Cloud)
 
 **Venus** is a multi-service Linux server providing web hosting, encrypted synchronization, and multiplayer gaming.

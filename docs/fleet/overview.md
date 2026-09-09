@@ -1,6 +1,6 @@
 # Fleet Overview 🪐
 
-Solar orchestrates an entire constellation of 13 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
+Solar orchestrates an entire constellation of 14 machines across physical workstations, laptops, gaming rigs, storage arrays, cloud servers, and testbeds.
 
 ______________________________________________________________________
 
@@ -8,6 +8,7 @@ ______________________________________________________________________
 
 | Host | Form Factor | Architecture | Primary Role | Platform & UI | Storage Tier |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`sol`** | Storage Server (NAS) | `x86_64-linux` | Central Fleet NAS & Storage Hub | Headless Server | Ephemeral `tmpfs` + 1x NVMe + 2x HDD |
 | **`mars`** | Desktop Workstation | `x86_64-linux` | Primary Workstation & Esports Rig | Niri (Sky Theme) | Ephemeral `tmpfs` + 2x NVMe + 2x HDD |
 | **`mercury`** | Laptop | `x86_64-linux` | Portable Development | Niri (Sky Theme) | Ephemeral `tmpfs` + 1x NVMe |
 | **`phobos`** | MacBook | `aarch64-darwin` | macOS Mobility & Apple Silicon | macOS + Homebrew | APFS Encrypted |
@@ -18,8 +19,8 @@ ______________________________________________________________________
 | **`ganymede`** | Storage Server | `x86_64-linux` | Dedicated NAS (Samba / NFS) | Headless Server | Standard Btrfs + 1x NVMe + 2x HDD |
 | **`callisto`** | Backup Server | `x86_64-linux` | Backup & Syncthing Node | Headless Server | Standard Btrfs + 1x NVMe + 1x HDD |
 | **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
-| **`phosphorus`** | Repurposed Node | `x86_64-linux` | K3s Cluster Node (16GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
-| **`hesperus`** | Tiny PC (M920q) | `x86_64-linux` | K3s Cluster Node (32GB RAM) | Headless / Limine | Standard Btrfs + 1x NVMe |
+| **`phosphorus`** | Repurposed Node | `x86_64-linux` | K3s Cluster Node (16GB RAM) | Headless / Limine | Ephemeral `tmpfs` + 1x NVMe |
+| **`hesperus`** | Tiny PC (M920q) | `x86_64-linux` | K3s Cluster Node (32GB RAM) | Headless / Limine | Ephemeral `tmpfs` + 1x NVMe |
 | **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
 
 ______________________________________________________________________
@@ -29,5 +30,5 @@ ______________________________________________________________________
 - **[Workstations & Portables](workstations.md)**: Details for **Mars**, **Mercury**, and **Phobos**.
 - **[Gaming, VR & Rigs](gaming-vr.md)**: Details for **Elara**, **Europa**, and **Amalthea**.
 - **[The Jupiter Moon Stack](jupiter-stack.md)**: Details for standalone storage nodes **Thebe**, **Ganymede**, and **Callisto**.
-- **[Server & Cloud Infrastructure](servers.md)**: Multi-service server **Venus** and K3s cluster nodes **Phosphorus** and **Hesperus**.
+- **[Server & Cloud Infrastructure](servers.md)**: Central NAS **Sol**, multi-service server **Venus**, and K3s cluster nodes **Phosphorus** and **Hesperus**.
 - **[Testbeds & Experimental](testbeds.md)**: Experimental COSMIC workstation **Io**.

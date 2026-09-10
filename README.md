@@ -40,7 +40,11 @@ Solar
 │       ├── amalthea/       # Handheld Console (Gaming Suite, Steam Big Picture)
 │       ├── io/             # COSMIC DE Testbed Node (Workstation, COSMIC Suite)
 │       ├── phobos/         # Apple Silicon MacBook (Darwin Workstation Suite)
-│       └── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
+│       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
+│       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
+│       ├── pluto/          # K3s HA Bootstrap Master (Beelink EQR5 Ryzen 7 32GB, Preservation, Agenix)
+│       ├── styx/           # K3s HA Master Node 2 (ThinkPad T14 Gen 2 16GB, Battery Cap, Agenix)
+│       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q 16GB, QuickSync GPU, Agenix)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features
 ```
@@ -88,7 +92,11 @@ A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD]
 
 ### 🌐 Home Server & Cloud Services
 
+- **`sol`** — *Central Fleet ZFS NAS & Storage Hub*: `suites.server`, wipe-on-boot tmpfs root with Disko ZFS mirrored HDD pool (`/tank`), NFS dynamic k3s volume export (`/tank/k3s-volumes`), Samba (SMB3 enforced), Avahi mDNS, Agenix private secrets, SMART monitoring, weekly ZFS scrubs & snapshots.
 - **`venus`** — *Multi-Service Cloud Server*: `suites.server`, Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool server, dedicated Factorio & Minecraft servers.
+- **`pluto`** — *K3s HA Bootstrap Master*: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, K3s HA control-plane cluster bootstrap master (`node.type=compute`, stateless `--disable=local-storage`), Wake-on-LAN, watchdog timer, weekly autoupgrade and staggered reboot (Sunday 03:00).
+- **`styx`** — *K3s HA Master Node 2*: Lenovo ThinkPad T14 Gen 2 (16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, 40–50% battery threshold conservation, lid switch ignore, NIC power save disabled, Wake-on-LAN, watchdog timer, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 03:30).
+- **`hydra`** — *K3s HA Master Node 3*: Lenovo ThinkCentre M920q Tiny (Intel i5-8500T, 16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, Intel QuickSync `/dev/dri` video transcoding (`gpu.vendor=intel`), Wake-on-LAN, watchdog timer, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 04:00).
 
 ## 🎨 Visual Styling
 
@@ -162,6 +170,64 @@ nrb  # (nixos-rebuild boot - apply on next reboot)
 # Apply changes (macOS)
 drs  # (darwin-rebuild switch)
 ```
+
+---
+
+## 🔐 Secret Management (`agenix-rekey`)
+
+Secrets are managed via [`agenix-rekey`](https://github.com/oddlama/agenix-rekey) and stored encrypted in [`solar-secrets`](https://github.com/Apollo-sudo767/solar-secrets). Nodes decrypt secrets locally on boot using their SSH host keys.
+
+### 1. Creating a New Secret from Scratch
+
+To create a brand-new secret and encrypt it with your master keys (`apollo_user` and `yubikey`):
+
+```bash
+# 1. Write the secret content to a temporary file
+nano /tmp/my-secret.txt
+
+# 2. Encrypt it into solar-secrets with age
+nix shell nixpkgs#age nixpkgs#age-plugin-yubikey -c age \
+  -R ~/src/solar-secrets/master/apollo_user.pub \
+  -R ~/src/solar-secrets/master/yubikey.pub \
+  -o ~/src/solar-secrets/secrets/<secret-name>.age \
+  /tmp/my-secret.txt
+
+# 3. Clean up the plaintext file
+rm -f /tmp/my-secret.txt
+
+# 4. Commit the new secret in solar-secrets
+cd ~/src/solar-secrets
+git add secrets/<secret-name>.age
+git commit -m "feat(secrets): add <secret-name>"
+```
+
+### 2. Rekeying Secrets for Target Nodes
+
+Whenever you add or modify a secret, rekey it so all target cluster machines can decrypt it:
+
+```bash
+cd ~/src/solar
+
+# Rekey for all machines (touch your YubiKey if prompted):
+s-rekey
+
+# Commit and push the rekeyed files:
+git add rekeyed/
+git commit -m "chore(secrets): rekey <secret-name>"
+git push origin main
+```
+
+### 3. Viewing or Editing Existing Rekeyed Secrets
+
+To view or edit secrets that are already tracked and rekeyed in the flake:
+
+```bash
+cd ~/src/solar
+s-edit
+# (Opens interactive fzf picker to decrypt and view with your master identity)
+```
+
+---
 
 ## 🍼 Creating New Hosts
 

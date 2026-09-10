@@ -1,6 +1,6 @@
 # Setting Up a Basic Server Host 🖧
 
-This guide walks you through setting up a headless, high-performance server in Solar—such as a home lab storage node, application host, or dedicated game server (like the Jupiter Moon stack: *Callisto*, *Ganymede*, *Europa*).
+This guide walks you through setting up a headless, high-performance server in Solar—such as a home lab storage node, application host, or dedicated game server (such as the Pluto Cluster nodes *Pluto*, *Styx*, *Hydra*, or standalone servers *Venus* and *Sol*).
 
 ______________________________________________________________________
 

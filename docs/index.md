@@ -8,7 +8,7 @@ ______________________________________________________________________
 
 ## 🌟 What is Solar?
 
-Solar manages a diverse constellation of personal workstations, portable laptops, handheld gaming consoles, high-performance servers, dedicated NAS nodes, and general storage pools from a single unified repository.
+Solar manages a diverse constellation of personal workstations, portable laptops, handheld gaming consoles, high-performance servers, Kubernetes clusters, and dedicated storage pools from a single unified repository.
 
 ### Core Architecture Highlights
 
@@ -22,17 +22,38 @@ Solar manages a diverse constellation of personal workstations, portable laptops
 
 ______________________________________________________________________
 
-## 🧭 Navigation Guide
+## 🗺️ Quick Journey: Where Would You Like to Go?
 
-Use the sidebar on the left or press <kbd>S</kbd> to search anywhere in this book:
+| Your Goal | Recommended Starting Path | Quick Links |
+| :--- | :--- | :--- |
+| **New to Solar?** | Understand the core architecture and deploy bare-metal | [System Architecture](architecture.md) • [Installation Guide](deployment/installation.md) • [Wiki Quick Reference](wiki/quick-reference.md) |
+| **Fleet & Infrastructure** | Explore physical nodes, Kubernetes GitOps, and servers | [Fleet Overview](fleet/overview.md) • [The Pluto Cluster](fleet/pluto-cluster.md) • [Adding a Host](guides/adding-a-host.md) |
+| **Desktop & Customization** | Pick your window manager, desktop flavor, and keybindings | [Styling & Flavors](platforms/styling.md) • [Wayland Compositors](platforms/wayland.md) • [Universal Keybindings](wiki/keybinds.md) |
+| **Developer & Modules** | Build composable modules or browse every toggle | [Definitive Toggle List](wiki/definitive-toggle-list.md) • [How Modules Work](guides/how-modules-work.md) • [Add a Feature](guides/adding-a-feature.md) |
 
-### 🪐 The Fleet
+______________________________________________________________________
 
-- **[Fleet Overview](fleet/overview.md)**: Summary of all 11 machines in the constellation.
+## 🧭 Comprehensive Documentation Directory
+
+Use the sidebar on the left or press <kbd>S</kbd> to search anywhere across all chapters:
+
+### 🧠 Wiki & Knowledge Base
+
+- **[Wiki Overview](wiki/index.md)**: Centralized technical knowledge base and troubleshooting portal.
+- **[Quick Reference & Cheatsheet](wiki/quick-reference.md)**: Daily command cheatsheet, rebuild aliases, and maintenance shortcuts.
+- **[Definitive Toggle Reference](wiki/definitive-toggle-list.md)**: Exhaustive catalog of every boolean toggle, option flag, and default across all Solar modules.
+- **[Universal Keybindings](wiki/keybinds.md)**: Shortcuts for Niri, Noctalia Shell, Helix editor, Ghostty terminal, and compositors.
+- **[Troubleshooting & Diagnostics](wiki/troubleshooting.md)**: GPU recovery, Btrfs filesystem repair, PipeWire audio, and network diagnostics.
+- **[Frequently Asked Questions](wiki/faq.md)**: Architecture design choices, ephemeral storage, Agenix, and Darwin portability.
+
+### 🪐 The Fleet & Constellation
+
+- **[Fleet Overview](fleet/overview.md)**: Complete machine constellation map and hardware specifications.
 - **[Workstations & Portables](fleet/workstations.md)**: Mars (Workstation), Mercury (Laptop), and Phobos (MacBook).
 - **[Gaming, VR & Rigs](fleet/gaming-vr.md)**: Elara (Streaming rig), Europa (VR workstation), and Amalthea (Handheld console).
-- **[The Jupiter Moon Stack](fleet/jupiter-stack.md)**: Thebe (Compact server), Ganymede (NAS), and Callisto (Storage & Backup).
-- **[Server & Cloud Infrastructure](fleet/servers.md)**: Venus (Multi-service cloud) and Io (COSMIC testbed).
+- **[The Pluto Cluster](fleet/pluto-cluster.md)**: High-Availability K3s GitOps cluster (**Pluto**, **Styx**, **Hydra**, and central storage **Sol**).
+- **[Server & Cloud Infrastructure](fleet/servers.md)**: Multi-service web and game server Venus.
+- **[Testbeds & Experimental](fleet/testbeds.md)**: Experimental COSMIC workstation Io.
 
 ### 🌲 Dendritic Suites & Profiles
 
@@ -58,7 +79,7 @@ Use the sidebar on the left or press <kbd>S</kbd> to search anywhere in this boo
 - **[Media Production](programs/media.md)**: DaVinci Resolve, OBS Studio (VAAPI & PipeWire capture), and MPV GPU acceleration.
 - **[Productivity & Office](programs/productivity.md)**: Firefox Nightly, Zen Browser, Bitwarden, Vesktop, and AP-Office.
 
-### 🌐 Services & Daemons
+### 🌐 Services & Infrastructure
 
 - **[Networking & VPN](services/networking.md)**: Tailscale mesh network, systemd-resolved DNS, Syncthing, Dynamic DNS, and Nginx SSL proxy.
 - **[Multimedia & Streaming](services/multimedia.md)**: PipeWire low-latency audio stack, Sunshine GameStream server, and Moonlight.
@@ -74,7 +95,7 @@ Use the sidebar on the left or press <kbd>S</kbd> to search anywhere in this boo
 - **[TPM 2.0 Auto-Unlock](security/tpm2.md)**: Tamper-proof hardware binding with `systemd-cryptenroll`.
 - **[Encrypted Secrets with Agenix](security/agenix.md)**: Asymmetric Age encryption and memory key management.
 
-### 🛠️ Deployment & Guides
+### 🛠️ Deployment & Developer Guides
 
 - **[Bare-Metal Installation Guide](deployment/installation.md)**: Automated and manual deployment steps.
 - **[Routine Maintenance](deployment/maintenance.md)**: Rebuild aliases, garbage collection, and Btrfs scrubbing.
@@ -86,4 +107,4 @@ Use the sidebar on the left or press <kbd>S</kbd> to search anywhere in this boo
 
 ### 🤝 Community & Contributing
 
-- **[Contributing Guide](contributing.md)**: Guidelines for contributing code, modules, and documentation directly to the GitHub Pages wiki.
+- **[Contributing Guide](contributing.md)**: Guidelines for proposing improvements, editing documentation, and submitting Pull Requests.

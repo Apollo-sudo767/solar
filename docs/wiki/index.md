@@ -9,16 +9,14 @@ ______________________________________________________________________
 
 ## 📑 Wiki Directory
 
-Explore the wiki topics below:
+Explore the technical wiki topics below:
 
-```
-Solar Wiki
-├── ⚡ [Quick Reference & Cheatsheet](quick-reference.md)    # Commands, rebuild shortcuts, flake operations
-├── ⌨️ [Universal Keybindings](keybinds.md)                 # Niri, Noctalia, Helix, Ghostty, compositor binds
-├── 🌲 [Suites Reference Matrix](suites-reference.md)        # Complete list of functional & desktop suites
-├── 🔧 [Troubleshooting & Diagnostics](troubleshooting.md)  # GPU recovery, Btrfs repair, audio, network
-└── ❓ [Frequently Asked Questions](faq.md)                  # Common architecture, storage & Darwin questions
-```
+- ⚡ **[Quick Reference & Cheatsheet](quick-reference.md)**: Daily command cheatsheet, rebuild aliases, garbage collection, and flake operations.
+- 🎛️ **[Definitive Toggle Reference](definitive-toggle-list.md)**: Exhaustive catalog of every boolean toggle, option flag, and default across all Solar modules.
+- ⌨️ **[Universal Keybindings](keybinds.md)**: Window manager shortcuts across Niri, Noctalia Shell, Helix editor, Ghostty terminal, and Hyprland.
+- 🌲 **[Suites Architecture](../suites/overview.md)**: The 3-tier dendritic module system, functional workflow suites, and desktop suites.
+- 🔧 **[Troubleshooting & Diagnostics](troubleshooting.md)**: GPU driver recovery, Btrfs filesystem repair, PipeWire audio diagnostics, and network debugging.
+- ❓ **[Frequently Asked Questions](faq.md)**: Common architectural questions, ephemeral storage, Agenix secrets, and Darwin portability.
 
 ______________________________________________________________________
 
@@ -28,10 +26,19 @@ Use the built-in search bar in the top navigation or press <kbd>S</kbd> to insta
 
 ______________________________________________________________________
 
-## 🤝 Editing the Wiki
+## 🧭 Navigation & Next Steps
 
-Because the wiki is part of the main Git repository in \[`docs/wiki/`\](file:///Users/apollo/src/solar/docs/wiki), you can propose edits directly:
+- **[Jump to Quick Reference Cheatsheet](quick-reference.md)** ➔
+- **[View Definitive Toggle Reference](definitive-toggle-list.md)** ➔
+- **[Explore The Fleet](../fleet/overview.md)** ➔
+- **[Return to Documentation Home](../index.md)** ➔
 
-1. Click the **Suggest an edit** pencil icon at the top right of any wiki page.
-1. Edit the markdown file on GitHub and submit a Pull Request.
+______________________________________________________________________
+
+## 🤝 Contributing to the Wiki
+
+Because the documentation is part of the main Solar repository under `docs/`, you can propose edits directly:
+
+1. Click the **Suggest an edit** pencil icon at the top right of any page.
+1. Edit the markdown file and submit a Pull Request.
 1. Once merged into `main`, GitHub Pages automatically rebuilds and deploys the update.

@@ -30,9 +30,9 @@ Solar
 │   ├── services/           # System services (Networking, Samba, NFS, Game Servers)
 │   └── hosts/              # The Terminal Leaves (Individual Machine Configs)
 │       ├── default.nix     # Dual-purpose host loader
-│       ├── thebe/          # Intel Mac Mini (Server Suite, Limine)
-│       ├── ganymede/       # Dedicated NAS (Server Suite, Samba SMB3, NFS)
-│       ├── callisto/       # Storage & Backup (Server Suite, Btrfs Pool)
+│       ├── pluto/          # Pluto Cluster Bootstrap Master (K3s HA, Ryzen 7, Minecraft)
+│       ├── styx/           # Pluto Cluster Control-Plane Master (ThinkPad T14, Battery UPS)
+│       ├── hydra/          # Pluto Cluster Control-Plane Master (ThinkCentre, QuickSync GPU)
 │       ├── mars/           # Main Workstation (Workstation, Gaming, Creator, Niri Suite)
 │       ├── mercury/        # Portable Laptop (Workstation, Laptop, Niri Suite)
 │       ├── elara/          # Gaming Rig (Workstation, Gaming, Plasma Suite)
@@ -49,15 +49,36 @@ Solar
 └── templates/              # Blueprints for new hosts and features
 ```
 
+## 📖 Documentation & Navigation Hub
+
+Solar features extensive, automated documentation generated via **mdBook** and published directly to GitHub Pages:
+
+👉 **[Browse the Solar Documentation Site](https://apollo-sudo767.github.io/solar/)** • **[Local Source (`docs/`)](docs/)**
+
+| Section | Description | Quick Links |
+| :--- | :--- | :--- |
+| 🧠 **Wiki & Knowledge Base** | Technical guides, option toggles, keybindings, and troubleshooting | [Quick Reference](docs/wiki/quick-reference.md) • [Toggle List](docs/wiki/definitive-toggle-list.md) • [Keybindings](docs/wiki/keybinds.md) • [Troubleshooting](docs/wiki/troubleshooting.md) • [FAQ](docs/wiki/faq.md) |
+| 🪐 **The Fleet** | Hardware specs, machine roles, and the Pluto Kubernetes cluster | [Fleet Overview](docs/fleet/overview.md) • [Workstations](docs/fleet/workstations.md) • [Gaming & VR](docs/fleet/gaming-vr.md) • [The Pluto Cluster](docs/fleet/pluto-cluster.md) • [Cloud & Servers](docs/fleet/servers.md) |
+| 🌲 **Suites & Profiles** | Dendritic 3-tier architecture, role suites, and desktop profiles | [Suites Overview](docs/suites/overview.md) • [Role Suites](docs/suites/roles.md) • [Desktop Suites](docs/suites/desktops.md) |
+| 🖥️ **Platforms & Desktops** | 18 graphical compositors, window managers, greeters, and Stylix styling | [Compositors Overview](docs/platforms/desktops.md) • [Wayland](docs/platforms/wayland.md) • [X11](docs/platforms/x11.md) • [DEs](docs/platforms/desktop-environments.md) • [Styling](docs/platforms/styling.md) |
+| 🎮 **Programs & Toolchains** | Steam, Gamescope, TF2, VR, Ghostty terminal, Helix, and Office | [Gaming](docs/programs/gaming.md) • [Virtual Reality](docs/programs/vr.md) • [Terminal & Dev](docs/programs/terminal.md) • [Productivity](docs/programs/productivity.md) |
+| 💾 **Storage & Security** | Ephemeral root tmpfs, Disko pools, LUKS2, Secure Boot, and Agenix secrets | [Universal Disko](docs/storage/disko.md) • [Wipe-on-Boot](docs/storage/preservation.md) • [LUKS2](docs/security/luks.md) • [Secure Boot](docs/security/secureboot.md) • [TPM 2.0](docs/security/tpm2.md) • [Agenix](docs/security/agenix.md) |
+| 🚀 **Deployment & Guides** | Bare-metal installation wizard, system maintenance, and module creation | [Installation Guide](docs/deployment/installation.md) • [Maintenance](docs/deployment/maintenance.md) • [How Modules Work](docs/guides/how-modules-work.md) • [Adding a Host](docs/guides/adding-a-host.md) |
+
+______________________________________________________________________
+
 ## 🪐 The Fleet
 
-### 🌕 The Jupiter Moon Stack *(Disko + Btrfs + LUKS)*
+### 🪐 The Pluto Cluster *(High-Availability K3s + GitOps + ZFS NAS)*
 
-Self-contained, standalone hosts with **zero dependencies on private secret repositories or agenix**.
+A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD](https://github.com/Apollo-sudo767/pluto-cluster) and NixOS:
 
-- **`thebe`** — *Intel Mac Mini*: Compact server node, `suites.server`, Apple SMC thermal monitoring, Limine bootloader, Disko LUKS + Btrfs SSD, AppArmor, Tailscale.
-- **`ganymede`** — *Dedicated NAS*: `suites.server`, NVMe cache + multi-HDD Btrfs storage pool, Samba (SMB3 enforced), NFSv4 server, Avahi mDNS auto-discovery, SMART diagnostics, weekly Btrfs scrubs.
-- **`callisto`** — *General Storage & Backup*: `suites.server`, multi-drive Btrfs storage pool, Syncthing peer folder sync, backup utilities (Restic, Borg, Rclone, Rsync), SMART monitoring.
+- **`pluto`** — *Bootstrap Master*: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM, NVMe), `clusterInit = true`, `node.type=compute`, secrets sync daemon, dedicated Paper Minecraft host with Playit.gg anycast sidecar tunnel.
+- **`styx`** — *Control-Plane Master*: Lenovo ThinkPad T14 Gen 2 (i5, 16GB RAM, NVMe), built-in battery UPS capped at 50% (`TLP`), lid-switch ignored, embedded etcd quorum peer.
+- **`hydra`** — *Control-Plane Master & Transcoder*: Lenovo ThinkCentre M920q Tiny (i5-8500T, 16GB RAM, NVMe), `gpu.vendor=intel`, Intel QuickSync GPU hardware passthrough (`/dev/dri`) for Jellyfin video transcoding.
+- **`sol`** — *Central Fleet ZFS NAS*: Storage hub exporting `/tank/k3s-volumes` via dynamic NFS (`nfs-client` provisioner).
+
+📖 **For detailed architecture, secrets sync, and workloads, see [The Pluto Cluster Documentation](docs/fleet/pluto-cluster.md) and the [GitOps Repository](https://github.com/Apollo-sudo767/pluto-cluster).**
 
 ### 🚀 Personal Workstations, Laptops & Devices
 

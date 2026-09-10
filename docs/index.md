@@ -52,7 +52,7 @@ Use the sidebar on the left or press <kbd>S</kbd> to search anywhere across all 
 - **[Workstations & Portables](fleet/workstations.md)**: Mars (Workstation), Mercury (Laptop), and Phobos (MacBook).
 - **[Gaming, VR & Rigs](fleet/gaming-vr.md)**: Elara (Streaming rig), Europa (VR workstation), and Amalthea (Handheld console).
 - **[The Pluto Cluster](fleet/pluto-cluster.md)**: High-Availability K3s GitOps cluster (**Pluto**, **Styx**, **Hydra**, and central storage **Sol**).
-- **[Server & Cloud Infrastructure](fleet/servers.md)**: Multi-service web and game server Venus.
+- **[Server & Cloud Infrastructure](fleet/servers.md)**: Multi-service cloud server Venus and compact standalone server Thebe (with legacy storage nodes Ganymede and Callisto noted as deprecated).
 - **[Testbeds & Experimental](fleet/testbeds.md)**: Experimental COSMIC workstation Io.
 
 ### 🌲 Dendritic Suites & Profiles

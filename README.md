@@ -40,6 +40,7 @@ Solar
 │       ├── amalthea/       # Handheld Console (Gaming Suite, Steam Big Picture)
 │       ├── io/             # COSMIC DE Testbed Node (Workstation, COSMIC Suite)
 │       ├── phobos/         # Apple Silicon MacBook (Darwin Workstation Suite)
+│       ├── thebe/          # Compact Standalone Server (Intel Mac Mini, Limine)
 │       └── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features
@@ -89,6 +90,8 @@ A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD]
 ### 🌐 Home Server & Cloud Services
 
 - **`venus`** — *Multi-Service Cloud Server*: `suites.server`, Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool server, dedicated Factorio & Minecraft servers.
+- **`thebe`** — *Compact Standalone Server*: Intel Mac Mini, `suites.server`, Apple SMC thermal monitoring, Limine bootloader, Disko LUKS + Btrfs SSD, AppArmor, Tailscale.
+- *(Note: Legacy standalone storage nodes **`ganymede`** and **`callisto`** are deprecated and retired in favor of **`sol`** and the **Pluto Cluster**).*
 
 ## 🎨 Visual Styling
 

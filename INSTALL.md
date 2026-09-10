@@ -1,6 +1,6 @@
 # Installation & Deployment Guide ☀️
 
-This guide provides step-by-step instructions for deploying and installing any host configuration from the **Solar** repository onto bare-metal machines, including the Jupiter moon stack (**thebe**, **ganymede**, and **callisto**).
+This guide provides step-by-step instructions for deploying and installing any host configuration from the **Solar** repository onto bare-metal machines, including personal workstations, portable laptops, and the Pluto cluster nodes (**pluto**, **styx**, and **hydra**).
 
 ______________________________________________________________________
 

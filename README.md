@@ -40,8 +40,9 @@ Solar
 │       ├── amalthea/       # Handheld Console (Gaming Suite, Steam Big Picture)
 │       ├── io/             # COSMIC DE Testbed Node (Workstation, COSMIC Suite)
 │       ├── phobos/         # Apple Silicon MacBook (Darwin Workstation Suite)
-│       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
+│       ├── thebe/          # Compact Standalone Server (Intel Mac Mini, Limine)
 │       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
+│       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
 │       ├── pluto/          # K3s HA Bootstrap Master (Beelink EQR5 Ryzen 7 32GB, Preservation, Agenix)
 │       ├── styx/           # K3s HA Master Node 2 (ThinkPad T14 Gen 2 16GB, Battery Cap, Agenix)
 │       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q 16GB, QuickSync GPU, Agenix)
@@ -94,9 +95,8 @@ A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD]
 
 - **`sol`** — *Central Fleet ZFS NAS & Storage Hub*: `suites.server`, wipe-on-boot tmpfs root with Disko ZFS mirrored HDD pool (`/tank`), NFS dynamic k3s volume export (`/tank/k3s-volumes`), Samba (SMB3 enforced), Avahi mDNS, Agenix private secrets, SMART monitoring, weekly ZFS scrubs & snapshots.
 - **`venus`** — *Multi-Service Cloud Server*: `suites.server`, Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool server, dedicated Factorio & Minecraft servers.
-- **`pluto`** — *K3s HA Bootstrap Master*: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, K3s HA control-plane cluster bootstrap master (`node.type=compute`, stateless `--disable=local-storage`), Wake-on-LAN, watchdog timer, weekly autoupgrade and staggered reboot (Sunday 03:00).
-- **`styx`** — *K3s HA Master Node 2*: Lenovo ThinkPad T14 Gen 2 (16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, 40–50% battery threshold conservation, lid switch ignore, NIC power save disabled, Wake-on-LAN, watchdog timer, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 03:30).
-- **`hydra`** — *K3s HA Master Node 3*: Lenovo ThinkCentre M920q Tiny (Intel i5-8500T, 16GB RAM), `suites.server`, Limine bootloader, wipe-on-boot tmpfs preservation, Agenix secrets, Intel QuickSync `/dev/dri` video transcoding (`gpu.vendor=intel`), Wake-on-LAN, watchdog timer, K3s HA control-plane master, weekly autoupgrade and staggered reboot (Sunday 04:00).
+- **`thebe`** — *Compact Standalone Server*: Intel Mac Mini, `suites.server`, Apple SMC thermal monitoring, Limine bootloader, Disko LUKS + Btrfs SSD, AppArmor, Tailscale.
+- *(Note: Legacy standalone storage nodes **`ganymede`** and **`callisto`** are deprecated and retired in favor of **`sol`** and the **Pluto Cluster**).*
 
 ## 🎨 Visual Styling
 
@@ -171,7 +171,7 @@ nrb  # (nixos-rebuild boot - apply on next reboot)
 drs  # (darwin-rebuild switch)
 ```
 
----
+______________________________________________________________________
 
 ## 🔐 Secret Management (`agenix-rekey`)
 
@@ -227,7 +227,7 @@ s-edit
 # (Opens interactive fzf picker to decrypt and view with your master identity)
 ```
 
----
+______________________________________________________________________
 
 ## 🍼 Creating New Hosts
 

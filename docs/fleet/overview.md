@@ -19,11 +19,15 @@ ______________________________________________________________________
 | **`styx`** | Laptop (ThinkPad) | `x86_64-linux` | Pluto Cluster Control Plane Master | Headless / K3s HA | Ephemeral `tmpfs` + NVMe |
 | **`hydra`** | Tiny PC (ThinkCentre) | `x86_64-linux` | Pluto Cluster Control Plane & Media Transcoder | Headless / K3s HA | Ephemeral `tmpfs` + NVMe |
 | **`sol`** | Storage Server | `x86_64-linux` | Central Fleet ZFS NAS & Dynamic Storage Hub | Headless Server | ZFS Pool `tank` + Multi-NIC |
+| **`thebe`** | Mac Mini Node | `x86_64-linux` | Compact Standalone Server Node | Headless / Limine | Standard Btrfs + LUKS2 |
 | **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
 | **`pluto`** | Mini PC (Beelink EQR5) | `x86_64-linux` | K3s HA Bootstrap Master (Ryzen 7 5825U, 32GB RAM) | Headless Server | Ephemeral `tmpfs` + 1x NVMe |
 | **`styx`** | Laptop (ThinkPad T14 Gen 2) | `x86_64-linux` | K3s HA Master Node 2 (16GB RAM) | Headless Server | Ephemeral `tmpfs` + 1x NVMe |
 | **`hydra`** | Tiny PC (ThinkCentre M920q) | `x86_64-linux` | K3s HA Master Node 3 (i5-8500T, 16GB RAM) | Headless Server | Ephemeral `tmpfs` + 1x NVMe |
 | **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
+
+> [!NOTE]
+> **Deprecated Hosts**: Legacy standalone storage nodes **`ganymede`** and **`callisto`** have been deprecated and retired in favor of **`sol`** (Central ZFS NAS) and the **Pluto Cluster**. **`thebe`** remains actively supported as a standalone compact node.
 
 ______________________________________________________________________
 
@@ -32,7 +36,7 @@ ______________________________________________________________________
 - **[Workstations & Portables](workstations.md)**: Details for **Mars**, **Mercury**, and **Phobos**.
 - **[Gaming, VR & Rigs](gaming-vr.md)**: Details for **Elara**, **Europa**, and **Amalthea**.
 - **[The Pluto Cluster](pluto-cluster.md)**: High-Availability K3s GitOps cluster (**Pluto**, **Styx**, **Hydra**, and storage **Sol**).
-- **[Server & Cloud Infrastructure](servers.md)**: Multi-service web and game server **Venus**.
+- **[Server & Cloud Infrastructure](servers.md)**: Multi-service cloud server **Venus** and compact server **Thebe**.
 - **[Testbeds & Experimental](testbeds.md)**: Experimental COSMIC workstation **Io**.
 
 ______________________________________________________________________

@@ -1,8 +1,10 @@
 # Server & Cloud Infrastructure 🌐
 
+Solar powers central storage arrays, multi-service cloud nodes, compact bare-metal servers, and High-Availability Kubernetes clusters designed for continuous, headless operation.
+
 ______________________________________________________________________
 
-## ☀️ Sol (Central Fleet ZFS NAS & Storage Hub)
+## ☀️ 1. Sol (Central Fleet ZFS NAS & Storage Hub)
 
 **Sol** (*The Sun*) is the central storage and file-sharing backbone of the Solar constellation, configured with ZFS, wipe-on-boot preservation, and private secrets management via Agenix.
 
@@ -17,7 +19,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## ☁️ Venus (Multi-Service Home Cloud)
+## ☁️ 2. Venus (Multi-Service Home Cloud)
 
 **Venus** is a multi-service Linux server providing web hosting, encrypted synchronization, and multiplayer gaming.
 
@@ -45,14 +47,28 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## 🌑 The Pluto K3s High-Availability Cluster
+## 🛰️ 3. Thebe (Intel Mac Mini Server)
+
+**Thebe** is a compact, standalone bare-metal server node running on repurposed Intel Mac Mini hardware:
+
+- **Hardware**: Intel Core CPU, Intel iGPU, Apple SMC controller.
+- **Role**: Compact headless server node (`suites.server`).
+- **Bootloader**: Native UEFI `limine` with graphical splash.
+- **Storage Topology**: Single SATA/NVMe SSD managed via Disko with LUKS2 encryption and Btrfs root filesystem (`compress=zstd`, `noatime`).
+- **Security & Features**: AppArmor MAC profiles, `applesmc` thermal sensor monitoring, Tailscale mesh VPN, and key-only OpenSSH.
+- **Zero-Secret Bootstrap**: Operates completely self-contained with zero dependencies on private secret repositories.
+
+______________________________________________________________________
+
+## 🌑 4. The Pluto K3s High-Availability Cluster
 
 The **Pluto Cluster** is a 3-node, High-Availability Kubernetes (K3s) control plane powered by an embedded etcd quorum. All three nodes operate as control-plane masters, ephemeral wipe-on-boot preservation hosts, and Agenix-managed secret consumers. To enforce stateless compute nodes, local hostpath storage is disabled (`--disable=local-storage`), delegating all persistent storage dynamically to Sol's ZFS NFS pool (`nfs-client`).
 
 To protect the etcd quorum from simultaneous failure during maintenance, all nodes run automated weekly system upgrades and reboots on Sunday, staggered precisely 30 minutes apart.
 
 > [!TIP]
-> For GitOps deployment, workload manifests, dynamic NFS provisioner configuration, and the step-by-step cluster bootstrapping guide, see the dedicated [**Pluto Cluster GitOps Repository**](https://github.com/Apollo-sudo767/pluto-cluster) and [**Comprehensive Setup & Operations Guide**](https://github.com/Apollo-sudo767/pluto-cluster/blob/main/docs/SETUP_GUIDE.md).
+> For the dedicated, in-depth architectural guide, see **[The Pluto Cluster](pluto-cluster.md)**.
+> For GitOps deployment manifests and step-by-step bootstrapping runbooks, see the [**Pluto Cluster GitOps Repository**](https://github.com/Apollo-sudo767/pluto-cluster).
 
 ### 🪐 Pluto (Bootstrap Master — Slot 1: Sun 03:00)
 
@@ -93,12 +109,19 @@ To protect the etcd quorum from simultaneous failure during maintenance, all nod
 
 ______________________________________________________________________
 
-## 📦 Cluster GitOps & Core Workloads (Flux CD)
+## ⚠️ Deprecated Legacy Hosts
 
-The cluster workloads and dynamic storage are declaratively synchronized via **Flux CD** from the dedicated [`pluto-cluster`](https://github.com/Apollo-sudo767/pluto-cluster) repository:
+> [!NOTE]
+> The former Jupiter Moon storage nodes have been retired in favor of the centralized storage and compute topology:
+>
+> - **`ganymede`** (Dedicated NAS): **Deprecated** — superseded by **`sol`** (Central ZFS NAS).
+> - **`callisto`** (Storage & Backup): **Deprecated** — superseded by **`sol`** and the **Pluto Cluster**.
+> - **`thebe`** remains actively maintained as a standalone compact server node.
 
-1. **Dynamic Storage (`nfs-client`)**: `nfs-subdir-external-provisioner` provisions persistent volumes dynamically from Sol's ZFS mirror pool (`sol.local:/tank/k3s-volumes`).
-1. **Minecraft Server**: Running `itzg/minecraft-server` with 8GB RAM allocated, pinned to Beelink EQR5 (`node.type=compute`), with a `playit-agent` sidecar for portless external friend access.
-1. **Jellyfin Media Server**: Pinned to the M920q (`gpu.vendor: intel`) with `/dev/dri` hardware-accelerated QuickSync video transcoding.
-1. **Cloudflared Tunnel**: Secure, zero-port-forwarding HTTPS ingress to cluster web services (e.g. `jellyfin.yourdomain.com`).
-1. **Home Assistant**: Smart home automation running with dedicated persistent volume storage.
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- **[Explore The Pluto Cluster (Full Guide)](pluto-cluster.md)** ➔
+- **[Return to Fleet Overview](overview.md)** ➔
+- **[Return to Documentation Home](../index.md)** ➔

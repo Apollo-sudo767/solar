@@ -3,41 +3,41 @@
 [Welcome to Solar](index.md)
 [System Architecture](architecture.md)
 
-# Wiki & Knowledge Base
+# 🧠 Wiki & Knowledge Base
 
 - [Wiki Overview](wiki/index.md)
-- [Definitive Toggle Reference](wiki/definitive-toggle-list.md)
-- [Quick Reference & Cheatsheet](wiki/quick-reference.md)
-- [Universal Keybindings](wiki/keybinds.md)
-- [Troubleshooting & Diagnostics](wiki/troubleshooting.md)
-- [Frequently Asked Questions](wiki/faq.md)
+  - [Quick Reference & Cheatsheet](wiki/quick-reference.md)
+  - [Definitive Toggle Reference](wiki/definitive-toggle-list.md)
+  - [Universal Keybindings](wiki/keybinds.md)
+  - [Troubleshooting & Diagnostics](wiki/troubleshooting.md)
+  - [Frequently Asked Questions](wiki/faq.md)
 
-# The Fleet
+# 🪐 The Fleet
 
 - [Fleet Overview](fleet/overview.md)
-- [Workstations & Portables](fleet/workstations.md)
-- [Gaming, VR & Rigs](fleet/gaming-vr.md)
-- [The Jupiter Moon Stack](fleet/jupiter-stack.md)
-- [Server & Cloud Infrastructure](fleet/servers.md)
-- [Testbeds & Experimental](fleet/testbeds.md)
+  - [Workstations & Portables](fleet/workstations.md)
+  - [Gaming, VR & Rigs](fleet/gaming-vr.md)
+  - [The Pluto Cluster](fleet/pluto-cluster.md)
+  - [Server & Cloud Infrastructure](fleet/servers.md)
+  - [Testbeds & Experimental](fleet/testbeds.md)
 
-# Dendritic Suites & Profiles
+# 🌲 Dendritic Suites & Profiles
 
 - [Suites Architecture Overview](suites/overview.md)
-- [Role & Workflow Suites](suites/roles.md)
-- [Desktop Environment Suites](suites/desktops.md)
+  - [Role & Workflow Suites](suites/roles.md)
+  - [Desktop Environment Suites](suites/desktops.md)
 
-# Platforms, Window Managers & Desktops
+# 🖥️ Platforms & Desktops
 
 - [Compositors & WMs Overview](platforms/desktops.md)
-- [Wayland Compositors](platforms/wayland.md)
-- [Classic X11 Window Managers](platforms/x11.md)
-- [Full Desktop Environments](platforms/desktop-environments.md)
-- [Display Managers & Greeters](platforms/display-managers.md)
-- [Shell, Bar & Addons](platforms/addons.md)
-- [Styling & Flavors](platforms/styling.md)
+  - [Wayland Compositors](platforms/wayland.md)
+  - [Classic X11 Window Managers](platforms/x11.md)
+  - [Full Desktop Environments](platforms/desktop-environments.md)
+  - [Display Managers & Greeters](platforms/display-managers.md)
+  - [Shell, Bar & Addons](platforms/addons.md)
+  - [Styling & Flavors](platforms/styling.md)
 
-# Software Suites & Toolchains
+# 🎮 Software Suites & Toolchains
 
 - [Gaming & Esports Suite](programs/gaming.md)
 - [Virtual Reality Suite](programs/vr.md)
@@ -45,31 +45,31 @@
 - [Media Production & Creation](programs/media.md)
 - [Productivity & Office](programs/productivity.md)
 
-# Services & Infrastructure
+# 🌐 Services & Daemons
 
 - [Networking & Mesh VPN](services/networking.md)
 - [Multimedia & Streaming](services/multimedia.md)
 - [Dedicated Servers](services/servers.md)
 
-# Storage & Impermanence
+# 💾 Storage & Impermanence
 
 - [Universal Hardware-Aware Disko](storage/disko.md)
 - [Wipe-on-Boot & Preservation](storage/preservation.md)
 - [Drive Swapping & Storage Expansion](storage/drive-swapping.md)
 
-# Security & Cryptography
+# 🛡️ Security & Cryptography
 
 - [Full-Disk LUKS2 Encryption](security/luks.md)
 - [Native Secure Boot with Limine](security/secureboot.md)
 - [TPM 2.0 Tamper-Proof Auto-Unlock](security/tpm2.md)
 - [Encrypted Secrets with Agenix](security/agenix.md)
 
-# Deployment & Operations
+# 🚀 Deployment & Operations
 
 - [Bare-Metal Installation Guide](deployment/installation.md)
 - [Routine Updates & System Maintenance](deployment/maintenance.md)
 
-# Configuration & Developer Guides
+# 📖 Configuration & Developer Guides
 
 - [How Modules Work](guides/how-modules-work.md)
 - [Setting Up a Basic Desktop](guides/setting-up-a-desktop.md)
@@ -77,6 +77,6 @@
 - [Adding a New Host](guides/adding-a-host.md)
 - [Adding a New Feature Module](guides/adding-a-feature.md)
 
-# Community & Contributing
+# 🤝 Community & Contributing
 
 - [Contributing Guide](contributing.md)

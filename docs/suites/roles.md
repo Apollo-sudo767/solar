@@ -65,7 +65,7 @@ myFeatures.suites.creator.enable = true;
 
 ### 4. Server Suite (`suites.server`)
 
-For headless bare-metal servers, NAS nodes, and cloud instances (**Ganymede**, **Callisto**, **Thebe**, **Venus**).
+For headless bare-metal servers, Kubernetes cluster nodes, NAS nodes, and cloud instances (**Pluto**, **Styx**, **Hydra**, **Sol**, **Venus**).
 
 ```nix
 myFeatures.suites.server.enable = true;

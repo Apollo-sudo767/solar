@@ -14,9 +14,10 @@ ______________________________________________________________________
 | **`elara`** | Gaming Rig | `x86_64-linux` | 4K Gaming & Live Streaming | KDE Plasma 6 (Strawberry) | Standard Btrfs + 1x SSD |
 | **`europa`** | VR Workstation | `x86_64-linux` | VR Streaming & Video Production | KDE Plasma 6 (Forest) | Standard Btrfs + 1x SSD |
 | **`amalthea`** | Handheld Console | `x86_64-linux` | Portable Steam Gaming | Steam Big Picture (Gamescope) | Standard Btrfs + eMMC/SD |
-| **`thebe`** | Mac Mini Node | `x86_64-linux` | Compact Desktop / Server Node | Headless / Limine | Standard Btrfs + LUKS2 |
-| **`ganymede`** | Storage Server | `x86_64-linux` | Dedicated NAS (Samba / NFS) | Headless Server | Standard Btrfs + 1x NVMe + 2x HDD |
-| **`callisto`** | Backup Server | `x86_64-linux` | Backup & Syncthing Node | Headless Server | Standard Btrfs + 1x NVMe + 1x HDD |
+| **`pluto`** | Mini PC (Beelink) | `x86_64-linux` | Pluto Cluster Bootstrap Master & Game Host | Headless / K3s HA | Ephemeral `tmpfs` + NVMe |
+| **`styx`** | Laptop (ThinkPad) | `x86_64-linux` | Pluto Cluster Control Plane Master | Headless / K3s HA | Ephemeral `tmpfs` + NVMe |
+| **`hydra`** | Tiny PC (ThinkCentre) | `x86_64-linux` | Pluto Cluster Control Plane & Media Transcoder | Headless / K3s HA | Ephemeral `tmpfs` + NVMe |
+| **`sol`** | Storage Server | `x86_64-linux` | Central Fleet ZFS NAS & Dynamic Storage Hub | Headless Server | ZFS Pool `tank` + Multi-NIC |
 | **`venus`** | Cloud Server | `x86_64-linux` | Web, Cloud Services & Game Servers | Headless Server | Standard Btrfs + 1x NVMe |
 | **`io`** | Testbed | `x86_64-linux` | Experimental Desktop Testing | COSMIC Desktop (Space) | Standard Btrfs |
 
@@ -26,6 +27,14 @@ ______________________________________________________________________
 
 - **[Workstations & Portables](workstations.md)**: Details for **Mars**, **Mercury**, and **Phobos**.
 - **[Gaming, VR & Rigs](gaming-vr.md)**: Details for **Elara**, **Europa**, and **Amalthea**.
-- **[The Jupiter Moon Stack](jupiter-stack.md)**: Details for standalone storage nodes **Thebe**, **Ganymede**, and **Callisto**.
+- **[The Pluto Cluster](pluto-cluster.md)**: High-Availability K3s GitOps cluster (**Pluto**, **Styx**, **Hydra**, and storage **Sol**).
 - **[Server & Cloud Infrastructure](servers.md)**: Multi-service web and game server **Venus**.
 - **[Testbeds & Experimental](testbeds.md)**: Experimental COSMIC workstation **Io**.
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- **[Browse The Pluto Cluster Documentation](pluto-cluster.md)** ➔
+- **[Explore Workstations & Laptops](workstations.md)** ➔
+- **[Return to Documentation Overview](../index.md)** ➔

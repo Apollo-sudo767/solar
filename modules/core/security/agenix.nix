@@ -47,6 +47,7 @@ in
           let
             allPaths = [
               "${secretsInput}/master/yubikey.id.pub"
+              "${secretsInput}/master/yubikey_slot2.id.pub"
               "${secretsInput}/master/mac_se.id.pub"
             ];
             validIdentities = builtins.filter (

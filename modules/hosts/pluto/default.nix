@@ -93,9 +93,26 @@
         extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=pluto --node-label node.type=compute";
       };
 
-      # Ensure cluster token directory exists on boot
+      # Support NFS mounting
+      boot.supportedFilesystems = [ "nfs" ];
+
+      # --- Temporary Cluster NFS Server (Until Sol NAS is built) ---
+      services.nfs.server = {
+        enable = true;
+        exports = ''
+          /persist/k3s-volumes *(rw,sync,no_subtree_check,no_root_squash)
+        '';
+      };
+
+      networking.firewall = {
+        allowedTCPPorts = [ 2049 ];
+        allowedUDPPorts = [ 2049 ];
+      };
+
+      # Ensure cluster token and persistent volumes directories exist on boot
       systemd.tmpfiles.rules = [
         "d /persist/etc/rancher/k3s 0700 root root - -"
+        "d /persist/k3s-volumes 0777 root root - -"
       ];
 
       # Preserve k3s state across wipe-on-boot ephemeral root

@@ -143,6 +143,9 @@
         "d /persist/etc/rancher/k3s 0700 root root - -"
       ];
 
+      # Support NFS mounting
+      boot.supportedFilesystems = [ "nfs" ];
+
       # Preserve k3s state across wipe-on-boot ephemeral root
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" = {
         directories = [

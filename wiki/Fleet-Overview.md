@@ -34,4 +34,8 @@ ______________________________________________________________________
 
 | Host | Celestial Body | Role | Hosted Services |
 | :--- | :--- | :--- | :--- |
+| **`sol`** | The Sun (Central Star) | **Central Fleet ZFS NAS**<br>• Storage Server (NVMe + HDDs) | ZFS mirrored pool (`tank`, LZ4, POSIX ACLs), NFS export (`/tank/k3s-volumes`), Samba SMB3, Avahi mDNS (`sol.local`), Agenix secrets, wipe-on-boot preservation, SMART diagnostics, weekly ZFS scrub & auto-snapshots. |
 | **`venus`** | Planet Venus | **Multi-Service Server**<br>• AMD CPU | Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool grammar server, dedicated Factorio & Minecraft servers. |
+| **`pluto`** | Dwarf Planet Pluto | **K3s HA Bootstrap Master**<br>• Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd bootstrap master, `node.type=compute`, Wake-on-LAN, watchdog, weekly upgrade & reboot Sun 03:00, Tailscale mesh. |
+| **`styx`** | Moon of Pluto (Styx) | **K3s HA Master Node 2**<br>• ThinkPad T14 Gen 2 (16GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd master, 40–50% battery cap, lid switch ignore, NIC power saving disabled, Wake-on-LAN, watchdog, weekly upgrade & reboot Sun 03:30, Tailscale mesh. |
+| **`hydra`** | Moon of Pluto (Hydra) | **K3s HA Master Node 3**<br>• ThinkCentre M920q (i5-8500T, 16GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd master, `gpu.vendor=intel`, Intel QuickSync `/dev/dri`, Wake-on-LAN, watchdog, weekly upgrade & reboot Sun 04:00, Tailscale mesh. |

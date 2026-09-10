@@ -58,28 +58,18 @@ ______________________________________________________________________
 | **Toggle Noctalia Control Center**| <kbd>Mod</kbd> + <kbd>N</kbd> | Quick settings, Bluetooth, Audio slider |
 | **Toggle Notification Center** | <kbd>Mod</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> | SwayNC / Noctalia notification panel |
 | **Interactive Screenshot** | <kbd>PrintScreen</kbd> or <kbd>Mod</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Region capture with `grim` & `slurp` |
-| **Lock Screen** | <kbd>Mod</kbd> + <kbd>Alt</kbd> + <kbd>L</kbd> | Swaylock / Waylock |
 
 ______________________________________________________________________
 
-## 📝 Helix Modal Editor
+## ⌨️ Helix Modal Editor Quick Keys
 
-| Mode / Action | Keybinding |
-| :--- | :--- |
-| **Normal Mode** | <kbd>Esc</kbd> |
-| **Insert Mode** | <kbd>i</kbd> (before cursor) or <kbd>a</kbd> (after cursor) |
-| **File Picker** | <kbd>Space</kbd> + <kbd>f</kbd> |
-| **Global Text Search** | <kbd>Space</kbd> + <kbd>/</kbd> |
-| **Buffer / Open Tabs** | <kbd>Space</kbd> + <kbd>b</kbd> |
-| **Save File** | <kbd>:w</kbd> + <kbd>Enter</kbd> or <kbd>Space</kbd> + <kbd>w</kbd> |
-| **Quit** | <kbd>:q</kbd> + <kbd>Enter</kbd> |
-
-______________________________________________________________________
-
-## 🧭 Navigation & Next Steps
-
-- ⚡ **[Quick Reference & Cheatsheet](quick-reference.md)**
-- 🎛️ **[Definitive Toggle Reference](definitive-toggle-list.md)**
-- 🔧 **[Troubleshooting & Diagnostics](troubleshooting.md)**
-- ❓ **[Frequently Asked Questions](faq.md)**
-- 🏠 **[Return to Wiki Overview](index.md)**
+| Mode / Action | Key | Description |
+| :--- | :--- | :--- |
+| **Normal Mode** | <kbd>Esc</kbd> | Return to command / navigation mode |
+| **Insert Mode** | <kbd>i</kbd> / <kbd>a</kbd> | Insert before / after cursor |
+| **File Picker** | <kbd>Space</kbd> + <kbd>f</kbd> | Fuzzy file finder across project |
+| **Global Search** | <kbd>Space</kbd> + <kbd>/</kbd> | Ripgrep search project text |
+| **Buffer / Tab Switcher** | <kbd>Space</kbd> + <kbd>b</kbd> | Fuzzy switch between open files |
+| **Format Document** | <kbd>Space</kbd> + <kbd>F</kbd> | Treefmt / LSP code formatting |
+| **Save / Write File** | <kbd>:w</kbd> + <kbd>Enter</kbd> | Save current buffer to disk |
+| **Quit Editor** | <kbd>:q</kbd> + <kbd>Enter</kbd> | Exit Helix |

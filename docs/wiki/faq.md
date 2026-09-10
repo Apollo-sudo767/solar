@@ -38,3 +38,13 @@ ______________________________________________________________________
 ### Q: How does Solar manage both NixOS and macOS in the same flake?
 
 `flake.nix` exports both `nixosConfigurations` (for Linux hosts) and `darwinConfigurations` (for macOS hosts like **Phobos**). The module autoscanner (`modules/default.nix`) uses platform reflection to load `modules/darwin/` and modules with `isDarwin` or `isTotal` on macOS while excluding Linux-only kernel and driver modules.
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- ⚡ **[Quick Reference & Cheatsheet](quick-reference.md)**
+- 🎛️ **[Definitive Toggle Reference](definitive-toggle-list.md)**
+- ⌨️ **[Universal Keybindings](keybinds.md)**
+- 🔧 **[Troubleshooting & Diagnostics](troubleshooting.md)**
+- 🏠 **[Return to Wiki Overview](index.md)**

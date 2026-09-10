@@ -65,3 +65,13 @@ ______________________________________________________________________
 - **Kernel Protection**: `protectKernelImage = true`, `forcePageTableIsolation = true`, and memory allocation checks (`MALLOC_CHECK_=1`).
 - **Firewall & Fail2ban**: Default-drop firewall policy with `fail2ban` protecting SSH and exposed ports.
 - **Secret Separation**: Standalone hosts set `useSolarSecrets = false` and `security.agenix.enable = false` to run fully self-contained without requiring private secret submodules.
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 💾 **[Storage & Disko Guide](Storage-&-Disko.md)**
+- 🚀 **[Installation & Deployment](Installation-&-Deployment.md)**
+- 🖧 **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**
+- 🔧 **[Troubleshooting & Diagnostics](Troubleshooting-&-Diagnostics.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

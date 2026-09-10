@@ -29,7 +29,7 @@ Universal Disko adapts automatically depending on whether wipe-on-boot preservat
 
 ### 1. Standard Mode (`usePersistence = false`)
 
-*Ideal for servers, NAS, storage nodes, and general workstations (`thebe`, `ganymede`, `callisto`, `elara`, `amalthea`).*
+*Ideal for standard servers, compact nodes, and general workstations (`thebe`, `venus`, `elara`, `amalthea`, `io`).*
 
 - **Boot Partition:** 2GB EFI System Partition (`vfat`, `umask=0077`) at `/boot`.
 - **Root Filesystem:** Formatted directly as Btrfs mounted at `/` with `compress=zstd` and `noatime`.
@@ -39,7 +39,7 @@ Universal Disko adapts automatically depending on whether wipe-on-boot preservat
 
 ### 2. Wipe-on-Boot Mode (`usePersistence = true`)
 
-*Ideal for security-hardened personal workstations and laptops (`mars`, `mercury`).*
+*Ideal for security-hardened workstations, laptops, and stateless cluster nodes (`mars`, `mercury`, `pluto`, `styx`, `hydra`, `sol`).*
 
 - **Root Filesystem (`/`):** 4GB in-memory `tmpfs` wiped completely on every reboot.
 - **Boot Partition:** 2GB EFI System Partition at `/boot`.
@@ -55,13 +55,20 @@ ______________________________________________________________________
 
 | Host | Preservation Mode | LUKS2 Encryption | Speed Disks | Bulk Disks | Mounted FileSystems |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`sol`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | 2x HDD (ZFS Mirror) | `/` (`tmpfs`), `/boot`, `/mnt-root`, `/nix`, `/persist`, `/tank` (ZFS `tank`) |
 | **`mars`** | **YES** (`tmpfs` root) | **YES** | 2x NVMe | 2x HDD | `/` (`tmpfs`), `/boot`, `/mnt-root`, `/nix`, `/persist`, `/persist/bulk` |
 | **`mercury`** | **YES** (`tmpfs` root) | **YES** | 1x NVMe | None | `/` (`tmpfs`), `/boot`, `/mnt-root`, `/nix`, `/persist` |
+| **`pluto`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | None | `/` (`tmpfs`), `/boot`, `/mnt-root`, `/nix`, `/persist` (Stateless K3s) |
+| **`styx`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | None | `/` (`tmpfs`), `/boot`, `/mnt-root`, `/nix`, `/persist` (Stateless K3s) |
+| **`hydra`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | None | `/` (`tmpfs`), `/boot`, `/mnt-root`, `/nix`, `/persist` (Stateless K3s) |
 | **`thebe`** | **NO** (Standard) | **YES** | 1x SSD/NVMe | None | `/`, `/boot` |
-| **`ganymede`** | **NO** (Standard) | **YES** | 1x NVMe | 2x HDD | `/`, `/boot`, `/persist/bulk` |
-| **`callisto`** | **NO** (Standard) | **YES** | 1x NVMe | 1x HDD | `/`, `/boot`, `/persist/bulk` |
+| **`venus`** | **NO** (Standard) | **NO** | 1x NVMe | None | `/`, `/boot` |
 | **`elara`** | **NO** (Standard) | **NO** | 1x SSD | None | `/`, `/boot` |
 | **`amalthea`**| **NO** (Standard) | **NO** | 1x eMMC/SSD | None | `/`, `/boot`, `/mnt/games` |
+| **`io`** | **NO** (Standard) | **NO** | 1x SSD | None | `/`, `/boot` |
+
+> [!NOTE]
+> **Deprecated Hosts**: Legacy storage nodes **`ganymede`** (Dedicated NAS) and **`callisto`** (Backup & Storage) have been retired in favor of **`sol`** (Central ZFS NAS) and the **Pluto Cluster**. **`thebe`** remains actively maintained as a standalone compact server node.
 
 ______________________________________________________________________
 
@@ -104,3 +111,13 @@ sudo cryptsetup luksFormat --type luks2 /dev/sdd1
 sudo cryptsetup open /dev/sdd1 crypted-bulk-extra
 sudo btrfs device add /dev/mapper/crypted-bulk-extra /persist/bulk
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 🛡️ **[Security & Hardening](Security-&-Hardening.md)**
+- 🗺️ **[Fleet Overview](Fleet-Overview.md)**
+- 🪐 **[The Pluto Cluster](Pluto-Cluster.md)**
+- 🚀 **[Installation & Deployment](Installation-&-Deployment.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

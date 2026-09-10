@@ -87,3 +87,13 @@ Verify that the flake automatically discovers and evaluates your new host:
 git add modules/hosts/<hostname>
 nix eval .#nixosConfigurations.<hostname>.config.networking.hostName
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 🖥️ **[Setting Up a Basic Desktop](Setting-Up-a-Basic-Desktop.md)**
+- 🖧 **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**
+- 🚀 **[Installation & Deployment](Installation-&-Deployment.md)**
+- 💾 **[Storage & Disko Guide](Storage-&-Disko.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

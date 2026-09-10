@@ -170,3 +170,13 @@ Secrets are encrypted with Age keys and managed by **agenix** and **agenix-rekey
 - Encrypted secrets are stored in the private secrets repository (`solar-secrets`).
 - Hosts declare `useSolarSecrets = true` in their `meta` block.
 - Secret files are decrypted on boot into `/run/agenix/` and referenced cleanly in system services.
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 🌲 **[Architecture Overview](Architecture.md)**
+- 🎛️ **[Definitive Toggle Reference](Definitive-Toggle-List.md)**
+- 🧩 **[Adding a New Feature](Adding-a-New-Feature.md)**
+- 🍼 **[Adding a New Host](Adding-a-New-Host.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

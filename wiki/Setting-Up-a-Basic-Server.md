@@ -1,6 +1,6 @@
 # Setting Up a Basic Server Host 🖧
 
-This guide walks you through setting up a headless, high-performance server in Solar—such as a home lab storage node, application host, or dedicated game server (like the Jupiter Moon stack: *Callisto*, *Ganymede*, *Europa*).
+This guide walks you through setting up a headless, high-performance server in Solar—such as a home lab storage node, application host, or cluster node (such as standalone servers *Venus* and *Thebe*, or nodes in the *Pluto Cluster*).
 
 ______________________________________________________________________
 
@@ -264,3 +264,13 @@ myFeatures.core.system.virtualization = {
   podman = true;
 };
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 🪐 **[The Pluto Cluster Architecture](Pluto-Cluster.md)**
+- 🗺️ **[Fleet Overview](Fleet-Overview.md)**
+- 💾 **[Storage & Disko Guide](Storage-&-Disko.md)**
+- 🍼 **[Adding a New Host Blueprint](Adding-a-New-Host.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

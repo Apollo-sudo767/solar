@@ -16,7 +16,7 @@ cd solar
 
 ### Interactive Steps:
 
-1. **Host Selection**: Select target host (e.g. `thebe`, `ganymede`, `callisto`).
+1. **Host Selection**: Select target host (e.g. `thebe`, `pluto`, `sol`, `mars`).
 1. **Target IP**: IP address of the target machine (booted into a NixOS Minimal Live USB with `sshd` enabled).
 1. **Build Mode**: Local compilation (recommended) or remote on-target build.
 1. **Agenix Selection**: Select `2` (**DISABLED**) for standalone hosts without private secret access.
@@ -117,3 +117,14 @@ nco   # Clean profiles and optimize/deduplicate Nix store
 seed  # Unlock and seed Age master keys into RAM
 unseed# Purge Age master keys from RAM
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- ⚡ **[Quick Reference & Cheatsheet](Quick-Reference-&-Cheatsheet.md)**
+- 💾 **[Storage & Disko Guide](Storage-&-Disko.md)**
+- 🗺️ **[Fleet Overview](Fleet-Overview.md)**
+- 🖧 **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**
+- 🖥️ **[Setting Up a Basic Desktop](Setting-Up-a-Basic-Desktop.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

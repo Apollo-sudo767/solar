@@ -94,3 +94,13 @@ Flush and restart Systemd-Resolved:
 resolvectl flush-caches
 sudo systemctl restart systemd-resolved
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- ⚡ **[Quick Reference & Cheatsheet](quick-reference.md)**
+- 🎛️ **[Definitive Toggle Reference](definitive-toggle-list.md)**
+- ⌨️ **[Universal Keybindings](keybinds.md)**
+- ❓ **[Frequently Asked Questions](faq.md)**
+- 🏠 **[Return to Wiki Overview](index.md)**

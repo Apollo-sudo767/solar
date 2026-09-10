@@ -52,10 +52,11 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## 🧭 Navigation & Next Steps
+## 🪐 Pluto Cluster Management
 
-- 🎛️ **[Definitive Toggle Reference](definitive-toggle-list.md)**
-- ⌨️ **[Universal Keybindings](keybinds.md)**
-- 🔧 **[Troubleshooting & Diagnostics](troubleshooting.md)**
-- ❓ **[Frequently Asked Questions](faq.md)**
-- 🏠 **[Return to Wiki Overview](index.md)**
+| Task | Command | Description |
+| :--- | :--- | :--- |
+| **Cluster Node Status** | `kubectl get nodes -o wide` | List HA control plane nodes and readiness |
+| **Check Flux CD Sync** | `flux get kustomizations` | View GitOps reconciliation state |
+| **Trigger Flux Sync** | `flux reconcile kustomization apps --with-source` | Force immediate workload update from Git |
+| **Game Server Pod Logs** | `kubectl logs -n games -l app=minecraft -c minecraft-server -f` | Follow live Minecraft server console |

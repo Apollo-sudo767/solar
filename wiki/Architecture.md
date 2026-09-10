@@ -49,3 +49,13 @@ Scans `modules/hosts/` for subdirectories (excluding `shared/`). For each host:
 1. Directs the build to either `pkgs.lib.nixosSystem` or `inputs.nix-darwin.lib.darwinSystem`.
 1. Injects Home Manager, Disko, Preservation, and Agenix modules dynamically.
 1. Exposes the resulting configurations under `nixosConfigurations.<hostname>` and `darwinConfigurations.<hostname>`.
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- ⚙️ **[How Modules Work](How-Modules-Work.md)**
+- 🎛️ **[Definitive Toggle Reference](Definitive-Toggle-List.md)**
+- 🗺️ **[Fleet Overview](Fleet-Overview.md)**
+- 🪐 **[The Pluto Cluster](Pluto-Cluster.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

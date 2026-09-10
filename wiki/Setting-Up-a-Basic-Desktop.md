@@ -318,3 +318,13 @@ Deploy the system locally:
 ```bash
 nh os switch . -H <hostname>
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- ⌨️ **[Universal Keybindings](Universal-Keybindings.md)**
+- 🍼 **[Adding a New Host](Adding-a-New-Host.md)**
+- 🚀 **[Installation & Deployment](Installation-&-Deployment.md)**
+- 🗺️ **[Fleet Overview](Fleet-Overview.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

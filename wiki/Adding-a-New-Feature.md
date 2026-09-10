@@ -61,3 +61,13 @@ Because of the Dendritic Autoscanner (`modules/default.nix`), you do **not** nee
 ```nix
 myFeatures.programs.terminal.mytool.enable = true;
 ```
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 🍼 **[Adding a New Host Blueprint](Adding-a-New-Host.md)**
+- ⚙️ **[How Modules Work](How-Modules-Work.md)**
+- 🌲 **[Architecture Overview](Architecture.md)**
+- 🎛️ **[Definitive Toggle Reference](Definitive-Toggle-List.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

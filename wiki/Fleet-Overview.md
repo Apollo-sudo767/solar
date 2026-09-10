@@ -4,15 +4,28 @@ Solar manages a constellation of specialized machines, each named after planets 
 
 ______________________________________________________________________
 
-## 🌕 The Jupiter Moon Stack *(Self-Contained Storage & Nodes)*
+## 🌑 The Pluto K3s High-Availability Cluster
 
-Configured with **Universal Disko**, **LUKS Encryption**, **Btrfs** (`zstd` compression, `noatime`, auto-scrubbing), and **zero dependencies on private secret repositories**.
+The **Pluto Cluster** is a 3-node, High-Availability Kubernetes (K3s) control plane powered by an embedded etcd quorum. All three nodes run ephemeral wipe-on-boot roots with Disko, stateless compute (`--disable=local-storage`), and delegate dynamic persistent storage to Sol's ZFS pool over NFS. Weekly system upgrades and reboots occur on Sundays, staggered by 30 minutes.
 
-| Host | Celestial Namesake | Role & Hardware | Key Highlights |
+> [!TIP]
+> For the dedicated cluster architecture, network topology, storage integration, and operational runbooks, see **[The Pluto Cluster](Pluto-Cluster.md)**.
+
+| Host | Celestial Body | Role & Architecture | Key Highlights |
 | :--- | :--- | :--- | :--- |
-| **`thebe`** | Inner Moon (Jupiter XIV) | **Intel Mac Mini**<br>• Intel CPU & iGPU<br>• Apple SMC sensors | UEFI `limine` bootloader, Disko LUKS + Btrfs on SATA/NVMe SSD, `applesmc` thermal control, AppArmor, Tailscale. |
-| **`ganymede`** | Galilean Moon (Jupiter III) | **Dedicated NAS**<br>• Fast NVMe OS cache<br>• Multi-HDD storage pool | Samba (SMB3 enforced), NFSv4, Avahi mDNS (`ganymede.local`), `smartd` health monitoring, weekly Btrfs auto-scrub. |
-| **`callisto`** | Galilean Moon (Jupiter IV) | **General Storage & Backup**<br>• NVMe + HDD pool | Syncthing peer folder synchronization, backup utilities (Restic, Borg, Rclone, Rsync), `smartd` monitoring, weekly Btrfs scrub. |
+| **`pluto`** | Dwarf Planet Pluto | **K3s HA Bootstrap Master**<br>• Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd bootstrap master (`clusterInit`), `node.type=compute`, Wake-on-LAN, watchdog, weekly upgrade Sun 03:00, Tailscale mesh. |
+| **`styx`** | Moon of Pluto (Styx) | **K3s HA Master Node 2**<br>• ThinkPad T14 Gen 2 (16GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd master, 40–50% battery cap, lid switch ignore, NIC power saving disabled, Wake-on-LAN, watchdog, weekly upgrade Sun 03:30, Tailscale mesh. |
+| **`hydra`** | Moon of Pluto (Hydra) | **K3s HA Master Node 3**<br>• ThinkCentre M920q (i5-8500T, 16GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd master, `gpu.vendor=intel`, Intel QuickSync `/dev/dri`, Wake-on-LAN, watchdog, weekly upgrade Sun 04:00, Tailscale mesh. |
+
+______________________________________________________________________
+
+## 🌐 Server & Storage Infrastructure
+
+| Host | Celestial Body | Role & Hardware | Hosted Services & Configuration |
+| :--- | :--- | :--- | :--- |
+| **`sol`** | The Sun (Central Star) | **Central Fleet ZFS NAS**<br>• Storage Server (NVMe + HDDs) | ZFS mirrored pool (`tank`, LZ4, POSIX ACLs), NFS export (`/tank/k3s-volumes`) for K3s dynamic PVs, Samba SMB3, Avahi mDNS (`sol.local`), Agenix secrets, wipe-on-boot preservation, SMART diagnostics, weekly ZFS scrub & auto-snapshots. |
+| **`venus`** | Planet Venus | **Multi-Service Server**<br>• AMD CPU | Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool grammar server, dedicated Factorio & Minecraft servers. |
+| **`thebe`** | Inner Moon (Jupiter XIV) | **Compact Standalone Server**<br>• Intel Mac Mini (Core CPU & iGPU) | UEFI `limine` bootloader, Disko LUKS + Btrfs on SATA/NVMe SSD, `applesmc` thermal monitoring, AppArmor, Tailscale mesh VPN, key-only SSH. Self-contained with zero private secret dependencies. |
 
 ______________________________________________________________________
 
@@ -30,12 +43,21 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## 🌐 Server & Cloud Infrastructure
+## ⚠️ Deprecated Legacy Hosts
 
-| Host | Celestial Body | Role | Hosted Services |
-| :--- | :--- | :--- | :--- |
-| **`sol`** | The Sun (Central Star) | **Central Fleet ZFS NAS**<br>• Storage Server (NVMe + HDDs) | ZFS mirrored pool (`tank`, LZ4, POSIX ACLs), NFS export (`/tank/k3s-volumes`), Samba SMB3, Avahi mDNS (`sol.local`), Agenix secrets, wipe-on-boot preservation, SMART diagnostics, weekly ZFS scrub & auto-snapshots. |
-| **`venus`** | Planet Venus | **Multi-Service Server**<br>• AMD CPU | Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool grammar server, dedicated Factorio & Minecraft servers. |
-| **`pluto`** | Dwarf Planet Pluto | **K3s HA Bootstrap Master**<br>• Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd bootstrap master, `node.type=compute`, Wake-on-LAN, watchdog, weekly upgrade & reboot Sun 03:00, Tailscale mesh. |
-| **`styx`** | Moon of Pluto (Styx) | **K3s HA Master Node 2**<br>• ThinkPad T14 Gen 2 (16GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd master, 40–50% battery cap, lid switch ignore, NIC power saving disabled, Wake-on-LAN, watchdog, weekly upgrade & reboot Sun 03:30, Tailscale mesh. |
-| **`hydra`** | Moon of Pluto (Hydra) | **K3s HA Master Node 3**<br>• ThinkCentre M920q (i5-8500T, 16GB RAM) | Headless server, Limine, Ephemeral tmpfs root + Preservation, Agenix, K3s embedded etcd master, `gpu.vendor=intel`, Intel QuickSync `/dev/dri`, Wake-on-LAN, watchdog, weekly upgrade & reboot Sun 04:00, Tailscale mesh. |
+> [!NOTE]
+> The legacy Jupiter Moon storage nodes have been retired in favor of **`sol`** (Central ZFS NAS) and the **Pluto Cluster**:
+>
+> - **`ganymede`** (Dedicated NAS): **Deprecated** — superseded by **`sol`**.
+> - **`callisto`** (Storage & Backup): **Deprecated** — superseded by **`sol`** and the **Pluto Cluster**.
+> - **`thebe`** remains actively maintained as a standalone compact server node.
+
+______________________________________________________________________
+
+## 🧭 Navigation & Next Steps
+
+- 🪐 **[The Pluto Cluster Documentation](Pluto-Cluster.md)**
+- 💾 **[Storage & Disko Guide](Storage-&-Disko.md)**
+- 🖧 **[Setting Up a Basic Server](Setting-Up-a-Basic-Server.md)**
+- ⚡ **[Quick Reference & Cheatsheet](Quick-Reference-&-Cheatsheet.md)**
+- 🏠 **[Return to Wiki Home](Home.md)**

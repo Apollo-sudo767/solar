@@ -104,11 +104,6 @@
         '';
       };
 
-      networking.firewall = {
-        allowedTCPPorts = [ 2049 ];
-        allowedUDPPorts = [ 2049 ];
-      };
-
       # Ensure cluster token and persistent volumes directories exist on boot
       systemd.tmpfiles.rules = [
         "d /persist/etc/rancher/k3s 0700 root root - -"
@@ -158,12 +153,14 @@
         enable = lib.mkDefault true;
         allowedTCPPorts = [
           22 # SSH
+          2049 # NFS Server
           6443 # k3s API Server
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
         ];
         allowedUDPPorts = [
+          2049 # NFS Server
           8472 # Flannel VXLAN overlay network
         ];
       };

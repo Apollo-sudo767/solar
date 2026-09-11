@@ -4,26 +4,18 @@ Solar provides a unified configuration workflow for personal workstations, lapto
 
 ______________________________________________________________________
 
-## ⚡ Quick Deployment via `install.sh`
+## ⚡ Live Installer Image & Disko Deployment
 
-The interactive `install.sh` wizard orchestrates remote bare-metal installations over SSH using `nixos-anywhere` and Disko:
+Solar supports direct bare-metal deployment either via the **Solar Live Installer Image** or manually from a standard **NixOS Minimal Live USB**:
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/Apollo-sudo767/solar.git
-cd solar
+# 1. Boot target hardware into the Solar Live Installer USB
+# 2. Run the on-device installer wizard:
+sudo solar-install
 
-# 2. Launch interactive provisioning
-./install.sh
+# Or partition and format directly via Disko:
+sudo nix run github:nix-community/disko -- --mode zap-create-mount --flake "github:Apollo-sudo767/solar#<hostname>"
 ```
-
-### Installation Steps
-
-1. **Host Selection**: Select target host (e.g. `mars`, `mercury`, `pluto`, `thebe`, `sol`).
-1. **Target IP**: IP address of target booted into a NixOS Minimal Live USB with `sshd` running.
-1. **Build Mode**: Local compilation (recommended) or remote compilation on the target node.
-1. **Agenix Selection**: Select `2` (Disabled) for standalone bootstrap or `1` (Enabled) if secrets are available.
-1. **Initial User Password**: Supply a root password for initial login.
 
 ______________________________________________________________________
 

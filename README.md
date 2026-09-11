@@ -16,7 +16,6 @@ New features and hosts are automatically discovered and integrated. This structu
 Solar
 ├── flake.nix               # Entry point (generates nixosConfigurations and darwinConfigurations)
 ├── flake.lock
-├── install.sh              # Interactive bare-metal deployment wizard
 ├── INSTALL.md              # Bare-metal installation & storage guide
 ├── assets/                 # Icons, wallpapers, and screenshots
 ├── modules/                # The Dendritic Core
@@ -129,17 +128,20 @@ experimental-features = nix-command flakes
 
 For complete step-by-step bare-metal installation instructions, see [INSTALL.md](INSTALL.md).
 
-### Automated Installation
+### Live Installer Image / Manual Disko Installation
 
-Run the interactive installation wizard:
+Boot target hardware into the Solar Live Installer USB (or a standard NixOS Minimal installer) and partition via Disko:
 
 ```bash
-./install.sh
+# 1. Partition and format storage declaratively via Disko:
+sudo nix run github:nix-community/disko -- --mode zap-create-mount --flake "github:Apollo-sudo767/solar#<host>"
+
+# 2. Install NixOS closure:
+sudo nixos-install --flake "github:Apollo-sudo767/solar#<host>" --no-root-password
+
+# 3. Reboot:
+sudo reboot
 ```
-
-### Initial Bootstrap
-
-To apply a configuration to a new machine for the first time:
 
 **NixOS:**
 

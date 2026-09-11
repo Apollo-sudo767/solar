@@ -8,8 +8,8 @@ ______________________________________________________________________
 
 1. [Target Architecture & Disk Layout Overview](#target-architecture--disk-layout-overview)
 1. [Prerequisites](#prerequisites)
-1. [Method 1: Automated Installation via `install.sh` (Recommended)](#method-1-automated-installation-via-installsh-recommended)
-1. [Method 2: Manual Installation from NixOS Live Installer](#method-2-manual-installation-from-nixos-live-installer)
+1. [Method 1: Solar Live Installer Image (`solar-install`)](#method-1-solar-live-installer-image-solar-install)
+1. [Method 2: Manual Installation from NixOS Live Installer via Disko](#method-2-manual-installation-from-nixos-live-installer-via-disko)
 1. [Host-Specific Installation Notes](#host-specific-installation-notes)
    - [Thebe (Intel Mac Mini)](#thebe-intel-mac-mini)
    - [Ganymede (Dedicated NAS)](#ganymede-dedicated-nas)
@@ -58,34 +58,39 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## 🚀 Method 1: Automated Installation via `install.sh` (Recommended)
+## 🚀 Method 1: Solar Live Installer Image (`solar-install`)
+
+Solar includes a custom, fully-equipped Live Installer ISO configuration (`modules/hosts/installer/default.nix`) with automatic network configuration, Disko, GParted, and the interactive `solar-install` tool built-in.
+
+### 1. Build the Solar Live Installer ISO
 
 From a workstation running Linux or macOS with Nix installed:
 
-1. **Clone the repository:**
+```bash
+cd ~/src/solar
+nix build .#nixosConfigurations.installer.config.system.build.isoImage
+```
 
+The resulting bootable `.iso` will be in `./result/iso/`.
+
+### 2. Flash to USB Drive
+
+```bash
+# Identify your USB drive (e.g. /dev/sdX):
+lsblk
+
+# Write ISO directly:
+sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress conv=fsync
+```
+
+### 3. Boot Target Hardware & Install
+
+1. Boot the target machine from the USB drive.
+1. In the terminal (or via SSH as `nixos` / `root`), run:
    ```bash
-   git clone https://github.com/Apollo-sudo767/solar.git
-   cd solar
+   sudo solar-install
    ```
-
-1. **Execute the interactive installer:**
-
-   ```bash
-   ./install.sh
-   ```
-
-1. **Follow the interactive prompts:**
-
-   - **Host selection**: Enter `thebe`, `ganymede`, or `callisto`.
-   - **Target IP**: Enter the IP address of the target machine.
-   - **Build mode**: Choose `1` (Build locally and copy to target) or `2` (Remote build on target).
-   - **Agenix Secret Management**: Select `2` (**DISABLED** — bypasses agenix for self-contained hosts).
-   - **SSH Host Key**: Choose `1` (Generate new SSH host key) or `3` (Skip).
-   - **User Password**: Enter a custom password or press Enter for default.
-
-1. **Installation Execution**:
-   The script will automatically invoke `disko` to partition and format the drives with LUKS and Btrfs, transfer the NixOS system closure, and configure the Limine bootloader.
+1. Follow the on-screen prompts to select the target host configuration, verify disk targets, and install automatically.
 
 ______________________________________________________________________
 
@@ -105,30 +110,47 @@ If your disk device paths differ from the defaults (e.g. `/dev/nvme0n1` vs `/dev
 
 ### Step 2: Partition and Format with Disko
 
-Run Disko directly to create the GPT table, EFI partition, LUKS containers, and Btrfs filesystems:
+Run Disko directly to wipe the target disk, create the GPT table, EFI partition, and format Btrfs subvolumes (`/root`, `/nix`, `/persist`):
 
 ```bash
 sudo nix --extra-experimental-features "nix-command flakes" \
   run github:nix-community/disko -- \
-  --mode disko \
+  --mode zap-create-mount \
   --flake "github:Apollo-sudo767/solar#<hostname>"
 ```
 
-*(You will be prompted to enter a passphrase for each LUKS encrypted volume.)*
+*(If prompted for LUKS encryption passphrases on encrypted nodes, enter your passphrase).*
 
 > [!IMPORTANT]
 > When Disko prompts for passphrases on multi-drive systems (`ganymede` / `callisto`), **set the EXACT same passphrase on all disks**. See the section below for details.
 
-### Step 3: Install NixOS
+### Step 3 (For Agenix Secret Hosts): Provision Host Key
+
+If installing a host that uses private secrets (e.g. `hydra`, `pluto`, `styx`):
+
+1. Create the persistent SSH directory on the mounted drive:
+   ```bash
+   sudo mkdir -p /mnt/persist/etc/ssh
+   ```
+1. If the host has an existing private key, copy it to `/mnt/persist/etc/ssh/ssh_host_ed25519_key`.
+1. If generating a fresh key:
+   ```bash
+   sudo ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@<hostname>"
+   sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key
+   cat /mnt/persist/etc/ssh/ssh_host_ed25519_key.pub
+   ```
+   *(Add this public key to `solar-secrets/hosts/<hostname>.pub`, run `s-rekey` on your workstation, and push to GitHub before proceeding to install).*
+
+### Step 4: Install NixOS Closure
 
 ```bash
-sudo nixos-install --flake "github:Apollo-sudo767/solar#<hostname>"
+sudo nixos-install --flake "github:Apollo-sudo767/solar#<hostname>" --no-root-password
 ```
 
-### Step 4: Reboot
+### Step 5: Reboot
 
 ```bash
-reboot
+sudo reboot
 ```
 
 ______________________________________________________________________

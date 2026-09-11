@@ -425,22 +425,22 @@
 
       # Bundle Solar repository and desktop launcher applet
       system.activationScripts.copySolarRepo = ''
-                if [ ! -d /home/nixos/solar ]; then
-                  mkdir -p /home/nixos
-                  cp -r ${inputs.self.outPath} /home/nixos/solar
-                  chown -R nixos:users /home/nixos/solar
-                  chmod -R u+w /home/nixos/solar
+        if [ ! -d /home/nixos/solar ]; then
+          mkdir -p /home/nixos
+          cp -r ${inputs.self.outPath} /home/nixos/solar
+          chown -R nixos:users /home/nixos/solar
+          chmod -R u+w /home/nixos/solar
 
-                  # Initialize as a valid Git repository so Nix Flakes can evaluate it offline
-                  ${pkgs.git}/bin/git -C /home/nixos/solar init >/dev/null 2>&1 || true
-                  ${pkgs.git}/bin/git -C /home/nixos/solar add -A >/dev/null 2>&1 || true
-                  ${pkgs.git}/bin/git -C /home/nixos/solar -c user.name="Solar" -c user.email="solar@localhost" commit -m "solar iso bundle" >/dev/null 2>&1 || true
-                fi
+          # Initialize as a valid Git repository so Nix Flakes can evaluate it offline
+          ${pkgs.git}/bin/git -C /home/nixos/solar init >/dev/null 2>&1 || true
+          ${pkgs.git}/bin/git -C /home/nixos/solar add -A >/dev/null 2>&1 || true
+          ${pkgs.git}/bin/git -C /home/nixos/solar -c user.name="Solar" -c user.email="solar@localhost" commit -m "solar iso bundle" >/dev/null 2>&1 || true
+        fi
 
-                mkdir -p /home/nixos/Desktop
-                cp ${desktopLauncher}/share/applications/solar-install.desktop /home/nixos/Desktop/solar-install.desktop
-                chmod +x /home/nixos/Desktop/solar-install.desktop
-                chown -R nixos:users /home/nixos/Desktop
+        mkdir -p /home/nixos/Desktop
+        cp ${desktopLauncher}/share/applications/solar-install.desktop /home/nixos/Desktop/solar-install.desktop
+        chmod +x /home/nixos/Desktop/solar-install.desktop
+        chown -R nixos:users /home/nixos/Desktop
       '';
 
       # Environment Packages & Tools
@@ -481,7 +481,7 @@
         =============================================================
 
         • Install Solar locally:   Run 'sudo solar-install'
-        • Remote deployment:       Run 'install.sh' (nixos-anywhere)
+        • Manual Disko install:    Run 'sudo disko --mode zap-create-mount --flake .#<host>'
         • Configure Wi-Fi:         Run 'nmtui'
         • Partition visually:      Run 'gparted' (Graphical Mode)
         • Remote SSH Access:       Authorized with key 'apollo@mars'

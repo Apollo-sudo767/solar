@@ -96,16 +96,35 @@
       # Support NFS mounting
       boot.supportedFilesystems = [ "nfs" ];
 
-      # Ensure cluster token directory exists on boot
-      systemd.tmpfiles.rules = [
-        "d /persist/etc/rancher/k3s 0700 root root - -"
+      # --- Open-iSCSI & Storage Prerequisites (Longhorn HA Storage) ---
+      services.openiscsi = {
+        enable = true;
+        name = "iqn.2020-08.org.linux-iscsi.${config.networking.hostName}:initiator";
+      };
+
+      environment.systemPackages = with pkgs; [
+        nfs-utils
+        util-linux
+        e2fsprogs
+        xfsprogs
       ];
 
-      # Preserve k3s state across wipe-on-boot ephemeral root
+      # Unified /persist/kubernetes storage layout (easy rsync migration when Sol NAS is ready)
+      systemd.tmpfiles.rules = [
+        "d /persist/etc/rancher/k3s 0700 root root - -"
+        "d /persist/kubernetes 0755 root root - -"
+        "d /persist/kubernetes/storage 0777 root root - -"
+        "d /persist/kubernetes/longhorn 0777 root root - -"
+        "L+ /persist/k3s-volumes - - - - /persist/kubernetes/storage"
+      ];
+
+      # Preserve k3s and storage state across wipe-on-boot ephemeral root
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" = {
         directories = [
           "/var/lib/rancher"
           "/etc/rancher"
+          "/var/lib/longhorn"
+          "/etc/iscsi"
         ];
       };
 

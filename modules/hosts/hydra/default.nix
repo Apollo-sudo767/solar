@@ -100,13 +100,13 @@
       # Kernel hardware watchdog timers for auto-recovery on system freezes
       services.watchdog.enable = true;
 
-      # --- K3s HA Multi-Master Configuration (Bootstrap Master Node) ---
+      # --- K3s HA Multi-Master Configuration (Joining Master Node) ---
       myFeatures.services.k3s.secretSync.enable = true;
 
       services.k3s = {
         enable = true;
         role = "server";
-        clusterInit = true; # Initializes the embedded etcd HA cluster
+        serverAddr = "https://pluto:6443";
         tokenFile =
           if (config.age.secrets ? "k3s-token.age") then
             config.age.secrets."k3s-token.age".path
@@ -130,15 +130,6 @@
         e2fsprogs
         xfsprogs
       ];
-
-      # --- Temporary Cluster NFS Server (Until Sol NAS is built) ---
-      services.nfs.server = {
-        enable = true;
-        exports = ''
-          /persist/kubernetes/storage *(rw,sync,no_subtree_check,no_root_squash)
-          /persist/k3s-volumes *(rw,sync,no_subtree_check,no_root_squash)
-        '';
-      };
 
       # Unified /persist/kubernetes storage layout (easy rsync migration when Sol NAS is ready)
       systemd.tmpfiles.rules = [

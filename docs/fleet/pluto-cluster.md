@@ -54,9 +54,9 @@ The cluster maintains an embedded 3-node etcd quorum across heterogeneous hardwa
 
 | Node | Namesake | Hardware Specification | Role | Node Labels & Special Configs |
 | :--- | :--- | :--- | :--- | :--- |
-| **`hydra`** | Moon of Pluto (Hydra) | Lenovo ThinkCentre M920q Tiny (Intel Core i5-8500T, 16GB RAM, NVMe) | Bootstrap Master (`clusterInit`) | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`), Secrets sync daemon |
+| **`pluto`** | Dwarf Planet Pluto | Beelink EQR5 (AMD Ryzen 7 5825U 8C/16T, 32GB RAM, 1TB NVMe) | Bootstrap Master (`clusterInit`) | `node.type=compute`<br>Secrets sync daemon, high-performance CPU allocation |
 | **`styx`** | Moon of Pluto (Styx) | Lenovo ThinkPad T14 Gen 2 (Intel Core i5, 16GB RAM, 512GB NVMe) | Control-Plane Master | Built-in battery UPS, battery capped at 50% (`TLP`), lid-switch ignored |
-| **`pluto`** | Dwarf Planet Pluto | Beelink EQR5 (AMD Ryzen 7 5825U 8C/16T, 32GB RAM, 1TB NVMe) | Control-Plane Master | `node.type=compute`<br>High-performance CPU allocation |
+| **`hydra`** | Moon of Pluto (Hydra) | Lenovo ThinkCentre M920q Tiny (Intel Core i5-8500T, 16GB RAM, NVMe) | Control-Plane Master | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`) |
 | **`sol`** | Central Star (Sun) | Dedicated ZFS NAS (Multi-NIC, SAS/SATA HDD pool) | Fleet Storage Hub | Central NFS export (`/tank/k3s-volumes`) for persistent volumes |
 
 ### 🧹 Stateless Root & Impermanence

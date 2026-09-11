@@ -129,7 +129,7 @@
       services.k3s = {
         enable = true;
         role = "server";
-        serverAddr = "https://pluto:6443";
+        serverAddr = "https://hydra:6443";
         tokenFile =
           if (config.age.secrets ? "k3s-token.age") then
             config.age.secrets."k3s-token.age".path

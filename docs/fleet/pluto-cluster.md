@@ -64,7 +64,7 @@ The cluster maintains an embedded 3-node etcd quorum across heterogeneous hardwa
 All compute nodes (`pluto`, `styx`, `hydra`) implement Solar's signature **ephemeral root on tmpfs**:
 
 - The root filesystem (`/`) is wiped cleanly on every single reboot.
-- Essential persistent state is preserved explicitly under `/persist` (K3s runtime tokens, cluster state, logs, and SSH host keys) via declarative [Preservation / Impermanence](../storage/preservation.md).
+- Essential persistent state is preserved explicitly under `/persist` (K3s runtime tokens, cluster state, logs, and SSH host keys) via declarative [Preservation / Impermanence](/guide/storage-security).
 - Guarantee: Nodes remain 100% immutable and reproducible from Nix expressions.
 
 ______________________________________________________________________
@@ -127,7 +127,7 @@ ______________________________________________________________________
 
 ## 🌐 Networking & Ingress Architecture
 
-- **Internal Connectivity**: Nodes communicate over encrypted WireGuard meshes via [Tailscale](../services/networking.md) and local gigabit LAN.
+- **Internal Connectivity**: Nodes communicate over encrypted WireGuard meshes via [Tailscale](/guide/getting-started) and local gigabit LAN.
 - **External Web Access**: Cloudflare Zero Trust Tunnel (`cloudflared`) connects web services (Jellyfin, Home Assistant) to public hostnames without opening ports or exposing home IP addresses.
 - **External Gaming Access**: Playit.gg tunnels TCP/UDP gaming traffic through global anycast edge nodes directly to game pods.
 
@@ -164,10 +164,10 @@ kubectl logs -n games -l app=minecraft -c minecraft-server -f
 
 ______________________________________________________________________
 
-## 🔗 Related Documentation
+## 🧭 Navigation & Next Steps
 
-- **[Fleet Overview](overview.md)**: Explore the entire Solar machine constellation.
-- **[Server & Cloud Infrastructure](servers.md)**: Standalone web and game server Venus.
-- **[Universal Disko & Storage](../storage/disko.md)**: Declarative partitioning and filesystem layout.
-- **[Secrets Management with Agenix](../security/agenix.md)**: Cryptographic secrets workflow.
+- **[Fleet Overview & Matrix](/fleet/)**: Explore the entire Solar machine constellation.
+- **[Getting Started & Installation](/guide/getting-started)**: Blueprint for headless servers and clusters.
+- **[Storage & Disko Architecture](/guide/storage-security)**: Ephemeral roots, NFS dynamic volumes, and ZFS storage.
+- **[Universal Cheatsheet](/reference/cheatsheet)**: Cluster administration commands and aliases.
 - **[Pluto Cluster Repository](https://github.com/Apollo-sudo767/pluto-cluster)**: GitOps manifests, Flux definitions, and application configs.

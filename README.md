@@ -50,21 +50,19 @@ Solar
 └── templates/              # Blueprints for new hosts and features
 ```
 
-## 📖 Documentation & Navigation Hub
+## 📖 Documentation & Developer Portal
 
-Solar features extensive, automated documentation generated via **mdBook** and published directly to GitHub Pages:
+Solar features an official developer documentation portal built with **VitePress** and published automatically via GitHub Pages:
 
-👉 **[Browse the Solar Documentation Site](https://apollo-sudo767.github.io/solar/)** • **[Local Source (`docs/`)](docs/)**
+👉 **[Browse the Solar Documentation Portal](https://apollo-sudo767.github.io/solar/)** • **[Local Source (`docs/`)](docs/)**
 
-| Section | Description | Quick Links |
+| Portal Section | Highlights & Key Guides | Quick Links |
 | :--- | :--- | :--- |
-| 🧠 **Wiki & Knowledge Base** | Technical guides, option toggles, keybindings, and troubleshooting | [Quick Reference](docs/wiki/quick-reference.md) • [Toggle List](docs/wiki/definitive-toggle-list.md) • [Keybindings](docs/wiki/keybinds.md) • [Troubleshooting](docs/wiki/troubleshooting.md) • [FAQ](docs/wiki/faq.md) |
-| 🪐 **The Fleet** | Hardware specs, machine roles, and the Pluto Kubernetes cluster | [Fleet Overview](docs/fleet/overview.md) • [Workstations](docs/fleet/workstations.md) • [Gaming & VR](docs/fleet/gaming-vr.md) • [The Pluto Cluster](docs/fleet/pluto-cluster.md) • [Cloud & Servers](docs/fleet/servers.md) |
-| 🌲 **Suites & Profiles** | Dendritic 3-tier architecture, role suites, and desktop profiles | [Suites Overview](docs/suites/overview.md) • [Role Suites](docs/suites/roles.md) • [Desktop Suites](docs/suites/desktops.md) |
-| 🖥️ **Platforms & Desktops** | 18 graphical compositors, window managers, greeters, and Stylix styling | [Compositors Overview](docs/platforms/desktops.md) • [Wayland](docs/platforms/wayland.md) • [X11](docs/platforms/x11.md) • [DEs](docs/platforms/desktop-environments.md) • [Styling](docs/platforms/styling.md) |
-| 🎮 **Programs & Toolchains** | Steam, Gamescope, TF2, VR, Ghostty terminal, Helix, and Office | [Gaming](docs/programs/gaming.md) • [Virtual Reality](docs/programs/vr.md) • [Terminal & Dev](docs/programs/terminal.md) • [Productivity](docs/programs/productivity.md) |
-| 💾 **Storage & Security** | Ephemeral root tmpfs, Disko pools, LUKS2, Secure Boot, and Agenix secrets | [Universal Disko](docs/storage/disko.md) • [Wipe-on-Boot](docs/storage/preservation.md) • [LUKS2](docs/security/luks.md) • [Secure Boot](docs/security/secureboot.md) • [TPM 2.0](docs/security/tpm2.md) • [Agenix](docs/security/agenix.md) |
-| 🚀 **Deployment & Guides** | Bare-metal installation wizard, system maintenance, and module creation | [Installation Guide](docs/deployment/installation.md) • [Maintenance](docs/deployment/maintenance.md) • [How Modules Work](docs/guides/how-modules-work.md) • [Adding a Host](docs/guides/adding-a-host.md) |
+| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and routine updates | [Getting Started](docs/guide/getting-started.md) • [Module Guide](docs/guide/modules.md) |
+| 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](docs/guide/architecture.md) |
+| 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](docs/fleet/index.md) • [The Pluto Cluster](docs/fleet/pluto-cluster.md) |
+| 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](docs/guide/storage-security.md) |
+| ⚡ **Reference & Help** | Universal command aliases, desktop keybindings, diagnostics, and toggle reference | [Cheatsheet](docs/reference/cheatsheet.md) • [Keybindings](docs/reference/keybindings.md) • [Troubleshooting](docs/reference/troubleshooting.md) • [532 Toggles](docs/reference/toggles.md) • [FAQ](docs/reference/faq.md) |
 
 ______________________________________________________________________
 

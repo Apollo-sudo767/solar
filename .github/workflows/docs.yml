@@ -25,14 +25,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v25
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
+          node-version: 20
+          cache: npm
 
-      - name: Build mdBook documentation
-        run: nix shell nixpkgs#mdbook --command mdbook build
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build VitePress documentation
+        run: npm run docs:build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -40,7 +43,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'book'
+          path: 'docs/.vitepress/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment

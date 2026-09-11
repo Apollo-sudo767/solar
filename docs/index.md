@@ -1,110 +1,44 @@
-# Solar Documentation ☀️
-
-Welcome to the official documentation for **Solar** — a high-performance, hybrid NixOS and macOS configuration structured as an automated, dendritic flake.
-
-![Solar Banner](../assets/wallpapers/limine-bg.png)
-
 ______________________________________________________________________
 
-## 🌟 What is Solar?
+layout: home
 
-Solar manages a diverse constellation of personal workstations, portable laptops, handheld gaming consoles, high-performance servers, Kubernetes clusters, and dedicated storage pools from a single unified repository.
+hero:
+name: "Solar"
+text: "Dendritic Flake & Fleet Orchestration"
+tagline: "A unified, declarative NixOS and macOS constellation powering workstations, HA Kubernetes clusters, and central ZFS storage."
+image:
+src: "data:image/svg+xml,\<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☀️</text></svg>"
+alt: Solar Logo
+actions:
+\- theme: brand
+text: Getting Started
+link: /guide/getting-started
+\- theme: alt
+text: The Fleet & Clusters
+link: /fleet/
+\- theme: alt
+text: Command Cheatsheet
+link: /reference/cheatsheet
 
-### Core Architecture Highlights
+features:
 
-- 🌲 **Dendritic Module Tree**: Self-discovering module graph with automatic platform filtering for Linux and macOS (`isDarwin` / `isTotal`).
-- 💾 **Universal Hardware-Aware Disko**: Single declarative storage engine supporting single-disk, multi-disk speed pools, and high-capacity bulk pools with Btrfs.
-- 🧹 **Ephemeral Root Filesystem**: Wipe-on-boot root on `tmpfs` with multi-tier state preservation on NVMe speed (`/persist`) and HDD bulk (`/persist/bulk`) storage.
-- 🛡️ **Zero-Compromise Security**: AppArmor MAC profiles, kernel hardening, LUKS2 disk encryption, native Secure Boot with Limine, TPM 2.0 hardware auto-unlock, and Agenix secrets.
-- 🎮 **Esports & Gaming Suite**: Native 64-bit Steam with Gamescope, competitive Team Fortress 2 suite with low-latency net rates and match demo recording, Mumble VoIP with Wayland push-to-talk, Prism Launcher, and Unified VR (WiVRn / ALVR).
-- 🎨 **Centralized Theming**: Stylix theming with custom desktop flavors (`sky`, `gruvbox`, `strawberry`, `forest`, `space`) across Niri, KDE Plasma 6, GNOME, COSMIC, Noctalia, and Waybar.
-- 🚀 **Zero-Secret Bootstrap**: Standalone hosts run completely self-contained without requiring access to private secret repositories.
+- icon: 🌲
+  title: Dendritic Autodiscovery
+  details: Zero-boilerplate leaf loading. Modules auto-scan filesystem paths into typed options under myFeatures without manual import registries.
+- icon: 🪐
+  title: 15-Host Constellation
+  details: Complete fleet orchestration from Niri Wayland workstations (Mars, Mercury) to the 3-node HA Pluto K3s Cluster, Sol ZFS NAS, and Venus cloud.
+- icon: 💾
+  title: Universal Disko Storage
+  details: Single declarative engine provisions ephemeral tmpfs roots, Btrfs subvolumes, multi-drive pools, and mirrored ZFS arrays.
+- icon: 🛡️
+  title: Defense in Depth
+  details: Limine Secure Boot, TPM 2.0 PCR 0+7 enrollment, AppArmor MAC profiles, kernel hardening, and Age-encrypted private secrets.
+- icon: 🍏
+  title: Dual Linux & macOS
+  details: Unified developer environment across NixOS and Apple Silicon macOS (Phobos) via nix-darwin with Home Manager parity.
+- icon: ⚡
+  title: 532 Managed Toggles
+  details: Exhaustive catalog of toggle flags covering desktops, compositors, shells, development runtimes, and self-hosted daemons.
 
 ______________________________________________________________________
-
-## 🗺️ Quick Journey: Where Would You Like to Go?
-
-| Your Goal | Recommended Starting Path | Quick Links |
-| :--- | :--- | :--- |
-| **New to Solar?** | Understand the core architecture and deploy bare-metal | [System Architecture](architecture.md) • [Installation Guide](deployment/installation.md) • [Wiki Quick Reference](wiki/quick-reference.md) |
-| **Fleet & Infrastructure** | Explore physical nodes, Kubernetes GitOps, and servers | [Fleet Overview](fleet/overview.md) • [The Pluto Cluster](fleet/pluto-cluster.md) • [Adding a Host](guides/adding-a-host.md) |
-| **Desktop & Customization** | Pick your window manager, desktop flavor, and keybindings | [Styling & Flavors](platforms/styling.md) • [Wayland Compositors](platforms/wayland.md) • [Universal Keybindings](wiki/keybinds.md) |
-| **Developer & Modules** | Build composable modules or browse every toggle | [Definitive Toggle List](wiki/definitive-toggle-list.md) • [How Modules Work](guides/how-modules-work.md) • [Add a Feature](guides/adding-a-feature.md) |
-
-______________________________________________________________________
-
-## 🧭 Comprehensive Documentation Directory
-
-Use the sidebar on the left or press <kbd>S</kbd> to search anywhere across all chapters:
-
-### 🧠 Wiki & Knowledge Base
-
-- **[Wiki Overview](wiki/index.md)**: Centralized technical knowledge base and troubleshooting portal.
-- **[Quick Reference & Cheatsheet](wiki/quick-reference.md)**: Daily command cheatsheet, rebuild aliases, and maintenance shortcuts.
-- **[Definitive Toggle Reference](wiki/definitive-toggle-list.md)**: Exhaustive catalog of every boolean toggle, option flag, and default across all Solar modules.
-- **[Universal Keybindings](wiki/keybinds.md)**: Shortcuts for Niri, Noctalia Shell, Helix editor, Ghostty terminal, and compositors.
-- **[Troubleshooting & Diagnostics](wiki/troubleshooting.md)**: GPU recovery, Btrfs filesystem repair, PipeWire audio, and network diagnostics.
-- **[Frequently Asked Questions](wiki/faq.md)**: Architecture design choices, ephemeral storage, Agenix, and Darwin portability.
-
-### 🪐 The Fleet & Constellation
-
-- **[Fleet Overview](fleet/overview.md)**: Complete machine constellation map and hardware specifications.
-- **[Workstations & Portables](fleet/workstations.md)**: Mars (Workstation), Mercury (Laptop), and Phobos (MacBook).
-- **[Gaming, VR & Rigs](fleet/gaming-vr.md)**: Elara (Streaming rig), Europa (VR workstation), and Amalthea (Handheld console).
-- **[The Pluto Cluster](fleet/pluto-cluster.md)**: High-Availability K3s GitOps cluster (**Pluto**, **Styx**, **Hydra**, and central storage **Sol**).
-- **[Server & Cloud Infrastructure](fleet/servers.md)**: Multi-service cloud server Venus and compact standalone server Thebe (with legacy storage nodes Ganymede and Callisto noted as deprecated).
-- **[Testbeds & Experimental](fleet/testbeds.md)**: Experimental COSMIC workstation Io.
-
-### 🌲 Dendritic Suites & Profiles
-
-- **[Suites Architecture Overview](suites/overview.md)**: The 3-tier dendritic philosophy, `lib.mkDefault`, and host styling separation.
-- **[Role & Workflow Suites](suites/roles.md)**: Workstation, Gaming, Creator, Streaming, Productivity, Hardened, Networking, Laptop, and Server suites.
-- **[Desktop Environment Suites](suites/desktops.md)**: Turn-key preconfigured suites for all 18 window managers and desktop environments.
-
-### 🖥️ Platforms, Window Managers & Desktops
-
-- **[Compositors & WMs Overview](platforms/desktops.md)**: Comprehensive guide to the Solar graphical pantheon.
-- **[Wayland Compositors](platforms/wayland.md)**: Niri, Hyprland, Sway, River, MangoWC, Wayfire, Labwc, and Qtile.
-- **[Classic X11 Window Managers](platforms/x11.md)**: i3, Bspwm, AwesomeWM, XMonad, DWM, and Openbox.
-- **[Full Desktop Environments](platforms/desktop-environments.md)**: KDE Plasma 6, GNOME, COSMIC, XFCE, Cinnamon, MATE, LXQt, and Budgie.
-- **[Display Managers & Greeters](platforms/display-managers.md)**: ReGreet, SDDM, GDM, COSMIC Greeter, Tuigreet, and LightDM.
-- **[Shell, Bar & Addons](platforms/addons.md)**: Noctalia Shell, Waybar, Ironbar, SwayNC notifications, and SwayOSD.
-- **[Styling & Flavors](platforms/styling.md)**: Stylix color palettes, desktop flavors, and custom ricing.
-
-### 🎮 Software Suites & Toolchains
-
-- **[Gaming & Esports Suite](programs/gaming.md)**: Steam, Gamescope, Competitive TF2 Suite, Mumble VoIP, and Prism Launcher.
-- **[Virtual Reality Suite](programs/vr.md)**: Meta Quest wired USB ADB streaming, WiVRn OpenXR, ALVR, Monado, and SideQuest.
-- **[Terminal & Developer Tools](programs/terminal.md)**: Ghostty GPU terminal, Helix editor, Antigravity AI assistant, Fastfetch, and Nix-LD.
-- **[Media Production](programs/media.md)**: DaVinci Resolve, OBS Studio (VAAPI & PipeWire capture), and MPV GPU acceleration.
-- **[Productivity & Office](programs/productivity.md)**: Firefox Nightly, Zen Browser, Bitwarden, Vesktop, and AP-Office.
-
-### 🌐 Services & Infrastructure
-
-- **[Networking & VPN](services/networking.md)**: Tailscale mesh network, systemd-resolved DNS, Syncthing, Dynamic DNS, and Nginx SSL proxy.
-- **[Multimedia & Streaming](services/multimedia.md)**: PipeWire low-latency audio stack, Sunshine GameStream server, and Moonlight.
-- **[Dedicated Servers](services/servers.md)**: Minecraft Create Aero & SLLV, Factorio, Terraria, Joplin, Zotero, Samba SMB3, and NFSv4.
-
-### 💾 Storage & Security
-
-- **[Universal Hardware-Aware Disko](storage/disko.md)**: Declarative storage engine, speed pools, and bulk pools.
-- **[Wipe-on-Boot & Preservation](storage/preservation.md)**: Ephemeral root tmpfs and declarative persistent storage.
-- **[Drive Swapping & Maintenance](storage/drive-swapping.md)**: Disk replacement and partition cloning procedures.
-- **[Full-Disk LUKS2 Encryption](security/luks.md)**: Multi-disk single-prompt caching and recovery key slots.
-- **[Native Secure Boot](security/secureboot.md)**: Limine UEFI signing with `sbctl`.
-- **[TPM 2.0 Auto-Unlock](security/tpm2.md)**: Tamper-proof hardware binding with `systemd-cryptenroll`.
-- **[Encrypted Secrets with Agenix](security/agenix.md)**: Asymmetric Age encryption and memory key management.
-
-### 🛠️ Deployment & Developer Guides
-
-- **[Bare-Metal Installation Guide](deployment/installation.md)**: Automated and manual deployment steps.
-- **[Routine Maintenance](deployment/maintenance.md)**: Rebuild aliases, garbage collection, and Btrfs scrubbing.
-- **[How Modules Work](guides/how-modules-work.md)**: Deep dive into the dendritic module system.
-- **[Setting Up a Desktop](guides/setting-up-a-desktop.md)**: Step-by-step desktop blueprint.
-- **[Setting Up a Server](guides/setting-up-a-server.md)**: Step-by-step headless server blueprint.
-- **[Adding a Host](guides/adding-a-host.md)**: Creating and deploying a new machine.
-- **[Adding a Feature Module](guides/adding-a-feature.md)**: Building composable NixOS/Home Manager features.
-
-### 🤝 Community & Contributing
-
-- **[Contributing Guide](contributing.md)**: Guidelines for proposing improvements, editing documentation, and submitting Pull Requests.

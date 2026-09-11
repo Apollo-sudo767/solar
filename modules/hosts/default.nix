@@ -14,6 +14,33 @@ let
 
   getPkgInput = isStable: if isStable then inputs.nixpkgs-stable else inputs.nixpkgs-unstable;
 
+  globalSolarSecrets =
+    if (builtins.hasAttr "solar-secrets" inputs) && (inputs.solar-secrets ? outPath) then
+      inputs.solar-secrets
+    else
+      null;
+
+  globalMasterIdentities =
+    let
+      allPaths =
+        if globalSolarSecrets != null && (builtins.pathExists "${globalSolarSecrets}/master") then
+          [
+            "${globalSolarSecrets}/master/yubikey.id.pub"
+            "${globalSolarSecrets}/master/yubikey_slot2.id.pub"
+            "${globalSolarSecrets}/master/mac_se.id.pub"
+          ]
+        else
+          [ ];
+      validIdentities = builtins.filter (
+        p:
+        let
+          content = if builtins.pathExists p then builtins.readFile p else "";
+        in
+        (lib.strings.hasInfix "AGE-PLUGIN-" content) && !(lib.strings.hasInfix "DUMMY" content)
+      ) allPaths;
+    in
+    if validIdentities == [ ] then [ "dummy" ] else validIdentities;
+
   mkHost =
     name: hostData:
     let
@@ -127,7 +154,7 @@ let
                   );
                 storageMode = lib.mkDefault "local";
                 localStorageDir = lib.mkDefault (inputs.self + "/rekeyed/${name}");
-                masterIdentities = lib.mkDefault [ "dummy" ];
+                masterIdentities = lib.mkDefault globalMasterIdentities;
               };
             })
           ]

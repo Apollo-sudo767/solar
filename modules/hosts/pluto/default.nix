@@ -78,13 +78,13 @@
       # Kernel hardware watchdog timers for auto-recovery on system freezes
       services.watchdog.enable = true;
 
-      # --- K3s HA Multi-Master Configuration (Bootstrap Master) ---
+      # --- K3s HA Multi-Master Configuration (Joining Master Node) ---
       myFeatures.services.k3s.secretSync.enable = true;
 
       services.k3s = {
         enable = true;
         role = "server";
-        clusterInit = true; # Initializes the embedded etcd HA cluster
+        serverAddr = "https://hydra:6443";
         tokenFile =
           if (config.age.secrets ? "k3s-token.age") then
             config.age.secrets."k3s-token.age".path
@@ -96,18 +96,9 @@
       # Support NFS mounting
       boot.supportedFilesystems = [ "nfs" ];
 
-      # --- Temporary Cluster NFS Server (Until Sol NAS is built) ---
-      services.nfs.server = {
-        enable = true;
-        exports = ''
-          /persist/k3s-volumes *(rw,sync,no_subtree_check,no_root_squash)
-        '';
-      };
-
-      # Ensure cluster token and persistent volumes directories exist on boot
+      # Ensure cluster token directory exists on boot
       systemd.tmpfiles.rules = [
         "d /persist/etc/rancher/k3s 0700 root root - -"
-        "d /persist/k3s-volumes 0777 root root - -"
       ];
 
       # Preserve k3s state across wipe-on-boot ephemeral root

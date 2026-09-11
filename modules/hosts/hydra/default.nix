@@ -100,11 +100,13 @@
       # Kernel hardware watchdog timers for auto-recovery on system freezes
       services.watchdog.enable = true;
 
-      # --- K3s HA Multi-Master Configuration (Joining Master 3) ---
+      # --- K3s HA Multi-Master Configuration (Bootstrap Master Node) ---
+      myFeatures.services.k3s.secretSync.enable = true;
+
       services.k3s = {
         enable = true;
         role = "server";
-        serverAddr = "https://pluto:6443";
+        clusterInit = true; # Initializes the embedded etcd HA cluster
         tokenFile =
           if (config.age.secrets ? "k3s-token.age") then
             config.age.secrets."k3s-token.age".path
@@ -113,13 +115,22 @@
         extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=hydra --node-label gpu.vendor=intel";
       };
 
-      # Ensure cluster token directory exists on boot
-      systemd.tmpfiles.rules = [
-        "d /persist/etc/rancher/k3s 0700 root root - -"
-      ];
-
       # Support NFS mounting
       boot.supportedFilesystems = [ "nfs" ];
+
+      # --- Temporary Cluster NFS Server (Until Sol NAS is built) ---
+      services.nfs.server = {
+        enable = true;
+        exports = ''
+          /persist/k3s-volumes *(rw,sync,no_subtree_check,no_root_squash)
+        '';
+      };
+
+      # Ensure cluster token and persistent volumes directories exist on boot
+      systemd.tmpfiles.rules = [
+        "d /persist/etc/rancher/k3s 0700 root root - -"
+        "d /persist/k3s-volumes 0777 root root - -"
+      ];
 
       # Preserve k3s state across wipe-on-boot ephemeral root
       preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" = {
@@ -164,12 +175,14 @@
         enable = lib.mkDefault true;
         allowedTCPPorts = [
           22 # SSH
+          2049 # NFS Server
           6443 # k3s API Server
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
         ];
         allowedUDPPorts = [
+          2049 # NFS Server
           8472 # Flannel VXLAN overlay network
         ];
       };

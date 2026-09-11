@@ -96,6 +96,15 @@
       # Support NFS mounting
       boot.supportedFilesystems = [ "nfs" ];
 
+      # --- Cluster NFS Server (Pluto Primary Storage Host) ---
+      services.nfs.server = {
+        enable = true;
+        exports = ''
+          /persist/kubernetes/storage *(rw,sync,no_subtree_check,no_root_squash)
+          /persist/k3s-volumes *(rw,sync,no_subtree_check,no_root_squash)
+        '';
+      };
+
       # --- Open-iSCSI & Storage Prerequisites (Longhorn HA Storage) ---
       services.openiscsi = {
         enable = true;

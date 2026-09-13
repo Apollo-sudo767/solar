@@ -75,10 +75,6 @@
             };
             minecraft = {
               admin.enable = true;
-              sllv = {
-                enable = true;
-                port = 25565;
-              };
               no-mans-land = {
                 enable = true;
                 port = 19132;

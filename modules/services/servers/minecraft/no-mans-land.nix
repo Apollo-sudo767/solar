@@ -16,8 +16,8 @@ let
   };
 
   modpack = pkgs.fetchModrinthModpack {
-    url = "https://github.com/Phas-MC/NoMansLand/releases/download/Release/PhasMC.s.No.Man.s.Land.mrpack";
-    packHash = "sha256-mZC4YMvaThAeY6c5kWmr3YZUcR8mP14Ey5cUNR6j+kQ=";
+    url = "https://github.com/Phas-MC/NoMansLand/releases/download/1.0.2/PhasMC.s.No.Man.s.Land.mrpack";
+    packHash = "sha256-MCffXzoSSQeWjpBo/1XgNecZyhtnarbXY2buvgZVNJg=";
     side = "server";
   };
 in

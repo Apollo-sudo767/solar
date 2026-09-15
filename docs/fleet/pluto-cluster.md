@@ -95,6 +95,8 @@ The Pluto cluster enforces a strict **Zero Plaintext Secrets** policy in Git:
    - `playit-secret.age` -> Secret in namespace `games` for Playit.gg tunnel authentication.
    - `cloudflared-credentials.age` -> Secret in namespace `cloudflared` for Cloudflare Tunnel ingress.
    - `surfshark-vpn.age` -> Secret in namespace `media` for Gluetun WireGuard VPN.
+1. **Zero-Trust Host Key Lifecycle**:
+   Cluster node private host keys (`ssh_host_ed25519_key`) are quarantined exclusively on the management workstation `mars` under `~/.ssh/hosts/<node>/` and are never committed to Git. During bare-metal provisioning with `solar-install`, keys are transferred out-of-band via interactive paste or direct `scp` to `/mnt/persist/etc/ssh/`. Only public keys (`hosts/<node>.pub`) are tracked in `solar-secrets` for Agenix-rekey encryption.
 
 ______________________________________________________________________
 

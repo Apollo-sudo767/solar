@@ -30,8 +30,8 @@ Solar
 │   └── hosts/              # The Terminal Leaves (Individual Machine Configs)
 │       ├── default.nix     # Dual-purpose host loader
 │       ├── pluto/          # Pluto Cluster Bootstrap Master (K3s HA, Ryzen 7, Minecraft)
-│       ├── styx/           # Pluto Cluster Control-Plane Master (ThinkPad T14, Battery UPS)
-│       ├── hydra/          # Pluto Cluster Control-Plane Master (ThinkCentre, QuickSync GPU)
+│       ├── styx/           # Pluto Cluster Control-Plane Master (ThinkCentre M920q Tiny, i5-9500T)
+│       ├── hydra/          # Pluto Cluster Control-Plane Master (ThinkCentre, QuickSync GPU, 24GB RAM)
 │       ├── mars/           # Main Workstation (Workstation, Gaming, Creator, Niri Suite)
 │       ├── mercury/        # Portable Laptop (Workstation, Laptop, Niri Suite)
 │       ├── elara/          # Gaming Rig (Workstation, Gaming, Plasma Suite)
@@ -43,8 +43,8 @@ Solar
 │       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
 │       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
 │       ├── pluto/          # K3s HA Bootstrap Master (Beelink EQR5 Ryzen 7 32GB, Preservation, Agenix)
-│       ├── styx/           # K3s HA Master Node 2 (ThinkPad T14 Gen 2 16GB, Battery Cap, Agenix)
-│       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q 16GB, QuickSync GPU, Agenix)
+│       ├── styx/           # K3s HA Master Node 2 (ThinkCentre M920q Tiny i5-9500T 16GB, Agenix)
+│       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q i5-8500T 24GB, QuickSync GPU, Agenix)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features
 ```
@@ -72,8 +72,8 @@ ______________________________________________________________________
 A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD](https://github.com/Apollo-sudo767/pluto-cluster) and NixOS:
 
 - **`pluto`** — *Bootstrap Master*: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM, NVMe), `clusterInit = true`, `node.type=compute`, secrets sync daemon, dedicated Paper Minecraft host with Playit.gg anycast sidecar tunnel.
-- **`styx`** — *Control-Plane Master*: Lenovo ThinkPad T14 Gen 2 (i5, 16GB RAM, NVMe), built-in battery UPS capped at 50% (`TLP`), lid-switch ignored, embedded etcd quorum peer.
-- **`hydra`** — *Control-Plane Master & Transcoder*: Lenovo ThinkCentre M920q Tiny (i5-8500T, 16GB RAM, NVMe), `gpu.vendor=intel`, Intel QuickSync GPU hardware passthrough (`/dev/dri`) for Jellyfin video transcoding.
+- **`styx`** — *Control-Plane Master*: Lenovo ThinkCentre M920q Tiny (i5-9500T, 16GB RAM, NVMe), `gpu.vendor=intel`, embedded etcd quorum peer.
+- **`hydra`** — *Control-Plane Master & Transcoder*: Lenovo ThinkCentre M920q Tiny (i5-8500T, 24GB RAM, NVMe), `gpu.vendor=intel`, Intel QuickSync GPU hardware passthrough (`/dev/dri`) for Jellyfin video transcoding.
 - **`sol`** — *Central Fleet ZFS NAS*: Storage hub exporting `/tank/k3s-volumes` via dynamic NFS (`nfs-client` provisioner).
 
 📖 **For detailed architecture, secrets sync, and workloads, see [The Pluto Cluster Documentation](docs/fleet/pluto-cluster.md) and the [GitOps Repository](https://github.com/Apollo-sudo767/pluto-cluster).**

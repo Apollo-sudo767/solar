@@ -13,8 +13,8 @@ ______________________________________________________________________
 | **`mercury`** | Planet Mercury | **Portable Laptop**<br>• Intel CPU/iGPU | Niri (Sky Theme) | Ephemeral `tmpfs` + 1x NVMe |
 | **`phobos`** | Moon of Mars | **MacBook**<br>• Apple Silicon (`aarch64-darwin`) | macOS + nix-darwin | APFS Encrypted |
 | **`pluto`** | Dwarf Planet Pluto | **K3s HA Bootstrap Master**<br>• Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) | Headless / K3s HA | Ephemeral `tmpfs` + 1x NVMe (Stateless K3s) |
-| **`styx`** | Moon of Pluto (Styx) | **K3s HA Master Node 2**<br>• ThinkPad T14 Gen 2 (16GB RAM) | Headless / K3s HA | Ephemeral `tmpfs` + 1x NVMe (Stateless K3s) |
-| **`hydra`** | Moon of Pluto (Hydra) | **K3s HA Master Node 3**<br>• ThinkCentre M920q (i5-8500T, 16GB RAM) | Headless / K3s HA | Ephemeral `tmpfs` + 1x NVMe (Stateless K3s) |
+| **`styx`** | Moon of Pluto (Styx) | **K3s HA Master Node 2**<br>• ThinkCentre M920q (i5-9500T, 16GB RAM) | Headless / K3s HA | Ephemeral `tmpfs` + 1x NVMe (Stateless K3s) |
+| **`hydra`** | Moon of Pluto (Hydra) | **K3s HA Master Node 3**<br>• ThinkCentre M920q (i5-8500T, 24GB RAM) | Headless / K3s HA | Ephemeral `tmpfs` + 1x NVMe (Stateless K3s) |
 | **`thebe`** | Inner Moon (Jupiter XIV) | **Compact Standalone Server**<br>• Intel Mac Mini (Core CPU & iGPU) | Headless / Limine | Standard Btrfs + LUKS2 |
 | **`venus`** | Planet Venus | **Multi-Service Server**<br>• AMD CPU | Headless Server | Standard Btrfs + 1x NVMe |
 | **`elara`** | Moon of Jupiter | **Gaming Rig**<br>• AMD CPU + Nvidia GPU | KDE Plasma 6 (Strawberry) | Standard Btrfs + 1x SSD |

@@ -19,7 +19,7 @@
 
       system.stateVersion = "26.11";
 
-      # Styx: Lenovo ThinkPad T14 Gen 2 (16GB RAM) - K3s HA Control-Plane Master (Node 2)
+      # Styx: Lenovo ThinkCentre M920q Tiny (i5-9500T, 16GB RAM) - K3s HA Control-Plane Master (Node 2)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;
@@ -63,58 +63,32 @@
             bluetooth.enable = false;
             wifi = {
               enable = true;
-              persistence = true;
             };
           };
         };
       };
 
-      # --- Hardware & Power Configurations ---
-      # 1. Disable lid-close suspend
-      services.logind.settings.Login = {
-        HandleLidSwitch = "ignore";
-        HandleLidSwitchExternalPower = "ignore";
-        HandleLidSwitchDocked = "ignore";
-        LidSwitchIgnoreInhibited = "no";
-      };
-
-      # 2. Battery thresholding (40–50%) via TLP & sysfs
-      services.tlp = {
+      # --- Intel GPU & QuickSync Configuration ---
+      hardware.graphics = {
         enable = true;
-        settings = {
-          START_CHARGE_THRESH_BAT0 = 40;
-          STOP_CHARGE_THRESH_BAT0 = 50;
-          # 3. Disable network card power saving
-          WIFI_PWR_ON_AC = "off";
-          WIFI_PWR_ON_BAT = "off";
-          PCIE_ASPM_ON_AC = "performance";
-          PCIE_ASPM_ON_BAT = "performance";
-        };
-      };
-
-      networking.networkmanager.wifi.powersave = false;
-
-      systemd.services.battery-charge-limit = {
-        description = "Cap battery charge threshold at 40-50% via sysfs";
-        after = [ "multi-user.target" ];
-        wantedBy = [
-          "multi-user.target"
-          "post-resume.target"
+        extraPackages = with pkgs; [
+          intel-media-driver # iHD driver for Gen 9+ (i5-9500T UHD 630)
+          intel-vaapi-driver # i965 fallback
+          libvdpau-va-gl
+          intel-compute-runtime # OpenCL support
         ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = pkgs.writeShellScript "cap-battery-50" ''
-            for bat in /sys/class/power_supply/BAT* /sys/class/power_supply/battery; do
-              [ -d "$bat" ] || continue
-              [ -f "$bat/charge_control_end_threshold" ] && echo 50 > "$bat/charge_control_end_threshold" 2>/dev/null || true
-              [ -f "$bat/charge_control_start_threshold" ] && echo 40 > "$bat/charge_control_start_threshold" 2>/dev/null || true
-              [ -f "$bat/charge_stop_threshold" ] && echo 50 > "$bat/charge_stop_threshold" 2>/dev/null || true
-              [ -f "$bat/charge_start_threshold" ] && echo 40 > "$bat/charge_start_threshold" 2>/dev/null || true
-            done
-          '';
-        };
       };
+
+      # Ensure permissions for containerized Intel QuickSync access (/dev/dri)
+      users.users.apollo.extraGroups = [
+        "video"
+        "render"
+      ];
+
+      services.udev.extraRules = ''
+        KERNEL=="renderD*", GROUP="render", MODE="0666"
+        KERNEL=="card*", GROUP="video", MODE="0666"
+      '';
 
       # 4. Wake on LAN across ethernet interfaces
       networking.interfaces = {
@@ -135,7 +109,7 @@
             config.age.secrets."k3s-token.age".path
           else
             lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
-        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=styx";
+        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=styx --node-label gpu.vendor=intel";
       };
 
       # Support NFS mounting

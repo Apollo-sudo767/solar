@@ -19,7 +19,7 @@
 
       system.stateVersion = "26.11";
 
-      # Hydra: Lenovo ThinkCentre M920q Tiny (i5-8500T, 16GB RAM) - K3s HA Control-Plane Master (Node 3)
+      # Hydra: Lenovo ThinkCentre M920q Tiny (i5-8500T, 24GB RAM) - K3s HA Control-Plane Master (Node 3)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;

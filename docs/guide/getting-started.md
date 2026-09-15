@@ -14,7 +14,7 @@ Solar supports direct bare-metal deployment either via the **Solar Live Installe
 sudo solar-install
 
 # Or partition and format directly via Disko:
-sudo nix run github:nix-community/disko -- --mode zap-create-mount --flake "github:Apollo-sudo767/solar#<hostname>"
+sudo nix run github:nix-community/disko -- --mode destroy,format,mount --yes-wipe-all-disks --flake "github:Apollo-sudo767/solar#<hostname>"
 ```
 
 ______________________________________________________________________
@@ -32,7 +32,8 @@ Boot target machine into the official [NixOS Minimal ISO](https://channels.nixos
 ```bash
 sudo nix --extra-experimental-features "nix-command flakes" \
   run github:nix-community/disko -- \
-  --mode disko \
+  --mode destroy,format,mount \
+  --yes-wipe-all-disks \
   --flake "github:Apollo-sudo767/solar#<hostname>"
 ```
 

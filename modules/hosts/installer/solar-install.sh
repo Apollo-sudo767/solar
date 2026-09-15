@@ -163,10 +163,17 @@ if [[ "$GEN_HW" =~ ^[Yy]$ ]]; then
 fi
 
 # 5. User Password Setup
+PRIMARY_USER=$(grep -oE 'usernames\s*=\s*\[\s*"[^"]+"' "$HOST_DIR/default.nix" 2>/dev/null | head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || echo "apollo")
+PRIMARY_USER="${PRIMARY_USER:-apollo}"
 echo -e "${BOLD}User Account Setup:${NC}"
-read -s -r -p "Enter password for user accounts (press Enter for default 'solar'): " USER_PASS
-echo ""
-USER_PASS="${USER_PASS:-solar}"
+USER_PASS=""
+while [[ -z "$USER_PASS" ]]; do
+    read -s -r -p "Enter initial password for user accounts ($PRIMARY_USER and root): " USER_PASS
+    echo ""
+    if [[ -z "$USER_PASS" ]]; then
+        echo -e "${RED}Password cannot be empty for security. Please enter a password.${NC}"
+    fi
+done
 PASSWORD_HASH=$(mkpasswd -m sha-512 "$USER_PASS")
 
 # 6. Agenix / Secrets Mode
@@ -257,16 +264,58 @@ fi
 echo -e "\n${CYAN}🔑 Provisioning SSH host keys for $SELECTED_HOST...${NC}"
 mkdir -p /mnt/persist/etc/ssh /mnt/etc/ssh
 
-if [[ -n "$SECRETS_DIR" && -f "$SECRETS_DIR/keys/$SELECTED_HOST/ssh_host_ed25519_key" ]]; then
-    echo -e "${GREEN}✓ Found pre-generated host key in secrets repository for '$SELECTED_HOST'. Provisioning...${NC}"
-    cp "$SECRETS_DIR/keys/$SELECTED_HOST/ssh_host_ed25519_key"* /mnt/persist/etc/ssh/ 2>/dev/null || true
-    cp "$SECRETS_DIR/keys/$SELECTED_HOST/ssh_host_ed25519_key"* /mnt/etc/ssh/ 2>/dev/null || true
-elif [[ ! -f "/mnt/persist/etc/ssh/ssh_host_ed25519_key" && ! -f "/mnt/etc/ssh/ssh_host_ed25519_key" ]]; then
-    echo -e "${BLUE}🔑 Generating fresh persistent SSH host key for $SELECTED_HOST...${NC}"
-    ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@$SELECTED_HOST"
-    cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/ 2>/dev/null || true
+# Check if key already exists on target filesystem or temporary locations
+if [[ -f "/mnt/persist/etc/ssh/ssh_host_ed25519_key" ]]; then
+    echo -e "${GREEN}✓ Found existing SSH host key in /mnt/persist/etc/ssh/${NC}"
+elif [[ -f "/home/nixos/ssh_host_ed25519_key" ]]; then
+    echo -e "${GREEN}✓ Found host key in /home/nixos. Copying to target...${NC}"
+    cp /home/nixos/ssh_host_ed25519_key* /mnt/persist/etc/ssh/
+elif [[ -f "/root/ssh_host_ed25519_key" ]]; then
+    echo -e "${GREEN}✓ Found host key in /root. Copying to target...${NC}"
+    cp /root/ssh_host_ed25519_key* /mnt/persist/etc/ssh/
+else
+    INSTALLER_IP=$(ip -4 addr show scope global | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1 || echo "<installer-ip>")
+    echo -e "${BOLD}Select SSH host key provisioning method for $SELECTED_HOST:${NC}"
+    echo "  1) Paste private Ed25519 key (from mars ~/.ssh/hosts/$SELECTED_HOST/ssh_host_ed25519_key) [Default]"
+    echo "  2) Wait for manual SCP transfer from mars"
+    echo "  3) Generate fresh random key (will require rekeying secrets on mars)"
+    read -r -p "Select key option [1-3] (default 1): " KEY_CHOICE
+    KEY_CHOICE="${KEY_CHOICE:-1}"
+
+    case "$KEY_CHOICE" in
+        1)
+            echo -e "${BLUE}Paste your private Ed25519 key below, then press Enter followed by Ctrl+D:${NC}"
+            KEY_CONTENT=$(cat)
+            if [[ -n "$KEY_CONTENT" ]]; then
+                echo "$KEY_CONTENT" > /mnt/persist/etc/ssh/ssh_host_ed25519_key
+                chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key
+                ssh-keygen -y -f /mnt/persist/etc/ssh/ssh_host_ed25519_key > /mnt/persist/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+                echo -e "${GREEN}✓ Private key installed and public key derived.${NC}"
+            else
+                echo -e "${YELLOW}No key provided, falling back to key generation...${NC}"
+                ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@$SELECTED_HOST"
+            fi
+            ;;
+        2)
+            echo -e "${BLUE}Run this command from mars to transfer the key:${NC}"
+            echo -e "  ${BOLD}scp ~/.ssh/hosts/$SELECTED_HOST/ssh_host_ed25519_key* root@$INSTALLER_IP:/mnt/persist/etc/ssh/${NC}"
+            echo -e "  (or: scp ~/.ssh/hosts/$SELECTED_HOST/ssh_host_ed25519_key* nixos@$INSTALLER_IP:/home/nixos/)"
+            while [[ ! -f "/mnt/persist/etc/ssh/ssh_host_ed25519_key" && ! -f "/home/nixos/ssh_host_ed25519_key" ]]; do
+                read -r -p "Press Enter once the key has been transferred via SCP..." _dummy || true
+                if [[ -f "/home/nixos/ssh_host_ed25519_key" ]]; then
+                    cp /home/nixos/ssh_host_ed25519_key* /mnt/persist/etc/ssh/
+                fi
+            done
+            echo -e "${GREEN}✓ Key detected in /mnt/persist/etc/ssh/${NC}"
+            ;;
+        3)
+            echo -e "${BLUE}🔑 Generating fresh persistent SSH host key for $SELECTED_HOST...${NC}"
+            ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@$SELECTED_HOST"
+            ;;
+    esac
 fi
 
+cp -n /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/ 2>/dev/null || true
 chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key 2>/dev/null || true
 chmod 644 /mnt/persist/etc/ssh/ssh_host_ed25519_key.pub /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
 

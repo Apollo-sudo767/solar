@@ -93,8 +93,8 @@ sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress conv=fsync
 1. Follow the interactive installer wizard:
    - **Repository Source**: Choose to fetch the latest `solar` flake from GitHub (default), use a bundled offline copy (`/home/nixos/solar`), or a custom path.
    - **Host Configuration**: Select the target machine configuration to install (e.g. `hydra`, `styx`, `thebe`, `ganymede`).
-   - **Secrets Management**: If installing a host that uses `solar-secrets` (such as Pluto cluster nodes), the installer checks `/home/nixos/solar-secrets`, or prompts to clone it via SSH or specify a local path. Pre-generated SSH host keys (`keys/<host>/ssh_host_ed25519_key`) from `solar-secrets` are automatically detected and provisioned directly to `/mnt/persist/etc/ssh/` and `/mnt/etc/ssh/`.
-   - **User Password**: Enter an initial password for user accounts and root (or press Enter to skip).
+   - **Secrets Management & Host Key Provisioning**: If installing a host that uses `solar-secrets` (such as Pluto cluster nodes), the installer locks `solar-secrets` into `flake.lock` for offline evaluation. Host private keys are kept strictly on `mars` (`~/.ssh/hosts/<hostname>/`) and provisioned out-of-band via interactive paste or `scp` from `mars`.
+   - **User Password**: Enter an initial password for user accounts and root (mandatory non-empty password to prevent default credential risks).
    - **Disko Partitioning & Formatting**: Disko wipes the target disk, creates partition tables, EFI boot partitions, and Btrfs subvolumes (`/root`, `/nix`, `/persist`), mounting them cleanly to `/mnt`.
    - **System Build & Install**: NixOS is built and installed to `/mnt` via `nixos-install`.
    - **User Credentials Finalization**: Initial password hashes are written to `/mnt/etc/shadow` and `/mnt/persist/etc/user-password`.
@@ -146,11 +146,13 @@ For hosts using private secrets (`hydra`, `pluto`, `styx`):
 
 1. **Provision Host Key**:
 
-   - **Option A (Pre-generated key from solar-secrets)**:
-     If the host key was generated in `solar-secrets/keys/<hostname>/`:
+   - **Option A (Transfer from workstation ~/.ssh/hosts/<hostname>/)**:
+     Host private keys are stored securely on `mars` (`~/.ssh/hosts/<hostname>/`) and not in Git:
      ```bash
-     # Copy from your workstation:
-     scp ~/src/solar-secrets/keys/<hostname>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+     # From mars:
+     scp ~/.ssh/hosts/<hostname>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+
+     # On the installer:
      sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
      sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key
      ```

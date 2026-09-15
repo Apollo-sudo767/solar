@@ -91,10 +91,16 @@ sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
 - **Authorized Boot**: Secure Boot verifies the kernel signature $\\rightarrow$ TPM releases key $\\rightarrow$ boots seamlessly without password prompts.
 - **Tampered Boot**: If firmware is altered or unverified kernels are booted $\\rightarrow$ TPM refuses key $\\rightarrow$ prompts for manual recovery passphrase.
 
-### 3. Agenix Secrets Management
+### 3. Agenix Secrets Management & Zero-Trust Host Keys
 
-Secrets are encrypted with Age keys and versioned cleanly:
+Solar enforces a strict asymmetric encryption model with **zero private keys in Git**:
 
-- Stored in private submodule repository `solar-secrets`.
-- Rekeyed automatically with `agenix -r`.
-- Unlocked into ramdisk at `/run/agenix/<name>`.
+- **Secrets Storage**: Encrypted Age secrets (`*.age`) live in `solar-secrets/secrets/` and rekeyed outputs in `solar/rekeyed/`.
+- **Public Keys**: Only public keys (`hosts/<hostname>.pub`) are tracked in `solar-secrets/hosts/`, used by `agenix-rekey` to encrypt secrets.
+- **Private Host Key Isolation**:
+  - Host private keys (`ssh_host_ed25519_key`) are **strictly prohibited** from Git repositories.
+  - Master workstation copies reside exclusively on `mars` at `~/.ssh/hosts/<hostname>/ssh_host_ed25519_key` with strict `0600` permissions.
+- **Out-of-Band Provisioning**:
+  - During installation via `solar-install`, private keys are securely transferred out-of-band (via interactive terminal paste or direct `scp` from `mars` to `/mnt/persist/etc/ssh/`).
+  - When combined with Solar's ephemeral root, host keys persist under `/persist/etc/ssh/` across reboots while the root filesystem (`/`) remains 100% immutable.
+- **Runtime Decryption**: Unlocked into ramdisk at `/run/agenix/<name>` on boot, accessible only to authorized services.

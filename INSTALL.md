@@ -146,11 +146,13 @@ For hosts using private secrets (`hydra`, `pluto`, `styx`):
 
 1. **Provision Host Key**:
 
-   - **Option A (Pre-generated key from solar-secrets)**:
-     If the host key was generated in `solar-secrets/keys/<hostname>/`:
+   - **Option A (Transfer from workstation ~/.ssh/hosts/<hostname>/)**:
+     Host private keys are stored securely on `mars` (`~/.ssh/hosts/<hostname>/`) and not in Git:
      ```bash
-     # Copy from your workstation:
-     scp ~/src/solar-secrets/keys/<hostname>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+     # From mars:
+     scp ~/.ssh/hosts/<hostname>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+
+     # On the installer:
      sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
      sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key
      ```

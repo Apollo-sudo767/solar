@@ -183,15 +183,22 @@
             SECRETS_PATH="''${SECRETS_PATH:-/home/nixos/solar-secrets}"
             if [[ -d "$SECRETS_PATH" ]]; then
                 OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$SECRETS_PATH")
+                echo -e "''${BLUE}🔒 Locking solar-secrets to: $SECRETS_PATH...''${NC}"
+                nix flake lock --override-input solar-secrets "path:$SECRETS_PATH" "$FLAKE_DIR"
             else
                 echo -e "''${YELLOW}Directory not found, proceeding with dummy secrets bypass.''${NC}"
                 DUMMY_DIR=$(mktemp -d)
                 OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$DUMMY_DIR")
+                echo -e "''${BLUE}🔒 Locking dummy secrets in flake...''${NC}"
+                nix flake lock --override-input solar-secrets "path:$DUMMY_DIR" "$FLAKE_DIR"
             fi
         else
             DUMMY_DIR=$(mktemp -d)
             OVERRIDE_SECRETS_ARG=(--override-input solar-secrets "path:$DUMMY_DIR")
+            echo -e "''${BLUE}🔒 Locking dummy secrets in flake...''${NC}"
+            nix flake lock --override-input solar-secrets "path:$DUMMY_DIR" "$FLAKE_DIR"
         fi
+        git -C "$FLAKE_DIR" add flake.lock 2>/dev/null || true
 
         # 7. Storage Preparation & Cleanup
         HAS_DISKO=true
@@ -226,7 +233,7 @@
 
             # 8. Run Disko
             echo -e "\n''${CYAN}🚀 Phase 1/3: Partitioning and mounting storage via Disko...''${NC}"
-            disko --mode disko --yes-wipe-all-disks --flake "$FLAKE_DIR#$SELECTED_HOST" "''${OVERRIDE_SECRETS_ARG[@]}"
+            disko --mode destroy,format,mount --yes-wipe-all-disks --flake "$FLAKE_DIR#$SELECTED_HOST"
 
             # Verify that Disko mounted the root filesystem to /mnt
             if ! findmnt /mnt >/dev/null 2>&1; then
@@ -481,7 +488,7 @@
         =============================================================
 
         • Install Solar locally:   Run 'sudo solar-install'
-        • Manual Disko install:    Run 'sudo disko --mode zap-create-mount --flake .#<host>'
+        • Manual Disko install:    Run 'sudo disko --mode destroy,format,mount --flake .#<host>'
         • Configure Wi-Fi:         Run 'nmtui'
         • Partition visually:      Run 'gparted' (Graphical Mode)
         • Remote SSH Access:       Authorized with key 'apollo@mars'

@@ -57,7 +57,7 @@ Solar features an official developer documentation portal built with **VitePress
 
 | Portal Section | Highlights & Key Guides | Quick Links |
 | :--- | :--- | :--- |
-| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and routine updates | [Getting Started](docs/guide/getting-started.md) • [Module Guide](docs/guide/modules.md) |
+| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and forking guide | [Getting Started](docs/guide/getting-started.md) • [Forking & Maintenance](docs/guide/forking.md) • [Module Guide](docs/guide/modules.md) |
 | 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](docs/guide/architecture.md) |
 | 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](docs/fleet/index.md) • [The Pluto Cluster](docs/fleet/pluto-cluster.md) |
 | 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](docs/guide/storage-security.md) |

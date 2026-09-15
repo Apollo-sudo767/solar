@@ -32,6 +32,7 @@ export default defineConfig({
             { text: 'Dendritic Architecture', link: '/guide/architecture' },
             { text: 'How Modules Work', link: '/guide/modules' },
             { text: 'Storage, Disko & Security', link: '/guide/storage-security' },
+            { text: 'Forking & Maintenance', link: '/guide/forking' },
           ]
         },
         {
@@ -56,6 +57,7 @@ export default defineConfig({
           items: [
             { text: 'Storage & Disko', link: '/guide/storage-security' },
             { text: 'Getting Started', link: '/guide/getting-started' },
+            { text: 'Forking & Maintenance', link: '/guide/forking' },
           ]
         }
       ],

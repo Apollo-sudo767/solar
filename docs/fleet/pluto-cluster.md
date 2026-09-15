@@ -17,7 +17,7 @@ ______________________________________________________________________
                  ▼                         ▼                         ▼
    ┌──────────────────────────┐┌──────────────────────────┐┌──────────────────────────┐
    │         pluto            ││           styx           ││          hydra           │
-   │   Beelink EQR5 (Ryzen)   ││  ThinkCentre M920q Tiny  ││  ThinkCentre M920q Tiny  │
+   │   Beelink EQR5 (Ryzen)   ││  ThinkCentre M720q Tiny  ││  ThinkCentre M920q Tiny  │
    │  Bootstrap Master Node   ││   Control Plane Master   ││   Control Plane Master   │
    │    node.type=compute     ││     gpu.vendor=intel     ││     gpu.vendor=intel     │
    │   Reboot: Sun 03:00      ││    Reboot: Sun 03:30     ││    Reboot: Sun 04:00     │
@@ -55,7 +55,7 @@ The cluster maintains an embedded 3-node etcd quorum across heterogeneous hardwa
 | Node | Namesake | Hardware Specification | Role | Node Labels & Special Configs |
 | :--- | :--- | :--- | :--- | :--- |
 | **`hydra`** | Moon of Pluto (Hydra) | Lenovo ThinkCentre M920q Tiny (Intel Core i5-8500T, 24GB RAM, NVMe) | Bootstrap Master (`clusterInit`) | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`), Secrets sync daemon |
-| **`styx`** | Moon of Pluto (Styx) | Lenovo ThinkCentre M920q Tiny (Intel Core i5-9500T, 16GB RAM, NVMe) | Control-Plane Master | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`) |
+| **`styx`** | Moon of Pluto (Styx) | Lenovo ThinkCentre M720q Tiny (Intel Core i5-9500T, 16GB RAM, NVMe) | Control-Plane Master | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`) |
 | **`pluto`** | Dwarf Planet Pluto | Beelink EQR5 (AMD Ryzen 7 5825U 8C/16T, 32GB RAM, 1TB NVMe) | Control-Plane Master | `node.type=compute`<br>High-performance CPU allocation |
 | **`sol`** | Central Star (Sun) | Dedicated ZFS NAS (Multi-NIC, SAS/SATA HDD pool) | Fleet Storage Hub | Central NFS export (`/tank/k3s-volumes`) for persistent volumes |
 

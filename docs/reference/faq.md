@@ -61,4 +61,4 @@ On headless servers and cluster nodes (`pluto`, `styx`, `hydra`, `sol`), LUKS is
 1. **Ephemeral In-Memory Root (`tmpfs`)**: Cluster nodes boot into RAM (`/` on `tmpfs`). No application secrets or root filesystem state reside on the local disk.
 1. **Encrypted Secrets at Rest**: Agenix secrets (`*.age`) are encrypted using asymmetric Age keys and decrypted directly into RAM (`/run/agenix/`) on boot.
 
-*Note: For environments requiring physical disk encryption on stationary nodes, ThinkCentre M920q nodes support sealing LUKS keys to their discrete **TPM 2.0 (PCR 0+7)** using `systemd-cryptenroll`, enabling tamper-proof automated unlocking without human intervention.*
+*Note: For environments requiring physical disk encryption on stationary nodes, ThinkCentre M920q/M720q nodes support sealing LUKS keys to their discrete **TPM 2.0 (PCR 0+7)** using `systemd-cryptenroll`, enabling tamper-proof automated unlocking without human intervention.*

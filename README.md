@@ -29,9 +29,9 @@ Solar
 │   ├── services/           # System services (Networking, Samba, NFS, Game Servers)
 │   └── hosts/              # The Terminal Leaves (Individual Machine Configs)
 │       ├── default.nix     # Dual-purpose host loader
-│       ├── pluto/          # Pluto Cluster Bootstrap Master (K3s HA, Ryzen 7, Minecraft)
-│       ├── styx/           # Pluto Cluster Control-Plane Master (ThinkCentre M920q Tiny, i5-9500T)
-│       ├── hydra/          # Pluto Cluster Control-Plane Master (ThinkCentre, QuickSync GPU, 24GB RAM)
+│       ├── pluto/          # Pluto Cluster Bootstrap Master (K3s HA, Beelink EQR5, Ryzen 7 5825u, 32GB RAM)
+│       ├── styx/           # Pluto Cluster Control-Plane Master (ThinkCentre M720q Tiny, i5-9500T, 16GB RAM)
+│       ├── hydra/          # Pluto Cluster Control-Plane Master (ThinkCentre, M920q Tiny, 15-8500T, 24GB RAM)
 │       ├── mars/           # Main Workstation (Workstation, Gaming, Creator, Niri Suite)
 │       ├── mercury/        # Portable Laptop (Workstation, Laptop, Niri Suite)
 │       ├── elara/          # Gaming Rig (Workstation, Gaming, Plasma Suite)
@@ -43,7 +43,7 @@ Solar
 │       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
 │       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
 │       ├── pluto/          # K3s HA Bootstrap Master (Beelink EQR5 Ryzen 7 32GB, Preservation, Agenix)
-│       ├── styx/           # K3s HA Master Node 2 (ThinkCentre M920q Tiny i5-9500T 16GB, Agenix)
+│       ├── styx/           # K3s HA Master Node 2 (ThinkCentre M720q Tiny i5-9500T 16GB, Agenix)
 │       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q i5-8500T 24GB, QuickSync GPU, Agenix)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features

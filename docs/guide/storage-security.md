@@ -52,9 +52,9 @@ ______________________________________________________________________
 | **`sol`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | 2x HDD (ZFS Mirror `tank`) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist`, `/tank` (NFS & Samba) |
 | **`mars`** | **YES** (`tmpfs` root) | **YES** | 2x NVMe | 2x HDD | `/` (`tmpfs`), `/boot`, `/nix`, `/persist`, `/persist/bulk` |
 | **`mercury`** | **YES** (`tmpfs` root) | **YES** | 1x NVMe | None | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
-| **`pluto`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | None (Stateless K3s) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
-| **`styx`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | None (Stateless K3s) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
-| **`hydra`** | **YES** (`tmpfs` root) | **NO** | 1x NVMe | None (Stateless K3s) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
+| **`pluto`** | **YES** (`tmpfs` root) | **YES** (TPM2 Auto-Unlock) | 1x NVMe | None (Stateless K3s) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
+| **`styx`** | **YES** (`tmpfs` root) | **YES** (TPM2 Auto-Unlock) | 1x NVMe | None (Stateless K3s) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
+| **`hydra`** | **YES** (`tmpfs` root) | **YES** (TPM2 Auto-Unlock) | 1x NVMe | None (Stateless K3s) | `/` (`tmpfs`), `/boot`, `/nix`, `/persist` |
 | **`thebe`** | **NO** (Standard) | **YES** | 1x SSD/NVMe | None | `/`, `/boot` |
 | **`venus`** | **NO** (Standard) | **NO** | 1x NVMe | None | `/`, `/boot` |
 | **`elara`** | **NO** (Standard) | **NO** | 1x SSD | None | `/`, `/boot` |

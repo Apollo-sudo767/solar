@@ -36,7 +36,7 @@ ______________________________________________________________________
 
 ### 1. File Not Persisting Across Reboots
 
-On ephemeral hosts (`mars`, `mercury`, `pluto`), unmanaged files in `/` disappear on reboot:
+On ephemeral hosts (`mars`, `mercury`, `pluto`, `styx`, `hydra`, `sol`), unmanaged files in `/` disappear on reboot:
 
 1. Verify if the path is listed in `preservation.preserveAt`.
 1. Move state into `/persist/home/apollo/` and symlink:

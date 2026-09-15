@@ -130,13 +130,19 @@ For complete step-by-step bare-metal installation instructions, see [INSTALL.md]
 
 ### Live Installer Image / Manual Disko Installation
 
-Boot target hardware into the Solar Live Installer USB (or a standard NixOS Minimal installer) and partition via Disko:
+Boot target hardware into the Solar Live Installer USB (or a standard NixOS Minimal installer):
 
 ```bash
-# 1. Partition and format storage declaratively via Disko:
-sudo nix run github:nix-community/disko -- --mode zap-create-mount --flake "github:Apollo-sudo767/solar#<host>"
+# Method 1: Run the interactive on-device wizard:
+sudo solar-install
 
-# 2. Install NixOS closure:
+# Method 2: Partition and format directly via Disko:
+sudo nix run github:nix-community/disko -- \
+  --mode destroy,format,mount \
+  --yes-wipe-all-disks \
+  --flake "github:Apollo-sudo767/solar#<host>"
+
+# Install NixOS closure:
 sudo nixos-install --flake "github:Apollo-sudo767/solar#<host>" --no-root-password
 
 # 3. Reboot:

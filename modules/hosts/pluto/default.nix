@@ -33,7 +33,7 @@
             };
             disko = {
               enable = true;
-              enableLuks = false;
+              enableLuks = true;
               speedDisks = [ "/dev/nvme0n1" ];
             };
             users = {

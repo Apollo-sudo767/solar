@@ -8,14 +8,14 @@ ______________________________________________________________________
 
 ### Quick Contributing Summary
 
-1. **Single Source of Truth**: All documentation is maintained under [`docs/`](docs/) and compiled via mdBook to GitHub Pages.
+1. **Single Source of Truth**: All documentation is maintained under [`docs/`](docs/) and compiled via VitePress to GitHub Pages.
 1. **Dendritic Architecture**: All new modules belong under `modules/<category>/` and must use `myFeatures.<category>.<subcategory>.<feature>`.
 1. **The Suite Law**: Suites (`modules/suites/`) bundle functional workflows with `lib.mkDefault`. Styling, themes, and display managers are strictly declared per host.
-1. **Validation**: Test host evaluations locally before submitting PRs:
+1. **Validation**: Test host evaluations and documentation locally before submitting PRs:
    ```bash
    nix eval .#nixosConfigurations.mars.config.system.stateVersion
    nix eval .#darwinConfigurations.phobos.config.system.stateVersion
-   nix run nixpkgs#mdbook -- build
+   nix develop .#web --command npm run docs:build
    ```
 
 For comprehensive guidelines, visit the **[Solar Documentation Hub](https://apollo-sudo767.github.io/solar/)**.

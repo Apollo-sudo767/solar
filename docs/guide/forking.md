@@ -38,6 +38,24 @@ Search and replace the upstream repository URLs with your own GitHub namespace:
 1. Under **Build and deployment**, set **Source** to **GitHub Actions**.
 1. Pushes to `main` will automatically build and publish VitePress via `.github/workflows/docs.yml`.
 
+### 3. Editing & Previewing Documentation
+
+1. **Enter the Web DevShell**:
+   ```bash
+   nix develop .#web
+   ```
+1. **Live Preview Server**:
+   ```bash
+   npm run docs:dev
+   ```
+   Preview changes in real time at `http://localhost:5173/solar/`.
+1. **Verify Production Build**:
+   ```bash
+   npm run docs:build
+   ```
+1. **Adding Pages**:
+   Create a new Markdown file under `docs/` and register its route in `docs/.vitepress/config.mts` under `themeConfig.sidebar`.
+
 ______________________________________________________________________
 
 ## 🔐 Secrets Strategy & Age/YubiKey Setup

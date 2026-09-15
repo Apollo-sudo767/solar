@@ -90,7 +90,15 @@ sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress conv=fsync
    ```bash
    sudo solar-install
    ```
-1. Follow the on-screen prompts to select the target host configuration, verify disk targets, and install automatically.
+1. Follow the interactive installer wizard:
+   - **Repository Source**: Choose to fetch the latest `solar` flake from GitHub (default), use a bundled offline copy (`/home/nixos/solar`), or a custom path.
+   - **Host Configuration**: Select the target machine configuration to install (e.g. `hydra`, `styx`, `thebe`, `ganymede`).
+   - **Secrets Management**: If installing a host that uses `solar-secrets` (such as Pluto cluster nodes), the installer checks `/home/nixos/solar-secrets`, or prompts to clone it via SSH or specify a local path. Pre-generated SSH host keys (`keys/<host>/ssh_host_ed25519_key`) from `solar-secrets` are automatically detected and provisioned directly to `/mnt/persist/etc/ssh/` and `/mnt/etc/ssh/`.
+   - **User Password**: Enter an initial password for user accounts and root (or press Enter to skip).
+   - **Disko Partitioning & Formatting**: Disko wipes the target disk, creates partition tables, EFI boot partitions, and Btrfs subvolumes (`/root`, `/nix`, `/persist`), mounting them cleanly to `/mnt`.
+   - **System Build & Install**: NixOS is built and installed to `/mnt` via `nixos-install`.
+   - **User Credentials Finalization**: Initial password hashes are written to `/mnt/etc/shadow` and `/mnt/persist/etc/user-password`.
+   - **Reboot**: Select `y` to reboot directly into your newly installed Solar system.
 
 ______________________________________________________________________
 
@@ -115,7 +123,8 @@ Run Disko directly to wipe the target disk, create the GPT table, EFI partition,
 ```bash
 sudo nix --extra-experimental-features "nix-command flakes" \
   run github:nix-community/disko -- \
-  --mode zap-create-mount \
+  --mode destroy,format,mount \
+  --yes-wipe-all-disks \
   --flake "github:Apollo-sudo767/solar#<hostname>"
 ```
 
@@ -124,30 +133,57 @@ sudo nix --extra-experimental-features "nix-command flakes" \
 > [!IMPORTANT]
 > When Disko prompts for passphrases on multi-drive systems (`ganymede` / `callisto`), **set the EXACT same passphrase on all disks**. See the section below for details.
 
-### Step 3 (For Agenix Secret Hosts): Provision Host Key
+### Step 3 (For Agenix Secret Hosts): Provision Host SSH Key
 
-If installing a host that uses private secrets (e.g. `hydra`, `pluto`, `styx`):
+For hosts using private secrets (`hydra`, `pluto`, `styx`):
 
-1. Create the persistent SSH directory on the mounted drive:
+1. **Ensure Persistent SSH Directory Exists**:
+
    ```bash
-   sudo mkdir -p /mnt/persist/etc/ssh
+   sudo mkdir -p /mnt/persist/etc/ssh /mnt/etc/ssh
+   sudo chmod 755 /mnt/persist/etc/ssh /mnt/etc/ssh
    ```
-1. If the host has an existing private key, copy it to `/mnt/persist/etc/ssh/ssh_host_ed25519_key`.
-1. If generating a fresh key:
-   ```bash
-   sudo ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@<hostname>"
-   sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key
-   cat /mnt/persist/etc/ssh/ssh_host_ed25519_key.pub
-   ```
-   *(Add this public key to `solar-secrets/hosts/<hostname>.pub`, run `s-rekey` on your workstation, and push to GitHub before proceeding to install).*
 
-### Step 4: Install NixOS Closure
+1. **Provision Host Key**:
+
+   - **Option A (Pre-generated key from solar-secrets)**:
+     If the host key was generated in `solar-secrets/keys/<hostname>/`:
+     ```bash
+     # Copy from your workstation:
+     scp ~/src/solar-secrets/keys/<hostname>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+     sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
+     sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key
+     ```
+   - **Option B (Generate new key on installer)**:
+     ```bash
+     sudo ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@<hostname>"
+     sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
+     sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key
+     cat /mnt/persist/etc/ssh/ssh_host_ed25519_key.pub
+     ```
+     *(Add this public key to `solar-secrets/hosts/<hostname>.pub`, rekey secrets with `s-rekey` on your workstation, and commit/push before installing).*
+
+### Step 4: Rekey Secrets on Workstation (If Host Key Changed)
+
+On your management workstation (`mars`), rekey secrets for the target host:
+
+```bash
+s-rekey
+```
+
+*(Or execute the full command as a single line:)*
+
+```bash
+AGENIX_REKEY_PRIMARY_FLAKE_ROOT=$HOME/src/solar AGENIX_REKEY_SECONDARY_FLAKE_ROOTS=$HOME/src/solar-secrets nix run --override-input solar-secrets path:$HOME/src/solar-secrets --no-write-lock-file $HOME/src/solar#agenix-rekey-rekey && git -C $HOME/src/solar add rekeyed
+```
+
+### Step 5: Install NixOS Closure
 
 ```bash
 sudo nixos-install --flake "github:Apollo-sudo767/solar#<hostname>" --no-root-password
 ```
 
-### Step 5: Reboot
+### Step 6: Reboot
 
 ```bash
 sudo reboot

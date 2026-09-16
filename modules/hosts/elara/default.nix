@@ -20,6 +20,7 @@
           workstation.enable = true;
           gaming.enable = true;
           desktops.plasma.enable = true;
+          networking.enable = true;
         };
 
         # 🎛️ Host Specifics

@@ -1,7 +1,7 @@
 {
   meta = {
     system = "x86_64-linux";
-    stable = false;
+    stable = true;
     useSolarSecrets = true;
   };
 
@@ -17,7 +17,7 @@
         ./hardware-configuration.nix
       ];
 
-      system.stateVersion = "26.11";
+      system.stateVersion = "26.05";
 
       # Pluto: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) - K3s Bootstrap Master (HA Node 1)
       myFeatures = {

@@ -84,5 +84,27 @@ in
         age.secrets."surfshark-vpn.age".rekeyFile = "${secretsDir}/surfshark-vpn.age";
       }
     )
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/github-token.age")
+        && (lib.elem config.networking.hostName [
+          "pluto"
+          "styx"
+          "hydra"
+        ])
+      )
+      {
+        age.secrets."github-token.age" = {
+          rekeyFile = "${secretsDir}/github-token.age";
+          mode = "0444";
+        };
+        nix.extraOptions = ''
+          !include ${config.age.secrets."github-token.age".path}
+        '';
+      }
+    )
   ];
 }

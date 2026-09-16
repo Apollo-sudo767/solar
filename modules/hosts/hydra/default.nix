@@ -1,7 +1,7 @@
 {
   meta = {
     system = "x86_64-linux";
-    stable = false;
+    stable = true;
     useSolarSecrets = true;
   };
 
@@ -17,7 +17,7 @@
         ./hardware-configuration.nix
       ];
 
-      system.stateVersion = "26.11";
+      system.stateVersion = "26.05";
 
       # Hydra: Lenovo ThinkCentre M920q Tiny (i5-8500T, 24GB RAM) - K3s HA Control-Plane Master (Node 3)
       myFeatures = {
@@ -45,7 +45,7 @@
             enable = true;
             loader = "limine";
             kernel = "latest";
-            secureBoot.enable = false;
+            secureBoot.enable = true;
           };
           security = {
             security.useAppArmor = true;

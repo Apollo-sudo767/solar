@@ -120,7 +120,7 @@ in
 
     boot.plymouth.enable = lib.mkDefault cfg.plymouth.enable;
 
-    hardware.enableAllFirmware = true;
+    hardware.enableAllFirmware = lib.mkDefault false;
     hardware.enableRedistributableFirmware = true;
     hardware.firmware = [ pkgs.linux-firmware ];
 

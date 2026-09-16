@@ -19,7 +19,7 @@
 
       system.stateVersion = "26.05";
 
-      # Styx: Lenovo ThinkCentre M720q Tiny (i5-9500T, 16GB RAM) - K3s HA Control-Plane Master (Node 2)
+      # Styx: Lenovo ThinkCentre M920q Tiny (i5-9500T, 16GB RAM) - K3s HA Control-Plane Master (Node 2)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;

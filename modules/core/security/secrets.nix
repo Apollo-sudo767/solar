@@ -90,6 +90,11 @@ in
         && cfg.usePrivateSecrets
         && hasPrivateSecrets
         && (builtins.pathExists "${secretsDir}/github-token.age")
+        && (lib.elem config.networking.hostName [
+          "pluto"
+          "styx"
+          "hydra"
+        ])
       )
       {
         age.secrets."github-token.age" = {

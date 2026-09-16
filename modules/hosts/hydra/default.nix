@@ -67,6 +67,9 @@
             };
           };
         };
+        services = {
+          networking.resolved.enable = true;
+        };
       };
 
       # --- Intel GPU & QuickSync Configuration ---

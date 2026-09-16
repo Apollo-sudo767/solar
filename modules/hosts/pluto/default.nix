@@ -67,6 +67,9 @@
             };
           };
         };
+        services = {
+          networking.resolved.enable = true;
+        };
       };
 
       # Wake on LAN across ethernet interfaces

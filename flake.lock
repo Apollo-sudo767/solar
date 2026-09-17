@@ -1110,7 +1110,7 @@
       "flake": false,
       "locked": {
         "lastModified": 1789589788,
-        "narHash": "sha256-PtgSJE4/V5jtDY01HRxSWhAtCRfDvW7pnScmJ61jGvs=",
+        "narHash": "sha256-YB5cVuE71Mk2EmJjzIpJM/9b6IZBBhXdkfY62d97FoE=",
         "rev": "9ed3664d1be4d54656f0cf338c07f1a7562c0add",
         "revCount": 25,
         "type": "git",

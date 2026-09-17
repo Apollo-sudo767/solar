@@ -45,7 +45,7 @@
             enable = true;
             loader = "limine";
             kernel = "latest";
-            secureBoot.enable = true;
+            secureBoot.enable = false;
           };
           security = {
             security.useAppArmor = true;
@@ -125,6 +125,7 @@
       };
 
       environment.systemPackages = with pkgs; [
+        sbctl
         nfs-utils
         util-linux
         e2fsprogs

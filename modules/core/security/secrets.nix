@@ -104,9 +104,12 @@ in
         nix.extraOptions = ''
           !include ${config.age.secrets."github-token.age".path}
         '';
-        programs.git.config = {
-          credential."https://github.com".helper =
-            "!f() { echo username=Apollo-sudo767; echo password=$(cut -d= -f3 /run/agenix/github-token.age 2>/dev/null); }; f";
+        programs.git = {
+          enable = true;
+          config = {
+            credential."https://github.com".helper =
+              "!f() { echo username=Apollo-sudo767; echo password=$(cut -d= -f3 /run/agenix/github-token.age 2>/dev/null); }; f";
+          };
         };
       }
     )

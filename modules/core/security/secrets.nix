@@ -2,6 +2,7 @@
   config,
   lib,
   inputs,
+  isDarwin ? false,
   isTotal,
   useSecrets ? true,
   ...
@@ -96,22 +97,26 @@ in
           "hydra"
         ])
       )
-      {
-        age.secrets."github-token.age" = {
-          rekeyFile = "${secretsDir}/github-token.age";
-          mode = "0444";
-        };
-        nix.extraOptions = ''
-          !include ${config.age.secrets."github-token.age".path}
-        '';
-        programs.git = {
-          enable = true;
-          config = {
-            credential."https://github.com".helper =
-              "!f() { echo username=Apollo-sudo767; echo password=$(cut -d= -f3 /run/agenix/github-token.age 2>/dev/null); }; f";
+      (
+        {
+          age.secrets."github-token.age" = {
+            rekeyFile = "${secretsDir}/github-token.age";
+            mode = "0444";
           };
-        };
-      }
+          nix.extraOptions = ''
+            !include ${config.age.secrets."github-token.age".path}
+          '';
+        }
+        // lib.optionalAttrs (!isDarwin) {
+          programs.git = {
+            enable = true;
+            config = {
+              credential."https://github.com".helper =
+                "!f() { echo username=Apollo-sudo767; echo password=$(cut -d= -f3 /run/agenix/github-token.age 2>/dev/null); }; f";
+            };
+          };
+        }
+      )
     )
   ];
 }

@@ -191,8 +191,21 @@
         };
       };
 
+      # Ensure Limine installs directly to the standard UEFI fallback path (/EFI/BOOT/BOOTX64.EFI)
+      # on Lenovo ThinkCentre hardware, guaranteeing the binary booted by the firmware always
+      # matches the enrolled config BLAKE2B hash and sbctl signature across rebuilds.
+      boot.loader.limine.efiInstallAsRemovable = true;
+
       # Firewall & k3s cluster networking
-      services.fail2ban.enable = true;
+      services.fail2ban = {
+        enable = true;
+        ignoreIP = [
+          "127.0.0.1/8"
+          "::1"
+          "192.168.0.0/24"
+          "100.64.0.0/10"
+        ];
+      };
       networking.firewall = {
         enable = lib.mkDefault true;
         allowedTCPPorts = [

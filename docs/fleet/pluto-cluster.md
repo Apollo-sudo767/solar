@@ -17,7 +17,7 @@ ______________________________________________________________________
                  ▼                         ▼                         ▼
    ┌──────────────────────────┐┌──────────────────────────┐┌──────────────────────────┐
    │         pluto            ││           styx           ││          hydra           │
-   │   Beelink EQR5 (Ryzen)   ││  ThinkCentre M720q Tiny  ││  ThinkCentre M920q Tiny  │
+   │   Beelink EQR5 (Ryzen)   ││  ThinkCentre M920q Tiny  ││  ThinkCentre M920q Tiny  │
    │  Bootstrap Master Node   ││   Control Plane Master   ││   Control Plane Master   │
    │    node.type=compute     ││     gpu.vendor=intel     ││     gpu.vendor=intel     │
    │   Reboot: Sun 03:00      ││    Reboot: Sun 03:30     ││    Reboot: Sun 04:00     │
@@ -55,7 +55,7 @@ The cluster maintains an embedded 3-node etcd quorum across heterogeneous hardwa
 | Node | Namesake | Hardware Specification | Role | Node Labels & Special Configs |
 | :--- | :--- | :--- | :--- | :--- |
 | **`hydra`** | Moon of Pluto (Hydra) | Lenovo ThinkCentre M920q Tiny (Intel Core i5-8500T, 24GB RAM, NVMe) | Bootstrap Master (`clusterInit`) | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`), Secrets sync daemon |
-| **`styx`** | Moon of Pluto (Styx) | Lenovo ThinkCentre M720q Tiny (Intel Core i5-9500T, 16GB RAM, NVMe) | Control-Plane Master | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`) |
+| **`styx`** | Moon of Pluto (Styx) | Lenovo ThinkCentre M920q Tiny (Intel Core i5-9500T, 16GB RAM, NVMe) | Control-Plane Master | `gpu.vendor=intel`<br>Intel QuickSync GPU hardware acceleration (`/dev/dri`) |
 | **`pluto`** | Dwarf Planet Pluto | Beelink EQR5 (AMD Ryzen 7 5825U 8C/16T, 32GB RAM, 1TB NVMe) | Control-Plane Master | `node.type=compute`<br>High-performance CPU allocation |
 | **`sol`** | Central Star (Sun) | Dedicated ZFS NAS (Multi-NIC, SAS/SATA HDD pool) | Fleet Storage Hub | Central NFS export (`/tank/k3s-volumes`) for persistent volumes |
 
@@ -97,6 +97,167 @@ The Pluto cluster enforces a strict **Zero Plaintext Secrets** policy in Git:
    - `surfshark-vpn.age` -> Secret in namespace `media` for Gluetun WireGuard VPN.
 1. **Zero-Trust Host Key Lifecycle**:
    Cluster node private host keys (`ssh_host_ed25519_key`) are quarantined exclusively on the management workstation `mars` under `~/.ssh/hosts/<node>/` and are never committed to Git. During bare-metal provisioning with `solar-install`, keys are transferred out-of-band via interactive paste or direct `scp` to `/mnt/persist/etc/ssh/`. Only public keys (`hosts/<node>.pub`) are tracked in `solar-secrets` for Agenix-rekey encryption.
+
+______________________________________________________________________
+
+## 🚀 Bare-Metal Provisioning & Security Hardening Lifecycle
+
+Deploying a Pluto cluster node (`pluto`, `styx`, or `hydra`) follows an airtight, zero-trust lifecycle combining Disko LUKS encryption, out-of-band host key provisioning, native Limine cryptographic verification, and TPM 2.0 PCR 0+7 hardware sealing.
+
+```
+                  ┌──────────────────────────────────────────────┐
+                  │ 1. Boot Live USB & Run `solar-install`       │
+                  │    - Disko formats LUKS + Ephemeral Btrfs    │
+                  │    - Ephemeral root (`/` tmpfs) initialized  │
+                  └──────────────────────┬───────────────────────┘
+                                         │
+                                         ▼
+                  ┌──────────────────────────────────────────────┐
+                  │ 2. Out-of-Band Host Key Injection            │
+                  │    - Mars `scp ~/.ssh/hosts/<node>/*`        │
+                  │    - Injected to `/mnt/persist/etc/ssh/`     │
+                  │    - Preserves Agenix secret decryption      │
+                  └──────────────────────┬───────────────────────┘
+                                         │
+                                         ▼
+                  ┌──────────────────────────────────────────────┐
+                  │ 3. Initial Boot (Secure Boot Disabled)       │
+                  │    - System boots cleanly into NixOS         │
+                  │    - Unlock LUKS with manual passphrase      │
+                  └──────────────────────┬───────────────────────┘
+                                         │
+                                         ▼
+                  ┌──────────────────────────────────────────────┐
+                  │ 4. Enroll Platform Keys (`sbctl`)            │
+                  │    - `sbctl create-keys` (persisted)         │
+                  │    - `sbctl enroll-keys --microsoft`         │
+                  │    - Enable `secureBoot.enable = true`       │
+                  │    - Run `nixos-rebuild switch`              │
+                  │      (Limine binary signed & config hashed)  │
+                  └──────────────────────┬───────────────────────┘
+                                         │
+                                         ▼
+                  ┌──────────────────────────────────────────────┐
+                  │ 5. Enable Secure Boot in BIOS & Boot         │
+                  │    - Enter BIOS Setup (F1)                   │
+                  │    - Toggle Secure Boot to Enabled           │
+                  │    - Boot into NixOS under active SB         │
+                  └──────────────────────┬───────────────────────┘
+                                         │
+                                         ▼
+                  ┌──────────────────────────────────────────────┐
+                  │ 6. Seal LUKS to TPM 2.0 (PCR 0+7)            │
+                  │    - `systemd-cryptenroll --tpm2-pcrs=0+7`   │
+                  │    - Hands-free tamper-proof auto-unlock     │
+                  └──────────────────────────────────────────────┘
+```
+
+### Step 1: Bare-Metal Installation via `solar-install`
+
+1. Flash the Solar Installer ISO (`modules/hosts/installer/default.nix`) to a USB drive:
+   ```bash
+   nix build .#nixosConfigurations.installer.config.system.build.isoImage
+   sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress conv=fsync
+   ```
+2. Boot target node (e.g. `styx`) from the USB drive.
+3. Launch the interactive installer:
+   ```bash
+   sudo solar-install
+   ```
+4. Select the target host configuration (e.g. `styx`), enter your primary LUKS disk passphrase and user password, and allow Disko to partition the NVMe drive and install the NixOS closure.
+
+### Step 2: Out-of-Band Host Key Provisioning (Zero-Plaintext)
+
+Because cluster nodes decrypt private secrets via Agenix, the node's private SSH host key must match the public key in `solar-secrets/hosts/<node>.pub`:
+
+```bash
+# On the installer target (before rebooting):
+sudo mkdir -p /mnt/persist/etc/ssh /mnt/etc/ssh
+
+# From the management workstation (mars):
+scp ~/.ssh/hosts/<node>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+
+# On the installer target:
+sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
+sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key
+sudo chmod 644 /mnt/persist/etc/ssh/ssh_host_ed25519_key.pub /mnt/etc/ssh/ssh_host_ed25519_key.pub
+```
+
+Reboot into the newly installed system:
+```bash
+sudo reboot
+```
+
+### Step 3: Limine Native Secure Boot Architecture (`sbctl`)
+
+Limine implements a high-security cryptographic architecture that differs fundamentally from traditional UEFI bootloaders:
+
+> [!IMPORTANT]
+> **Understanding Limine's Cryptographic Chain of Trust:**
+>
+> 1. **Motherboard UEFI Firmware** validates the digital signature of the Limine EFI binary (`BOOTX64.EFI`) using your custom Secure Boot keys.
+> 2. **Limine Bootloader (`BOOTX64.EFI`)** contains the enrolled BLAKE2B hash of `limine.conf` embedded directly in its binary. It verifies that `limine.conf` on disk matches this hash bit-for-bit before parsing it.
+> 3. **Limine Config Engine** contains BLAKE2B hashes of the kernel (`bzImage`) and initrd. Limine validates the file bytes against these hashes before loading them into memory.
+>
+> **CRITICAL RULE**: **NEVER run `sbctl sign` on the Linux kernel in `/boot/limine/kernels/`!**
+> Limine does not use UEFI to load kernels; it verifies them via BLAKE2B hashes. Running `sbctl sign` inserts an Authenticode signature into the kernel file, mutating its byte content and breaking the BLAKE2B hash verification, resulting in `Blake2b hash does not match!`.
+
+#### Platform Key Enrollment:
+
+1. Ensure the UEFI BIOS is in **Setup Mode** (Keys cleared, Secure Boot disabled).
+2. Boot into NixOS and create/enroll your platform keys:
+   ```bash
+   # Ensure persistent storage for sbctl keys
+   sudo mkdir -p -m 700 /persist/var/lib/sbctl /var/lib/sbctl
+   sudo mount --bind /persist/var/lib/sbctl /var/lib/sbctl
+
+   # Verify Setup Mode
+   sudo sbctl status
+
+   # Generate custom keys and enroll with Microsoft OEM certificates
+   sudo sbctl create-keys
+   sudo sbctl enroll-keys --microsoft
+   ```
+3. Enable Secure Boot in `modules/hosts/<node>/default.nix`:
+   ```nix
+   myFeatures.core.boot.secureBoot.enable = true;
+   ```
+4. Rebuild to sign the bootloader and enroll configuration hashes:
+   ```bash
+   sudo nixos-rebuild switch
+   ```
+
+### Step 4: Activating Secure Boot & TPM 2.0 Auto-Unlock (PCR 0+7)
+
+> [!CAUTION]
+> **CRITICAL ORDER OF OPERATIONS: ENABLE SECURE BOOT IN BIOS FIRST!**
+>
+> TPM register **PCR 7** measures the active Secure Boot state and certificate policy.
+> - If you run `systemd-cryptenroll` while Secure Boot is **Disabled**, the TPM seals your LUKS key to PCR 7 = 0.
+> - As soon as Secure Boot is turned **Enabled** in the BIOS, PCR 7 changes to reflect the active certificates.
+> - The TPM will detect the mismatch and **refuse to unlock the disk**.
+>
+> **You must ALWAYS enable Secure Boot in the BIOS first, boot into NixOS with Secure Boot active, and ONLY THEN enroll the TPM.**
+
+1. **Reboot into BIOS**: Press `F1` (Lenovo ThinkCentre) to enter BIOS Setup.
+2. **Enable Secure Boot**: Navigate to **Security → Secure Boot** and set to **Enabled**. Ensure **Allow Microsoft 3rd Party UEFI CA** is set to **Enabled**.
+3. **Save and Reboot**: Press `F10`.
+4. **Boot into NixOS**: Enter your manual LUKS passphrase once at the physical console.
+5. **Verify Secure Boot is Active**:
+   ```bash
+   sudo sbctl status
+   # Setup Mode: Disabled
+   # Secure Boot: Enabled
+   ```
+6. **Seal LUKS Key to TPM 2.0 (PCR 0+7)**:
+   ```bash
+   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
+   ```
+7. **Verify Keyslot**:
+   ```bash
+   sudo cryptsetup luksDump /dev/nvme0n1p2
+   ```
+   *(Keyslot 1 will display `systemd-tpm2`). On subsequent reboots, the system will automatically decrypt the NVMe drive in under 1 second without prompting for a passphrase!*
 
 ______________________________________________________________________
 

@@ -350,6 +350,13 @@ if [ -n "$PASSWORD_HASH" ]; then
     echo -e "${GREEN}✓ Account '$PRIMARY_USER' password initialized in /etc/shadow${NC}"
 fi
 
+# 11. Mirror standard UEFI fallback bootloader
+if [[ -f "/mnt/boot/efi/limine/BOOTX64.EFI" ]]; then
+    mkdir -p /mnt/boot/EFI/BOOT
+    cp -f /mnt/boot/efi/limine/BOOTX64.EFI /mnt/boot/EFI/BOOT/BOOTX64.EFI
+    echo -e "${GREEN}✓ Mirrored bootloader to /boot/EFI/BOOT/BOOTX64.EFI (UEFI standard fallback)${NC}"
+fi
+
 sync
 echo -e "\n${GREEN}${BOLD}🎉 Installation of $SELECTED_HOST completed successfully!${NC}"
 echo "========================================================="

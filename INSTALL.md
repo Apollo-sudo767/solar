@@ -371,16 +371,21 @@ Secure Boot ensures that only cryptographically signed kernels and EFI bootloade
 
 ### Step 1: Put UEFI Firmware into Setup Mode
 
-1. Reboot the machine and enter your motherboard's UEFI/BIOS settings (usually `Del`, `F2`, or `F12`).
-1. Navigate to the **Secure Boot** settings.
-1. Select **Clear Secure Boot Keys** or **Enter Setup Mode** (this puts the firmware in "Setup Mode" allowing custom key enrollment).
+1. Reboot the machine and enter your motherboard's UEFI/BIOS settings (press `F1` on Lenovo ThinkCentres, or `Del` / `F2` on other motherboards).
+1. Navigate to the **Security → Secure Boot** settings.
+1. Select **Clear Secure Boot Keys** or **Enter Setup Mode** (this sets the firmware to "Setup Mode: Enabled", allowing custom key enrollment).
+1. Ensure **Secure Boot** is set to **Disabled** for now during initial setup.
 1. Save and reboot into NixOS.
 
-### Step 2: Generate Custom Secure Boot Keys
+### Step 2: Ensure Key Persistence & Generate Platform Keys
 
-In NixOS, run `sbctl` to generate your private platform keys (stored securely in `/var/lib/sbctl`):
+Because Solar uses an ephemeral root filesystem on tmpfs, `/var/lib/sbctl` must be bind-mounted to persistent storage before creating keys:
 
 ```bash
+# Ensure persistent directory exists and bind mount it
+sudo mkdir -p -m 700 /persist/var/lib/sbctl /var/lib/sbctl
+sudo mount --bind /persist/var/lib/sbctl /var/lib/sbctl
+
 # Verify the system is in Setup Mode
 sudo sbctl status
 
@@ -390,69 +395,103 @@ sudo sbctl create-keys
 
 ### Step 3: Enroll Keys into UEFI Firmware
 
-Enroll your custom keys along with Microsoft OEM certificates (necessary to prevent bricking option ROMs on GPUs and expansion cards):
+Enroll your custom keys along with Microsoft OEM certificates (necessary to prevent bricking Option ROMs on GPUs and expansion cards):
 
 ```bash
 sudo sbctl enroll-keys --microsoft
 ```
 
-### Step 4: Sign Bootloader and Kernels
+### Step 4: Sign Bootloaders and Kernels
 
-Sign the Limine EFI bootloader and kernel binaries:
+Sign both the primary Limine EFI binary, the universal UEFI fallback binary (`/boot/EFI/BOOT/BOOTX64.EFI`), and the active kernel:
 
 ```bash
-# Sign all EFI binaries in /boot
-sudo find /boot -type f -name "*.efi" -exec sbctl sign -s {} +
+# 1. Mirror and sign Limine bootloaders
+sudo mkdir -p /boot/EFI/BOOT
+sudo cp -u /boot/efi/limine/BOOTX64.EFI /boot/EFI/BOOT/BOOTX64.EFI
 
-# Sign all kernel binaries
-sudo find /boot -type f \( -name "vmlinuz*" -o -name "bzImage*" \) -exec sbctl sign -s {} +
+sudo sbctl sign -s /boot/efi/limine/BOOTX64.EFI
+sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+
+# 2. Sign all installed kernels
+sudo sh -c 'sbctl sign -s /boot/limine/kernels/*bzImage*'
+
+# 3. Verify all signatures are valid (all green checkmarks)
+sudo sbctl verify
 ```
 
 ### Step 5: Enable Automated Secure Boot Signing in Host Config
 
-In `modules/hosts/<hostname>/default.nix`, enable automated signing on future rebuilds:
+Now that your platform keys exist in `/var/lib/sbctl`, enable automated signing on future rebuilds in `modules/hosts/<hostname>/default.nix`:
 
 ```nix
 myFeatures.core.boot.secureBoot.enable = true;
 ```
 
-Now, whenever `nixos-rebuild` builds a new generation or kernel, Limine and the kernel will be signed automatically!
+Switch the configuration to lock in automated signing and persistent mounting:
+
+```bash
+sudo nixos-rebuild switch
+```
 
 ______________________________________________________________________
 
 ## 🔑 Binding LUKS to Secure Boot via TPM 2.0 (Tamper-Proof Auto-Unlock)
 
-By pairing **LUKS encryption** with **Secure Boot** through the **TPM 2.0** chip, the system can automatically unlock encrypted drives on boot **without prompting for a password**—while remaining fully secure against tampering.
+By pairing **LUKS encryption** with **Secure Boot** through the **TPM 2.0** chip, the system automatically unlocks encrypted drives on boot **without prompting for a password**—while remaining fully secure against tampering.
 
-### How it Works:
+> [!CAUTION]
+> **CRITICAL ORDER OF OPERATIONS: DO NOT ENROLL TPM BEFORE ENABLING SECURE BOOT!**
+>
+> TPM register **PCR 7** measures the active Secure Boot state and certificate policy:
+>
+> 1. If you run `systemd-cryptenroll` while Secure Boot is **Disabled**, the TPM seals your disk encryption key to the *disabled* state.
+> 1. As soon as you turn on Secure Boot in the BIOS, PCR 7 changes completely.
+> 1. The TPM will detect the PCR mismatch and **refuse to unlock the disk**, causing a boot halt or prompting for the manual passphrase.
+>
+> **You must ALWAYS enable Secure Boot in the BIOS first, boot into NixOS with Secure Boot active, and ONLY THEN run `systemd-cryptenroll`.**
 
-- We bind the LUKS encryption key to TPM registers **PCR 0** (core motherboard firmware) and **PCR 7** (Secure Boot state & signed certificate database).
-- **Normal Boot:** Secure Boot verifies the signed Limine bootloader and signed kernel $\\rightarrow$ PCR 7 matches $\\rightarrow$ TPM releases LUKS key $\\rightarrow$ System boots seamlessly without password prompts.
-- **Tampered Boot:** If an attacker modifies the kernel, disables Secure Boot, boots a live USB, or moves the drive to another machine $\\rightarrow$ PCR 7 measurement changes $\\rightarrow$ TPM **refuses** to release the key $\\rightarrow$ System demands the manual LUKS recovery passphrase.
+### Step 1: Turn on Secure Boot in BIOS
 
-### Enrolling the TPM 2.0 Key:
+1. Reboot the machine (`sudo reboot`) and press **F1** (or `Del` / `F2`) to enter BIOS Setup.
+1. Navigate to **Security → Secure Boot**.
+1. Toggle **Secure Boot** to **Enabled**.
+1. *(On Lenovo ThinkCentres)*: Ensure **Allow Microsoft 3rd Party UEFI CA** is set to **Enabled**.
+1. Press **F10** to save changes and restart.
 
-Run `systemd-cryptenroll` on each encrypted disk partition:
+### Step 2: Boot into NixOS with Secure Boot Active
+
+1. Styx will boot directly into Limine under active Secure Boot.
+1. Enter your manual LUKS disk passphrase on the physical keyboard/screen to unlock the drive this one time.
+1. Log in to your user account.
+
+### Step 3: Enroll the TPM 2.0 Key
+
+Now that the system is running under active Secure Boot, seal the LUKS key to your hardware's exact Secure Boot measurements:
 
 ```bash
-# 1. Primary OS / Speed Drive:
+# 1. Primary OS / Speed Drive (e.g. Styx / Hydra NVMe):
 sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
 
-# 2. Bulk Storage Drives (e.g. on NAS / Storage hosts):
+# 2. Bulk Storage Drives (if present on NAS / Storage hosts):
 sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/sda1
-sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/sdb1
 ```
 
-### Verifying TPM 2.0 Enrollment:
+### Step 4: Verify TPM 2.0 Enrollment
 
 ```bash
 sudo cryptsetup luksDump /dev/nvme0n1p2
 ```
 
-*(You will see a `systemd-tpm2` token listed alongside your manual passphrase keyslot.)*
+*(You will see a `systemd-tpm2` token listed in keyslot 1 alongside your manual password keyslot 0).*
 
 > [!TIP]
-> If a future motherboard firmware update changes PCR 0 and causes TPM unlock to fail, simply enter your manual recovery passphrase at boot, then re-enroll the TPM with `systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2`.
+> If a future motherboard firmware update or BIOS update changes PCR 0/7 and causes TPM unlock to fail, simply enter your manual recovery passphrase at boot, then re-enroll the TPM with:
+>
+> ```bash
+> sudo systemd-cryptenroll --wipe-slot=tpm2 /dev/nvme0n1p2
+> sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
+> ```
 
 ______________________________________________________________________
 

@@ -198,7 +198,7 @@
                 program = lib.getExe (
                   pkgs.writeShellScriptBin "rebuild" ''
                     if [ "$(uname)" = "Darwin" ]; then
-                      exec ${lib.getExe pkgs.nix-darwin or "darwin-rebuild"} switch --flake . "$@"
+                      exec darwin-rebuild switch --flake . "$@"
                     else
                       exec ${lib.getExe pkgs.nh} os switch . "$@"
                     fi

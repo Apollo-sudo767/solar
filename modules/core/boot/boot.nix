@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  options,
   ...
 }:
 
@@ -85,10 +86,21 @@ in
     systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
     # Prevent journal log bloat from slowing down systemd-tmpfiles-setup.service
-    services.journald.extraConfig = ''
-      SystemMaxUse=200M
-      MaxRetentionSec=14d
-    '';
+    services.journald =
+      if (options.services.journald ? settings) then
+        {
+          settings.Journal = {
+            SystemMaxUse = "200M";
+            MaxRetentionSec = "14d";
+          };
+        }
+      else
+        {
+          extraConfig = ''
+            SystemMaxUse=200M
+            MaxRetentionSec=14d
+          '';
+        };
 
     # The native "Nix-Way" to pass compression properties to the initrd builder engine
     boot.initrd.compressor = "zstd";

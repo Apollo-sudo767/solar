@@ -47,14 +47,23 @@ in
     # module will automatically import it if it IS enabled.
     {
       home-manager.sharedModules = [
-        (lib.mkIf cfg.enable {
-          stylix.targets = {
-            helix.enable = config.myFeatures.programs.terminal.helix.enable or false;
-            ghostty.enable = config.myFeatures.programs.terminal.ghostty.enable or false;
-            noctalia-shell.enable = config.myFeatures.platforms.addons.noctalia-shell.enable or false;
-            spicetify.enable = config.myFeatures.programs.utilities.spotify.enable or false;
-          };
-        })
+        (lib.mkIf cfg.enable (
+          { config, ... }:
+          {
+            disabledModules = lib.optional (!isStable) "${stylixInput}/modules/rofi/hm.nix";
+            stylix.targets = {
+              helix.enable = config.myFeatures.programs.terminal.helix.enable or false;
+              ghostty.enable = config.myFeatures.programs.terminal.ghostty.enable or false;
+              noctalia-shell.enable = config.myFeatures.platforms.addons.noctalia-shell.enable or false;
+              spicetify.enable = config.myFeatures.programs.utilities.spotify.enable or false;
+            };
+          }
+          // lib.optionalAttrs (!isStable) {
+            programs.rofi = lib.mkIf (config.programs.rofi.enable or false) {
+              settings.font = lib.mkDefault "${config.stylix.fonts.monospace.name} ${toString config.stylix.fonts.sizes.popups}";
+            };
+          }
+        ))
       ]
       ++ lib.optional (!config.stylix.enable) stylixInput.homeModules.stylix;
     }

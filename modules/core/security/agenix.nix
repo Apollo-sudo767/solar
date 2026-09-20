@@ -33,6 +33,13 @@ in
       default = true;
       description = "Whether to look for secrets inside the private solar-secrets repository input.";
     };
+    githubToken = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Provision GitHub personal access token via Agenix for automated Git operations.";
+      };
+    };
   };
 
   config = lib.mkMerge [

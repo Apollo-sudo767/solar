@@ -82,6 +82,7 @@ in
         security = {
           ssh.enable = lib.mkIf cfg.ssh.enable (lib.mkDefault true);
           security.enable = lib.mkIf cfg.security.enable (lib.mkDefault true);
+          agenix.githubToken.enable = lib.mkDefault true;
         };
         shell = lib.mkIf cfg.shell.enable {
           cli.enable = lib.mkDefault true;

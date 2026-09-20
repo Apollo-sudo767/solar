@@ -91,11 +91,7 @@ in
         && cfg.usePrivateSecrets
         && hasPrivateSecrets
         && (builtins.pathExists "${secretsDir}/github-token.age")
-        && (lib.elem config.networking.hostName [
-          "pluto"
-          "styx"
-          "hydra"
-        ])
+        && config.myFeatures.core.security.agenix.githubToken.enable
       )
       (
         {

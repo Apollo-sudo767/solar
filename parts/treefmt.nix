@@ -19,7 +19,6 @@
       settings.formatter = {
         nixfmt.includes = [ "*.nix" ];
         statix.includes = [ "*.nix" ];
-        mdformat.excludes = [ "docs/**" ];
       };
 
     };

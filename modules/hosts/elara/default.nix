@@ -71,7 +71,6 @@
             steam.protonInstaller.enable = true;
             media.enable = true;
             obs.enable = true;
-            davinci.enable = true;
             vlc.enable = true;
             ani-cli.enable = true;
           };
@@ -84,11 +83,6 @@
         };
 
         services = {
-          multimedia.sunshine = {
-            enable = true;
-            port = 48000;
-          };
-          hardware.openrgb.enable = true;
           networking.tailscale.enable = true;
         };
       };

@@ -53,15 +53,15 @@ Solar
 
 Solar features an official developer documentation portal built with **VitePress** and published automatically via GitHub Pages:
 
-👉 **[Browse the Solar Documentation Portal](https://apollo-sudo767.github.io/solar/)** • **[Local Source (`docs/`)](docs/)**
+👉 **[Browse the Solar Documentation Portal](https://apollo-sudo767.github.io/solar/)** • **[Documentation Repository (`solar-docs`)](https://github.com/Apollo-sudo767/solar-docs)**
 
 | Portal Section | Highlights & Key Guides | Quick Links |
 | :--- | :--- | :--- |
-| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and forking guide | [Getting Started](docs/guide/getting-started.md) • [Forking & Maintenance](docs/guide/forking.md) • [Module Guide](docs/guide/modules.md) |
-| 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](docs/guide/architecture.md) |
-| 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](docs/fleet/index.md) • [The Pluto Cluster](docs/fleet/pluto-cluster.md) |
-| 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](docs/guide/storage-security.md) |
-| ⚡ **Reference & Help** | Universal command aliases, desktop keybindings, diagnostics, and toggle reference | [Cheatsheet](docs/reference/cheatsheet.md) • [Keybindings](docs/reference/keybindings.md) • [Troubleshooting](docs/reference/troubleshooting.md) • [532 Toggles](docs/reference/toggles.md) • [FAQ](docs/reference/faq.md) |
+| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and forking guide | [Getting Started](https://apollo-sudo767.github.io/solar/guide/getting-started) • [Forking & Maintenance](https://apollo-sudo767.github.io/solar/guide/forking) • [Module Guide](https://apollo-sudo767.github.io/solar/guide/modules) |
+| 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](https://apollo-sudo767.github.io/solar/guide/architecture) |
+| 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](https://apollo-sudo767.github.io/solar/fleet/) • [The Pluto Cluster](https://apollo-sudo767.github.io/solar/fleet/pluto-cluster) |
+| 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](https://apollo-sudo767.github.io/solar/guide/storage-security) |
+| ⚡ **Reference & Help** | Universal command aliases, desktop keybindings, diagnostics, and toggle reference | [Cheatsheet](https://apollo-sudo767.github.io/solar/reference/cheatsheet) • [Keybindings](https://apollo-sudo767.github.io/solar/reference/keybindings) • [Troubleshooting](https://apollo-sudo767.github.io/solar/reference/troubleshooting) • [532 Toggles](https://apollo-sudo767.github.io/solar/reference/toggles) • [FAQ](https://apollo-sudo767.github.io/solar/reference/faq) |
 
 ______________________________________________________________________
 
@@ -76,7 +76,7 @@ A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD]
 - **`hydra`** — *Control-Plane Master & Transcoder*: Lenovo ThinkCentre M920q Tiny (i5-8500T, 24GB RAM, NVMe), `gpu.vendor=intel`, Intel QuickSync GPU hardware passthrough (`/dev/dri`) for Jellyfin video transcoding.
 - **`sol`** — *Central Fleet ZFS NAS*: Storage hub exporting `/tank/k3s-volumes` via dynamic NFS (`nfs-client` provisioner).
 
-📖 **For detailed architecture, secrets sync, and workloads, see [The Pluto Cluster Documentation](docs/fleet/pluto-cluster.md) and the [GitOps Repository](https://github.com/Apollo-sudo767/pluto-cluster).**
+📖 **For detailed architecture, secrets sync, and workloads, see [The Pluto Cluster Documentation](https://apollo-sudo767.github.io/solar/fleet/pluto-cluster) and the [GitOps Repository](https://github.com/Apollo-sudo767/pluto-cluster).**
 
 ### 🚀 Personal Workstations, Laptops & Devices
 

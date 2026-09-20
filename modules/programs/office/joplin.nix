@@ -115,10 +115,11 @@ in
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
-      (lib.optionalAttrs (!isDarwin) {
+      {
         environment.systemPackages =
           (lib.optional cfg.gui pkgs.joplin-desktop) ++ (lib.optional cfg.cli pkgs.joplin-cli);
-
+      }
+      (lib.optionalAttrs (!isDarwin) {
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {
@@ -128,10 +129,6 @@ in
               });
             };
       })
-      (lib.optionalAttrs isDarwin {
-        homebrew.casks = lib.optional cfg.gui "joplin";
-        environment.systemPackages = lib.optional cfg.cli pkgs.joplin-cli;
-      })
       {
         home-manager.sharedModules = lib.mkIf hasPlugins [
           ({ config, ... }: {
@@ -139,41 +136,48 @@ in
               ${
                 if isDarwin then
                   ''
-                    jpath="$HOME/Library/Application Support/joplin-desktop/plugins"
+                    jpaths=(
+                      "$HOME/Library/Application Support/joplin-desktop/plugins"
+                      "$HOME/.config/joplin-desktop/plugins"
+                    )
                   ''
                 else
                   ''
-                    jpath="$HOME/.config/joplin-desktop/plugins"
+                    jpaths=(
+                      "$HOME/.config/joplin-desktop/plugins"
+                    )
                   ''
               }
-              mkdir -p "$jpath"
+              for jpath in "''${jpaths[@]}"; do
+                mkdir -p "$jpath"
 
-              # Remove old read-only symlinks if present from previous Home Manager setups
-              for f in "$jpath"/*.jpl; do
-                if [ -L "$f" ]; then
-                  rm -f "$f"
-                fi
+                # Remove old read-only symlinks if present from previous Home Manager setups
+                for f in "$jpath"/*.jpl; do
+                  if [ -L "$f" ]; then
+                    rm -f "$f"
+                  fi
+                done
+
+                ${lib.optionalString cfg.plugins.jopdoc ''
+                  cp -f "${jopdocJpl}" "$jpath/jopdoc.nsharris247.jpl"
+                  chmod 644 "$jpath/jopdoc.nsharris247.jpl"
+                ''}
+
+                ${lib.optionalString cfg.plugins.bibtex ''
+                  cp -f "${bibtexJpl}" "$jpath/com.xUser5000.bibtex.jpl"
+                  chmod 644 "$jpath/com.xUser5000.bibtex.jpl"
+                ''}
+
+                ${lib.optionalString cfg.plugins.outline ''
+                  cp -f "${outlineJpl}" "$jpath/outline.jpl"
+                  chmod 644 "$jpath/outline.jpl"
+                ''}
+
+                ${lib.optionalString cfg.plugins.richMarkdown ''
+                  cp -f "${richMarkdownJpl}" "$jpath/plugin.calebjohn.rich-markdown.jpl"
+                  chmod 644 "$jpath/plugin.calebjohn.rich-markdown.jpl"
+                ''}
               done
-
-              ${lib.optionalString cfg.plugins.jopdoc ''
-                cp -f "${jopdocJpl}" "$jpath/jopdoc.nsharris247.jpl"
-                chmod 644 "$jpath/jopdoc.nsharris247.jpl"
-              ''}
-
-              ${lib.optionalString cfg.plugins.bibtex ''
-                cp -f "${bibtexJpl}" "$jpath/com.xUser5000.bibtex.jpl"
-                chmod 644 "$jpath/com.xUser5000.bibtex.jpl"
-              ''}
-
-              ${lib.optionalString cfg.plugins.outline ''
-                cp -f "${outlineJpl}" "$jpath/outline.jpl"
-                chmod 644 "$jpath/outline.jpl"
-              ''}
-
-              ${lib.optionalString cfg.plugins.richMarkdown ''
-                cp -f "${richMarkdownJpl}" "$jpath/plugin.calebjohn.rich-markdown.jpl"
-                chmod 644 "$jpath/plugin.calebjohn.rich-markdown.jpl"
-              ''}
             '';
           })
         ];

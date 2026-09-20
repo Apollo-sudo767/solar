@@ -193,14 +193,6 @@
                 type = "app";
                 program = lib.getExe self.agenix-rekey.${system}.update-masterkeys;
               };
-              docs = {
-                type = "app";
-                program = lib.getExe (
-                  pkgs.writeShellScriptBin "docs" ''
-                    ${lib.getExe pkgs.mdbook} serve --open "$@"
-                  ''
-                );
-              };
               rebuild = {
                 type = "app";
                 program = lib.getExe (

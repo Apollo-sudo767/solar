@@ -161,6 +161,7 @@ For hosts using private secrets (`hydra`, `pluto`, `styx`):
      ```bash
      # 1. Copy host key from Mars to MacBook (run from Mars or MacBook):
      # From Mars:
+     ssh apollo@macbook-pro "mkdir -p ~/.ssh/hosts"
      scp -r ~/.ssh/hosts/<hostname> apollo@macbook-pro:~/.ssh/hosts/
      # (Or pull from MacBook):
      mkdir -p ~/.ssh/hosts/<hostname>

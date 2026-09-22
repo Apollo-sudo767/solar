@@ -53,15 +53,15 @@ Solar
 
 Solar features an official developer documentation portal built with **VitePress** and published automatically via GitHub Pages:
 
-👉 **[Browse the Solar Documentation Portal](https://apollo-sudo767.github.io/solar/)** • **[Documentation Repository (`solar-docs`)](https://github.com/Apollo-sudo767/solar-docs)**
+👉 **[Browse the Solar Documentation Portal](https://apollo-sudo767.github.io/solar-docs/)** • **[Documentation Repository (`solar-docs`)](https://github.com/Apollo-sudo767/solar-docs)**
 
 | Portal Section | Highlights & Key Guides | Quick Links |
 | :--- | :--- | :--- |
-| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and forking guide | [Getting Started](https://apollo-sudo767.github.io/solar/guide/getting-started) • [Forking & Maintenance](https://apollo-sudo767.github.io/solar/guide/forking) • [Module Guide](https://apollo-sudo767.github.io/solar/guide/modules) |
-| 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](https://apollo-sudo767.github.io/solar/guide/architecture) |
-| 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](https://apollo-sudo767.github.io/solar/fleet/) • [The Pluto Cluster](https://apollo-sudo767.github.io/solar/fleet/pluto-cluster) |
-| 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](https://apollo-sudo767.github.io/solar/guide/storage-security) |
-| ⚡ **Reference & Help** | Universal command aliases, desktop keybindings, diagnostics, and toggle reference | [Cheatsheet](https://apollo-sudo767.github.io/solar/reference/cheatsheet) • [Keybindings](https://apollo-sudo767.github.io/solar/reference/keybindings) • [Troubleshooting](https://apollo-sudo767.github.io/solar/reference/troubleshooting) • [532 Toggles](https://apollo-sudo767.github.io/solar/reference/toggles) • [FAQ](https://apollo-sudo767.github.io/solar/reference/faq) |
+| 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and forking guide | [Getting Started](https://apollo-sudo767.github.io/solar-docs/guide/getting-started) • [Forking & Maintenance](https://apollo-sudo767.github.io/solar-docs/guide/forking) • [Module Guide](https://apollo-sudo767.github.io/solar-docs/guide/modules) |
+| 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](https://apollo-sudo767.github.io/solar-docs/guide/architecture) |
+| 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](https://apollo-sudo767.github.io/solar-docs/fleet/) • [The Pluto Cluster](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster) |
+| 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](https://apollo-sudo767.github.io/solar-docs/guide/storage-security) |
+| ⚡ **Reference & Help** | Universal command aliases, desktop keybindings, diagnostics, and toggle reference | [Cheatsheet](https://apollo-sudo767.github.io/solar-docs/reference/cheatsheet) • [Keybindings](https://apollo-sudo767.github.io/solar-docs/reference/keybindings) • [Troubleshooting](https://apollo-sudo767.github.io/solar-docs/reference/troubleshooting) • [532 Toggles](https://apollo-sudo767.github.io/solar-docs/reference/toggles) • [FAQ](https://apollo-sudo767.github.io/solar-docs/reference/faq) |
 
 ______________________________________________________________________
 
@@ -76,7 +76,7 @@ A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD]
 - **`hydra`** — *Control-Plane Master & Transcoder*: Lenovo ThinkCentre M920q Tiny (i5-8500T, 24GB RAM, NVMe), `gpu.vendor=intel`, Intel QuickSync GPU hardware passthrough (`/dev/dri`) for Jellyfin video transcoding.
 - **`sol`** — *Central Fleet ZFS NAS*: Storage hub exporting `/tank/k3s-volumes` via dynamic NFS (`nfs-client` provisioner).
 
-📖 **For detailed architecture, secrets sync, and workloads, see [The Pluto Cluster Documentation](https://apollo-sudo767.github.io/solar/fleet/pluto-cluster) and the [GitOps Repository](https://github.com/Apollo-sudo767/pluto-cluster).**
+📖 **For detailed architecture, secrets sync, and workloads, see [The Pluto Cluster Documentation](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster) and the [GitOps Repository](https://github.com/Apollo-sudo767/pluto-cluster).**
 
 ### 🚀 Personal Workstations, Laptops & Devices
 

@@ -2,7 +2,7 @@
 
 Welcome! To keep all documentation in sync and avoid fragmented navigation across multiple wiki platforms, **all Solar documentation and developer guides are hosted exclusively on GitHub Pages**:
 
-👉 **[Read the Full Contributing Guide](https://apollo-sudo767.github.io/solar/contributing.html)**
+👉 **[Read the Full Contributing Guide](https://apollo-sudo767.github.io/solar-docs/guide/forking)**
 
 ______________________________________________________________________
 
@@ -17,4 +17,4 @@ ______________________________________________________________________
    nix eval .#darwinConfigurations.phobos.config.system.stateVersion
    ```
 
-For comprehensive guidelines, visit the **[Solar Documentation Hub](https://apollo-sudo767.github.io/solar/)**.
+For comprehensive guidelines, visit the **[Solar Documentation Hub](https://apollo-sudo767.github.io/solar-docs/)**.

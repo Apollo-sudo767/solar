@@ -540,6 +540,16 @@ ______________________________________________________________________
    sudo btrfs scrub status /
    ```
 
+1. **Verify Pluto Cluster Health (for K3s Nodes):**
+   On cluster nodes (`pluto`, `hydra`, `styx`), verify K3s and pods:
+
+   ```bash
+   kubectl get nodes -o wide
+   kubectl get pods -A
+   # Or run the automated health check:
+   # see pluto-cluster/TRANSFER.md Step 5.4
+   ```
+
 1. **Routine Maintenance & Upgrades:**
 
    ```bash

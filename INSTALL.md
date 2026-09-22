@@ -146,7 +146,7 @@ For hosts using private secrets (`hydra`, `pluto`, `styx`):
 
 1. **Provision Host Key**:
 
-   - **Option A (Transfer from workstation ~/.ssh/hosts/<hostname>/)**:
+   - **Option A (Direct Transfer from Workstation ~/.ssh/hosts/<hostname>/)**:
      Host private keys are stored securely on `mars` (`~/.ssh/hosts/<hostname>/`) and not in Git:
      ```bash
      # From mars:
@@ -156,7 +156,22 @@ For hosts using private secrets (`hydra`, `pluto`, `styx`):
      sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
      sudo chmod 600 /mnt/persist/etc/ssh/ssh_host_ed25519_key /mnt/etc/ssh/ssh_host_ed25519_key
      ```
-   - **Option B (Generate new key on installer)**:
+   - **Option B (Transfer via Laptop / MacBook Intermediary)**:
+     When performing field deployments or on-site installations using a laptop/MacBook:
+     ```bash
+     # 1. Copy host key from Mars to MacBook (run from Mars or MacBook):
+     # From Mars:
+     scp -r ~/.ssh/hosts/<hostname> apollo@macbook-pro:~/.ssh/hosts/
+     # (Or pull from MacBook):
+     mkdir -p ~/.ssh/hosts/<hostname>
+     scp -r apollo@mars:~/.ssh/hosts/<hostname>/ ~/.ssh/hosts/<hostname>/
+
+     # 2. Push key from MacBook to target installer machine:
+     scp ~/.ssh/hosts/<hostname>/ssh_host_ed25519_key* root@<installer-ip>:/mnt/persist/etc/ssh/
+     # Or if Disko hasn't partitioned/mounted /mnt yet, stage in /home/nixos/:
+     scp ~/.ssh/hosts/<hostname>/ssh_host_ed25519_key* nixos@<installer-ip>:/home/nixos/
+     ```
+   - **Option C (Generate new key on installer)**:
      ```bash
      sudo ssh-keygen -t ed25519 -f /mnt/persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@<hostname>"
      sudo cp /mnt/persist/etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/

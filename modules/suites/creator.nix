@@ -9,13 +9,21 @@ let
 in
 {
   options.myFeatures.suites.creator = {
-    enable = lib.mkEnableOption "Content Creation & Media Production Suite (DaVinci Resolve, OBS Studio, VLC, Ani-CLI, Media Tools)";
+    enable = lib.mkEnableOption "Content Creation & Media Production Suite (Kdenlive, OBS Studio, VLC, Ani-CLI, Media Tools)";
+
+    kdenlive = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable Kdenlive open-source video editor.";
+      };
+    };
 
     davinci = {
       enable = lib.mkOption {
         type = lib.types.bool;
-        default = true;
-        description = "Enable DaVinci Resolve Studio video editor.";
+        default = false;
+        description = "Enable DaVinci Resolve Studio video editor (unfree).";
       };
     };
 
@@ -54,6 +62,7 @@ in
 
   config = lib.mkIf cfg.enable {
     myFeatures.programs.media = {
+      kdenlive.enable = lib.mkIf cfg.kdenlive.enable (lib.mkDefault true);
       davinci.enable = lib.mkIf cfg.davinci.enable (lib.mkDefault true);
       obs.enable = lib.mkIf cfg.obs.enable (lib.mkDefault true);
       vlc.enable = lib.mkIf cfg.vlc.enable (lib.mkDefault true);

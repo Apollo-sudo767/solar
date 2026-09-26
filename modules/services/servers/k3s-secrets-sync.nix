@@ -26,6 +26,11 @@ in
       default = config.age.secrets."surfshark-vpn.age".path or null;
       description = "Path to decrypted Surfshark VPN WireGuard credentials file.";
     };
+    cloudflareDdnsTokenPath = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = config.age.secrets."cloudflare-ddns-token.age".path or null;
+      description = "Path to decrypted Cloudflare DDNS API token file.";
+    };
   };
 
   config = lib.mkIf (config.services.k3s.enable && cfg.enable) {
@@ -103,6 +108,23 @@ in
             --from-env-file="$SURFSHARK_PATH" \
             --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
           echo "Synchronized surfshark-vpn-secret in namespace 'media'."
+        fi
+
+        # 4. Cloudflare DDNS API Token (Namespace: infrastructure)
+        CF_DDNS_PATH="${
+          if cfg.cloudflareDdnsTokenPath != null then
+            toString cfg.cloudflareDdnsTokenPath
+          else
+            "/persist/etc/kubernetes/secrets/cloudflare-ddns-token"
+        }"
+        if [ -f "$CF_DDNS_PATH" ]; then
+          kubectl --kubeconfig "$KUBECONFIG" create namespace infrastructure --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
+          CF_TOKEN=$(cat "$CF_DDNS_PATH" | tr -d '\n\r ')
+          kubectl --kubeconfig "$KUBECONFIG" create secret generic cloudflare-ddns-secret \
+            --namespace=infrastructure \
+            --from-literal=CLOUDFLARE_API_TOKEN="$CF_TOKEN" \
+            --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
+          echo "Synchronized cloudflare-ddns-secret in namespace 'infrastructure'."
         fi
 
         echo "Nix-managed secret synchronization complete."

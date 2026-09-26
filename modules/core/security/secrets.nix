@@ -28,10 +28,13 @@ in
         && hasPrivateSecrets
       )
       {
-        age.secrets."password-apollo.age".rekeyFile = "${secretsDir}/apollo-passwd.age";
-        # Allow host-specific password secrets for testing/overrides
-        age.secrets."password-${config.networking.hostName}.age".rekeyFile =
-          "${secretsDir}/apollo-passwd.age";
+        age.secrets."password-apollo.age".rekeyFile =
+          if (lib.elem config.networking.hostName [ "hydra" "pluto" "styx" ])
+             && (builtins.pathExists "${secretsDir}/cluster-passwd.age")
+          then
+            "${secretsDir}/cluster-passwd.age"
+          else
+            "${secretsDir}/apollo-passwd.age";
       }
     )
 
@@ -83,6 +86,22 @@ in
       )
       {
         age.secrets."surfshark-vpn.age".rekeyFile = "${secretsDir}/surfshark-vpn.age";
+      }
+    )
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/cloudflare-ddns-token.age")
+        && (lib.elem config.networking.hostName [
+          "pluto"
+          "styx"
+          "hydra"
+        ])
+      )
+      {
+        age.secrets."cloudflare-ddns-token.age".rekeyFile = "${secretsDir}/cloudflare-ddns-token.age";
       }
     )
     (lib.mkIf

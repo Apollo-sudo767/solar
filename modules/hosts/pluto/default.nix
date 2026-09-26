@@ -170,6 +170,10 @@
         };
       };
 
+      # Ensure Limine installs directly to the standard UEFI fallback path (/EFI/BOOT/BOOTX64.EFI)
+      # guaranteeing the binary booted by the firmware matches sbctl signature across rebuilds
+      boot.loader.limine.efiInstallAsRemovable = true;
+
       # Firewall & k3s cluster networking
       services.fail2ban.enable = true;
       networking.firewall = {

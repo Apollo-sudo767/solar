@@ -1,5 +1,9 @@
 # Solar ☀️
 
+> [!TIP]
+> **Have questions or need help?**
+> Refer to the official documentation portal at **[apollo-sudo767.github.io/solar-docs](https://apollo-sudo767.github.io/solar-docs/)** for comprehensive guides, architecture deep-dives, hardware specs, runbooks, and answers to frequently asked questions.
+
 ______________________________________________________________________
 
 ## ❄️ Fully Automated Dendritic Flake
@@ -242,3 +246,19 @@ Use the provided templates to quickly spin up new configurations:
 ```bash
 cp -r templates/hosts.nix modules/hosts/<new-host>/default.nix
 ```
+
+______________________________________________________________________
+
+## ❓ Questions & Support
+
+Have questions, ran into an issue, or wondering how a specific module or cluster workload is configured?
+
+1. **Consult the Official Documentation**: Browse the **[Solar Documentation Portal](https://apollo-sudo767.github.io/solar-docs/)** for comprehensive guides, cheatsheets, and operational runbooks:
+   - [Troubleshooting & Diagnostics](https://apollo-sudo767.github.io/solar-docs/reference/troubleshooting)
+   - [Universal Cheatsheet](https://apollo-sudo767.github.io/solar-docs/reference/cheatsheet)
+   - [Frequently Asked Questions (FAQ)](https://apollo-sudo767.github.io/solar-docs/reference/faq)
+   - [The Pluto Cluster Architecture & Runbooks](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster)
+   - [External Game Access, DDNS & Password Isolation Guide](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster/external-access)
+2. **Search Flake Options & Toggles**: Use the [Interactive Options Search](https://apollo-sudo767.github.io/solar-docs/reference/search) to explore all custom `myFeatures` modules and options.
+3. **Discussions & Issues**: If you still can't find what you need, open an issue or discussion on the [Solar GitHub Repository](https://github.com/Apollo-sudo767/solar/issues).
+

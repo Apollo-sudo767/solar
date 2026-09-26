@@ -39,9 +39,21 @@ in
       # 3. Linux-only configuration (Shielded from the Mac Evaluator)
       (lib.optionalAttrs (!isDarwin) {
         programs.ssh.startAgent = true;
-        services.openssh.settings = {
-          PermitRootLogin = "prohibit-password";
-          PasswordAuthentication = true;
+        services.openssh = {
+          hostKeys = [
+            {
+              path =
+                if config.myFeatures.core.system.core-branch.usePersistence then
+                  "${config.myFeatures.core.system.preservation.persistentPath}/etc/ssh/ssh_host_ed25519_key"
+                else
+                  "/etc/ssh/ssh_host_ed25519_key";
+              type = "ed25519";
+            }
+          ];
+          settings = {
+            PermitRootLogin = "prohibit-password";
+            PasswordAuthentication = true;
+          };
         };
         # Disable conflicting GCR agent to ensure OpenSSH agent works for hardware keys
         services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
@@ -53,7 +65,6 @@ in
                 {
                   directory = "/etc/ssh";
                   mode = "0755";
-                  how = "symlink";
                 }
               ];
             };

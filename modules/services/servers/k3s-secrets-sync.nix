@@ -123,6 +123,7 @@ in
           kubectl --kubeconfig "$KUBECONFIG" create secret generic cloudflare-ddns-secret \
             --namespace=infrastructure \
             --from-literal=CLOUDFLARE_API_TOKEN="$CF_TOKEN" \
+            --from-literal=CF_API_TOKEN="$CF_TOKEN" \
             --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
           echo "Synchronized cloudflare-ddns-secret in namespace 'infrastructure'."
         fi

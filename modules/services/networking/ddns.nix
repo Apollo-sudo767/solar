@@ -25,8 +25,11 @@ in
       services.cloudflare-dyndns = {
         enable = true;
         inherit (cfg) domains;
-        # Point to your manually created token file
-        apiTokenFile = "/var/lib/secrets/cloudflare-token";
+        apiTokenFile =
+          if (config.age.secrets ? "cloudflare-ddns-token.age") then
+            config.age.secrets."cloudflare-ddns-token.age".path
+          else
+            "/var/lib/secrets/cloudflare-token";
       };
     }
   );

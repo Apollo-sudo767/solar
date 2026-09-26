@@ -94,11 +94,15 @@ in
         && cfg.usePrivateSecrets
         && hasPrivateSecrets
         && (builtins.pathExists "${secretsDir}/cloudflare-ddns-token.age")
-        && (lib.elem config.networking.hostName [
-          "pluto"
-          "styx"
-          "hydra"
-        ])
+        && (
+          (lib.elem config.networking.hostName [
+            "pluto"
+            "styx"
+            "hydra"
+            "venus"
+          ])
+          || (config.myFeatures.services.networking.ddns.enable or false)
+        )
       )
       {
         age.secrets."cloudflare-ddns-token.age".rekeyFile = "${secretsDir}/cloudflare-ddns-token.age";

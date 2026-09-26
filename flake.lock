@@ -1115,11 +1115,11 @@
         "rev": "b3bd6e9f826be3c7c4a4c5b597939e37d61e488e",
         "revCount": 26,
         "type": "git",
-        "url": "https://github.com/Apollo-sudo767/solar-secrets.git"
+        "url": "ssh://git@github.com/Apollo-sudo767/solar-secrets.git"
       },
       "original": {
         "type": "git",
-        "url": "https://github.com/Apollo-sudo767/solar-secrets.git"
+        "url": "ssh://git@github.com/Apollo-sudo767/solar-secrets.git"
       }
     },
     "spicetify-nix": {

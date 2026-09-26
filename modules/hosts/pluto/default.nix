@@ -93,7 +93,7 @@
             config.age.secrets."k3s-token.age".path
           else
             lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
-        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=pluto --node-label node.type=compute --node-ip=192.168.68.98 --node-external-ip=192.168.68.98 --flannel-iface=eno1";
+        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=pluto --node-label node.type=compute --flannel-iface=eno1";
       };
 
       # Support NFS mounting

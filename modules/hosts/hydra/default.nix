@@ -115,7 +115,7 @@
             config.age.secrets."k3s-token.age".path
           else
             lib.mkDefault "/persist/etc/rancher/k3s/cluster-token";
-        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=hydra --node-label gpu.vendor=intel --node-ip=192.168.68.102 --node-external-ip=192.168.68.102 --flannel-iface=eth0";
+        extraFlags = "--disable traefik --disable local-storage --flannel-backend=vxlan --node-name=hydra --node-label gpu.vendor=intel --flannel-iface=eth0";
       };
 
       # Support NFS mounting

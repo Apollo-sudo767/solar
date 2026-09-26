@@ -208,6 +208,11 @@
       };
       networking.firewall = {
         enable = lib.mkDefault true;
+        trustedInterfaces = [
+          "cni0"
+          "flannel.1"
+        ];
+        checkReversePath = "loose";
         allowedTCPPorts = [
           22 # SSH
           2049 # NFS Server

@@ -197,6 +197,11 @@
       };
       networking.firewall = {
         enable = lib.mkDefault true;
+        trustedInterfaces = [
+          "cni0"
+          "flannel.1"
+        ];
+        checkReversePath = "loose";
         allowedTCPPorts = [
           22 # SSH
           6443 # k3s API Server

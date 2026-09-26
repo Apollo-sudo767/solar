@@ -118,6 +118,8 @@ in
           "pluto"
           "styx"
           "hydra"
+          "mercury"
+          "mars"
         ])
       )
       (

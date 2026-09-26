@@ -51,7 +51,7 @@
     };
 
     solar-secrets = {
-      url = "git+ssh://git@github.com/Apollo-sudo767/solar-secrets.git";
+      url = "git+https://github.com/Apollo-sudo767/solar-secrets.git";
       flake = false;
     };
 

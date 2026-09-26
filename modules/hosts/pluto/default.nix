@@ -180,10 +180,16 @@
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
+          25565 # Minecraft Server
+          27015 # TF2 Server
         ];
         allowedUDPPorts = [
           2049 # NFS Server
           8472 # Flannel VXLAN overlay network
+          24454 # Minecraft Simple Voice Chat
+          34197 # Factorio Server
+          27015 # TF2 Server
+          27020 # TF2 SourceTV
         ];
       };
 

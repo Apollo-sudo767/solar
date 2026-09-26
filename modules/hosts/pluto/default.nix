@@ -115,6 +115,7 @@
       };
 
       environment.systemPackages = with pkgs; [
+        sbctl
         nfs-utils
         util-linux
         e2fsprogs

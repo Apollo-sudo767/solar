@@ -31,6 +31,11 @@ in
       default = config.age.secrets."cloudflare-ddns-token.age".path or null;
       description = "Path to decrypted Cloudflare DDNS API token file.";
     };
+    tf2SecretPath = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = config.age.secrets."tf2-secret.age".path or null;
+      description = "Path to decrypted TF2 server credentials env file.";
+    };
   };
 
   config = lib.mkIf (config.services.k3s.enable && cfg.enable) {
@@ -126,6 +131,22 @@ in
             --from-literal=CF_API_TOKEN="$CF_TOKEN" \
             --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
           echo "Synchronized cloudflare-ddns-secret in namespace 'infrastructure'."
+        fi
+
+        # 5. TF2 Server Credentials (Namespace: games)
+        TF2_PATH="${
+          if cfg.tf2SecretPath != null then
+            toString cfg.tf2SecretPath
+          else
+            "/persist/etc/kubernetes/secrets/tf2.env"
+        }"
+        if [ -f "$TF2_PATH" ]; then
+          kubectl --kubeconfig "$KUBECONFIG" create namespace games --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
+          kubectl --kubeconfig "$KUBECONFIG" create secret generic tf2-secret \
+            --namespace=games \
+            --from-env-file="$TF2_PATH" \
+            --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
+          echo "Synchronized tf2-secret in namespace 'games'."
         fi
 
         echo "Nix-managed secret synchronization complete."

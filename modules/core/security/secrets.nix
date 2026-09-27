@@ -71,6 +71,17 @@ in
         cfg.enable
         && cfg.usePrivateSecrets
         && hasPrivateSecrets
+        && (builtins.pathExists "${secretsDir}/tf2-secret.age")
+      )
+      {
+        age.secrets."tf2-secret.age".rekeyFile = "${secretsDir}/tf2-secret.age";
+      }
+    )
+    (lib.mkIf
+      (
+        cfg.enable
+        && cfg.usePrivateSecrets
+        && hasPrivateSecrets
         && (builtins.pathExists "${secretsDir}/cloudflared-credentials.age")
       )
       {

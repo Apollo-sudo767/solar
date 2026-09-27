@@ -126,7 +126,6 @@
         enable = true;
         exports = ''
           /persist/kubernetes/storage *(rw,sync,no_subtree_check,no_root_squash)
-          /persist/k3s-volumes *(rw,sync,no_subtree_check,no_root_squash)
         '';
       };
 

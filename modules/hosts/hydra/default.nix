@@ -215,14 +215,18 @@
         checkReversePath = "loose";
         allowedTCPPorts = [
           22 # SSH
+          111 # NFS RPC portmapper
           2049 # NFS Server
+          20048 # NFS mountd
           6443 # k3s API Server
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
         ];
         allowedUDPPorts = [
+          111 # NFS RPC portmapper
           2049 # NFS Server
+          20048 # NFS mountd
           8472 # Flannel VXLAN overlay network
         ];
       };

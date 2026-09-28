@@ -221,6 +221,7 @@
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
+          30046 # Headlamp Dashboard (NodePort / Tailscale)
         ];
         allowedUDPPorts = [
           111 # NFS RPC portmapper

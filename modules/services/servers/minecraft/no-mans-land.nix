@@ -38,7 +38,7 @@ in
     };
     motd = lib.mkOption {
       type = lib.types.str;
-      default = "PhasMC No Man's Land 1.21.1";
+      default = "§8» §6No Man's Land §8« §7- §f1.21.1";
       description = "Message of the day displayed in the server list.";
     };
     jvmOpts = lib.mkOption {

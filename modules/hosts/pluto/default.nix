@@ -192,6 +192,7 @@
           10250 # Kubelet metrics
           25565 # Minecraft Server
           27015 # TF2 Server
+          30046 # Headlamp Dashboard (NodePort / Tailscale)
         ];
         allowedUDPPorts = [
           2049 # NFS Server

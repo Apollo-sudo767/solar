@@ -208,6 +208,7 @@
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
+          30046 # Headlamp Dashboard (NodePort / Tailscale)
         ];
         allowedUDPPorts = [
           8472 # Flannel VXLAN overlay network

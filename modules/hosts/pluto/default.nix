@@ -193,6 +193,7 @@
           25565 # Minecraft Server
           27015 # TF2 Server
           30046 # Headlamp Dashboard (NodePort / Tailscale)
+          42420 # Vintage Story Server
         ];
         allowedUDPPorts = [
           2049 # NFS Server
@@ -201,6 +202,7 @@
           34197 # Factorio Server
           27015 # TF2 Server
           27020 # TF2 SourceTV
+          42420 # Vintage Story Server
         ];
       };
 

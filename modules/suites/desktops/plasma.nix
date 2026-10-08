@@ -45,10 +45,15 @@ in
     myFeatures = {
       platforms.desktops.kde.enable = true;
 
-      programs.utilities.filemanager = lib.mkIf cfg.filemanager.enable {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "dolphin";
-        yazi.enable = lib.mkIf cfg.filemanager.yazi (lib.mkDefault true);
+      programs.utilities = {
+        filemanager = lib.mkIf cfg.filemanager.enable {
+          enable = lib.mkDefault true;
+          selection = lib.mkDefault "dolphin";
+          yazi.enable = lib.mkIf cfg.filemanager.yazi (lib.mkDefault true);
+        };
+        appstore = {
+          selection = lib.mkDefault "discover";
+        };
       };
 
       services = {

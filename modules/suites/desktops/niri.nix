@@ -36,10 +36,15 @@ in
         };
       };
 
-      programs.utilities.filemanager = {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "nautilus";
-        yazi.enable = lib.mkDefault true;
+      programs.utilities = {
+        filemanager = {
+          enable = lib.mkDefault true;
+          selection = lib.mkDefault "nautilus";
+          yazi.enable = lib.mkDefault true;
+        };
+        appstore = {
+          selection = lib.mkDefault "gnome-software";
+        };
       };
 
       services = {

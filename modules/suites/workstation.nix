@@ -78,6 +78,11 @@ in
         default = true;
         description = "Enable desktop & terminal file managers.";
       };
+      appstore = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable graphical software flatpak store (GNOME Software / KDE Discover).";
+      };
       bitwarden = lib.mkOption {
         type = lib.types.bool;
         default = true;
@@ -137,6 +142,7 @@ in
 
         utilities = {
           filemanager.enable = lib.mkIf cfg.utilities.filemanager (lib.mkDefault true);
+          appstore.enable = lib.mkIf cfg.utilities.appstore (lib.mkDefault true);
           bitwarden.enable = lib.mkIf cfg.utilities.bitwarden (lib.mkDefault true);
           social = lib.mkIf cfg.utilities.social {
             enable = lib.mkDefault true;

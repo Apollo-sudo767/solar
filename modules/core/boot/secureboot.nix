@@ -17,9 +17,8 @@ in
         # 1. Enable native Limine signing during rebuilds
         boot.loader.limine.secureBoot.enable = true;
 
-        # 2. Recommended: Embed a hash of your config in the binary
-        # This prevents tampering with kernel params (like init=/bin/sh)
-        boot.loader.limine.enrollConfig = true;
+        # 2. Disable strict config hash embedding to prevent checksum mismatches on rebuilds
+        boot.loader.limine.enrollConfig = false;
 
         # 3. Add management tools
         environment.systemPackages = [ pkgs.sbctl ];

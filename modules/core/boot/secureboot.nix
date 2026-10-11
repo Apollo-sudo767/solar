@@ -16,9 +16,7 @@ in
       (lib.optionalAttrs (!isDarwin) {
         # 1. Enable native Limine signing during rebuilds
         boot.loader.limine.secureBoot.enable = true;
-
-        # 2. Disable strict config hash embedding to prevent checksum mismatches on rebuilds
-        boot.loader.limine.enrollConfig = false;
+        boot.loader.limine.enrollConfig = true;
 
         # 3. Add management tools
         environment.systemPackages = [ pkgs.sbctl ];

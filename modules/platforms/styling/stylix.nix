@@ -13,6 +13,7 @@ let
   inherit isDarwin;
   cfg = config.myFeatures.platforms.styling.stylix;
   stylixInput = if isStable then inputs.stylix-stable else inputs.stylix-unstable;
+  nixosConfig = config;
 in
 {
   imports = [
@@ -52,10 +53,10 @@ in
           {
             disabledModules = lib.optional (!isStable) "${stylixInput}/modules/rofi/hm.nix";
             stylix.targets = {
-              helix.enable = config.myFeatures.programs.terminal.helix.enable or false;
-              ghostty.enable = config.myFeatures.programs.terminal.ghostty.enable or false;
-              noctalia-shell.enable = config.myFeatures.platforms.addons.noctalia-shell.enable or false;
-              spicetify.enable = config.myFeatures.programs.utilities.spotify.enable or false;
+              helix.enable = nixosConfig.myFeatures.programs.terminal.helix.enable or false;
+              ghostty.enable = nixosConfig.myFeatures.programs.terminal.ghostty.enable or false;
+              noctalia-shell.enable = nixosConfig.myFeatures.platforms.addons.noctalia-shell.enable or false;
+              spicetify.enable = nixosConfig.myFeatures.programs.utilities.spotify.enable or false;
             };
           }
           // lib.optionalAttrs (!isStable) {

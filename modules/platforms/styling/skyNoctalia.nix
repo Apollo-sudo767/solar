@@ -217,7 +217,9 @@ in
           wallpaper = lib.mkForce {
             directory = pkgs.runCommand "noctalia-sky-wallpapers" { } ''
               mkdir -p $out
-              cp ${../../../assets/wallpapers/space.png} $out/space.png
+              cp ${
+                if config.stylix.enable then config.stylix.image else ../../../assets/wallpapers/space.png
+              } $out/wallpaper.png
             '';
             transition = [
               "disc"
@@ -229,13 +231,12 @@ in
             ];
             transition_on_startup = true;
 
-            default.path = ../../../assets/wallpapers/space.png;
-            last.path = ../../../assets/wallpapers/space.png;
+            default.path =
+              if config.stylix.enable then config.stylix.image else ../../../assets/wallpapers/space.png;
+            last.path =
+              if config.stylix.enable then config.stylix.image else ../../../assets/wallpapers/space.png;
 
-            monitors = {
-              DP-1.path = ../../../assets/wallpapers/space.png;
-              DP-2.path = ../../../assets/wallpapers/space.png;
-            };
+            monitors = { };
           };
         };
       };

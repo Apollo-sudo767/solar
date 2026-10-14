@@ -22,6 +22,9 @@ in
             };
           };
         };
+
+        security.pam.services.greetd.enableGnomeKeyring =
+          lib.mkDefault config.services.gnome.gnome-keyring.enable;
       })
     ]
   );

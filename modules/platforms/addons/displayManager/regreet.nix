@@ -168,6 +168,9 @@ in
           };
         };
 
+        security.pam.services.greetd.enableGnomeKeyring =
+          lib.mkDefault config.services.gnome.gnome-keyring.enable;
+
         # Ensure correct permissions for the greeter user on persistent directories
         systemd.tmpfiles.rules = [
           "d /var/lib/greetd 0750 greeter greeter - -"

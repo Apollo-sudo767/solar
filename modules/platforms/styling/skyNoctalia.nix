@@ -20,14 +20,6 @@ in
     home-manager.users = lib.genAttrs usernames (_name: {
       programs.noctalia = {
         settings = {
-          # v5 Specific Configuration - Matched EXACTLY to ~/.config/noctalia/config.toml
-          app_launcher = {
-            iconMode = "tabler";
-            position = "center";
-            showCategories = true;
-            sortByMostUsed = true;
-          };
-
           bar = {
             backgroundOpacity = 0.6;
             barType = "simple";
@@ -108,34 +100,6 @@ in
             widgets.enabled = false;
           };
 
-          colors = {
-            mBackground = "#050a18";
-            mOnBackground = "#abb2bf";
-            mOnPrimary = "#050a18";
-            mOnSecondary = "#050a18";
-            mOnSurface = "#abb2bf";
-            mOutline = "#101f3b";
-            mPrimary = "#2471a3";
-            mSecondary = "#ff9f43";
-            mSurface = "#050a18";
-          };
-
-          control_center = {
-            position = "close_to_bar_button";
-            shortcuts = {
-              left = [
-                { id = "Network"; }
-                { id = "Bluetooth"; }
-                { id = "WallpaperSelector"; }
-              ];
-              right = [
-                { id = "Notifications"; }
-                { id = "PowerProfile"; }
-                { id = "KeepAwake"; }
-              ];
-            };
-          };
-
           dock.enabled = false;
 
           hot_corners = {
@@ -157,15 +121,6 @@ in
               action = "none";
               command = "";
             };
-          };
-
-          general = {
-            animationSpeed = 1;
-            avatarImage = iconFile;
-            enableBlurBehind = true;
-            enableShadows = true;
-            radiusRatio = 1;
-            screenRadiusRatio = 1;
           };
 
           idle = {
@@ -205,22 +160,17 @@ in
           };
 
           theme = {
-            community_palette = "m3-content";
-            source = lib.mkForce "wallpaper";
-            wallpaper_scheme = "Noctalia";
+            source = if config.stylix.enable then "custom" else "wallpaper";
+            custom_palette = if config.stylix.enable then "stylix" else null;
+            wallpaper_scheme = "m3-tonal-spot";
           };
 
           weather = {
             unit = "fahrenheit";
           };
 
-          wallpaper = lib.mkForce {
-            directory = pkgs.runCommand "noctalia-sky-wallpapers" { } ''
-              mkdir -p $out
-              cp ${
-                if config.stylix.enable then config.stylix.image else ../../../assets/wallpapers/space.png
-              } $out/wallpaper.png
-            '';
+          wallpaper = {
+            directory = ../../../assets/wallpapers;
             transition = [
               "disc"
               "fade"

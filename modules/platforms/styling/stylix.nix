@@ -55,6 +55,7 @@ in
             stylix.targets = {
               helix.enable = nixosConfig.myFeatures.programs.terminal.helix.enable or false;
               ghostty.enable = nixosConfig.myFeatures.programs.terminal.ghostty.enable or false;
+              noctalia.enable = nixosConfig.myFeatures.platforms.addons.noctalia-v5.enable or false;
               noctalia-shell.enable = nixosConfig.myFeatures.platforms.addons.noctalia-shell.enable or false;
               spicetify.enable = nixosConfig.myFeatures.programs.utilities.spotify.enable or false;
             };

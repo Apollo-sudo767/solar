@@ -23,6 +23,12 @@ in
       description = "Enable Vesktop Discord client.";
     };
 
+    matrix.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable Element-Desktop Matrix client. ";
+    };
+
     spotify_player.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -48,6 +54,7 @@ in
       spotify.tui.enable = lib.mkIf (cfg.spotify_player.enable || cfg.minimal) (lib.mkDefault true);
       spotify.enable = lib.mkIf (cfg.spotify.enable && !cfg.minimal) (lib.mkDefault true);
       webcord.enable = lib.mkIf (cfg.webcord.enable && !cfg.minimal) (lib.mkDefault true);
+      matrix.enable = lib.mkIf cfg.matrix.enable (lib.mkDefault true);
     };
   };
 }

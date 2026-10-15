@@ -16,10 +16,15 @@ in
     myFeatures = {
       platforms.desktops.lxqt.enable = true;
 
-      programs.utilities.filemanager = {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "pcmanfm";
-        yazi.enable = lib.mkDefault true;
+      programs.utilities = {
+        filemanager = {
+          enable = lib.mkDefault true;
+          selection = lib.mkDefault "pcmanfm";
+          yazi.enable = lib.mkDefault true;
+        };
+        matrix = {
+          client = lib.mkDefault "element";
+        };
       };
 
       services = {

@@ -16,10 +16,12 @@ in
     myFeatures = {
       platforms.desktops.cinnamon.enable = true;
 
-      programs.utilities.filemanager = {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "nemo";
-        yazi.enable = lib.mkDefault true;
+      programs.utilities = {
+        filemanager = {
+          nemo.enable = lib.mkDefault true;
+          yazi.enable = lib.mkDefault true;
+        };
+        appstore.gnome-software.enable = lib.mkDefault true;
       };
 
       services = {

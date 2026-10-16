@@ -47,12 +47,11 @@ in
 
       programs.utilities = {
         filemanager = lib.mkIf cfg.filemanager.enable {
-          enable = lib.mkDefault true;
-          selection = lib.mkDefault "dolphin";
+          dolphin.enable = lib.mkDefault true;
           yazi.enable = lib.mkIf cfg.filemanager.yazi (lib.mkDefault true);
         };
         appstore = {
-          selection = lib.mkDefault "discover";
+          discover.enable = lib.mkDefault true;
         };
       };
 

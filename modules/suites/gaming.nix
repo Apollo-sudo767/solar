@@ -229,9 +229,19 @@ in
               || cfg.games.minecraft.windows
               || cfg.games.minecraft.bedrockOnLinux
               || cfg.games.bedrockOnLinux
+              || (
+                (cfg.minecraft.bedrock.enable || cfg.games.minecraft.bedrock)
+                && (cfg.minecraft.bedrock.edition == "windows" || cfg.minecraft.bedrock.edition == "both")
+              )
             ) (lib.mkDefault true);
             android.enable = lib.mkIf (
-              cfg.minecraft.bedrock.android || cfg.games.minecraft.android || cfg.games.mcpelauncher
+              cfg.minecraft.bedrock.android
+              || cfg.games.minecraft.android
+              || cfg.games.mcpelauncher
+              || (
+                (cfg.minecraft.bedrock.enable || cfg.games.minecraft.bedrock)
+                && (cfg.minecraft.bedrock.edition == "android" || cfg.minecraft.bedrock.edition == "both")
+              )
             ) (lib.mkDefault true);
           };
         };

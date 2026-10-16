@@ -85,7 +85,10 @@ in
           direnv.enable = lib.mkIf cfg.terminal.direnv (lib.mkDefault true);
         };
 
-        utilities.filemanager.enable = lib.mkIf cfg.utilities.filemanager (lib.mkDefault true);
+        utilities.filemanager = {
+          enable = lib.mkIf cfg.utilities.filemanager (lib.mkDefault true);
+          commander-one.enable = lib.mkIf cfg.utilities.filemanager (lib.mkDefault true);
+        };
         office.ap-office.enable = lib.mkIf cfg.office.enable (lib.mkDefault true);
       };
     };

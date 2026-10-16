@@ -16,10 +16,12 @@ in
     myFeatures = {
       platforms.desktops.xfce.enable = true;
 
-      programs.utilities.filemanager = {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "thunar";
-        yazi.enable = lib.mkDefault true;
+      programs.utilities = {
+        filemanager = {
+          thunar.enable = lib.mkDefault true;
+          yazi.enable = lib.mkDefault true;
+        };
+        appstore.gnome-software.enable = lib.mkDefault true;
       };
 
       services = {

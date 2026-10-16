@@ -259,6 +259,5 @@ Have questions, ran into an issue, or wondering how a specific module or cluster
    - [Frequently Asked Questions (FAQ)](https://apollo-sudo767.github.io/solar-docs/reference/faq)
    - [The Pluto Cluster Architecture & Runbooks](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster)
    - [External Game Access, DDNS & Password Isolation Guide](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster/external-access)
-2. **Search Flake Options & Toggles**: Use the [Interactive Options Search](https://apollo-sudo767.github.io/solar-docs/reference/search) to explore all custom `myFeatures` modules and options.
-3. **Discussions & Issues**: If you still can't find what you need, open an issue or discussion on the [Solar GitHub Repository](https://github.com/Apollo-sudo767/solar/issues).
-
+1. **Search Flake Options & Toggles**: Use the [Interactive Options Search](https://apollo-sudo767.github.io/solar-docs/reference/search) to explore all custom `myFeatures` modules and options.
+1. **Discussions & Issues**: If you still can't find what you need, open an issue or discussion on the [Solar GitHub Repository](https://github.com/Apollo-sudo767/solar/issues).

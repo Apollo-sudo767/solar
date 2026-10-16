@@ -20,10 +20,12 @@ in
         };
       };
 
-      programs.utilities.filemanager = {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "nautilus";
-        yazi.enable = lib.mkDefault true;
+      programs.utilities = {
+        filemanager = {
+          nautilus.enable = lib.mkDefault true;
+          yazi.enable = lib.mkDefault true;
+        };
+        appstore.gnome-software.enable = lib.mkDefault true;
       };
 
       services = {

@@ -38,12 +38,11 @@ in
 
       programs.utilities = {
         filemanager = {
-          enable = lib.mkDefault true;
-          selection = lib.mkDefault "nautilus";
+          nautilus.enable = lib.mkDefault true;
           yazi.enable = lib.mkDefault true;
         };
         appstore = {
-          selection = lib.mkDefault "gnome-software";
+          gnome-software.enable = lib.mkDefault true;
         };
       };
 

@@ -23,6 +23,12 @@ in
   config = lib.mkIf enabled {
     environment.systemPackages = [
       (pkgs.prismlauncher.override {
+        additionalLibs = with pkgs; [
+          libxi
+          libxtst
+          libxfixes
+          libxkbcommon
+        ];
         jdks = with pkgs; [
           temurin-bin-25 # Modern Minecraft (1.26+)
           temurin-bin-21 # Modern Minecraft (1.20.5+)

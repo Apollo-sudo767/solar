@@ -58,10 +58,12 @@ in
         };
       };
 
-      programs.utilities.filemanager = lib.mkIf cfg.filemanager.enable {
-        enable = lib.mkDefault true;
-        selection = lib.mkDefault "nautilus";
-        yazi.enable = lib.mkIf cfg.filemanager.yazi (lib.mkDefault true);
+      programs.utilities = {
+        filemanager = lib.mkIf cfg.filemanager.enable {
+          nautilus.enable = lib.mkDefault true;
+          yazi.enable = lib.mkIf cfg.filemanager.yazi (lib.mkDefault true);
+        };
+        appstore.gnome-software.enable = lib.mkDefault true;
       };
 
       services = {

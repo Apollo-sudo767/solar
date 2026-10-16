@@ -29,8 +29,13 @@ in
       )
       {
         age.secrets."password-apollo.age".rekeyFile =
-          if (lib.elem config.networking.hostName [ "hydra" "pluto" "styx" ])
-             && (builtins.pathExists "${secretsDir}/cluster-passwd.age")
+          if
+            (lib.elem config.networking.hostName [
+              "hydra"
+              "pluto"
+              "styx"
+            ])
+            && (builtins.pathExists "${secretsDir}/cluster-passwd.age")
           then
             "${secretsDir}/cluster-passwd.age"
           else

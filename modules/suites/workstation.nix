@@ -6,6 +6,8 @@
 
 let
   cfg = config.myFeatures.suites.workstation;
+  desktops = config.myFeatures.platforms.desktops or { };
+  isKde = (desktops.kde.enable or false) || (desktops.lxqt.enable or false);
 in
 {
   options.myFeatures.suites.workstation = {
@@ -141,8 +143,17 @@ in
         browsers.firefox.enable = lib.mkIf cfg.browser.enable (lib.mkDefault true);
 
         utilities = {
-          filemanager.enable = lib.mkIf cfg.utilities.filemanager (lib.mkDefault true);
-          appstore.enable = lib.mkIf cfg.utilities.appstore (lib.mkDefault true);
+          filemanager = lib.mkIf cfg.utilities.filemanager {
+            enable = lib.mkDefault true;
+            nautilus.enable = lib.mkIf (!isKde) (lib.mkDefault true);
+            dolphin.enable = lib.mkIf isKde (lib.mkDefault true);
+            yazi.enable = lib.mkDefault true;
+          };
+          appstore = lib.mkIf cfg.utilities.appstore {
+            enable = lib.mkDefault true;
+            gnome-software.enable = lib.mkIf (!isKde) (lib.mkDefault true);
+            discover.enable = lib.mkIf isKde (lib.mkDefault true);
+          };
           bitwarden.enable = lib.mkIf cfg.utilities.bitwarden (lib.mkDefault true);
           social = lib.mkIf cfg.utilities.social {
             enable = lib.mkDefault true;

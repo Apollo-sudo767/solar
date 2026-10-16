@@ -18,13 +18,10 @@ in
 
       programs.utilities = {
         filemanager = {
-          enable = lib.mkDefault true;
-          selection = lib.mkDefault "pcmanfm";
+          pcmanfm.enable = lib.mkDefault true;
           yazi.enable = lib.mkDefault true;
         };
-        matrix = {
-          client = lib.mkDefault "element";
-        };
+        appstore.discover.enable = lib.mkDefault true;
       };
 
       services = {

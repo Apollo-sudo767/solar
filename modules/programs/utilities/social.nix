@@ -23,23 +23,10 @@ in
       description = "Enable Vesktop Discord client.";
     };
 
-    matrix = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Enable Matrix client (Fractal or Element-Desktop).";
-      };
-
-      client = lib.mkOption {
-        type = lib.types.enum [
-          "auto"
-          "fractal"
-          "element"
-          "both"
-        ];
-        default = "auto";
-        description = "Which Matrix client to use ('auto', 'fractal', 'element', or 'both').";
-      };
+    matrix.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable Element-Desktop Matrix client. ";
     };
 
     spotify_player.enable = lib.mkOption {
@@ -67,10 +54,7 @@ in
       spotify.tui.enable = lib.mkIf (cfg.spotify_player.enable || cfg.minimal) (lib.mkDefault true);
       spotify.enable = lib.mkIf (cfg.spotify.enable && !cfg.minimal) (lib.mkDefault true);
       webcord.enable = lib.mkIf (cfg.webcord.enable && !cfg.minimal) (lib.mkDefault true);
-      matrix = lib.mkIf cfg.matrix.enable {
-        enable = lib.mkDefault true;
-        client = lib.mkIf (cfg.matrix.client != "auto") (lib.mkDefault cfg.matrix.client);
-      };
+      matrix.enable = lib.mkIf cfg.matrix.enable (lib.mkDefault true);
     };
   };
 }

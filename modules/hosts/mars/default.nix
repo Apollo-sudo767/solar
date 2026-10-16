@@ -27,7 +27,7 @@
               java.enable = true;
               bedrock = {
                 enable = true;
-                edition = "both";
+                edition = "windows";
               };
             };
           };

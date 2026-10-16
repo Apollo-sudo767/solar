@@ -54,9 +54,6 @@ in
         appstore = {
           selection = lib.mkDefault "discover";
         };
-        matrix = {
-          client = lib.mkDefault "element";
-        };
       };
 
       services = {

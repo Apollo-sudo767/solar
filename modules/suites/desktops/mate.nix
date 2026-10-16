@@ -16,15 +16,10 @@ in
     myFeatures = {
       platforms.desktops.mate.enable = true;
 
-      programs.utilities = {
-        filemanager = {
-          enable = lib.mkDefault true;
-          selection = lib.mkDefault "nautilus";
-          yazi.enable = lib.mkDefault true;
-        };
-        matrix = {
-          client = lib.mkDefault "fractal";
-        };
+      programs.utilities.filemanager = {
+        enable = lib.mkDefault true;
+        selection = lib.mkDefault "nautilus";
+        yazi.enable = lib.mkDefault true;
       };
 
       services = {

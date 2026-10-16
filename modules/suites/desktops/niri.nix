@@ -45,9 +45,6 @@ in
         appstore = {
           selection = lib.mkDefault "gnome-software";
         };
-        matrix = {
-          client = lib.mkDefault "fractal";
-        };
       };
 
       services = {

@@ -83,6 +83,16 @@ in
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi";
             installation_mode = "force_installed";
           };
+          "zotero@chnm.gmu.edu" =
+            lib.mkIf
+              (
+                config.myFeatures.programs.office.zotero.enable or false
+                && config.myFeatures.programs.office.zotero.connector or false
+              )
+              {
+                install_url = "https://download.zotero.org/connector/firefox/release/Zotero_Connector-5.0.148.xpi";
+                installation_mode = "force_installed";
+              };
         };
       };
     };

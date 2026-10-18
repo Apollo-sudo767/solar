@@ -100,7 +100,7 @@
       };
 
       # 5. Kernel hardware watchdog timers for auto-recovery on system freezes
-      services.watchdog.enable = true;
+      myFeatures.services.hardware.watchdog.enable = true;
 
       # --- K3s HA Multi-Master Configuration (Joining Master 2) ---
       services.k3s = {

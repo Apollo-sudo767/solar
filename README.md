@@ -44,11 +44,7 @@ Solar
 │       ├── io/             # COSMIC DE Testbed Node (Workstation, COSMIC Suite)
 │       ├── phobos/         # Apple Silicon MacBook (Darwin Workstation Suite)
 │       ├── thebe/          # Compact Standalone Server (Intel Mac Mini, Limine)
-│       ├── venus/          # Multi-Service Cloud Server (Server Suite, Nginx, Joplin, Games)
-│       ├── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
-│       ├── pluto/          # K3s HA Bootstrap Master (Beelink EQR5 Ryzen 7 32GB, Preservation, Agenix)
-│       ├── styx/           # K3s HA Master Node 2 (ThinkCentre M920q Tiny i5-9500T 16GB, Agenix)
-│       └── hydra/          # K3s HA Master Node 3 (ThinkCentre M920q i5-8500T 24GB, QuickSync GPU, Agenix)
+│       └── sol/            # Central Fleet ZFS NAS & Storage Hub (Server Suite, Limine, ZFS Mirror Pool)
 ├── parts/                  # Flake-parts organization
 └── templates/              # Blueprints for new hosts and features
 ```
@@ -63,7 +59,7 @@ Solar features an official developer documentation portal built with **VitePress
 | :--- | :--- | :--- |
 | 🚀 **Guides & Blueprints** | Bare-metal installation, desktop blueprints, server configuration, and forking guide | [Getting Started](https://apollo-sudo767.github.io/solar-docs/guide/getting-started) • [Forking & Maintenance](https://apollo-sudo767.github.io/solar-docs/guide/forking) • [Module Guide](https://apollo-sudo767.github.io/solar-docs/guide/modules) |
 | 🌲 **Architecture** | Dendritic tree pattern, automatic leaf discovery, and 3-tier system design | [Dendritic Architecture](https://apollo-sudo767.github.io/solar-docs/guide/architecture) |
-| 🪐 **The Fleet & Clusters** | 15-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](https://apollo-sudo767.github.io/solar-docs/fleet/) • [The Pluto Cluster](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster) |
+| 🪐 **The Fleet & Clusters** | 12-host constellation map, specs, and the 3-node HA Pluto K3s cluster | [Fleet Overview](https://apollo-sudo767.github.io/solar-docs/fleet/) • [The Pluto Cluster](https://apollo-sudo767.github.io/solar-docs/fleet/pluto-cluster) |
 | 💾 **Storage & Security** | Universal Disko, ephemeral tmpfs roots, LUKS2, Limine Secure Boot, and Agenix | [Storage & Security](https://apollo-sudo767.github.io/solar-docs/guide/storage-security) |
 | ⚡ **Reference & Help** | Universal command aliases, desktop keybindings, diagnostics, and toggle reference | [Cheatsheet](https://apollo-sudo767.github.io/solar-docs/reference/cheatsheet) • [Keybindings](https://apollo-sudo767.github.io/solar-docs/reference/keybindings) • [Troubleshooting](https://apollo-sudo767.github.io/solar-docs/reference/troubleshooting) • [532 Toggles](https://apollo-sudo767.github.io/solar-docs/reference/toggles) • [FAQ](https://apollo-sudo767.github.io/solar-docs/reference/faq) |
 
@@ -92,12 +88,10 @@ A 3-node High-Availability Kubernetes (K3s) GitOps cluster managed via [Flux CD]
 - **`phobos`** — *MacBook*: Apple Silicon (`aarch64-darwin`) managed via `nix-darwin`, `suites.darwinWorkstation`, Stylix Sky theme, Homebrew bundle integration, Logseq, Raycast.
 - **`io`** — *Testbed*: `suites.workstation`, `suites.desktops.cosmic`, Stylix Space theme, COSMIC Greeter.
 
-### 🌐 Home Server & Cloud Services
+### 🌐 Home Server & Storage Hub
 
 - **`sol`** — *Central Fleet ZFS NAS & Storage Hub*: `suites.server`, wipe-on-boot tmpfs root with Disko ZFS mirrored HDD pool (`/tank`), NFS dynamic k3s volume export (`/tank/k3s-volumes`), Samba (SMB3 enforced), Avahi mDNS, Agenix private secrets, SMART monitoring, weekly ZFS scrubs & snapshots.
-- **`venus`** — *Multi-Service Cloud Server*: `suites.server`, Nginx reverse proxy with automated Dynamic DNS & Lego SSL certificates, Joplin Server, Zotero sync server, LanguageTool server, dedicated Factorio & Minecraft servers.
 - **`thebe`** — *Compact Standalone Server*: Intel Mac Mini, `suites.server`, Apple SMC thermal monitoring, Limine bootloader, Disko LUKS + Btrfs SSD, AppArmor, Tailscale.
-- *(Note: Legacy standalone storage nodes **`ganymede`** and **`callisto`** are deprecated and retired in favor of **`sol`** and the **Pluto Cluster**).*
 
 ## 🎨 Visual Styling
 

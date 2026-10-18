@@ -1,83 +1,62 @@
+# templates/feature.nix
+# Template for creating a new dendritic feature module under modules/programs/, modules/services/, etc.
 {
-  # 1. META BLOCK (The "Peek" Layer)
-  # This allows the flake to see the system type without evaluating the whole module.
-  meta = {
-    system = "x86_64-linux"; # Standard for Mars/Europa. Use "aarch64-darwin" for Phobos.
-    stable = false; # Toggle for tracking unstable vs stable channels.
+  config,
+  lib,
+  pkgs,
+  isDarwin,
+  ...
+}:
+
+let
+  # The path in options matches the directory structure:
+  # e.g. modules/programs/terminal/mytool.nix -> myFeatures.programs.terminal.mytool
+  cfg = config.myFeatures.programs.terminal.mytool;
+in
+{
+  # 1. OPTIONS (Dendritic Hierarchy)
+  options.myFeatures.programs.terminal.mytool = {
+    enable = lib.mkEnableOption "MyTool CLI application";
+    package = lib.mkPackageOption pkgs "mytool" { };
+    extraConfig = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Extra configuration lines appended to mytool config.";
+    };
   };
 
-  # 2. MODULE BLOCK
-  module =
-    {
-      config,
-      lib,
-      pkgs,
-      inputs,
-      isDarwin,
-      ...
-    }:
-    let
-      # Shortcut for your feature configuration
-      cfg = config.myFeatures.template;
-    in
-    {
-      # 3. IMPORTS (OS-Aware)
-      # Only import Linux-specific hardware or service modules if we aren't on Darwin.
-      imports = lib.optional (!isDarwin) inputs.nix-minecraft.nixosModules.minecraft-servers;
+  # 2. CONFIGURATION
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      # Common Configuration (Linux & macOS Darwin)
+      {
+        environment.systemPackages = [ cfg.package ];
 
-      # 4. OPTIONS (The Toggle Board)
-      options.myFeatures.template = {
-        enable = lib.mkEnableOption "Master Learning Template";
+        # Universal Home Manager dotfiles across all declared users
+        home-manager.sharedModules = [
+          {
+            xdg.configFile."mytool/config.toml".text = ''
+              enabled = true
+              ${cfg.extraConfig}
+            '';
+          }
+        ];
+      }
 
-        # NEGATIVE TOGGLE: This is ON by default if 'template.enable' is true.
-        # Useful for core features you want to opt-out of rather than opt-in.
-        defaultFeature = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "A feature that stays on unless you explicitly set it to false.";
-        };
-
-        # STANDARD TOGGLE: Classic opt-in feature.
-        optionalExtra = lib.mkEnableOption "An optional addon feature";
-      };
-
-      # 5. CONFIG (The Logic Layer)
-      config = lib.mkIf cfg.enable {
-
-        # SHARED CONFIGURATION (Mac & Linux)
-        # ---------------------------------
-        environment.systemPackages =
-          with pkgs;
-          [
-            helix
-            git
-          ]
-          ++ lib.optionals cfg.optionalExtra [ pkgs.ripgrep ];
-
-        # DARWIN-SPECIFIC CONFIGURATION
-        # -----------------------------
-        # This block only executes on Phobos.
-        system.defaults = lib.mkIf isDarwin {
-          dock.autohide = true;
-        };
-
-        # NIXOS-SPECIFIC CONFIGURATION (The "Shield")
-        # ------------------------------------------
-        # Use lib.optionalAttrs or lib.mkIf (!isDarwin) to prevent Mac build errors.
-        # Perfect for systemd, firewall, or nix-minecraft.
-        networking.firewall = lib.mkIf (!isDarwin) {
-          allowedTCPPorts = [ 8080 ];
-        };
-
-        # Example of sllv.nix style systemd override [cite: 51]
-        systemd.services.example-service = lib.mkIf (!isDarwin) {
-          serviceConfig.TimeoutStopSec = lib.mkForce "120s";
-        };
-
-        # HOME MANAGER (Cross-Platform via Stylix)
-        # ----------------------------------------
-        # Stylix automatically bridges the gap between NixOS and Darwin apps.
-        stylix.targets.helix.enable = lib.mkIf config.stylix.enable true;
-      };
-    };
+      # Linux-Only Configuration (Guarded with optionalAttrs to prevent Darwin eval errors)
+      (lib.optionalAttrs (!isDarwin) {
+        # Ephemeral wipe-on-boot state preservation
+        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+          lib.mkIf config.myFeatures.core.system.preservation.enable
+            {
+              users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
+                directories = [
+                  ".config/mytool"
+                  ".local/share/mytool"
+                ];
+              });
+            };
+      })
+    ]
+  );
 }

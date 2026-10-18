@@ -88,7 +88,7 @@ in
           # Stability & Protection against CPU leaks
           Restart = "always";
           RestartSec = "10s";
-          CPUQuota = "20%"; # Hard cap to prevent the 12%+ hang from impacting venus
+          CPUQuota = "20%"; # Hard cap to prevent the 12%+ hang from impacting host performance
           MemoryMax = "2G";
 
           # Security Hardening

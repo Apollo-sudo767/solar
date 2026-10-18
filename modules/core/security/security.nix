@@ -19,44 +19,35 @@ in
   };
 
   config = lib.mkIf cfg.enable (
-    lib.mkMerge [
-      # Common Settings
-      {
-        # Glibc & Memory Allocator Hardening
-        environment.variables.MALLOC_CHECK_ = "1";
-      }
-
-      # Linux-Only Settings
-      (lib.optionalAttrs (!isDarwin) {
-        security = {
-          # 1. AppArmor Logic
-          apparmor = lib.mkIf cfg.useAppArmor {
-            enable = true;
-            enableCache = true;
-            killUnconfinedConfinables = true;
-            packages = with pkgs; [
-              apparmor-profiles
-              apparmor-utils
-            ];
-          };
-
-          # 2. Kernel & User-space Hardening
-          forcePageTableIsolation = true;
-          protectKernelImage = true;
-
-          sudo = {
-            execWheelOnly = true;
-            extraConfig = ''
-              Defaults lecture=never
-            '';
-          };
+    lib.optionalAttrs (!isDarwin) {
+      security = {
+        # 1. AppArmor Logic
+        apparmor = lib.mkIf cfg.useAppArmor {
+          enable = true;
+          enableCache = true;
+          killUnconfinedConfinables = true;
+          packages = with pkgs; [
+            apparmor-profiles
+            apparmor-utils
+          ];
         };
 
-        # 3. Systemd OOMD
-        systemd.oomd.enable = cfg.useOOMD;
+        # 2. Kernel & User-space Hardening
+        forcePageTableIsolation = true;
+        protectKernelImage = true;
 
-        networking.firewall.enable = lib.mkDefault true;
-      })
-    ]
+        sudo = {
+          execWheelOnly = true;
+          extraConfig = ''
+            Defaults lecture=never
+          '';
+        };
+      };
+
+      # 3. Systemd OOMD
+      systemd.oomd.enable = cfg.useOOMD;
+
+      networking.firewall.enable = lib.mkDefault true;
+    }
   );
 }

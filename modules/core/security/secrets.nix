@@ -115,7 +115,6 @@ in
             "pluto"
             "styx"
             "hydra"
-            "venus"
           ])
           || (config.myFeatures.services.networking.ddns.enable or false)
         )

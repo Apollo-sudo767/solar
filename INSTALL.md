@@ -12,8 +12,7 @@ ______________________________________________________________________
 1. [Method 2: Manual Installation from NixOS Live Installer via Disko](#method-2-manual-installation-from-nixos-live-installer-via-disko)
 1. [Host-Specific Installation Notes](#host-specific-installation-notes)
    - [Thebe (Intel Mac Mini)](#thebe-intel-mac-mini)
-   - [Ganymede (Dedicated NAS)](#ganymede-dedicated-nas)
-   - [Callisto (General Storage)](#callisto-general-storage)
+   - [Sol (Central Fleet ZFS NAS)](#sol-central-fleet-zfs-nas)
 1. [🔐 Setting Up LUKS Disk Encryption](#-setting-up-luks-disk-encryption)
    - [Crucial: Same Passphrase for Multi-Disk & Automated Reboots](#crucial-same-passphrase-for-multi-disk--automated-reboots)
    - [Adding Backup Recovery Keys](#adding-backup-recovery-keys)
@@ -29,16 +28,12 @@ ______________________________________________________________________
 
 ## 🎯 Target Architecture & Disk Layout Overview
 
-All three Jupiter moon hosts use **Disko**, **LUKS Encryption**, and **Btrfs** with `zstd` compression and `noatime`:
+Server and NAS hosts in Solar utilize declarative storage partitioning via **Disko**:
 
-| Host | Role | Boot Drive(s) (`speedDisks`) | Data Drive(s) (`bulkDisks`) | Bootloader & Services |
+| Host | Role | Boot Drive(s) (`speedDisks`) | Data Drive(s) | Bootloader & Services |
 | :--- | :--- | :--- | :--- | :--- |
-| **`thebe`** | Intel Mac Mini | `/dev/sda` (or NVMe) | — | Limine, Intel graphics, Apple SMC |
-| **`ganymede`** | Dedicated NAS | `/dev/nvme0n1` | `/dev/sda`, `/dev/sdb` | Limine, Samba (SMB3), NFS, Avahi mDNS, Btrfs Scrub |
-| **`callisto`** | General Storage | `/dev/nvme0n1` | `/dev/sda` | Limine, Syncthing, Restic/Borg, Btrfs Scrub |
-
-> [!NOTE]
-> All three hosts are configured with `useSolarSecrets = false` and `useSecrets = false`, making them completely self-contained with zero dependencies on private secret repositories or `agenix`.
+| **`thebe`** | Intel Mac Mini Server | `/dev/sda` (or NVMe) | — (Disko Btrfs + LUKS2) | Limine, Intel graphics, Apple SMC, Tailscale |
+| **`sol`** | Central Fleet ZFS NAS | NVMe (`/` on tmpfs) | Mirrored HDD array (`tank`) | Limine, ZFS Mirror, NFS, Samba (SMB3), Avahi mDNS |
 
 ______________________________________________________________________
 
@@ -92,7 +87,7 @@ sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress conv=fsync
    ```
 1. Follow the interactive installer wizard:
    - **Repository Source**: Choose to fetch the latest `solar` flake from GitHub (default), use a bundled offline copy (`/home/nixos/solar`), or a custom path.
-   - **Host Configuration**: Select the target machine configuration to install (e.g. `hydra`, `styx`, `thebe`, `ganymede`).
+   - **Host Configuration**: Select the target machine configuration to install (e.g. `hydra`, `styx`, `thebe`, `sol`, `mars`).
    - **Secrets Management & Host Key Provisioning**: If installing a host that uses `solar-secrets` (such as Pluto cluster nodes), the installer locks `solar-secrets` into `flake.lock` for offline evaluation. Host private keys are kept strictly on `mars` (`~/.ssh/hosts/<hostname>/`) and provisioned out-of-band via interactive paste or `scp` from `mars`.
    - **User Password**: Enter an initial password for user accounts and root (mandatory non-empty password to prevent default credential risks).
    - **Disko Partitioning & Formatting**: Disko wipes the target disk, creates partition tables, EFI boot partitions, and Btrfs subvolumes (`/root`, `/nix`, `/persist`), mounting them cleanly to `/mnt`.
@@ -131,7 +126,7 @@ sudo nix --extra-experimental-features "nix-command flakes" \
 *(If prompted for LUKS encryption passphrases on encrypted nodes, enter your passphrase).*
 
 > [!IMPORTANT]
-> When Disko prompts for passphrases on multi-drive systems (`ganymede` / `callisto`), **set the EXACT same passphrase on all disks**. See the section below for details.
+> When Disko prompts for passphrases on multi-drive systems (such as `mars`), **set the EXACT same passphrase on all disks**. See the section below for details.
 
 ### Step 3 (For Agenix Secret Hosts): Provision Host SSH Key
 
@@ -217,40 +212,19 @@ ______________________________________________________________________
 - **Bootloader**: `thebe` uses `limine` with styled background graphics.
 - **Thermal & Fan Control**: The `applesmc` kernel module is loaded automatically for thermal sensor monitoring.
 
-### Ganymede (Dedicated NAS)
+### Sol (Central Fleet ZFS NAS)
 
-- **Disk Pool Setup**:
-  - `speedDisks`: Fast NVMe/SSD drive for `/` and `/boot`.
-  - `bulkDisks`: High-capacity HDDs partitioned and mounted as Btrfs at `/persist/bulk`.
-- **Storage Share Path**: The default Samba & NFS shared directory is located at `/persist/bulk/storage`.
-- **Permissions**: Create the storage directory after first boot:
-  ```bash
-  sudo mkdir -p /persist/bulk/storage
-  sudo chown -R apollo:users /persist/bulk/storage
-  sudo chmod -R 775 /persist/bulk/storage
-  ```
-- **Accessing Shares**:
-  - **Samba (SMB3)**: `smb://ganymede.local/storage` or `\\<ganymede-ip>\storage`
-  - **NFS**: `mount -t nfs <ganymede-ip>:/persist/bulk/storage /mnt/nas`
-
-### Callisto (General Storage)
-
-- **Disk Pool Setup**:
-  - `speedDisks`: Fast primary drive for system files.
-  - `bulkDisks`: Bulk storage drive mounted at `/persist/bulk`.
-- **Syncthing Web GUI**:
-  - Syncthing is bound to `127.0.0.1:8384` for security.
-  - Access via SSH port forward:
-    ```bash
-    ssh -L 8384:127.0.0.1:8384 apollo@<callisto-ip>
-    ```
-    Then open `http://localhost:8384` in your browser.
+- **Storage Layout**: High-speed NVMe system drive with root filesystem on `tmpfs` (wipe-on-boot) and `/persist` on Btrfs.
+- **ZFS Mirrored Storage Pool**: Two 3.5" enterprise HDDs partitioned into a mirrored ZFS pool (`tank`).
+- **NFS Persistent Volumes**: Dynamic persistent volume storage exported at `/tank/k3s-volumes` with `no_root_squash` for the Pluto Kubernetes cluster.
+- **Samba (SMB3) Shares**: Encrypted Windows/macOS network shares at `/tank/storage` and `/tank/media` with Avahi mDNS discovery (`smb://sol.local/storage`).
+- **Automated Health**: Weekly automated ZFS scrubs, automatic snapshot retention, and `smartd` background drive health monitoring.
 
 ______________________________________________________________________
 
 ## 🔐 Setting Up LUKS Disk Encryption
 
-Disko automatically configures **LUKS2 encryption** on all `speedDisks` and `bulkDisks` when `enableLuks = true` (default on `thebe`, `ganymede`, and `callisto`).
+Disko automatically configures **LUKS2 encryption** on all `speedDisks` and `bulkDisks` when `enableLuks = true` (configured on `thebe`, `mars`, `mercury`, and cluster nodes).
 
 ### Crucial: Same Passphrase for Multi-Disk & Automated Reboots
 
@@ -347,7 +321,7 @@ ______________________________________________________________________
 
 ### Live Zero-Downtime Drive Swapping (via Native Btrfs)
 
-For active NAS and storage servers (**ganymede** and **callisto**), Btrfs allows you to hot-swap or replace drives **live without unmounting shares or taking the storage offline**:
+For machines with multi-drive Btrfs storage pools (such as workstations or storage nodes), Btrfs allows you to hot-swap or replace drives **live without unmounting shares or taking the storage offline**:
 
 #### 1. Live Replacing a Drive in the Btrfs Pool:
 

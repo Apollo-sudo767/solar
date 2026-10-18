@@ -12,9 +12,8 @@ let
   spicetifyCfg = config.myFeatures.programs.utilities.spicetify;
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   spotify-wrapped = pkgs.spotify.overrideAttrs (oldAttrs: {
-    postFixup = (oldAttrs.postFixup or "") + ''
-      # Edit the wrapper script to inject --password-store=basic
-      sed -i 's|exec -a "$0" \("[^"]*"\) *"$@"|exec -a "$0" \1 --password-store=basic "$@"|g' $out/share/spotify/spotify
+    preFixup = (oldAttrs.preFixup or "") + ''
+      gappsWrapperArgs+=(--add-flags "--password-store=basic")
     '';
   });
 
@@ -31,10 +30,17 @@ in
     gui.enable = lib.mkEnableOption "Spotify GUI client";
     tui.enable = lib.mkEnableOption "Spotify TUI client (spotify-player)";
   };
-  options.myFeatures.programs.utilities.spotify_player.enable =
-    lib.mkEnableOption "Spotify TUI client (spotify-player)";
-  options.myFeatures.programs.utilities.spotify-player.enable =
-    lib.mkEnableOption "Spotify TUI client (spotify-player)";
+  # Backward compatibility aliases
+  options.myFeatures.programs.utilities.spotify_player.enable = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = "Deprecated: use myFeatures.programs.utilities.spotify.tui.enable instead.";
+  };
+  options.myFeatures.programs.utilities.spotify-player.enable = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = "Deprecated: use myFeatures.programs.utilities.spotify.tui.enable instead.";
+  };
   options.myFeatures.programs.utilities.spicetify.enable =
     lib.mkEnableOption "Spicetify Integration"
     // {

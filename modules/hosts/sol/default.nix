@@ -188,7 +188,7 @@
         pools = [ "tank" ];
       };
 
-      services.zfs.snapshot.enable = true;
+      myFeatures.services.system.zfs-snapshot.enable = true;
 
       # SMART disk diagnostics
       services.smartd = {

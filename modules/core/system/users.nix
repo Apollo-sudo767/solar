@@ -101,25 +101,13 @@ in
     # 2. Linux-only Configuration (Completely omitted from evaluation on Darwin)
     (lib.mkIf cfg.enable (
       lib.optionalAttrs (!isDarwin) {
-        # Initialize default user password if it doesn't exist
-        system.activationScripts.user-password-init = {
-          text = ''
-            if [ ! -f /etc/user-password ]; then
-              mkdir -p /etc
-              echo '$6$/Edi4zjoQYa81MQL$MD/BacUUKnb3jdHCnAzRG5s2Vh7KUIYh4s0h/5SQzMLVpbJ7T6XKCvYMuMZ2Sqt91quxmHATBEzkuyQKzQ/K5/' > /etc/user-password
-              chmod 600 /etc/user-password
-            fi
-          '';
-        };
-
         # Moved here because nix-darwin doesn't support changing account mutability
         users.mutableUsers = lib.mkDefault (!useAgenixPassword);
 
-        # Using 'Z' (recursive) instead of 'd' ensures that the entire directory
-        # tree is owned by the user, fixing issues with Firefox and other apps.
+        # Ensure user home and persist home directories exist with correct permissions without expensive recursive chown on boot
         systemd.tmpfiles.rules = lib.concatMap (name: [
-          "Z /home/${name} 0700 ${name} users - -"
-          "Z /persist/home/${name} 0700 ${name} users - -"
+          "d /home/${name} 0700 ${name} users - -"
+          "d /persist/home/${name} 0700 ${name} users - -"
         ]) cfg.usernames;
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =

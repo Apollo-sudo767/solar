@@ -16,7 +16,8 @@ in
       (lib.optionalAttrs (!isDarwin) {
         # 1. Enable native Limine signing during rebuilds
         boot.loader.limine.secureBoot.enable = true;
-        boot.loader.limine.enrollConfig = true;
+        # Disabled to prevent Blake2b / SHA hash mismatch panics (hash_mismatch_panic) on rebuilds
+        boot.loader.limine.enrollConfig = false;
 
         # 3. Add management tools
         environment.systemPackages = [ pkgs.sbctl ];

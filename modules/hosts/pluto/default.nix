@@ -45,7 +45,7 @@
             enable = true;
             loader = "limine";
             kernel = "latest";
-            secureBoot.enable = true;
+            secureBoot.enable = false;
           };
           security = {
             security.useAppArmor = true;

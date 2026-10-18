@@ -14,7 +14,7 @@ in
   options.myFeatures.core.shell.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
 
   config = lib.mkIf cfg.enable {
-    environment.enableAllTerminfo = false;
+    environment.enableAllTerminfo = true;
 
     environment.systemPackages = [
       pkgs.eza

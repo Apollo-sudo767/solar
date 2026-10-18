@@ -145,7 +145,7 @@
       system.autoUpgrade = {
         enable = true;
         dates = "Sun 03:00";
-        allowReboot = true;
+        allowReboot = false;
         rebootWindow = {
           lower = "03:00";
           upper = "03:20";
@@ -153,22 +153,8 @@
         flake = "github:Apollo-sudo767/solar";
       };
 
-      systemd.timers.weekly-cluster-reboot = {
-        description = "Weekly staggered cluster reboot timer (Pluto @ Sun 03:00)";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "Sun 03:00";
-          Persistent = true;
-        };
-      };
-
-      systemd.services.weekly-cluster-reboot = {
-        description = "Weekly staggered cluster reboot service";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.systemd}/bin/systemctl reboot";
-        };
-      };
+      systemd.timers.weekly-cluster-reboot.enable = false;
+      systemd.services.weekly-cluster-reboot.enable = false;
 
       # Ensure Limine installs directly to the standard UEFI fallback path (/EFI/BOOT/BOOTX64.EFI)
       # guaranteeing the binary booted by the firmware matches sbctl signature across rebuilds

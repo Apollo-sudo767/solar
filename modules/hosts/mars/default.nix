@@ -143,7 +143,7 @@
             stylix.enable = true;
             flavors.sky.enable = true;
           };
-          addons.displayManager.manager = "regreet";
+          addons.displayManager.manager = "noctalia-greeter";
         };
 
         # 👤 5. Host Credentials & Nightly Browser

@@ -14,6 +14,7 @@
         "gtkGreet"
         "regreet"
         "cosmic-greeter"
+        "noctalia-greeter"
         "none"
       ];
       default = "none";

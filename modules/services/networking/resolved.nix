@@ -20,9 +20,13 @@ in
         enable = true;
         settings.Resolve = {
           DNSSEC = "false";
-          FallbackDNS = [
+          DNS = [
             "1.0.0.1"
             "9.9.9.9"
+          ];
+          FallbackDNS = [
+            "1.1.1.1"
+            "8.8.8.8"
           ];
         };
       };

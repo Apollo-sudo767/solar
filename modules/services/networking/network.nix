@@ -21,8 +21,12 @@ in
         networking.networkmanager.enable = lib.mkDefault true;
 
         # Optimization: Prioritize IPv4 over IPv6 to avoid Steam CDN bottlenecks
-        # and use Cloudflare/Quad9 DNS when resolved is not active (resolved uses FallbackDNS).
-        networking.nameservers = lib.mkIf (!config.services.resolved.enable) [
+        # and enforce Cloudflare/Quad9 IPv4 DNS ahead of any DHCP-provided DNS servers.
+        networking.nameservers = [
+          "1.0.0.1"
+          "9.9.9.9"
+        ];
+        networking.networkmanager.insertNameservers = [
           "1.0.0.1"
           "9.9.9.9"
         ];

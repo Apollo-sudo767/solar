@@ -4,6 +4,7 @@
 # and AccountsService user profile icons on NixOS.
 {
   config,
+  options,
   lib,
   pkgs,
   isDarwin,
@@ -15,12 +16,13 @@ let
   cfg = config.myFeatures.platforms.addons.displayManager;
   inherit (config.myFeatures.core.system.users) usernames;
   apolloIcon = ../../../../assets/icons/Apollo.jpg;
+  hasNoctaliaGreeterOption = (options.services.displayManager or { }) ? noctalia-greeter;
 in
 {
   # `services.displayManager.noctalia-greeter` only exists in nixpkgs-unstable.
   config = lib.mkIf (cfg.manager == "noctalia-greeter") (
     lib.mkMerge [
-      (lib.optionalAttrs (!isDarwin && !isStable) {
+      (lib.optionalAttrs (!isDarwin && !isStable && hasNoctaliaGreeterOption) {
         services.displayManager.noctalia-greeter = {
           enable = true;
           settings = {

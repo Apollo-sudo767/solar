@@ -1,10 +1,12 @@
+# modules/services/servers/joplin.nix
+#
+# Configures the self-hosted Joplin synchronization server (`joplin-server`)
+# with local PostgreSQL database and Nginx virtualHost support on NixOS.
 {
   config,
   lib,
-  pkgs,
   inputs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 

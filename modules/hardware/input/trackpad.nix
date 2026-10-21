@@ -1,8 +1,12 @@
+# modules/hardware/input/trackpad.nix
+# ============================================================================
+# Multi-Touch Trackpad Configuration (`libinput`)
+# ============================================================================
+# Enables tap-to-click, natural scrolling, and middle-click emulation via
+# `services.libinput`. Enabled automatically by `modules/suites/laptop.nix`.
 {
   config,
   lib,
-  isDarwin,
-  isTotal,
   ...
 }:
 
@@ -12,17 +16,14 @@ in
 {
   options.myFeatures.hardware.input.trackpad.enable = lib.mkEnableOption "Trackpad Settings";
 
-  # Shield everything
-  config = lib.mkIf cfg.enable (
-    lib.optionalAttrs (!isDarwin) {
-      services.libinput = {
-        enable = true;
-        touchpad = {
-          tapping = true;
-          naturalScrolling = true;
-          middleEmulation = true;
-        };
+  config = lib.mkIf cfg.enable {
+    services.libinput = {
+      enable = true;
+      touchpad = {
+        tapping = true;
+        naturalScrolling = true;
+        middleEmulation = true;
       };
-    }
-  );
+    };
+  };
 }

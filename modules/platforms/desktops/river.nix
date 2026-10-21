@@ -1,3 +1,7 @@
+# modules/platforms/desktops/river.nix
+#
+# Configures the River dynamic tiling Wayland compositor, `rivertile` layout
+# generator, Stylix border colors, and state preservation on NixOS.
 {
   config,
   lib,

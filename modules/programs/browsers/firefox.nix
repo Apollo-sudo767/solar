@@ -1,3 +1,7 @@
+# modules/programs/browsers/firefox.nix
+#
+# Configures Firefox (stable and Nightly) via Home Manager with declarative
+# policies, extensions (uBlock Origin, Bitwarden, Dark Reader, Zotero), and state preservation.
 {
   config,
   lib,

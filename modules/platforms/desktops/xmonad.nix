@@ -1,3 +1,10 @@
+# modules/platforms/desktops/xmonad.nix
+# ============================================================================
+# XMonad Dynamic X11 Tiling Window Manager
+# ============================================================================
+# Configures XMonad on X11 with `xmonad-contrib` and `xmonad-extras`, companion
+# X11 utilities (`xmobar`, `dmenu`, `picom`, `feh`), optional custom Haskell
+# configuration lines (`configGhc`), and `~/.xmonad` preservation.
 {
   config,
   lib,
@@ -7,6 +14,7 @@
 
 let
   cfg = config.myFeatures.platforms.desktops.xmonad;
+  customConfig = lib.concatStringsSep "\n" cfg.configGhc;
 in
 {
   options.myFeatures.platforms.desktops.xmonad = {
@@ -21,7 +29,7 @@ in
     configGhc = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "Extra Haskell configuration lines";
+      description = "Extra Haskell configuration lines for xmonad.hs";
     };
   };
 
@@ -31,6 +39,7 @@ in
       windowManager.xmonad = {
         enable = true;
         inherit (cfg) enableContribAndExtras;
+        config = lib.mkIf (cfg.configGhc != [ ]) customConfig;
       };
     };
 
@@ -48,6 +57,7 @@ in
       xsession.windowManager.xmonad = {
         enable = true;
         inherit (cfg) enableContribAndExtras;
+        config = lib.mkIf (cfg.configGhc != [ ]) (pkgs.writeText "xmonad.hs" customConfig);
       };
     });
 

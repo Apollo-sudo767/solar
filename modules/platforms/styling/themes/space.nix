@@ -1,6 +1,13 @@
+# modules/platforms/styling/themes/space.nix
+# ============================================================================
+# Space Base16 Color Scheme & Wallpaper (Stylix)
+# ============================================================================
+# Defines the dark Space (Ayu Dark-inspired) Base16 palette and default space
+# wallpaper for Stylix across Linux and macOS (`isTotal`).
 {
   config,
   lib,
+  isTotal,
   ...
 }:
 

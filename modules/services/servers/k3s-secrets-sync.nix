@@ -1,3 +1,7 @@
+# modules/services/servers/k3s-secrets-sync.nix
+#
+# Synchronizes agenix-decrypted secrets into Kubernetes secrets within K3s
+# via a oneshot systemd service on NixOS.
 {
   config,
   lib,
@@ -35,6 +39,11 @@ in
       type = lib.types.nullOr lib.types.path;
       default = config.age.secrets."tf2-secret.age".path or null;
       description = "Path to decrypted TF2 server credentials env file.";
+    };
+    matrixSecretPath = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = config.age.secrets."matrix-secret.age".path or null;
+      description = "Path to decrypted Matrix (Tuwunel + LiveKit RTC) credentials env file.";
     };
   };
 
@@ -147,6 +156,22 @@ in
             --from-env-file="$TF2_PATH" \
             --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
           echo "Synchronized tf2-secret in namespace 'games'."
+        fi
+
+        # 6. Matrix Homeserver & LiveKit RTC Credentials (Namespace: productivity)
+        MATRIX_PATH="${
+          if cfg.matrixSecretPath != null then
+            toString cfg.matrixSecretPath
+          else
+            "/persist/etc/kubernetes/secrets/matrix.env"
+        }"
+        if [ -f "$MATRIX_PATH" ]; then
+          kubectl --kubeconfig "$KUBECONFIG" create namespace productivity --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
+          kubectl --kubeconfig "$KUBECONFIG" create secret generic matrix-secret \
+            --namespace=productivity \
+            --from-env-file="$MATRIX_PATH" \
+            --dry-run=client -o yaml | kubectl --kubeconfig "$KUBECONFIG" apply -f -
+          echo "Synchronized matrix-secret in namespace 'productivity'."
         fi
 
         echo "Nix-managed secret synchronization complete."

@@ -1,9 +1,12 @@
+# modules/services/servers/terraria.nix
+#
+# Configures a dedicated Terraria server systemd service with resource quotas
+# and non-interactive world generation on NixOS.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 

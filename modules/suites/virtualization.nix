@@ -1,3 +1,6 @@
+# modules/suites/virtualization.nix
+#
+# Suite module enabling container and hypervisor runtimes (Docker and Libvirt/QEMU).
 {
   config,
   lib,

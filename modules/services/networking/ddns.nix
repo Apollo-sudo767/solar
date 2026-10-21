@@ -1,8 +1,11 @@
+# modules/services/networking/ddns.nix
+#
+# Configures Cloudflare Dynamic DNS (`cloudflare-dyndns`) using agenix
+# secrets on NixOS while keeping options cross-platform safe on macOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

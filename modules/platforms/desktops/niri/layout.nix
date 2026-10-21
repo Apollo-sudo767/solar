@@ -1,3 +1,7 @@
+# modules/platforms/desktops/niri/layout.nix
+#
+# Configures Niri layout proportions, gaps, borders, spring animations,
+# recent-window switcher, layer rules, and default window rules.
 {
   config,
   lib,

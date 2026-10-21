@@ -1,3 +1,13 @@
+# modules/programs/media/steam.nix
+# ============================================================================
+# Steam Gaming Platform, Gamescope Wrapper & Proton Tooling
+# ============================================================================
+# Configures the NixOS Steam environment with:
+# - GameMode, MangoHud, and ProtonUp-Qt / ProtonPlus compatibility managers
+# - Optional Gamescope micro-compositor wrapper (`steam-gamescope`)
+# - Optional WiVRn OpenXR runtime injection when `myFeatures.programs.media.vr.enable` is true
+# - Two-tier storage preservation (fast SSD `.local/share/Steam` + bulk library `.local/share/SteamBulk`)
+# - Automatic Desktop shortcut sync to `~/.local/share/applications` for Wayland launchers
 {
   config,
   lib,
@@ -7,6 +17,29 @@
 
 let
   cfg = config.myFeatures.programs.media.steam;
+  vrEnabled = config.myFeatures.programs.media.vr.enable or false;
+
+  argsString = lib.escapeShellArgs cfg.gamescope.args;
+  envList = lib.mapAttrsToList (name: value: "${name}=${lib.escapeShellArg value}") cfg.gamescope.env;
+  envPrefix = lib.concatStringsSep " " envList;
+  gamescopeArgs = lib.concatStringsSep " " (
+    lib.filter (s: s != "") [
+      "--steam"
+      argsString
+    ]
+  );
+  gamescopeCmd = "${
+    if envPrefix != "" then envPrefix + " " else ""
+  }gamescope ${gamescopeArgs} -- steam";
+
+  steam-gamescope = pkgs.writeShellScriptBin "steam-gamescope" ''
+    if [ -n "$WAYLAND_DISPLAY" ] && [ -z "$GAMESCOPE_WAYLAND_DISPLAY" ] && [ -z "$INSIDE_GAMESCOPE" ]; then
+      export INSIDE_GAMESCOPE=1
+      exec ${gamescopeCmd} "$@"
+    else
+      exec steam "$@"
+    fi
+  '';
 in
 {
   options.myFeatures.programs.media.steam = {
@@ -64,8 +97,10 @@ in
                 rm $out/bin/steam
                 cat <<'EOF' > $out/bin/steam
                 #!/bin/sh
-                export PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1
-                export XR_RUNTIME_JSON=/run/current-system/sw/share/openxr/1/openxr_wivrn.json
+                ${lib.optionalString vrEnabled ''
+                  export PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1
+                  export XR_RUNTIME_JSON=/run/current-system/sw/share/openxr/1/openxr_wivrn.json
+                ''}
                 ${lib.optionalString (cfg.gamescope.enable && cfg.gamescope.autoWrap) ''
                   if [ "$XDG_CURRENT_DESKTOP" = "niri" ] || [ -n "$NIRI_SOCKET" ]; then
                     if [ "$STEAM_GAMESCOPE_WRAPPED" != "1" ] && command -v steam-gamescope >/dev/null 2>&1; then
@@ -84,7 +119,7 @@ in
             };
           initialSteam = pkgs.steam.override {
             extraArgs = "-cef-disable-gpu-compositing";
-            extraEnv = {
+            extraEnv = lib.optionalAttrs vrEnabled {
               PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES = "1";
               XR_RUNTIME_JSON = "/run/current-system/sw/share/openxr/1/openxr_wivrn.json";
             };
@@ -128,13 +163,14 @@ in
         keyutils
       ]
       ++ lib.optional cfg.protonInstaller.enable protonPackage
-      ++ lib.optional cfg.gamescope.enable (
-        pkgs.makeDesktopItem {
+      ++ lib.optionals cfg.gamescope.enable [
+        steam-gamescope
+        (pkgs.makeDesktopItem {
           name = "steam-gamescope";
           desktopName = "Steam (Gamescope)";
           genericName = "Game 3D Engine";
           comment = "Launch Steam inside Gamescope micro-compositor";
-          exec = "steam-gamescope";
+          exec = "${steam-gamescope}/bin/steam-gamescope";
           icon = "steam";
           terminal = false;
           type = "Application";
@@ -143,8 +179,8 @@ in
             "FileTransfer"
             "Game"
           ];
-        }
-      );
+        })
+      ];
 
     preservation.preserveAt =
       let
@@ -168,16 +204,16 @@ in
       lib.mkIf pCfg.enable (
         if pCfg.coldPath == pCfg.persistentPath then
           {
-            "${pCfg.persistentPath}".users = lib.genAttrs users (name: {
+            "${pCfg.persistentPath}".users = lib.genAttrs users (_name: {
               directories = steamDirs ++ bulkDirs;
             });
           }
         else
           {
-            "${pCfg.persistentPath}".users = lib.genAttrs users (name: {
+            "${pCfg.persistentPath}".users = lib.genAttrs users (_name: {
               directories = steamDirs;
             });
-            "${pCfg.coldPath}".users = lib.genAttrs users (name: {
+            "${pCfg.coldPath}".users = lib.genAttrs users (_name: {
               directories = bulkDirs;
             });
           }
@@ -219,46 +255,17 @@ in
       SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS = "0";
     };
 
-    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (name: {
+    home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       xdg.desktopEntries = lib.mkIf cfg.gamescope.enable (
         let
-          argsString = lib.escapeShellArgs cfg.gamescope.args;
-          envList = lib.mapAttrsToList (name: value: "${name}=${lib.escapeShellArg value}") cfg.gamescope.env;
-          envPrefix = lib.concatStringsSep " " envList;
-          gamescopeArgs = lib.concatStringsSep " " (
-            lib.filter (s: s != "") [
-              "--steam"
-              argsString
-            ]
-          );
-          gamescopeCmd = "${
-            if envPrefix != "" then envPrefix + " " else ""
-          }gamescope ${gamescopeArgs} -- steam";
-
-          steam-launcher = pkgs.writeShellScriptBin "steam-launcher" ''
-            ${
-              if cfg.gamescope.autoWrap then
-                ''
-                  if [ -n "$WAYLAND_DISPLAY" ] && [ -z "$GAMESCOPE_WAYLAND_DISPLAY" ] && [ -z "$INSIDE_GAMESCOPE" ]; then
-                    export INSIDE_GAMESCOPE=1
-                    exec ${gamescopeCmd} "$@"
-                  else
-                    exec steam "$@"
-                  fi
-                ''
-              else
-                ''
-                  exec steam "$@"
-                ''
-            }
-          '';
+          launcherBin = if cfg.gamescope.autoWrap then "${steam-gamescope}/bin/steam-gamescope" else "steam";
         in
         {
           steam = {
             name = "Steam";
             genericName = "Game Client";
             comment = "Application for managing and playing games on Steam";
-            exec = "${steam-launcher}/bin/steam-launcher %U";
+            exec = "${launcherBin} %U";
             icon = "steam";
             terminal = false;
             type = "Application";
@@ -278,39 +285,39 @@ in
             actions = {
               Store = {
                 name = "Store";
-                exec = "${steam-launcher}/bin/steam-launcher steam://store";
+                exec = "${launcherBin} steam://store";
               };
               Community = {
                 name = "Community";
-                exec = "${steam-launcher}/bin/steam-launcher steam://url/CommunityHome/";
+                exec = "${launcherBin} steam://url/CommunityHome/";
               };
               Library = {
                 name = "Library";
-                exec = "${steam-launcher}/bin/steam-launcher steam://open/games";
+                exec = "${launcherBin} steam://open/games";
               };
               Servers = {
                 name = "Servers";
-                exec = "${steam-launcher}/bin/steam-launcher steam://open/servers";
+                exec = "${launcherBin} steam://open/servers";
               };
               Screenshots = {
                 name = "Screenshots";
-                exec = "${steam-launcher}/bin/steam-launcher steam://open/screenshots";
+                exec = "${launcherBin} steam://open/screenshots";
               };
               News = {
                 name = "News";
-                exec = "${steam-launcher}/bin/steam-launcher steam://openurl/https://store.steampowered.com/news";
+                exec = "${launcherBin} steam://openurl/https://store.steampowered.com/news";
               };
               Settings = {
                 name = "Settings";
-                exec = "${steam-launcher}/bin/steam-launcher steam://open/settings";
+                exec = "${launcherBin} steam://open/settings";
               };
               BigPicture = {
                 name = "Big Picture";
-                exec = "${steam-launcher}/bin/steam-launcher steam://open/bigpicture";
+                exec = "${launcherBin} steam://open/bigpicture";
               };
               Friends = {
                 name = "Friends";
-                exec = "${steam-launcher}/bin/steam-launcher steam://open/friends";
+                exec = "${launcherBin} steam://open/friends";
               };
             };
           };

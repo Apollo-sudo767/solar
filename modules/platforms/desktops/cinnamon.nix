@@ -1,7 +1,9 @@
+# modules/platforms/desktops/cinnamon.nix
+#
+# Configures the Cinnamon X11 desktop environment and state preservation on NixOS.
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 

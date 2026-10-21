@@ -1,4 +1,9 @@
 # parts/treefmt.nix
+# ============================================================================
+# Unified Code Formatting & Linting (`nix fmt`)
+# ============================================================================
+# Configures `treefmt-nix` so running `nix fmt` formats and lints the entire
+# repository (Nix, Markdown, and Python files) in a single pass.
 { inputs, ... }:
 
 {
@@ -8,8 +13,8 @@
     treefmt = {
       projectRootFile = "flake.nix";
       programs = {
-        nixfmt.enable = true; # Standard Nix formatter
-        deadnix.enable = false; # Find unused Nix code
+        nixfmt.enable = true; # Official RFC 166 Nix formatter
+        deadnix.enable = false; # Unused Nix code detector
         statix.enable = true; # Nix anti-pattern linter
 
         mdformat.enable = true; # Markdown formatter
@@ -20,7 +25,6 @@
         nixfmt.includes = [ "*.nix" ];
         statix.includes = [ "*.nix" ];
       };
-
     };
   };
 }

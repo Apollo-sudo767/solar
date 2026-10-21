@@ -1,9 +1,10 @@
+# modules/services/servers/trilium.nix
+#
+# Configures the self-hosted Trilium Notes synchronization server on NixOS.
 {
   config,
   lib,
-  pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 

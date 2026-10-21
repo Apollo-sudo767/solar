@@ -1,6 +1,11 @@
-# This module allows setting the TTY resolution, which is particularly useful
-# for fixing "stretched" or incorrect resolutions on boot and in TUI-based
-# display managers like tuigreet.
+# modules/hardware/system/ttyResolution.nix
+# ============================================================================
+# Virtual Console (TTY) & Bootloader Framebuffer Resolution
+# ============================================================================
+# Configures the kernel KMS `video=` mode and UEFI bootloader framebuffer
+# resolution (`limine`, `systemd-boot`, `grub`) so early boot prompts (LUKS),
+# virtual consoles (TTY1-6), and TUI login managers (`tuigreet`) render at
+# the display's native resolution instead of a stretched low-res fallback.
 { config, lib, ... }:
 
 let
@@ -16,12 +21,14 @@ in
           config.myFeatures.core.boot.resolution
         else
           "2560x1440";
-      description = "The resolution to set for the TTY (e.g., 2560x1440)";
+      description = "The resolution to set for the TTY and bootloader framebuffer (e.g., '2560x1440', '1920x1080').";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # Bare resolution string (e.g. video=2560x1440) causes DRM driver mode rejection on Nvidia/SimpleDRM.
-    # Omit bare video kernelParam to ensure clean DRM mode initialization.
+    boot.kernelParams = [ "video=${cfg.resolution}" ];
+    boot.loader.systemd-boot.consoleMode = lib.mkDefault "max";
+    boot.loader.grub.gfxmodeEfi = lib.mkDefault "${cfg.resolution},auto";
+    boot.loader.limine.resolution = lib.mkDefault cfg.resolution;
   };
 }

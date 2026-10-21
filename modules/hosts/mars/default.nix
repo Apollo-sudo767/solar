@@ -1,3 +1,12 @@
+# modules/hosts/mars/default.nix
+# ==============================================================================
+# Host Configuration — Mars (Primary AMD + NVIDIA Desktop Workstation)
+# ==============================================================================
+# Flagship workstation with dual-NVMe + dual-SATA Disko storage, LUKS + Btrfs
+# ephemeral root persistence, Secure Boot, Zen kernel, dual-monitor Niri
+# Wayland compositor, and full gaming/creator/productivity suites.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -91,10 +100,7 @@
           };
           peripherals = {
             bluetooth.gaming.enable = true;
-            wifi = {
-              enable = true;
-              persistence = true;
-            };
+            wifi.enable = true;
           };
           input.wooting.enable = true;
         };

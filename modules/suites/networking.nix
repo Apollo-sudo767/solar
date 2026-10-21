@@ -1,3 +1,7 @@
+# modules/suites/networking.nix
+#
+# Suite module enabling core networking services (NetworkManager, Tailscale,
+# and systemd-resolved).
 {
   config,
   lib,

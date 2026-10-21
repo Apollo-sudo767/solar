@@ -1,3 +1,7 @@
+# modules/suites/desktops/xfce.nix
+#
+# Desktop suite enabling the XFCE desktop environment alongside Thunar,
+# Yazi, GNOME Software, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

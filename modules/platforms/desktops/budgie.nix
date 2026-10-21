@@ -1,7 +1,9 @@
+# modules/platforms/desktops/budgie.nix
+#
+# Configures the Budgie X11 desktop environment and state preservation on NixOS.
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 

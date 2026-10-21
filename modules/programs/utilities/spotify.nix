@@ -1,3 +1,10 @@
+# modules/programs/utilities/spotify.nix
+# ============================================================================
+# Spotify Music Client & Spicetify Integration
+# ============================================================================
+# Supports both the Spotify desktop GUI (`enable` / `gui.enable`, enhanced with
+# Spicetify extensions and themes when `spicetify.enable = true`) and the
+# lightweight Rust terminal client `spotify-player` (`tui.enable`).
 {
   config,
   lib,
@@ -8,7 +15,6 @@
 
 let
   cfg = config.myFeatures.programs.utilities.spotify;
-  tuiCfg = cfg.tui;
   spicetifyCfg = config.myFeatures.programs.utilities.spicetify;
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   spotify-wrapped = pkgs.spotify.overrideAttrs (oldAttrs: {
@@ -17,10 +23,7 @@ let
     '';
   });
 
-  tuiPlayerCfg = config.myFeatures.programs.utilities.spotify_player.enable or false;
-  tuiPlayerHyphenCfg = config.myFeatures.programs.utilities.spotify-player.enable or false;
-  tuiEnabled = tuiCfg.enable || tuiPlayerCfg || tuiPlayerHyphenCfg;
-
+  tuiEnabled = cfg.tui.enable;
   guiEnabled = cfg.gui.enable || cfg.enable;
   anyEnabled = guiEnabled || tuiEnabled;
 in
@@ -29,17 +32,6 @@ in
     enable = lib.mkEnableOption "Spotify GUI client";
     gui.enable = lib.mkEnableOption "Spotify GUI client";
     tui.enable = lib.mkEnableOption "Spotify TUI client (spotify-player)";
-  };
-  # Backward compatibility aliases
-  options.myFeatures.programs.utilities.spotify_player.enable = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-    description = "Deprecated: use myFeatures.programs.utilities.spotify.tui.enable instead.";
-  };
-  options.myFeatures.programs.utilities.spotify-player.enable = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-    description = "Deprecated: use myFeatures.programs.utilities.spotify.tui.enable instead.";
   };
   options.myFeatures.programs.utilities.spicetify.enable =
     lib.mkEnableOption "Spicetify Integration"

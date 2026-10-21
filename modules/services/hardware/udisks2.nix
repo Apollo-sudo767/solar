@@ -1,8 +1,11 @@
+# modules/services/hardware/udisks2.nix
+#
+# Enables Udisks2, D-Bus, and GVFS for removable media automounting and
+# file manager trash/network support on Linux.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

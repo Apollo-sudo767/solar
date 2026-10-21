@@ -1,3 +1,7 @@
+# modules/services/system/flatpak.nix
+#
+# Configures declarative Flatpak support (`nix-flatpak`), Flathub remote,
+# XDG portal integration, and state preservation on NixOS.
 {
   config,
   lib,

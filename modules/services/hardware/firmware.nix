@@ -1,8 +1,11 @@
+# modules/services/hardware/firmware.nix
+#
+# Enables the `fwupd` firmware update daemon on Linux while keeping options
+# cross-platform safe on macOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

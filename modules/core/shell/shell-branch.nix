@@ -1,3 +1,9 @@
+# modules/core/shell/shell-branch.nix
+# ============================================================================
+# Interactive Shell Branch (`shell-branch`)
+# ============================================================================
+# Convenience toggle that enables both the Zsh + Starship interactive shell
+# (`shell.nix`) and the core CLI toolset (`cli.nix`).
 {
   lib,
   config,
@@ -11,11 +17,9 @@ in
 {
   options.myFeatures.core.shell.shell-branch = {
     enable = lib.mkEnableOption "Interactive Shell Environment";
-    p10k = lib.mkEnableOption "Powerlevel10k Theme";
-    aliases = lib.mkEnableOption "Custom System Aliases";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isTotal) {
     myFeatures.core.shell = {
       shell.enable = lib.mkDefault true;
       cli.enable = lib.mkDefault true;

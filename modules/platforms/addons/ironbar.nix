@@ -1,3 +1,7 @@
+# modules/platforms/addons/ironbar.nix
+#
+# Configures the Ironbar Wayland status bar via Home Manager with workspace,
+# media, system info, clipboard, volume, and power-menu widgets.
 {
   config,
   lib,

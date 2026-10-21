@@ -1,9 +1,13 @@
+# modules/hardware/input/wooting.nix
+# ============================================================================
+# Wooting Analog Hall-Effect Keyboard Support
+# ============================================================================
+# Installs Wooting udev rules (`hardware.wooting.enable`) and the `wootility`
+# configuration application for customizing actuation points and Rapid Trigger.
 {
   config,
   lib,
   pkgs,
-  isDarwin,
-  isTotal,
   ...
 }:
 
@@ -13,15 +17,12 @@ in
 {
   options.myFeatures.hardware.input.wooting.enable = lib.mkEnableOption "Wooting Keyboard Support";
 
-  # Shield everything
-  config = lib.mkIf cfg.enable (
-    lib.optionalAttrs (!isDarwin) {
-      hardware.wooting.enable = true;
+  config = lib.mkIf cfg.enable {
+    hardware.wooting.enable = true;
 
-      environment.systemPackages = [
-        pkgs.wootility
-        pkgs.wooting-udev-rules
-      ];
-    }
-  );
+    environment.systemPackages = [
+      pkgs.wootility
+      pkgs.wooting-udev-rules
+    ];
+  };
 }

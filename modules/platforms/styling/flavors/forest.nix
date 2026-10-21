@@ -1,3 +1,9 @@
+# modules/platforms/styling/flavors/forest.nix
+# ============================================================================
+# Forest Desktop Flavor
+# ============================================================================
+# Combines the Forest (Nord-inspired) Stylix color scheme with Niri and default
+# keybindings, setting a slightly tighter 6px window gap.
 {
   config,
   lib,
@@ -18,29 +24,11 @@ in
       styling.themes.forest.enable = true;
 
       # 2. Compositor / Window Manager Styling
+      # Base layout, borders, and rounded corners are handled by `niri/layout.nix`
+      # and `stylix-bridge/niri.nix`.
       desktops.niri = {
         enable = lib.mkDefault true;
-        settings = {
-          layout = {
-            default-column-width = lib.mkDefault { proportion = 0.5; };
-            background-color = "transparent";
-            gaps = 6;
-            focus-ring.off = { };
-            border = {
-              width = 2;
-              active-color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#81a1c1";
-              inactive-color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#434c5e";
-            };
-          };
-          _children = [
-            {
-              window-rule._children = [
-                { geometry-corner-radius = 8.0; }
-                { clip-to-geometry = true; }
-              ];
-            }
-          ];
-        };
+        gaps = lib.mkDefault 6;
       };
 
       styling.niriKeybinds.enable = lib.mkDefault true;

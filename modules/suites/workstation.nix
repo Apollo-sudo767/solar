@@ -1,3 +1,7 @@
+# modules/suites/workstation.nix
+#
+# Full desktop workstation suite bundling terminal toolchain, Firefox,
+# DE-aware file managers and software stores, Bitwarden, social apps, and PipeWire audio.
 {
   config,
   lib,

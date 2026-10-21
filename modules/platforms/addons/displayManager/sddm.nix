@@ -1,3 +1,6 @@
+# modules/platforms/addons/displayManager/sddm.nix
+#
+# Configures SDDM (Simple Desktop Display Manager) when selected via `displayManager.manager`.
 {
   config,
   lib,

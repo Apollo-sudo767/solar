@@ -1,3 +1,6 @@
+# modules/programs/media/kdenlive.nix
+#
+# Installs the Kdenlive video editor and preserves user configuration and project state.
 {
   config,
   lib,

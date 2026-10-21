@@ -1,3 +1,7 @@
+# modules/suites/desktops/sway.nix
+#
+# Desktop suite enabling Sway alongside Waybar, SwayNC, SwayOSD,
+# Nautilus, Yazi, GNOME Software, PipeWire audio, and XDG portals.
 {
   config,
   lib,

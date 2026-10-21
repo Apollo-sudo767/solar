@@ -343,8 +343,6 @@ nixos-install --flake "$FLAKE_DIR#$SELECTED_HOST" "${OVERRIDE_SECRETS_ARG[@]}" -
 
 # 10. Finalize User Credentials
 echo -e "\n${CYAN}🚀 Phase 3/3: Finalizing system configuration...${NC}"
-PRIMARY_USER=$(grep -oE 'usernames\s*=\s*\[\s*"[^"]+"' "$HOST_DIR/default.nix" 2>/dev/null | head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || echo "apollo")
-PRIMARY_USER="${PRIMARY_USER:-apollo}"
 if [ -n "$PASSWORD_HASH" ]; then
     nixos-enter --root /mnt -c "echo '$PRIMARY_USER:$PASSWORD_HASH' | chpasswd -e" 2>/dev/null || true
     echo -e "${GREEN}✓ Account '$PRIMARY_USER' password initialized in /etc/shadow${NC}"

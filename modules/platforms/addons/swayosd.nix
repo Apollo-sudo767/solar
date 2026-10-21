@@ -1,3 +1,7 @@
+# modules/platforms/addons/swayosd.nix
+#
+# Configures SwayOSD on-screen display for volume/brightness/input indicators
+# along with its required udev, D-Bus, and libinput backend services on Linux.
 {
   config,
   lib,

@@ -1,3 +1,7 @@
+# modules/platforms/addons/noctalia-v5.nix
+#
+# Configures Noctalia Shell v5 (Wayland shell), Cachix binary cache,
+# user profile icon provisioning, and state preservation on NixOS.
 {
   config,
   lib,
@@ -12,12 +16,23 @@ let
   inherit (config.myFeatures.core.system.users) usernames;
 in
 {
+  imports = [
+    inputs.noctalia-v5.nixosModules.default
+  ];
+
   options.myFeatures.platforms.addons.noctalia-v5.enable =
     lib.mkEnableOption "Noctalia Shell v5 (Wayland Shell)";
 
   config = lib.mkIf cfg.enable {
-    # Required services for Noctalia's status modules
-    services.upower.enable = lib.mkDefault true;
+    # Enable Noctalia's NixOS module & recommended system services
+    # (NetworkManager, Bluetooth, UPower, and power-profiles-daemon when not overridden).
+    # We set `package = null` at the system level because Home Manager installs the
+    # wrapped binary with user XDG_DATA_DIRS below.
+    programs.noctalia = {
+      enable = true;
+      package = null;
+      recommendedServices.enable = true;
+    };
 
     nix.settings = {
       substituters = [ "https://noctalia.cachix.org" ];
@@ -82,6 +97,9 @@ in
                 --prefix XDG_DATA_DIRS : '/home/${name}/.local/share:/home/${name}/Desktop:/home/${name}/Desktops'
             '';
             meta.mainProgram = "noctalia";
+          };
+          settings = lib.optionalAttrs (name == "apollo") {
+            avatar_path = "${../../../assets/icons/Apollo.jpg}";
           };
         };
 

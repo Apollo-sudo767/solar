@@ -1,3 +1,7 @@
+# modules/suites/desktops/hyprland.nix
+#
+# Desktop suite enabling Hyprland alongside Waybar, SwayNC, SwayOSD,
+# Nautilus, Yazi, GNOME Software, PipeWire audio, and XDG portals.
 {
   config,
   lib,

@@ -1,5 +1,11 @@
+# modules/platforms/addons/displayManager.nix
+# ============================================================================
+# Display Manager Router & Output Synchronization Options
+# ============================================================================
+# Defines the shared `myFeatures.platforms.addons.displayManager` options.
+# Individual greeter implementations live under `displayManager/<name>.nix`
+# and activate when `manager` matches their name.
 {
-  config,
   lib,
   ...
 }:
@@ -11,13 +17,13 @@
         "tuigreet"
         "gdm"
         "sddm"
-        "gtkGreet"
         "regreet"
         "cosmic-greeter"
         "noctalia-greeter"
         "none"
       ];
       default = "none";
+      description = "Login display manager / greeter to enable.";
     };
     primaryOutput = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
@@ -35,7 +41,4 @@
       description = "Extra compositor configuration lines for Wayland-based display managers (e.g. Sway for ReGreet).";
     };
   };
-
-  # The branch module itself doesn't need a mkIf cfg.enable because
-  # it's just a router. Each leaf module has lib.mkIf (cfg.manager == "...")
 }

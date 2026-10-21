@@ -1,3 +1,7 @@
+# modules/suites/desktops/labwc.nix
+#
+# Desktop suite enabling Labwc alongside Waybar, Nautilus, Yazi,
+# GNOME Software, PipeWire audio, and XDG portals.
 {
   config,
   lib,

@@ -1,3 +1,6 @@
+# modules/programs/utilities/lego.nix
+#
+# Installs the `lego` Let's Encrypt ACME client CLI across Linux and macOS (`isTotal`).
 {
   config,
   lib,

@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/swaync.nix
+#
+# Generates a Stylix-themed CSS stylesheet for the SwayNC notification daemon.
 {
   config,
   lib,

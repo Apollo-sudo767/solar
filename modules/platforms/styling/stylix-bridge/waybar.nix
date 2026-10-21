@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/waybar.nix
+#
+# Generates a Stylix-themed CSS stylesheet and calendar color format for Waybar.
 {
   config,
   lib,

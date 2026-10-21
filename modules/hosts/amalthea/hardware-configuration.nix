@@ -1,26 +1,21 @@
-{
-  config,
-  lib,
-  modulesPath,
-  ...
-}:
+# modules/hosts/amalthea/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Amalthea (Handheld Gaming Device, Intel Atom x5-Z8350)
+# ==============================================================================
+# Extends `../shared/hardware.nix` with eMMC/SD block storage support (`mmc_block`)
+# and an on-demand systemd automount for the removable `/mnt/games` SD card.
+# ==============================================================================
+
+_:
 
 {
   imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
     ../shared/hardware.nix
   ];
 
   boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "usb_storage"
-    "sd_mod"
-    "sdhci_pci"
     "mmc_block"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
 
   # SD Card Automount for Games
   fileSystems."/mnt/games" = {
@@ -34,8 +29,4 @@
   };
 
   swapDevices = [ ];
-
-  # Intel Atom Specifics
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

@@ -1,3 +1,6 @@
+# modules/programs/utilities/webcord.nix
+#
+# Installs the WebCord Discord client and preserves user configuration on Linux.
 {
   config,
   lib,

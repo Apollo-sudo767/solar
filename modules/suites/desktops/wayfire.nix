@@ -1,3 +1,7 @@
+# modules/suites/desktops/wayfire.nix
+#
+# Desktop suite enabling Wayfire alongside Nautilus, Yazi, GNOME Software,
+# PipeWire audio, and XDG portals.
 {
   config,
   lib,

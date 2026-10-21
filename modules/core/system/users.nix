@@ -1,3 +1,12 @@
+# modules/core/system/users.nix
+# ============================================================================
+# Declarative User Account & Home Manager Bootstrap
+# ============================================================================
+# Provisions system user accounts across NixOS and macOS (`nix-darwin`),
+# wires up Home Manager state versions and home directories for every user in
+# `usernames`, configures Agenix-managed password hashes (with a safe fallback
+# hash when building without private secrets), and persists user home folders
+# across reboots when `preservation` is active.
 {
   config,
   lib,
@@ -10,7 +19,6 @@
 }:
 
 let
-  inherit isDarwin isTotal;
   cfg = config.myFeatures.core.system.users;
   hasPrivateSecrets =
     (builtins.hasAttr "solar-secrets" inputs)

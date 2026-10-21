@@ -1,7 +1,9 @@
+# modules/programs/terminal/direnv.nix
+#
+# Configures `direnv` and `nix-direnv` via Home Manager across Linux and macOS (`isTotal`).
 {
   config,
   lib,
-  pkgs,
   isTotal,
   ...
 }:

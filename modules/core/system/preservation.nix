@@ -1,3 +1,14 @@
+# modules/core/system/preservation.nix
+# ============================================================================
+# Ephemeral Root State Preservation (`WilliButz/preservation`)
+# ============================================================================
+# When `myFeatures.core.system.core-branch.usePersistence = true;` is set on a
+# Linux host, the root filesystem (`/`) is a `tmpfs` RAM disk that resets on
+# every reboot. This module configures `preservation` to bind-mount or symlink
+# essential system state (`/var/log`, `/var/lib/nixos`, `/etc/machine-id`, etc.)
+# from `/persist` (NVMe speed pool) and optionally `/persist/bulk` (HDD cold pool).
+# Individual feature modules register their own directories/files into
+# `preservation.preserveAt.${persistentPath}`.
 {
   config,
   lib,
@@ -33,8 +44,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable && !isDarwin) {
-    # Initialize the preservation config
+  config = lib.mkIf (cfg.enable && !isDarwin && isTotal) {
     preservation = {
       enable = true;
 
@@ -44,7 +54,7 @@ in
           directories = [
             "/var/log"
             "/var/lib/nixos"
-            "/var/lib/systemd" # Stores backlight, rfkill, timesync, etc.
+            "/var/lib/systemd" # Stores backlight, rfkill, timesync, and timer timestamps
           ];
           files = [
             {
@@ -59,7 +69,7 @@ in
         };
       }
       // lib.optionalAttrs (cfg.coldPath != cfg.persistentPath) {
-        # Cold Tier (HDD) - Only merged if a distinct bulk storage path exists
+        # Cold Tier (HDD) - Only merged if a distinct bulk storage pool exists
         "${cfg.coldPath}" = {
           directories = [ ];
         };

@@ -1,3 +1,7 @@
+# modules/programs/media/media.nix
+#
+# Configures `imv` image viewer and GPU-accelerated `mpv` media player
+# via Home Manager across Linux and macOS (`isTotal`).
 {
   config,
   lib,

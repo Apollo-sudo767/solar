@@ -1,3 +1,11 @@
+# modules/hosts/pluto/default.nix
+# ==============================================================================
+# Host Configuration — Pluto (Beelink EQR5, AMD Ryzen 7 5825U, 32GB RAM)
+# ==============================================================================
+# K3s HA Compute & Control-Plane Joining Master (Node 1), primary cluster NFS
+# storage host, Longhorn iSCSI node, and game server ingress endpoint.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -19,7 +27,7 @@
 
       system.stateVersion = "26.05";
 
-      # Pluto: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) - K3s Bootstrap Master (HA Node 1)
+      # Pluto: Beelink EQR5 (Ryzen 7 5825U, 32GB RAM) - K3s Joining Master (HA Node 1)
       myFeatures = {
         # 🌲 Dendritic Suites
         suites.server.enable = true;
@@ -61,10 +69,7 @@
           cpu-gpu.amd.enable = true;
           peripherals = {
             bluetooth.enable = false;
-            wifi = {
-              enable = true;
-              persistence = true;
-            };
+            wifi.enable = true;
           };
         };
         services = {
@@ -115,7 +120,6 @@
       };
 
       environment.systemPackages = with pkgs; [
-        sbctl
         nfs-utils
         util-linux
         e2fsprogs
@@ -141,7 +145,7 @@
         ];
       };
 
-      # --- Staggered Maintenance & Automated Weekly Reboots (Slot 1: Sunday 03:00) ---
+      # --- Staggered Maintenance (Slot 1: Sunday 03:00, auto-reboot disabled) ---
       system.autoUpgrade = {
         enable = true;
         dates = "Sun 03:00";
@@ -153,9 +157,6 @@
         flake = "github:Apollo-sudo767/solar";
       };
 
-      systemd.timers.weekly-cluster-reboot.enable = false;
-      systemd.services.weekly-cluster-reboot.enable = false;
-
       # Ensure Limine installs directly to the standard UEFI fallback path (/EFI/BOOT/BOOTX64.EFI)
       # guaranteeing the binary booted by the firmware matches sbctl signature across rebuilds
       boot.loader.limine.efiInstallAsRemovable = true;
@@ -163,7 +164,6 @@
       # Firewall & k3s cluster networking
       services.fail2ban.enable = true;
       networking.firewall = {
-        enable = lib.mkDefault true;
         trustedInterfaces = [
           "cni0"
           "flannel.1"
@@ -173,6 +173,7 @@
           22 # SSH
           2049 # NFS Server
           6443 # k3s API Server
+          7881 # MatrixRTC LiveKit WebRTC TCP
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
@@ -183,6 +184,7 @@
         ];
         allowedUDPPorts = [
           2049 # NFS Server
+          7882 # MatrixRTC LiveKit WebRTC UDP Mux
           8472 # Flannel VXLAN overlay network
           24454 # Minecraft Simple Voice Chat
           34197 # Factorio Server
@@ -190,11 +192,6 @@
           27020 # TF2 SourceTV
           42420 # Vintage Story Server
         ];
-      };
-
-      services.openssh.settings = {
-        PermitRootLogin = lib.mkDefault "prohibit-password";
-        PasswordAuthentication = lib.mkDefault true;
       };
     };
 }

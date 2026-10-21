@@ -1,3 +1,7 @@
+# modules/platforms/desktops/niri/outputs.nix
+#
+# Defines the declarative `monitors` submodule for Niri and generates KDL
+# output blocks along with the `niri-bootstrap-monitors` startup helper.
 {
   config,
   lib,

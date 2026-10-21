@@ -1,3 +1,14 @@
+# modules/suites/gaming.nix
+# ============================================================================
+# Gaming Composite Suite
+# ============================================================================
+# High-level gaming bundle configuring:
+# - Steam + ProtonUp-Qt / ProtonPlus + Gamescope micro-compositor
+# - Low-latency Mumble VoIP and Team Fortress 2 competitive tools
+# - Minecraft (Java Edition via Prism Launcher, Bedrock Edition for Windows/Android)
+# - Roblox (Sober via Flatpak)
+# - Gamepad controller drivers (Xbox, Nintendo, PlayStation)
+# - Social communication clients (Vesktop + Spotify Player) and PipeWire audio
 {
   config,
   lib,
@@ -20,7 +31,7 @@ in
       protonInstaller = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Enable ProtonUp-Qt compatibility tool manager.";
+        description = "Enable ProtonUp-Qt / ProtonPlus compatibility tool manager.";
       };
       gamescope = lib.mkOption {
         type = lib.types.bool;
@@ -63,22 +74,7 @@ in
             "both"
           ];
           default = "windows";
-          description = "Minecraft Bedrock Edition toggle: 'windows' (BedrockOnLinux - Windows GDK) or 'android' (MCPELauncher via Flatpak).";
-        };
-        windows = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable Minecraft Bedrock for Windows (BedrockOnLinux).";
-        };
-        android = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable Minecraft Bedrock for Android (MCPELauncher via Flatpak).";
-        };
-        bedrockOnLinux = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable BedrockOnLinux (Minecraft Bedrock for Windows).";
+          description = "Minecraft Bedrock Edition target: 'windows' (BedrockOnLinux - Windows GDK), 'android' (MCPELauncher via Flatpak), or 'both'.";
         };
       };
     };
@@ -89,59 +85,10 @@ in
         default = true;
         description = "Enable Team Fortress 2 competitive suite.";
       };
-      minecraft = {
-        java = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable Minecraft: Java Edition (Prism Launcher).";
-        };
-        bedrock = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable Minecraft: Bedrock Edition.";
-        };
-        windows = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable Minecraft Bedrock for Windows (BedrockOnLinux).";
-        };
-        android = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable Minecraft Bedrock for Android (MCPELauncher via Flatpak).";
-        };
-        bedrockOnLinux = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Enable BedrockOnLinux (Minecraft Bedrock for Windows).";
-        };
-      };
       roblox = lib.mkOption {
         type = lib.types.bool;
         default = false;
         description = "Enable Roblox (Sober via Flatpak).";
-      };
-
-      # Convenience / legacy aliases
-      prism = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable Prism Minecraft launcher (alias for games.minecraft.java).";
-      };
-      bedrockOnLinux = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable BedrockOnLinux (alias for minecraft.bedrock.windows).";
-      };
-      mcpelauncher = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable MCPELauncher (alias for minecraft.bedrock.android).";
-      };
-      sober = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable Sober (alias for games.roblox).";
       };
     };
 
@@ -193,8 +140,8 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures = {
       programs.media = {
-        gaming.enable = lib.mkIf cfg.steam.enable (lib.mkDefault true);
         steam = {
+          enable = lib.mkIf cfg.steam.enable (lib.mkDefault true);
           protonInstaller.enable = lib.mkIf (cfg.steam.enable && cfg.steam.protonInstaller) (
             lib.mkDefault true
           );
@@ -204,48 +151,21 @@ in
         tf2.enable = lib.mkIf cfg.games.tf2 (lib.mkDefault true);
         minecraft = {
           enable = lib.mkIf cfg.minecraft.enable (lib.mkDefault true);
-          java.enable = lib.mkIf (cfg.minecraft.java.enable || cfg.games.minecraft.java || cfg.games.prism) (
-            lib.mkDefault true
-          );
+          java.enable = lib.mkIf cfg.minecraft.java.enable (lib.mkDefault true);
           bedrock = {
-            enable = lib.mkIf (
-              cfg.minecraft.bedrock.enable
-              || cfg.games.minecraft.bedrock
-              || cfg.minecraft.bedrock.windows
-              || cfg.minecraft.bedrock.android
-              || cfg.minecraft.bedrock.bedrockOnLinux
-              || cfg.games.minecraft.windows
-              || cfg.games.minecraft.android
-              || cfg.games.minecraft.bedrockOnLinux
-              || cfg.games.bedrockOnLinux
-              || cfg.games.mcpelauncher
-            ) (lib.mkDefault true);
-            edition = lib.mkIf (cfg.minecraft.bedrock.enable || cfg.games.minecraft.bedrock) (
-              lib.mkDefault cfg.minecraft.bedrock.edition
-            );
+            enable = lib.mkIf cfg.minecraft.bedrock.enable (lib.mkDefault true);
+            edition = lib.mkIf cfg.minecraft.bedrock.enable (lib.mkDefault cfg.minecraft.bedrock.edition);
             windows.enable = lib.mkIf (
-              cfg.minecraft.bedrock.windows
-              || cfg.minecraft.bedrock.bedrockOnLinux
-              || cfg.games.minecraft.windows
-              || cfg.games.minecraft.bedrockOnLinux
-              || cfg.games.bedrockOnLinux
-              || (
-                (cfg.minecraft.bedrock.enable || cfg.games.minecraft.bedrock)
-                && (cfg.minecraft.bedrock.edition == "windows" || cfg.minecraft.bedrock.edition == "both")
-              )
+              cfg.minecraft.bedrock.enable
+              && (cfg.minecraft.bedrock.edition == "windows" || cfg.minecraft.bedrock.edition == "both")
             ) (lib.mkDefault true);
             android.enable = lib.mkIf (
-              cfg.minecraft.bedrock.android
-              || cfg.games.minecraft.android
-              || cfg.games.mcpelauncher
-              || (
-                (cfg.minecraft.bedrock.enable || cfg.games.minecraft.bedrock)
-                && (cfg.minecraft.bedrock.edition == "android" || cfg.minecraft.bedrock.edition == "both")
-              )
+              cfg.minecraft.bedrock.enable
+              && (cfg.minecraft.bedrock.edition == "android" || cfg.minecraft.bedrock.edition == "both")
             ) (lib.mkDefault true);
           };
         };
-        roblox.enable = lib.mkIf (cfg.games.roblox || cfg.games.sober) (lib.mkDefault true);
+        roblox.enable = lib.mkIf cfg.games.roblox (lib.mkDefault true);
       };
 
       hardware.input.controllers = lib.mkIf cfg.controllers.enable {

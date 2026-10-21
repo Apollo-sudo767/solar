@@ -1,7 +1,9 @@
+# modules/services/servers/minecraft/admin.nix
+#
+# Configures the `mcadmin` user and `/srv/minecraft` directory permissions on NixOS.
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 

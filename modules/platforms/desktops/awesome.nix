@@ -1,3 +1,7 @@
+# modules/platforms/desktops/awesome.nix
+#
+# Configures AwesomeWM X11 window manager, Lua modules, helper utilities,
+# and state preservation on NixOS.
 {
   config,
   lib,

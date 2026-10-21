@@ -1,3 +1,7 @@
+# modules/platforms/desktops/bspwm.nix
+#
+# Configures the Bspwm X11 tiling window manager, sxhkd hotkey daemon,
+# Stylix border colors, and state preservation on NixOS.
 {
   config,
   lib,

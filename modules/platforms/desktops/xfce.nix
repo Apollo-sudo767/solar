@@ -1,3 +1,6 @@
+# modules/platforms/desktops/xfce.nix
+#
+# Configures the XFCE desktop environment, panel plugins, and state preservation on NixOS.
 {
   config,
   lib,

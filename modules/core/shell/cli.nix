@@ -1,3 +1,10 @@
+# modules/core/shell/cli.nix
+# ============================================================================
+# Core Command-Line Utilities (`myFeatures.core.shell.cli`)
+# ============================================================================
+# Installs essential modern CLI replacements and system inspection tools
+# (`bat`, `eza`, `fzf`, `ripgrep`, `fd`, `btop`, `jq`, `helix`, `comma`, etc.)
+# across both NixOS and macOS hosts.
 {
   pkgs,
   lib,
@@ -14,7 +21,7 @@ in
     enable = lib.mkEnableOption "Core CLI Utilities";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isTotal) {
     environment.systemPackages = with pkgs; [
       bat
       eza

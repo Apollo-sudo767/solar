@@ -1,4 +1,11 @@
-# Clean hardware-configuration.nix for Disko-managed systems
+# modules/hosts/mars/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Mars (Primary AMD + NVIDIA Desktop Workstation)
+# ==============================================================================
+# Declares AMD KVM (`kvm-amd`), CPU microcode updates, and initrd storage/USB
+# drivers. Disko manages all filesystems, swap, and LUKS encryption.
+# ==============================================================================
+
 { lib, config, ... }:
 
 {

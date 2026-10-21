@@ -1,3 +1,9 @@
+# modules/platforms/desktops/wayfire.nix
+# ============================================================================
+# Wayfire 3D Compiz-Style Wayland Compositor
+# ============================================================================
+# Configures the Wayfire compositor with 3D cube/wobbly/zoom plugins, Fuzzel,
+# `xdg-desktop-portal-wlr`, and Home Manager `wayfire.ini` generation.
 {
   config,
   lib,
@@ -7,7 +13,6 @@
 
 let
   cfg = config.myFeatures.platforms.desktops.wayfire;
-  stylixEnabled = config.myFeatures.platforms.styling.stylix.enable or false;
 in
 {
   options.myFeatures.platforms.desktops.wayfire = {

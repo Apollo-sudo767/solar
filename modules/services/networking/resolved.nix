@@ -1,8 +1,11 @@
+# modules/services/networking/resolved.nix
+#
+# Configures `systemd-resolved` DNS resolution with Cloudflare/Quad9/Google
+# upstream resolvers and NetworkManager integration on NixOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 

@@ -1,3 +1,11 @@
+# modules/programs/browsers/chrome.nix
+# ============================================================================
+# Chromium / Google Chrome / Ungoogled Chromium Browser Module
+# ============================================================================
+# Installs and configures a Chromium-family browser (`chromium` by default,
+# `ungoogled-chromium` when `ungoogled.enable = true`, or proprietary
+# `google-chrome` when `googleChrome.enable = true`) with managed privacy
+# policies and default browser MIME associations.
 {
   config,
   lib,
@@ -7,6 +15,16 @@
 
 let
   cfg = config.myFeatures.programs.browsers.chrome;
+  useGoogleChrome = cfg.googleChrome.enable && !cfg.ungoogled.enable;
+  browserPkg =
+    if cfg.ungoogled.enable then
+      pkgs.ungoogled-chromium
+    else if cfg.googleChrome.enable then
+      pkgs.google-chrome
+    else
+      pkgs.chromium;
+  browserCmd = if useGoogleChrome then "google-chrome" else "chromium";
+  desktopFile = if useGoogleChrome then "google-chrome.desktop" else "chromium-browser.desktop";
 in
 {
   options.myFeatures.programs.browsers.chrome = {
@@ -34,19 +52,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [
-      (
-        if cfg.ungoogled.enable then
-          pkgs.ungoogled-chromium
-        else if cfg.googleChrome.enable then
-          pkgs.google-chrome
-        else
-          pkgs.chromium
-      )
-    ];
-
     programs.chromium = {
-      enable = true;
+      enable = !useGoogleChrome;
       extraOpts = {
         "BrowserSignin" = 0;
         "SyncDisabled" = true;
@@ -56,49 +63,32 @@ in
     };
 
     home-manager.sharedModules = [
-      (
-        let
-          browserCmd =
-            if cfg.ungoogled.enable then
-              "chromium"
-            else if cfg.googleChrome.enable then
-              "google-chrome"
-            else
-              "chromium";
-          desktopFile =
-            if cfg.ungoogled.enable then
-              "chromium-browser.desktop"
-            else if cfg.googleChrome.enable then
-              "google-chrome.desktop"
-            else
-              "chromium-browser.desktop";
-        in
-        {
-          programs.chromium = {
-            enable = true;
-            extensions = [
-              { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; } # uBlock Origin
-              { id = "nngceckbapebfimnlniiiahkandclblb"; } # Bitwarden
-              { id = "mnjbeadjmkaphoeipkbpcpghpleffbpo"; } # Poster
-            ];
-          };
+      {
+        programs.chromium = {
+          enable = true;
+          package = browserPkg;
+          extensions = [
+            { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; } # uBlock Origin
+            { id = "nngceckbapebfimnlniiiahkandclblb"; } # Bitwarden
+            { id = "mnjbeadjmkaphoeipkbpcpghpleffbpo"; } # Poster
+          ];
+        };
 
-          home.sessionVariables = lib.mkIf cfg.default {
-            BROWSER = lib.mkDefault browserCmd;
-          };
+        home.sessionVariables = lib.mkIf cfg.default {
+          BROWSER = lib.mkDefault browserCmd;
+        };
 
-          xdg.mimeApps = lib.mkIf cfg.default {
-            enable = true;
-            defaultApplications = {
-              "text/html" = [ desktopFile ];
-              "x-scheme-handler/http" = [ desktopFile ];
-              "x-scheme-handler/https" = [ desktopFile ];
-              "x-scheme-handler/about" = [ desktopFile ];
-              "x-scheme-handler/unknown" = [ desktopFile ];
-            };
+        xdg.mimeApps = lib.mkIf cfg.default {
+          enable = true;
+          defaultApplications = {
+            "text/html" = [ desktopFile ];
+            "x-scheme-handler/http" = [ desktopFile ];
+            "x-scheme-handler/https" = [ desktopFile ];
+            "x-scheme-handler/about" = [ desktopFile ];
+            "x-scheme-handler/unknown" = [ desktopFile ];
           };
-        }
-      )
+        };
+      }
     ];
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =

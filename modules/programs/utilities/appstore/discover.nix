@@ -1,3 +1,6 @@
+# modules/programs/utilities/appstore/discover.nix
+#
+# Configures KDE Discover (Qt/Kirigami Flatpak software center) and state preservation on NixOS.
 {
   config,
   lib,

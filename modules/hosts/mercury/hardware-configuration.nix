@@ -1,21 +1,15 @@
-# Clean hardware-configuration.nix for Disko-managed systems
-{ lib, ... }:
+# modules/hosts/mercury/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Mercury (Intel Laptop Workstation)
+# ==============================================================================
+# Uses the shared Intel x86_64 hardware baseline (`../shared/hardware.nix`).
+# Disko declaratively manages filesystems, swap, and LUKS encryption.
+# ==============================================================================
+
+_:
 
 {
-  boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "thunderbolt"
-    "nvme"
-    "usb_storage"
-    "sd_mod"
-    "sdhci_pci"
+  imports = [
+    ../shared/hardware.nix
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-
-  # CPU microcode
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
-
-  # Disko handles fileSystems, swapDevices, and luks mapping now.
 }

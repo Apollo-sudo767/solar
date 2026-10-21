@@ -1,3 +1,7 @@
+# modules/programs/office/lightweight.nix
+#
+# Installs lightweight GTK office and document tools (AbiWord, Gnumeric,
+# PDFArranger, Evince) on Linux while keeping options cross-platform (`isTotal`).
 {
   config,
   lib,

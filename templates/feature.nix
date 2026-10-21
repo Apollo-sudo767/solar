@@ -1,5 +1,19 @@
 # templates/feature.nix
-# Template for creating a new dendritic feature module under modules/programs/, modules/services/, etc.
+# ============================================================================
+# Dendritic Feature Module Template (`modules/<category>/<subcategory>/<name>.nix`)
+# ============================================================================
+# How the Dendritic Autoscanner (`modules/default.nix`) handles this file:
+# 1. Any `.nix` file placed under `modules/` (outside `modules/hosts/`) is
+#    automatically imported—no manual `imports = [ ... ];` list is needed.
+# 2. The option path under `options.myFeatures` MUST mirror the directory path:
+#    e.g., `modules/programs/terminal/mytool.nix` -> `myFeatures.programs.terminal.mytool`.
+# 3. Platform Filtering:
+#    - Linux-only modules: omit `isDarwin` and `isTotal` from the function arguments.
+#      They will be automatically skipped when building macOS (`darwinConfigurations`).
+#    - Cross-platform modules: include `isDarwin` (or `isTotal`) in the function
+#      arguments so the macOS evaluator imports the module, and guard Linux-only
+#      NixOS options (like `systemd`, `preservation`, `services.*`) inside
+#      `lib.optionalAttrs (!isDarwin) { ... }`.
 {
   config,
   lib,
@@ -9,8 +23,8 @@
 }:
 
 let
-  # The path in options matches the directory structure:
-  # e.g. modules/programs/terminal/mytool.nix -> myFeatures.programs.terminal.mytool
+  # Option path matches the directory hierarchy:
+  # modules/programs/terminal/mytool.nix -> config.myFeatures.programs.terminal.mytool
   cfg = config.myFeatures.programs.terminal.mytool;
 in
 {
@@ -25,14 +39,14 @@ in
     };
   };
 
-  # 2. CONFIGURATION
+  # 2. IMPLEMENTATION (Only applied when `enable = true;`)
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
-      # Common Configuration (Linux & macOS Darwin)
+      # A. Cross-Platform Configuration (Evaluated on both NixOS and nix-darwin)
       {
         environment.systemPackages = [ cfg.package ];
 
-        # Universal Home Manager dotfiles across all declared users
+        # Apply Home Manager dotfiles across all configured users on the host
         home-manager.sharedModules = [
           {
             xdg.configFile."mytool/config.toml".text = ''
@@ -43,9 +57,9 @@ in
         ];
       }
 
-      # Linux-Only Configuration (Guarded with optionalAttrs to prevent Darwin eval errors)
+      # B. Linux-Only Configuration (Erased from the attribute set on macOS)
       (lib.optionalAttrs (!isDarwin) {
-        # Ephemeral wipe-on-boot state preservation
+        # Persist application state across reboots when ephemeral root (`usePersistence`) is active
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {

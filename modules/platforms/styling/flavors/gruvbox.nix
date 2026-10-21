@@ -1,3 +1,9 @@
+# modules/platforms/styling/flavors/gruvbox.nix
+# ============================================================================
+# Gruvbox Desktop Flavor
+# ============================================================================
+# Applies the Gruvbox Base16 color palette and configures Niri with a minimal,
+# gapless, borderless layout and standard keybindings.
 {
   config,
   lib,
@@ -17,22 +23,14 @@ in
       # 1. Base Theme (Stylix / Colors)
       styling.themes.gruvbox.enable = true;
 
-      # 2. Compositor / Window Manager Styling
+      # 2. Compositor / Window Manager Styling (Gruvbox uses a minimal gapless, borderless layout)
       desktops.niri = {
         enable = lib.mkDefault true;
-        settings.layout = {
-          default-column-width = lib.mkDefault { proportion = 0.5; };
-          background-color = "transparent";
-          gaps = 0;
-          focus-ring.off = { };
-          border.off = lib.mkForce { };
-        };
+        gaps = lib.mkDefault 0;
+        settings.layout.border.off = lib.mkForce { };
       };
 
       styling.niriKeybinds.enable = lib.mkDefault true;
-
-      # 3. Addon / Shell Integration
-      addons.noctalia-shell.enable = lib.mkDefault false;
     };
   };
 }

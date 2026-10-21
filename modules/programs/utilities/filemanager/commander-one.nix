@@ -1,3 +1,6 @@
+# modules/programs/utilities/filemanager/commander-one.nix
+#
+# Installs the Commander One dual-pane file manager via Homebrew cask on macOS.
 {
   config,
   lib,

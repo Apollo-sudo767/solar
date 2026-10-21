@@ -1,3 +1,10 @@
+# modules/platforms/desktops/niri/input.nix
+# ============================================================================
+# Niri Input, Gestures & Cursor Behavior
+# ============================================================================
+# Configures Niri's modifier key (`cfg.modKey`: "super" -> "Super",
+# "left-alt" -> "Alt"), focus-follows-mouse behavior, touchpad natural
+# scrolling, flat mouse acceleration, and auto-hiding cursor settings.
 {
   config,
   lib,
@@ -11,6 +18,7 @@ in
   config = lib.mkIf cfg.enable {
     myFeatures.platforms.desktops.niri.settings = {
       input = {
+        mod-key = lib.mkDefault (if cfg.modKey == "super" then "Super" else "Alt");
         focus-follows-mouse._props = {
           max-scroll-amount = "0%";
         };

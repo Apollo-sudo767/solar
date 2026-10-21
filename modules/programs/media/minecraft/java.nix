@@ -1,3 +1,10 @@
+# modules/programs/media/minecraft/java.nix
+# ============================================================================
+# Minecraft: Java Edition (Prism Launcher)
+# ============================================================================
+# Installs Prism Launcher bundled with Java 8, 17, 21, and 25 runtimes so all
+# Minecraft versions (from legacy 1.7/1.12 modpacks to modern 1.21+) work out
+# of the box. Preserves PrismLauncher instances and accounts on ephemeral root.
 {
   config,
   lib,
@@ -7,20 +14,13 @@
 
 let
   cfg = config.myFeatures.programs.media.minecraft.java;
-  prismCfg = config.myFeatures.programs.media.prism;
-  enabled = cfg.enable || (prismCfg.enable or false);
 in
 {
   options.myFeatures.programs.media.minecraft.java = {
     enable = lib.mkEnableOption "Minecraft: Java Edition (Prism Launcher with Java 8/17/21/25)";
   };
 
-  # Backwards compatibility alias
-  options.myFeatures.programs.media.prism = {
-    enable = lib.mkEnableOption "Prism Launcher (alias for minecraft.java)";
-  };
-
-  config = lib.mkIf enabled {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       (pkgs.prismlauncher.override {
         additionalLibs = with pkgs; [

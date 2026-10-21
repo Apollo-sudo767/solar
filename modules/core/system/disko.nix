@@ -1,13 +1,31 @@
 # modules/core/system/disko.nix
+# ============================================================================
+# Universal Hardware-Aware Disko Storage Module
+# ============================================================================
+# Provides a declarative, unified storage foundation across Linux hosts in Solar:
 #
-# Universal Hardware-Aware Disko Module
-#
-# Provides a declarative, unified storage foundation across all Linux hosts in Solar:
-# - Supports single-disk (NVMe/SSD) and multi-disk (Speed + Bulk) topologies.
-# - Formats storage with Btrfs (zstd compression, noatime) and automatic subvolume layouts.
-# - Automatically adapts between standard root and wipe-on-boot tmpfs persistence modes.
-# - Provides optional full-disk LUKS2 encryption with TPM2 auto-unlock hooks.
-# - Fully hardware-agnostic: supports persistent device paths (/dev/disk/by-id/...).
+# Supported Storage Topologies & Modes:
+# 1. Single-Disk vs. Multi-Disk Speed Pool (`speedDisks`):
+#    - The first drive in `speedDisks` (`mainDisk`) receives a 2GB UEFI System
+#      Partition (`/boot`) and the primary Btrfs root partition.
+#    - Any additional drives in `speedDisks` (`otherSpeedDisks`) are formatted
+#      and spanned into the `speed` Btrfs multi-device pool via `mkfs.btrfs` extraArgs.
+# 2. Optional Bulk Storage Pool (`bulkDisks`):
+#    - Secondary SATA SSDs or HDDs listed in `bulkDisks` are combined into a
+#      separate Btrfs pool labeled `bulk` and mounted at `/persist/bulk`.
+# 3. Full-Disk Encryption (`enableLuks = true`):
+#    - Wraps every speed and bulk partition in a LUKS2 container with SSD TRIM
+#      (`--allow-discards`) and systemd TPM2 auto-unlock (`tpm2-device=auto`).
+# 4. Ephemeral Root / Wipe-on-Boot Preservation (`core-branch.usePersistence`):
+#    - When `usePersistence = true`: `/` is mounted as a 4GB RAM-backed `tmpfs`
+#      that wipes clean on every reboot, while Btrfs subvolumes `/root` (`/mnt-root`),
+#      `/nix`, and `/persist` hold persistent state on disk.
+#    - When `usePersistence = false`: the `speed` Btrfs filesystem mounts directly
+#      at `/` as a traditional persistent root.
+# 5. Custom ZFS Mirror / RAIDZ Layouts:
+#    - Hosts requiring custom ZFS pools (such as `sol` NAS with a `tank` ZFS mirror)
+#      set `myFeatures.core.system.disko.enable = false;` and declare `disko.devices`
+#      directly in their host `default.nix`.
 {
   lib,
   config,
@@ -21,10 +39,14 @@ let
 
   inherit (cfg) speedDisks bulkDisks enableLuks;
 
-  # The very first disk in speedDisks is our "Primary" (holds ESP)
+  # The first disk in `speedDisks` holds the 2GB EFI System Partition (ESP)
+  # and acts as the primary Btrfs seed device for the `speed` pool.
   mainDisk = lib.head speedDisks;
   otherSpeedDisks = lib.filter (d: d != mainDisk) speedDisks;
 
+  # Mode A: Ephemeral Root (`usePersistence = true`)
+  # Splits the `speed` Btrfs pool into `/root`, `/nix`, and `/persist` subvolumes
+  # while `/` itself is mounted as an in-memory `tmpfs`.
   btrfsSubvolumesContent = {
     type = "btrfs";
     extraArgs = [
@@ -64,6 +86,8 @@ let
     };
   };
 
+  # Mode B: Traditional Persistent Root (`usePersistence = false`)
+  # Mounts the entire `speed` Btrfs filesystem directly at `/`.
   btrfsFilesystemContent = {
     type = "filesystem";
     format = "btrfs";
@@ -88,6 +112,7 @@ let
 
   btrfsContent = if usePersistence then btrfsSubvolumesContent else btrfsFilesystemContent;
 
+  # Optionally wrap the primary Btrfs pool inside a LUKS2 container with TPM2 auto-unlock
   mainPartitionContent =
     if enableLuks then
       {
@@ -101,7 +126,7 @@ let
     else
       btrfsContent;
 
-  # ESP and Main Speed Pool
+  # Primary Speed Disk: 2GB VFAT EFI System Partition (`/boot`) + Root/LUKS partition
   mkMainDisk = device: {
     type = "disk";
     inherit device;
@@ -126,7 +151,7 @@ let
     };
   };
 
-  # Other disks in the speed pool
+  # Additional Speed Disks: Joined into `mainDisk`'s Btrfs `speed` pool via `extraArgs`
   mkOtherSpeedDisk = device: {
     type = "disk";
     inherit device;
@@ -151,7 +176,7 @@ let
     };
   };
 
-  # Bulk Disks Pool (HDDs / Storage SSDs)
+  # Bulk Storage Disks (HDDs / Secondary SSDs): Combined into `/persist/bulk`
   mkBulkDisk = device: {
     type = "disk";
     inherit device;
@@ -178,12 +203,9 @@ let
                         "-L"
                         "bulk"
                       ]
-                      ++ (
-                        if enableLuks then
-                          (map (d: "/dev/mapper/crypted-bulk-${lib.strings.sanitizeDerivationName d}") (lib.drop 1 bulkDisks))
-                        else
-                          (lib.drop 1 bulkDisks)
-                      );
+                      ++ (map (d: "/dev/mapper/crypted-bulk-${lib.strings.sanitizeDerivationName d}") (
+                        lib.drop 1 bulkDisks
+                      ));
                       subvolumes = {
                         "/persist/bulk" = {
                           mountpoint = "/persist/bulk";
@@ -228,7 +250,7 @@ in
     enableLuks = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Enable LUKS encryption on disko partitions.";
+      description = "Enable LUKS2 full-disk encryption on Disko partitions.";
     };
     speedDisks = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -238,13 +260,17 @@ in
     bulkDisks = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "List of slow disks (HDD) for the bulk storage pool.";
+      description = "List of secondary/bulk disks (HDD/SATA) for the `/persist/bulk` storage pool.";
     };
   };
 
   config =
     lib.mkIf
-      (config.myFeatures.core.system.core-branch.enable && config.myFeatures.core.system.disko.enable)
+      (
+        config.myFeatures.core.system.core-branch.enable
+        && config.myFeatures.core.system.disko.enable
+        && isTotal
+      )
       (
         lib.mkMerge [
           (lib.optionalAttrs (!isDarwin) {
@@ -254,6 +280,7 @@ in
                 // (lib.genAttrs otherSpeedDisks mkOtherSpeedDisk)
                 // (lib.genAttrs bulkDisks mkBulkDisk);
 
+              # Ephemeral RAM-backed root filesystem when `usePersistence = true`
               nodev = lib.mkIf usePersistence {
                 "/" = {
                   fsType = "tmpfs";
@@ -265,7 +292,8 @@ in
               };
             };
 
-            # Ensure mounts are available for Preservation and storage services
+            # Mark `/persist` and `/persist/bulk` as required in early boot so
+            # `preservation` bind-mounts and services can access persistent files.
             fileSystems = {
               "/persist" = lib.mkIf usePersistence {
                 neededForBoot = true;

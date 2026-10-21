@@ -1,14 +1,18 @@
+# modules/platforms/styling/skyNoctalia.nix
+# ============================================================================
+# Sky Noctalia v5 Shell Rice
+# ============================================================================
+# Configures the Noctalia v5 Wayland shell bar, capsule groups, launcher,
+# notification center, session menu, and desktop widgets for the Sky flavor.
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
 let
   cfg = config.myFeatures.platforms.styling.skyNoctalia;
   inherit (config.myFeatures.core.system.users) usernames;
-  iconFile = ../../../assets/icons/Apollo.jpg;
 in
 {
   options.myFeatures.platforms.styling.skyNoctalia.enable =

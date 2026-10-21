@@ -1,3 +1,11 @@
+# modules/hosts/elara/default.nix
+# ==============================================================================
+# Host Configuration — Elara (AMD + NVIDIA Gaming Desktop)
+# ==============================================================================
+# Stable-channel KDE Plasma 6 gaming workstation for user `daphne`, featuring
+# open-kernel NVIDIA drivers, Zen kernel, and Strawberry Stylix theming.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";

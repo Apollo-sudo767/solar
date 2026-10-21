@@ -1,8 +1,13 @@
+# modules/services/servers/factorio.nix
+# ============================================================================
+# Factorio Dedicated Headless Server
+# ============================================================================
+# Runs a headless Factorio game server on Linux and automatically opens the
+# configured UDP port in the firewall via `services.factorio.openFirewall`.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 
@@ -24,11 +29,8 @@ in
       services.factorio = {
         enable = true;
         openFirewall = true;
-        # bind is not a standard option; port is.
         inherit (cfg) port;
       };
-
-      networking.firewall.allowedUDPPorts = [ cfg.port ];
     }
   );
 }

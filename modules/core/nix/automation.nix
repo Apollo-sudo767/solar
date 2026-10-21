@@ -1,3 +1,12 @@
+# modules/core/nix/automation.nix
+# ============================================================================
+# Flake Update Helper & Weekly Notification Service
+# ============================================================================
+# When `myFeatures.core.nix.automation.enable = true;` is set:
+# 1. Installs the `solar-sync` CLI script into the primary user's Home Manager
+#    profile to pull the latest `main` branch from GitHub.
+# 2. On Linux desktops, configures a weekly systemd user timer (`Mon 09:00`)
+#    that sends a desktop notification reminding the user to sync updates.
 {
   config,
   lib,
@@ -14,13 +23,17 @@ in
 {
   options.myFeatures.core.nix.automation = {
     enable = lib.mkEnableOption "automated GitHub-based flake updates";
-    syncHelper = lib.mkEnableOption "local helper script to sync GitHub updates";
+    syncHelper = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install the `solar-sync` helper script and weekly desktop update reminder.";
+    };
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf (cfg.enable && isTotal) (
     lib.mkMerge [
       {
-        # System-wide helper for the primary user
+        # Install `solar-sync` helper script for the primary user
         home-manager.users.${userCfg.mainUser} = lib.mkIf cfg.syncHelper {
           home.packages = [
             (pkgs.writeShellScriptBin "solar-sync" ''
@@ -33,7 +46,7 @@ in
         };
       }
 
-      # Maintenance notification service (Linux-only)
+      # Weekly maintenance desktop notification service (Linux-only)
       (lib.optionalAttrs (!isDarwin) {
         systemd.user.services."solar-update-notify" = lib.mkIf cfg.syncHelper {
           description = "Notify user of weekly flake update availability";

@@ -1,12 +1,25 @@
 # parts/devshells.nix
+# ============================================================================
+# Declarative Development Shells (`nix develop .#<name>`)
+# ============================================================================
+# Provides language-specific development environments as well as the default
+# `solar-core` administration shell (activated automatically by `direnv` or
+# `nix develop`).
 _:
 
 {
   perSystem =
-    { config, pkgs, ... }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     {
       devShells = {
-        # 1. CORE / GENERAL
+        # 1. CORE / GENERAL (Default shell for working on the Solar repository)
+        # Includes agenix-rekey, YubiKey/Secure Enclave age plugins, Nix LSP,
+        # `nh` rebuild helper, and automatic git pre-commit hook installation.
         default = pkgs.mkShell {
           name = "solar-core";
           packages =
@@ -28,7 +41,6 @@ _:
           shellHook = ''
             ${config.pre-commit.installationScript} >/dev/null 2>&1 || true
           '';
-
         };
 
         # 2. PYTHON (Data Science / Scripting)

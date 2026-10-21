@@ -1,3 +1,7 @@
+# modules/suites/development.nix
+#
+# Suite module bundling terminal development tools (Helix, Git, direnv,
+# nix-ld, Antigravity CLI, fastfetch, and nh).
 {
   config,
   lib,

@@ -1,3 +1,12 @@
+# modules/hosts/styx/default.nix
+# ==============================================================================
+# Host Configuration — Styx (Lenovo ThinkCentre M920q Tiny, i5-9500T, 16GB RAM)
+# ==============================================================================
+# K3s HA Control-Plane Joining Master (Node 2) with Intel QuickSync GPU
+# pass-through, Longhorn iSCSI storage, and staggered weekly maintenance
+# (Sunday 03:30).
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -61,9 +70,7 @@
           cpu-gpu.intel.enable = true;
           peripherals = {
             bluetooth.enable = false;
-            wifi = {
-              enable = true;
-            };
+            wifi.enable = true;
           };
         };
         services = {
@@ -71,20 +78,16 @@
         };
       };
 
-      # --- Intel GPU & QuickSync Configuration ---
-      hardware.graphics = {
-        enable = true;
-        extraPackages = with pkgs; [
-          intel-media-driver # iHD driver for Gen 9+ (i5-9500T UHD 630)
-          intel-vaapi-driver # i965 fallback
-          libvdpau-va-gl
-          intel-compute-runtime # OpenCL support
-        ];
-      };
+      # --- Intel GPU & QuickSync OpenCL Support ---
+      # Note: `intel-media-driver`, `intel-vaapi-driver`, and `libvdpau-va-gl`
+      # are already provided by `myFeatures.hardware.cpu-gpu.intel` and `graphics`.
+      hardware.graphics.extraPackages = with pkgs; [
+        intel-compute-runtime # OpenCL support
+      ];
 
       # Ensure permissions for containerized Intel QuickSync access (/dev/dri)
+      # (`video` group is already assigned by `myFeatures.core.system.users`)
       users.users.apollo.extraGroups = [
-        "video"
         "render"
       ];
 
@@ -93,13 +96,13 @@
         KERNEL=="card*", GROUP="video", MODE="0666"
       '';
 
-      # 4. Wake on LAN across ethernet interfaces
+      # Wake on LAN across ethernet interfaces
       networking.interfaces = {
         eno1.wakeOnLan.enable = true;
         eth0.wakeOnLan.enable = true;
       };
 
-      # 5. Kernel hardware watchdog timers for auto-recovery on system freezes
+      # Kernel hardware watchdog timers for auto-recovery on system freezes
       myFeatures.services.hardware.watchdog.enable = true;
 
       # --- K3s HA Multi-Master Configuration (Joining Master 2) ---
@@ -125,7 +128,6 @@
       };
 
       environment.systemPackages = with pkgs; [
-        sbctl
         nfs-utils
         util-linux
         e2fsprogs
@@ -196,7 +198,6 @@
         ];
       };
       networking.firewall = {
-        enable = lib.mkDefault true;
         trustedInterfaces = [
           "cni0"
           "flannel.1"
@@ -205,19 +206,16 @@
         allowedTCPPorts = [
           22 # SSH
           6443 # k3s API Server
+          7881 # MatrixRTC LiveKit WebRTC TCP
           2379 # k3s etcd client
           2380 # k3s etcd peer
           10250 # Kubelet metrics
           30046 # Headlamp Dashboard (NodePort / Tailscale)
         ];
         allowedUDPPorts = [
+          7882 # MatrixRTC LiveKit WebRTC UDP Mux
           8472 # Flannel VXLAN overlay network
         ];
-      };
-
-      services.openssh.settings = {
-        PermitRootLogin = lib.mkDefault "prohibit-password";
-        PasswordAuthentication = lib.mkDefault true;
       };
     };
 }

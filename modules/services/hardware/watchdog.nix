@@ -1,12 +1,15 @@
+# modules/services/hardware/watchdog.nix
+# ============================================================================
+# Hardware Watchdog & Kernel Panic Auto-Recovery
+# ============================================================================
+# Configures systemd hardware watchdog timers (`RuntimeWatchdogSec`,
+# `RebootWatchdogSec`, `KExecWatchdogSec`) and kernel panic sysctls so headless
+# servers (e.g. `hydra`, `pluto`, `styx`) automatically reboot and recover from
+# hard hangs or kernel panics.
 { config, lib, ... }:
 
 let
   cfg = config.myFeatures.services.hardware.watchdog;
-  legacyCfg = config.services.watchdog;
-  enabled = cfg.enable || legacyCfg.enable;
-  runtimeTime = if cfg.enable then cfg.runtimeTime else legacyCfg.runtimeTime;
-  rebootTime = if cfg.enable then cfg.rebootTime else legacyCfg.rebootTime;
-  kexecTime = if cfg.enable then cfg.kexecTime else legacyCfg.kexecTime;
 in
 {
   options.myFeatures.services.hardware.watchdog = {
@@ -28,35 +31,11 @@ in
     };
   };
 
-  # Backward compatibility aliases
-  options.services.watchdog = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Deprecated: use myFeatures.services.hardware.watchdog.enable instead.";
-    };
-    runtimeTime = lib.mkOption {
-      type = lib.types.str;
-      default = "30s";
-      description = "Deprecated";
-    };
-    rebootTime = lib.mkOption {
-      type = lib.types.str;
-      default = "10min";
-      description = "Deprecated";
-    };
-    kexecTime = lib.mkOption {
-      type = lib.types.str;
-      default = "5min";
-      description = "Deprecated";
-    };
-  };
-
-  config = lib.mkIf enabled {
+  config = lib.mkIf cfg.enable {
     systemd.settings.Manager = {
-      RuntimeWatchdogSec = runtimeTime;
-      RebootWatchdogSec = rebootTime;
-      KExecWatchdogSec = kexecTime;
+      RuntimeWatchdogSec = cfg.runtimeTime;
+      RebootWatchdogSec = cfg.rebootTime;
+      KExecWatchdogSec = cfg.kexecTime;
     };
 
     boot.kernel.sysctl = {

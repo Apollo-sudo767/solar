@@ -1,3 +1,7 @@
+# modules/programs/utilities/appstore/gnome-software.nix
+#
+# Configures GNOME Software (GTK4/Libadwaita Flatpak software center),
+# dconf support, and state preservation on NixOS.
 {
   config,
   lib,
@@ -6,20 +10,13 @@
 
 let
   cfg = config.myFeatures.programs.utilities.appstore.gnome-software;
-  aliasCfg = config.myFeatures.programs.utilities.appstore.gnomeSoftware;
-  enabled = cfg.enable || aliasCfg.enable;
 in
 {
-  options.myFeatures.programs.utilities.appstore = {
-    gnome-software = {
-      enable = lib.mkEnableOption "GNOME Software (GTK4/Libadwaita Flatpak store)";
-    };
-    gnomeSoftware = {
-      enable = lib.mkEnableOption "GNOME Software (alias)";
-    };
+  options.myFeatures.programs.utilities.appstore.gnome-software = {
+    enable = lib.mkEnableOption "GNOME Software (GTK4/Libadwaita Flatpak store)";
   };
 
-  config = lib.mkIf enabled {
+  config = lib.mkIf cfg.enable {
     # Ensure Flatpak subsystem is active so GNOME Software can manage apps
     myFeatures.services.system.flatpak.enable = lib.mkDefault true;
 

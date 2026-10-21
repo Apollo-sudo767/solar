@@ -1,3 +1,7 @@
+# modules/programs/media/vr.nix
+#
+# Configures Linux VR streaming via WiVRn and ALVR (including wired ADB
+# port forwarding for Meta Quest headsets), SideQuest, and state preservation.
 {
   config,
   lib,

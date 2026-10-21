@@ -1,3 +1,7 @@
+# modules/programs/media/obs.nix
+#
+# Configures OBS Studio via Home Manager with Linux Wayland/VAAPI/PipeWire
+# capture plugins and state preservation across Linux and macOS (`isTotal`).
 {
   config,
   lib,

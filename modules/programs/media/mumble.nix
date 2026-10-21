@@ -1,3 +1,7 @@
+# modules/programs/media/mumble.nix
+#
+# Installs a systemd-scoped Mumble VoIP client wrapper, optional in-game
+# overlay, `input` group access for Wayland Push-to-Talk, and state preservation.
 {
   config,
   lib,

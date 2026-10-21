@@ -1,3 +1,6 @@
+# modules/suites/hardened.nix
+#
+# Suite module enabling kernel and system security hardening (AppArmor and systemd-oomd).
 {
   config,
   lib,

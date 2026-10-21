@@ -1,9 +1,14 @@
+# modules/core/boot/secureboot.nix
+# ============================================================================
+# UEFI Secure Boot via Limine & `sbctl`
+# ============================================================================
+# Enables native Limine UEFI binary signing and config BLAKE2B checksum
+# enrollment during system rebuilds, installs `sbctl` for key management, and
+# preserves `/var/lib/sbctl` across reboots on ephemeral-root hosts.
 {
   config,
   lib,
   pkgs,
-  isDarwin,
-  isTotal,
   ...
 }:
 
@@ -11,28 +16,24 @@ let
   cfg = config.myFeatures.core.boot;
 in
 {
-  config = lib.mkIf (cfg.enable && cfg.secureBoot.enable) (
-    lib.mkMerge [
-      (lib.optionalAttrs (!isDarwin) {
-        # 1. Enable native Limine signing during rebuilds
-        boot.loader.limine.secureBoot.enable = true;
-        boot.loader.limine.enrollConfig = true;
+  config = lib.mkIf (cfg.enable && cfg.secureBoot.enable) {
+    # 1. Enable native Limine Secure Boot signing and config hash enrollment
+    boot.loader.limine.secureBoot.enable = true;
+    boot.loader.limine.enrollConfig = true;
 
-        # 3. Add management tools
-        environment.systemPackages = [ pkgs.sbctl ];
+    # 2. Install Secure Boot key management CLI (`sbctl`)
+    environment.systemPackages = [ pkgs.sbctl ];
 
-        # 4. Persistence
-        preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-          lib.mkIf config.myFeatures.core.system.preservation.enable
+    # 3. Persist Secure Boot signing keys across reboots on ephemeral root systems
+    preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
+      lib.mkIf config.myFeatures.core.system.preservation.enable
+        {
+          directories = [
             {
-              directories = [
-                {
-                  directory = "/var/lib/sbctl";
-                  mode = "0700";
-                }
-              ];
-            };
-      })
-    ]
-  );
+              directory = "/var/lib/sbctl";
+              mode = "0700";
+            }
+          ];
+        };
+  };
 }

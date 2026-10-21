@@ -1,3 +1,7 @@
+# modules/programs/terminal/helix.nix
+#
+# Configures the Helix modal terminal editor via Home Manager along with
+# system-wide nixd LSP and nixfmt formatter binaries across Linux and macOS (`isTotal`).
 {
   config,
   lib,
@@ -5,10 +9,6 @@
   isTotal,
   ...
 }:
-
-let
-  inherit isTotal;
-in
 {
   options.myFeatures.programs.terminal.helix.enable = lib.mkEnableOption "Helix Editor";
 

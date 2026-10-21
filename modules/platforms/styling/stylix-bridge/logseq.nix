@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/logseq.nix
+#
+# Injects a Stylix-generated `custom.css` theme into the user's Logseq vault.
 {
   config,
   lib,

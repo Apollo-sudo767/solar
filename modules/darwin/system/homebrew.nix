@@ -1,3 +1,9 @@
+# modules/darwin/system/homebrew.nix
+# ============================================================================
+# Declarative Homebrew Cask Management (`nix-darwin`)
+# ============================================================================
+# Manages macOS GUI applications distributed as Homebrew Casks when no native
+# Nix Darwin bundle is used.
 {
   config,
   lib,
@@ -5,25 +11,18 @@
 }:
 
 let
-  # 1. Setup a shortcut to your feature's config
-  # Replace 'myFeature' with your actual feature name
   cfg = config.myFeatures.darwin.system.homebrew;
 in
 {
-  # --- OPTIONS ---
-  # This defines the "switches" you flip in your /hosts files
   options.myFeatures.darwin.system.homebrew = {
-    enable = lib.mkEnableOption "Enable Homebrew";
+    enable = lib.mkEnableOption "Declarative Homebrew Cask integration on macOS";
   };
 
-  # --- CONFIG ---
-  # This is the "payload" that only runs if 'enable' is true
   config = lib.mkIf cfg.enable {
     homebrew = {
       enable = true;
       onActivation.cleanup = "none";
       casks = [
-        # Add your Mac-only GUI apps here
         "logseq"
         "ghostty"
       ];

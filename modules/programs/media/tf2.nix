@@ -1,3 +1,11 @@
+# modules/programs/media/tf2.nix
+# ============================================================================
+# Competitive Team Fortress 2 Suite & Tooling
+# ============================================================================
+# Provides competitive TF2 scripts, RCON match management (`tf2-rcon`),
+# autoexec/null-movement configuration generator (`tf2-comp-setup`), VPK/HUD
+# modding tools (`vpkedit`), and match log/demo lookup utilities (`tf2-logs`,
+# `tf2-demos`).
 {
   config,
   lib,
@@ -7,6 +15,28 @@
 
 let
   cfg = config.myFeatures.programs.media.tf2;
+
+  # Shared Source Engine null-cancelling movement aliases (prevents opposing
+  # WASD keys from cancelling each other out during strafing).
+  nullMovementBinds = ''
+    alias +mfwd "-back;+forward;alias checkfwd +forward"
+    alias +mback "-forward;+back;alias checkback +back"
+    alias +mleft "-moveright;+moveleft;alias checkleft +moveleft"
+    alias +mright "-moveleft;+moveright;alias checkright +moveright"
+    alias -mfwd "-forward;checkback;alias checkfwd none"
+    alias -mback "-back;checkfwd;alias checkback none"
+    alias -mleft "-moveleft;checkright;alias checkleft none"
+    alias -mright "-moveright;checkleft;alias checkright none"
+    alias checkfwd none
+    alias checkback none
+    alias checkleft none
+    alias checkright none
+    alias none ""
+
+    bind w +mfwd
+    bind s +mback
+    bind a +mleft
+    bind d +mright'';
 
   # RCON helper script for scrims, matches, and server administration
   tf2RconScript = pkgs.writeShellScriptBin "tf2-rcon" ''
@@ -233,24 +263,7 @@ let
     // Null-Cancelling Movement Script
     // Prevents opposing movement keys from stopping you
     // ==========================================
-    alias +mfwd "-back;+forward;alias checkfwd +forward"
-    alias +mback "-forward;+back;alias checkback +back"
-    alias +mleft "-moveright;+moveleft;alias checkleft +moveleft"
-    alias +mright "-moveleft;+moveright;alias checkright +moveright"
-    alias -mfwd "-forward;checkback;alias checkfwd none"
-    alias -mback "-back;checkfwd;alias checkback none"
-    alias -mleft "-moveleft;checkright;alias checkleft none"
-    alias -mright "-moveright;checkleft;alias checkright none"
-    alias checkfwd none
-    alias checkback none
-    alias checkleft none
-    alias checkright none
-    alias none ""
-
-    bind w +mfwd
-    bind s +mback
-    bind a +mleft
-    bind d +mright
+    ${nullMovementBinds}
     echo "[TF2-Comp] Null-cancelling movement script loaded!"
     EOF
             echo "✔ Installed null_movement.cfg to $TF_DIR/cfg/null_movement.cfg"
@@ -290,24 +303,7 @@ let
     alias interp_lan        "cl_interp 0.0; cl_interp_ratio 1; echo [TF2-Comp] Interpolation set to LAN"
 
     // --- 2. Null-Cancelling Movement Script ---
-    alias +mfwd "-back;+forward;alias checkfwd +forward"
-    alias +mback "-forward;+back;alias checkback +back"
-    alias +mleft "-moveright;+moveleft;alias checkleft +moveleft"
-    alias +mright "-moveleft;+moveright;alias checkright +moveright"
-    alias -mfwd "-forward;checkback;alias checkfwd none"
-    alias -mback "-back;checkfwd;alias checkback none"
-    alias -mleft "-moveleft;checkright;alias checkleft none"
-    alias -mright "-moveright;checkleft;alias checkright none"
-    alias checkfwd none
-    alias checkback none
-    alias checkleft none
-    alias checkright none
-    alias none ""
-
-    bind w +mfwd
-    bind s +mback
-    bind a +mleft
-    bind d +mright
+    ${nullMovementBinds}
 
     // --- 3. Medic Uber Radar (Team Wallhack Beeper) ---
     // Holding 'c' lowers the autocall threshold to show all nearby teammates through walls

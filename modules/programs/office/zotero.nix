@@ -1,3 +1,7 @@
+# modules/programs/office/zotero.nix
+#
+# Configures the Zotero reference manager, Better BibTeX extension provisioning,
+# and optional default PDF reader associations across Linux and macOS.
 {
   config,
   lib,
@@ -5,7 +9,6 @@
   inputs,
   isDarwin,
   isStable ? false,
-  isTotal ? true,
   ...
 }:
 

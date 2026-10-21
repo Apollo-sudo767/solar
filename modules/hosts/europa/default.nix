@@ -1,3 +1,11 @@
+# modules/hosts/europa/default.nix
+# ==============================================================================
+# Host Configuration — Europa (Intel + NVIDIA Optimus Gaming Laptop)
+# ==============================================================================
+# KDE Plasma 6 laptop workstation with legacy NVIDIA proprietary drivers +
+# PRIME offload, systemd-boot, and Forest theme styling.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -44,11 +52,7 @@
               enable = true;
               open = false;
               legacy = true;
-              prime = {
-                enable = true;
-                intelBusId = "PCI:0:2:0";
-                nvidiaBusId = "PCI:1:0:0";
-              };
+              prime.enable = true;
             };
             intel.enable = true;
           };

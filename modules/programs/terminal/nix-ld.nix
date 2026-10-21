@@ -1,9 +1,12 @@
+# modules/programs/terminal/nix-ld.nix
+#
+# Configures `nix-ld` on NixOS to support running unpatched dynamically
+# linked binaries while keeping the option cross-platform safe.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 let

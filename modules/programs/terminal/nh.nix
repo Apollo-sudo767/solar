@@ -1,9 +1,12 @@
+# modules/programs/terminal/nh.nix
+#
+# Configures the `nh` (Nix Helper) CLI for flake rebuilds and automatic
+# generation cleanup on NixOS and macOS.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 let

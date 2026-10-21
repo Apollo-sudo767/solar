@@ -1,3 +1,12 @@
+# modules/hosts/sol/default.nix
+# ==============================================================================
+# Host Configuration — Sol (Central ZFS NAS & Storage Hub)
+# ==============================================================================
+# Provides mirrored ZFS `tank` storage pools (`k3s-volumes`, `storage`, `media`),
+# automated ZFS scrubs/snapshots, SMART monitoring, NFSv4 exports for K3s, and
+# SMB3 network shares.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -8,7 +17,6 @@
   module =
     {
       config,
-      lib,
       pkgs,
       ...
     }:
@@ -269,7 +277,6 @@
 
       # Network Security & Firewall (NFS 111 & 2049)
       networking.firewall = {
-        enable = lib.mkDefault true;
         allowedTCPPorts = [
           22
           111
@@ -282,10 +289,6 @@
       };
 
       services.fail2ban.enable = true;
-      services.openssh.settings = {
-        PermitRootLogin = lib.mkDefault "prohibit-password";
-        PasswordAuthentication = lib.mkDefault true;
-      };
 
       # Preservation of NAS State across Wipe-on-Boot
       fileSystems."/persist".neededForBoot = true;

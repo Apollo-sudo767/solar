@@ -1,3 +1,7 @@
+# modules/platforms/desktops/sway.nix
+#
+# Configures the Sway Wayland tiling window manager, declarative monitor outputs,
+# keybindings, Stylix colors, XDG portals, and state preservation on NixOS.
 {
   config,
   lib,

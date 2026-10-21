@@ -1,3 +1,7 @@
+# modules/programs/utilities/vesktop.nix
+#
+# Configures Vesktop (Vencord-enabled Discord client) via Home Manager
+# and preserves user state on Linux.
 {
   config,
   lib,

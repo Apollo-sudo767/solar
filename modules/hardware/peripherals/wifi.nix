@@ -1,3 +1,10 @@
+# modules/hardware/peripherals/wifi.nix
+# ============================================================================
+# Wi-Fi Networking, Declarative SSID Profiles & State Persistence
+# ============================================================================
+# Enables NetworkManager with a declarative `Maximus` Wi-Fi profile (injecting
+# the PSK from `age.secrets."wifi.age"` when private secrets are enabled) and
+# persists `/etc/NetworkManager/system-connections` across ephemeral reboots.
 {
   config,
   lib,
@@ -34,7 +41,7 @@ in
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk-flags = 1; # Consult secret agent for psk
+              psk-flags = 1; # Consult secret agent / ensureProfiles secret entry for PSK
             };
           };
         };
@@ -49,8 +56,15 @@ in
       };
     };
 
+    # Persist saved Wi-Fi networks and regulatory/supplicant state across reboots
+    # (when `services.networking` is not already preserving NetworkManager state).
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
-      lib.mkIf (config.myFeatures.core.system.preservation.enable && cfg.persistence)
+      lib.mkIf
+        (
+          config.myFeatures.core.system.preservation.enable
+          && cfg.persistence
+          && !(config.myFeatures.services.networking.enable or false)
+        )
         {
           directories = [
             "/var/lib/NetworkManager"

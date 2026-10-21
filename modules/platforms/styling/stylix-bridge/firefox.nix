@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/firefox.nix
+#
+# Bridges Stylix Firefox profile theming across configured system users.
 {
   config,
   lib,

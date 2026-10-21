@@ -1,3 +1,7 @@
+# modules/platforms/desktops/i3.nix
+#
+# Configures the i3 X11 tiling window manager, keybindings, Stylix colors,
+# and state preservation on NixOS.
 {
   config,
   lib,

@@ -1,3 +1,7 @@
+# modules/platforms/addons/idle.nix
+#
+# Configures `swayidle` monitor DPMS timeouts and `systemd-logind` lid-switch
+# suspend behavior on Linux.
 {
   config,
   lib,

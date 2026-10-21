@@ -1,3 +1,7 @@
+# modules/programs/utilities/stylePackages.nix
+#
+# Installs decorative terminal animations and visualizers (cbonsai, cmatrix,
+# pipes, asciiquarium, cava, lavat, vitetris) across Linux and macOS (`isTotal`).
 {
   config,
   lib,
@@ -7,7 +11,6 @@
 }:
 
 let
-  inherit isTotal;
   cfg = config.myFeatures.programs.utilities.stylePackages;
 in
 {

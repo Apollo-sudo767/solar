@@ -1,3 +1,7 @@
+# modules/suites/desktops/lxqt.nix
+#
+# Desktop suite enabling the LXQt desktop environment alongside PCManFM,
+# Yazi, KDE Discover, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

@@ -1,10 +1,13 @@
+# modules/services/servers/minecraft/create-aero.nix
+#
+# Configures the Create Aeronautics (NeoForge 1.21.1) Minecraft server,
+# BlueMap web map, and automated BorgBackup snapshots on NixOS.
 {
   config,
   lib,
   pkgs,
   inputs,
   isDarwin,
-  isTotal,
   ...
 }:
 

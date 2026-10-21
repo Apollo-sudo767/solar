@@ -1,3 +1,7 @@
+# modules/suites/desktops/gnome.nix
+#
+# Desktop suite enabling the GNOME desktop environment alongside Nautilus,
+# Yazi, GNOME Software, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

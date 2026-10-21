@@ -1,3 +1,10 @@
+# modules/core/system/virtualization.nix
+# ============================================================================
+# Container & Virtual Machine Virtualization (Docker & Libvirt/KVM)
+# ============================================================================
+# Configures Docker and/or Libvirt (QEMU/KVM), automatically grants group
+# permissions (`docker`, `libvirtd`) to all declared users, and persists
+# container/VM storage under `/persist` when ephemeral root is enabled.
 {
   config,
   lib,
@@ -20,11 +27,12 @@ in
       libvirtd.enable = cfg.libvirt;
     };
 
-    # Automatically add users to the correct groups
+    # Grant declared system users access to the Docker socket and/or Libvirt daemon
     users.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       extraGroups = (lib.optional cfg.docker "docker") ++ (lib.optional cfg.libvirt "libvirtd");
     });
 
+    # Persist Docker images/volumes and Libvirt VM disks across reboots
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf config.myFeatures.core.system.preservation.enable
         {

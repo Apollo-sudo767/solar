@@ -1,3 +1,11 @@
+# modules/hosts/elara/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Elara (AMD + NVIDIA Gaming Desktop)
+# ==============================================================================
+# Declares AMD KVM (`kvm-amd`), microcode updates, and initrd storage/USB
+# modules. Disk partitioning and mounts are managed by Disko.
+# ==============================================================================
+
 {
   config,
   lib,

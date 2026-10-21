@@ -1,3 +1,7 @@
+# modules/programs/browsers/zen.nix
+#
+# Configures Zen Browser with declarative enterprise policies, pre-installed
+# extensions, MIME associations, and state preservation on NixOS.
 {
   config,
   lib,

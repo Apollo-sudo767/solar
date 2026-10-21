@@ -1,13 +1,18 @@
+# modules/programs/terminal/ghostty.nix
+# ============================================================================
+# Ghostty GPU-Accelerated Terminal Emulator
+# ============================================================================
+# Configures Ghostty via Home Manager with Zsh shell integration, translucent
+# blurred background, and automatic window decoration toggling (enabled on
+# floating desktop environments like KDE/GNOME/COSMIC, disabled on Niri).
 {
   config,
   lib,
-  pkgs,
   isTotal,
   ...
 }:
 
 let
-  inherit isTotal;
   cfg = config.myFeatures.programs.terminal.ghostty;
 
   isDE =
@@ -22,8 +27,6 @@ in
     lib.mkEnableOption "Ghostty Terminal Emulator";
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ pkgs.ghostty ];
-
     home-manager.sharedModules = [
       {
         programs.ghostty = {

@@ -1,3 +1,6 @@
+# modules/platforms/addons/displayManager/gdm.nix
+#
+# Configures the GNOME Display Manager (GDM) when selected via `displayManager.manager`.
 {
   config,
   lib,

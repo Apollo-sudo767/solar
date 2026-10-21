@@ -1,3 +1,10 @@
+# modules/platforms/styling/stylix-bridge/niri.nix
+# ============================================================================
+# Stylix Bridge for Niri Compositor
+# ============================================================================
+# Propagates Stylix cursor theme/size, Base16 window border/focus-ring colors,
+# and fallback `swaybg` wallpaper management (when Noctalia v5 is not active)
+# into Niri's KDL settings.
 {
   config,
   lib,
@@ -41,10 +48,9 @@ in
       };
     };
 
-    # 4. If noctalia shell is not managing the desktop wallpaper, ensure swaybg service is enabled with the Stylix wallpaper
+    # 4. If Noctalia v5 is not managing the desktop wallpaper, ensure swaybg service is enabled with the Stylix wallpaper
     myFeatures.platforms.addons.swaybg.enable = lib.mkIf (
-      !config.myFeatures.platforms.addons.noctalia-shell.enable
-      && !config.myFeatures.platforms.addons.noctalia-v5.enable
+      !config.myFeatures.platforms.addons.noctalia-v5.enable
     ) (lib.mkDefault true);
   };
 }

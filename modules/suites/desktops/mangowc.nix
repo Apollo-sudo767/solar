@@ -1,3 +1,7 @@
+# modules/suites/desktops/mangowc.nix
+#
+# Desktop suite enabling MangoWC alongside SwayOSD, Nautilus, Yazi,
+# GNOME Software, PipeWire audio, and XDG portals.
 {
   config,
   lib,

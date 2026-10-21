@@ -1,9 +1,12 @@
+# modules/programs/office/wpsoffice.nix
+#
+# Configures WPS Office suite, symbol fonts, XDG MIME associations on Linux,
+# and Homebrew cask installation on macOS.
 {
   config,
   lib,
   pkgs,
   isDarwin ? false,
-  isTotal ? true,
   ...
 }:
 

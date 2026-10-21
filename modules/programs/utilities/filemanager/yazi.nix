@@ -1,3 +1,7 @@
+# modules/programs/utilities/filemanager/yazi.nix
+#
+# Configures the Yazi terminal file manager, optional default directory MIME
+# associations, and state preservation on NixOS.
 {
   config,
   lib,

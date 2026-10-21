@@ -1,3 +1,7 @@
+# modules/platforms/desktops/mangowc.nix
+#
+# Configures the MangoWC (MangoWM) SceneFX-accelerated Wayland compositor,
+# declarative `config.conf`, XDG portals, and state preservation on NixOS.
 {
   config,
   lib,

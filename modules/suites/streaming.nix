@@ -1,3 +1,6 @@
+# modules/suites/streaming.nix
+#
+# Suite module enabling the Sunshine GameStream host service.
 {
   config,
   lib,

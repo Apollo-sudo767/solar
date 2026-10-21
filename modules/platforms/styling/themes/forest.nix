@@ -1,3 +1,7 @@
+# modules/platforms/styling/themes/forest.nix
+#
+# Defines the Forest Base16 color scheme and default wallpaper for Stylix
+# across Linux and macOS (`isTotal`).
 {
   config,
   lib,

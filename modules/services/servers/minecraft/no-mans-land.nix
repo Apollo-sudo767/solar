@@ -1,10 +1,13 @@
+# modules/services/servers/minecraft/no-mans-land.nix
+#
+# Configures the PhasMC No Man's Land (NeoForge 1.21.1) Minecraft server,
+# Simple Voice Chat UDP port, and automated BorgBackup snapshots on NixOS.
 {
   config,
   lib,
   pkgs,
   inputs,
   isDarwin,
-  isTotal,
   ...
 }:
 

@@ -1,3 +1,11 @@
+# modules/programs/office/libreoffice.nix
+# ============================================================================
+# LibreOffice Productivity Suite
+# ============================================================================
+# Installs LibreOffice (`fresh` or `still` branch), Hunspell dictionaries,
+# Microsoft-compatible metric fonts (Liberation, Carlito, Caladea), Java JRE
+# for LibreOffice Base, and optional LanguageTool integration. Also sets
+# `SAL_USE_VCLPLUGIN` appropriately (`gtk3` on Niri, `qt5`/`kf6` on KDE).
 {
   config,
   lib,
@@ -80,18 +88,6 @@ in
       description = "Enable Java JRE support (required for LibreOffice Base relational database engine).";
     };
 
-    iconTheme = lib.mkOption {
-      type = lib.types.enum [
-        "colibre"
-        "breeze"
-        "elementary"
-        "sukapura"
-        "karasa_jaga"
-      ];
-      default = "colibre";
-      description = "Icon theme for LibreOffice toolbars.";
-    };
-
     enableLanguageTool = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -100,6 +96,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    myFeatures.programs.office.languagetool.enable = lib.mkIf cfg.enableLanguageTool (
+      lib.mkDefault true
+    );
+
     environment.systemPackages = [
       loPkg
     ]
@@ -114,7 +114,7 @@ in
       pkgs.caladea
       pkgs.freefont_ttf
     ]
-    ++ lib.optional cfg.enableJava pkgs.jdk;
+    ++ lib.optional (cfg.enableJava || cfg.components.base) pkgs.jdk;
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       xdg.mimeApps = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
@@ -143,11 +143,22 @@ in
           "application/vnd.openxmlformats-officedocument.presentationml.presentation" =
             lib.mkIf cfg.components.impress
               [ "libreoffice-impress.desktop" ];
+
+          "application/vnd.oasis.opendocument.graphics" = lib.mkIf cfg.components.draw [
+            "libreoffice-draw.desktop"
+          ];
+          "application/vnd.oasis.opendocument.formula" = lib.mkIf cfg.components.math [
+            "libreoffice-math.desktop"
+          ];
+          "application/vnd.oasis.opendocument.database" = lib.mkIf cfg.components.base [
+            "libreoffice-base.desktop"
+          ];
         };
       };
 
       home.sessionVariables = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
-        SAL_USE_VCLPLUGIN = if config.myFeatures.platforms.niri.enable or false then "gtk3" else "qt5";
+        SAL_USE_VCLPLUGIN =
+          if config.myFeatures.platforms.desktops.niri.enable or false then "gtk3" else "qt5";
       };
     });
 

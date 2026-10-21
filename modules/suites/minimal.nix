@@ -1,3 +1,7 @@
+# modules/suites/minimal.nix
+#
+# Suite module providing a lightweight desktop workstation profile with
+# terminal tools, Firefox, lightweight GTK office apps, and minimal TUI social clients.
 {
   config,
   lib,

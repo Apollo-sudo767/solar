@@ -1,8 +1,11 @@
+# modules/programs/office/pandoc.nix
+#
+# Installs the Pandoc document converter and optional TeX Live distribution
+# across Linux and macOS (`isTotal`).
 {
   config,
   lib,
   pkgs,
-  isDarwin,
   isTotal ? true,
   ...
 }:

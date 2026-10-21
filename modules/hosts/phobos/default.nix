@@ -1,3 +1,11 @@
+# modules/hosts/phobos/default.nix
+# ==============================================================================
+# Host Configuration — Phobos (Apple Silicon macOS Workstation)
+# ==============================================================================
+# `aarch64-darwin` workstation managed via nix-darwin + Home Manager, featuring
+# `suites.darwinWorkstation`, AeroSpace tiling WM, and Sky Stylix theming.
+# ==============================================================================
+
 {
   meta = {
     system = "aarch64-darwin";

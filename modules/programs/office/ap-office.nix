@@ -1,7 +1,10 @@
+# modules/programs/office/ap-office.nix
+#
+# Meta-module for the AP Office academic suite, bundling Joplin, Zotero,
+# Pandoc, Typst, and LanguageTool across Linux and macOS (`isTotal`).
 {
   config,
   lib,
-  isDarwin,
   isTotal ? true,
   ...
 }:

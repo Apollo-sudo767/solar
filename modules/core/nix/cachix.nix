@@ -1,3 +1,10 @@
+# modules/core/nix/cachix.nix
+# ============================================================================
+# Community Binary Caches (`cachix`)
+# ============================================================================
+# Configures trusted community binary substituters (`niri` and `nix-community`)
+# so pre-built store paths are downloaded instead of compiled locally.
+# Enabled by default via `myFeatures.core.system.core-branch`.
 {
   config,
   lib,
@@ -11,7 +18,7 @@ in
 {
   options.myFeatures.core.nix.cachix.enable = lib.mkEnableOption "Cachix binary caches";
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isTotal) {
     nix.settings = {
       substituters = [
         "https://niri.cachix.org"

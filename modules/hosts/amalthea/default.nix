@@ -1,3 +1,11 @@
+# modules/hosts/amalthea/default.nix
+# ==============================================================================
+# Host Configuration — Amalthea (Handheld Gaming Device, Intel Atom x5-Z8350)
+# ==============================================================================
+# Console-like handheld gaming setup with SDDM auto-login into Steam Big Picture
+# / Gamescope session, KDE Plasma fallback, and Zen kernel tuning.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -47,10 +55,7 @@
           cpu-gpu.intel.enable = true;
           peripherals = {
             bluetooth.enable = true;
-            wifi = {
-              enable = true;
-              persistence = true;
-            };
+            wifi.enable = true;
           };
         };
 

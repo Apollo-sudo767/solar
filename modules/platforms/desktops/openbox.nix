@@ -1,3 +1,7 @@
+# modules/platforms/desktops/openbox.nix
+#
+# Configures the Openbox X11 stacking window manager, tint2/picom utilities,
+# and state preservation on NixOS.
 {
   config,
   lib,

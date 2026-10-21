@@ -1,7 +1,9 @@
+# modules/platforms/desktops/mate.nix
+#
+# Configures the MATE X11 desktop environment and state preservation on NixOS.
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 

@@ -1,3 +1,7 @@
+# modules/suites/desktops/plasma.nix
+#
+# Desktop suite enabling KDE Plasma 6 alongside Dolphin, Yazi,
+# KDE Discover, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

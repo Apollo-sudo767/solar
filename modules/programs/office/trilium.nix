@@ -1,9 +1,11 @@
+# modules/programs/office/trilium.nix
+#
+# Configures the Trilium Notes desktop client and state preservation across Linux and macOS.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 

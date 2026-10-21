@@ -1,3 +1,6 @@
+# modules/programs/terminal/git.nix
+#
+# Configures Git user identity, default branch, and per-user overrides via Home Manager.
 {
   config,
   lib,

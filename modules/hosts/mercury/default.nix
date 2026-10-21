@@ -1,3 +1,11 @@
+# modules/hosts/mercury/default.nix
+# ==============================================================================
+# Host Configuration — Mercury (Intel Laptop Workstation)
+# ==============================================================================
+# Portable Niri Wayland laptop with LUKS + ephemeral Btrfs persistence, Secure
+# Boot, battery power management (`suites.laptop`), and Sky theme styling.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -13,8 +21,6 @@
       ];
 
       system.stateVersion = "26.11";
-
-      boot.initrd.systemd.enable = true;
 
       myFeatures = {
         # 🌲 Dendritic Suites
@@ -53,13 +59,7 @@
             enable = true;
             resolution = "1920x1080";
           };
-          peripherals = {
-            battery.fullCharge = true;
-            wifi = {
-              enable = true;
-              persistence = true;
-            };
-          };
+          peripherals.battery.fullCharge = true;
         };
 
         platforms = {

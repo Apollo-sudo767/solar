@@ -1,9 +1,15 @@
+# modules/programs/office/onlyoffice.nix
+# ============================================================================
+# ONLYOFFICE Desktop Editors
+# ============================================================================
+# Installs ONLYOFFICE Desktop Editors (`pkgs.onlyoffice-bin` on Linux, Homebrew
+# Cask on macOS) and configures default MIME handlers for Office Open XML
+# (`.docx`/`.xlsx`/`.pptx`) and optionally OpenDocument (`.odt`/`.ods`/`.odp`).
 {
   config,
   lib,
   pkgs,
   isDarwin ? false,
-  isTotal ? true,
   ...
 }:
 
@@ -20,30 +26,7 @@ in
         "odf"
       ];
       default = "ooxml";
-      description = "Default document format target (.docx/.xlsx/.pptx vs .odt/.ods/.odp).";
-    };
-
-    enablePlugins = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable ONLYOFFICE plugins store (Translator, OCR, HTML, YouTube).";
-    };
-
-    enableSpellcheck = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable ONLYOFFICE spellchecking engine.";
-    };
-
-    uiTheme = lib.mkOption {
-      type = lib.types.enum [
-        "dark"
-        "light"
-        "system"
-        "classic"
-      ];
-      default = "dark";
-      description = "ONLYOFFICE UI theme preset.";
+      description = "Default document format target ('ooxml' for .docx/.xlsx/.pptx, 'odf' to also claim .odt/.ods/.odp).";
     };
   };
 
@@ -68,6 +51,11 @@ in
                 "onlyoffice-desktopeditors.desktop"
               ];
               "application/vnd.ms-powerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
+            }
+            // lib.optionalAttrs (cfg.defaultFormat == "odf") {
+              "application/vnd.oasis.opendocument.text" = [ "onlyoffice-desktopeditors.desktop" ];
+              "application/vnd.oasis.opendocument.spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
+              "application/vnd.oasis.opendocument.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
             };
           };
         });

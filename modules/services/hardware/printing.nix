@@ -1,8 +1,11 @@
+# modules/services/hardware/printing.nix
+#
+# Configures CUPS printing support, Avahi mDNS discovery, and state
+# preservation on Linux while keeping options cross-platform safe on macOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

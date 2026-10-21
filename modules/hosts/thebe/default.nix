@@ -1,9 +1,16 @@
+# modules/hosts/thebe/default.nix
+# ==============================================================================
+# Host Configuration — Thebe (Intel Mac Mini Server)
+# ==============================================================================
+# Standalone server node without ephemeral persistence or secrets, using Limine
+# on `/boot/EFI/BOOT/BOOTX64.EFI` with NVRAM writes disabled for Apple EFI.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
     stable = false;
     useSolarSecrets = false;
-    useSecrets = false;
   };
 
   module =
@@ -57,21 +64,13 @@
           cpu-gpu.intel.enable = true;
           peripherals = {
             bluetooth.enable = true;
-            wifi = {
-              enable = true;
-              persistence = true;
-            };
+            wifi.enable = true;
           };
         };
       };
 
       # System Security & Hardening
       services.fail2ban.enable = true;
-      networking.firewall.enable = lib.mkDefault true;
-      services.openssh.settings = {
-        PermitRootLogin = lib.mkDefault "prohibit-password";
-        PasswordAuthentication = lib.mkDefault true;
-      };
 
       # Apple Mac EFI Quirk: Apple NVRAM is slow/unreliable with efibootmgr.
       # Limine installs to /boot/EFI/BOOT/BOOTX64.EFI which Apple EFI boots automatically.

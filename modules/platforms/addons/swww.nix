@@ -1,3 +1,7 @@
+# modules/platforms/addons/swww.nix
+#
+# Configures the `awww` (formerly `swww`) animated Wayland wallpaper daemon
+# and user systemd service on Linux.
 {
   config,
   lib,

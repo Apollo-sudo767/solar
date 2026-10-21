@@ -1,37 +1,27 @@
-{
-  config,
-  lib,
-  modulesPath,
-  ...
-}:
+# modules/hosts/thebe/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Thebe (Intel Mac Mini Server)
+# ==============================================================================
+# Extends `../shared/hardware.nix` with Apple SMC/GMUX kernel modules, Broadcom
+# Gigabit Ethernet (`tg3`) in initrd, and Apple keyboard fnmode quirks.
+# ==============================================================================
+
+_:
 
 {
   imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
     ../shared/hardware.nix
   ];
 
   boot.initrd.availableKernelModules = [
-    "xhci_pci"
     "ahci"
-    "nvme"
     "usbhid"
-    "usb_storage"
-    "sd_mod"
-    "sdhci_pci"
     "tg3" # Broadcom Gigabit Ethernet
   ];
-  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [
-    "kvm-intel"
     "applesmc" # Apple System Management Controller (fan/temp control)
     "apple_gmux"
   ];
-  boot.extraModulePackages = [ ];
-
-  # Platform & CPU
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   # Apple Keyboard Quirk: Default to standard F1-F12 keys instead of media keys
   boot.extraModprobeConfig = ''

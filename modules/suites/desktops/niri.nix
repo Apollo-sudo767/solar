@@ -1,3 +1,10 @@
+# modules/suites/desktops/niri.nix
+# ============================================================================
+# Niri Scrollable-Tiling Desktop Suite
+# ============================================================================
+# Composite desktop suite for Niri. Enables the Niri compositor, keybindings,
+# SwayOSD overlay, desktop shell (`noctalia-v5` by default, or `waybar`),
+# Nautilus + Yazi file managers, GNOME Software, PipeWire audio, and XDG portals.
 {
   config,
   lib,
@@ -9,11 +16,10 @@ let
 in
 {
   options.myFeatures.suites.desktops.niri = {
-    enable = lib.mkEnableOption "Niri Desktop Suite (Niri + Keybinds + ReGreet + Nautilus + Yazi + Audio + Portals)";
+    enable = lib.mkEnableOption "Niri Desktop Suite (Niri + Keybinds + Shell + Nautilus + Yazi + Audio + Portals)";
     shell = lib.mkOption {
       type = lib.types.enum [
         "noctalia-v5"
-        "noctalia-shell"
         "waybar"
         "none"
       ];
@@ -30,7 +36,6 @@ in
         addons = {
           swayosd.enable = lib.mkDefault true;
           noctalia-v5.enable = lib.mkIf (cfg.shell == "noctalia-v5") true;
-          noctalia-shell.enable = lib.mkIf (cfg.shell == "noctalia-shell") true;
           waybar.enable = lib.mkIf (cfg.shell == "waybar") true;
           swaync.enable = lib.mkIf (cfg.shell == "waybar") true;
         };

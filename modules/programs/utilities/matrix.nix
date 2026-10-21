@@ -1,3 +1,7 @@
+# modules/programs/utilities/matrix.nix
+#
+# Configures Element Desktop Matrix client with custom keyring flags,
+# declarative `config.json` pointing to `matrix.apollan.cc`, and state preservation.
 {
   config,
   lib,
@@ -48,6 +52,18 @@ in
       default = [ ];
       description = "Extra command-line flags to pass to Element Desktop.";
     };
+
+    homeserverUrl = lib.mkOption {
+      type = lib.types.str;
+      default = "https://matrix.apollan.cc";
+      description = "Default Matrix homeserver URL for Element Desktop (hosted on Pluto cluster + UNAS Pro 4 NAS).";
+    };
+
+    serverName = lib.mkOption {
+      type = lib.types.str;
+      default = "matrix.apollan.cc";
+      description = "Default Matrix homeserver domain name.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -59,6 +75,30 @@ in
       home.packages = [
         elementPkg
       ];
+
+      xdg.configFile."Element/config.json".text = builtins.toJSON {
+        default_server_config = {
+          "m.homeserver" = {
+            base_url = cfg.homeserverUrl;
+            server_name = cfg.serverName;
+          };
+        };
+        brand = "Solar Matrix";
+        disable_custom_urls = false;
+        disable_guests = true;
+        default_theme = "dark";
+        room_directory = {
+          servers = [
+            cfg.serverName
+            "matrix.org"
+          ];
+        };
+        features = {
+          feature_video_rooms = true;
+          feature_group_calls = true;
+          feature_element_call_video_rooms = true;
+        };
+      };
     });
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =

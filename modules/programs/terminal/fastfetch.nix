@@ -1,3 +1,7 @@
+# modules/programs/terminal/fastfetch.nix
+#
+# Configures `fastfetch` via Home Manager with custom logo backend selection
+# across Linux and macOS (`isTotal`).
 {
   config,
   lib,

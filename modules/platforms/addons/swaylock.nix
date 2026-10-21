@@ -1,3 +1,6 @@
+# modules/platforms/addons/swaylock.nix
+#
+# Configures `swaylock-effects` screen locker via Home Manager.
 {
   config,
   lib,

@@ -1,32 +1,31 @@
+# modules/core/nix/lix.nix
+# ============================================================================
+# Lix Package Manager Engine (`pkgs.lix`)
+# ============================================================================
+# Replaces the standard C++ Nix daemon with Lix (a modern, high-reliability
+# fork of Nix) and strips the `mimalloc` meson flag to avoid allocator build
+# issues on certain platforms.
 {
   config,
   lib,
   pkgs,
-  isStable ? false,
   isTotal,
   ...
 }:
 
 let
-  inherit isTotal;
-  # 1. Setup a shortcut to your feature's config
-  # Replace 'myFeature' with your actual feature name
   cfg = config.myFeatures.core.nix.lix;
 in
 {
-  # --- OPTIONS ---
-  # This defines the "switches" you flip in your /hosts files
   options.myFeatures.core.nix.lix = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Enables Lix in systems";
+      description = "Use the Lix package manager implementation instead of standard Nix.";
     };
   };
 
-  # --- CONFIG ---
-  # This is the "payload" that only runs if 'enable' is true
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isTotal) {
     nixpkgs.overlays = [
       (_final: prev: {
         lix = prev.lix.overrideAttrs (old: {

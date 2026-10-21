@@ -1,8 +1,11 @@
+# modules/hardware/input/fingerprint.nix
+# ============================================================================
+# Biometric Fingerprint Reader (`fprintd`)
+# ============================================================================
+# Enables the `fprintd` daemon and PAM integration for `sudo` authentication.
 {
   config,
   lib,
-  isDarwin,
-  isTotal,
   ...
 }:
 
@@ -13,11 +16,8 @@ in
   options.myFeatures.hardware.input.fingerprint.enable =
     lib.mkEnableOption "Fingerprint Sensor Support";
 
-  # Shield everything
-  config = lib.mkIf cfg.enable (
-    lib.optionalAttrs (!isDarwin) {
-      services.fprintd.enable = true;
-      security.pam.services.sudo.fprintAuth = true;
-    }
-  );
+  config = lib.mkIf cfg.enable {
+    services.fprintd.enable = true;
+    security.pam.services.sudo.fprintAuth = true;
+  };
 }

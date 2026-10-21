@@ -1,24 +1,20 @@
-{
-  lib,
-  modulesPath,
-  ...
-}:
+# modules/hosts/io/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Io (Intel Desktop Workstation)
+# ==============================================================================
+# Extends `../shared/hardware.nix` with SATA AHCI and USB HID initrd modules.
+# Disko handles fileSystems and swapDevices declaratively.
+# ==============================================================================
+
+_:
 
 {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [
+    ../shared/hardware.nix
+  ];
 
   boot.initrd.availableKernelModules = [
-    "xhci_pci"
     "ahci"
-    "nvme"
     "usbhid"
-    "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-
-  # Disko handles fileSystems and swapDevices declaratively.
-
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

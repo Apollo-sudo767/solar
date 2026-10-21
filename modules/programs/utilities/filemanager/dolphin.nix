@@ -1,3 +1,7 @@
+# modules/programs/utilities/filemanager/dolphin.nix
+#
+# Configures KDE Dolphin file manager, thumbnailers, Ark archive manager,
+# default directory MIME associations, and state preservation on NixOS.
 {
   config,
   lib,

@@ -1,3 +1,13 @@
+# modules/platforms/styling/niriKeybinds.nix
+# ============================================================================
+# Niri Compositor Keybindings
+# ============================================================================
+# Defines the default keyboard and media shortcuts for the Niri window manager.
+# Automatically adapts:
+# - Default browser shortcut (`Mod+Shift+Q`) based on enabled browser modules
+# - Application launcher (`Mod+D` / `Mod+Space`) and shell panels (`Mod+S`,
+#   `Mod+Y`, `Mod+N`, `Mod+Escape`) to Noctalia v5 or Fuzzel
+# - Audio/brightness keys to SwayOSD when enabled
 {
   config,
   lib,
@@ -27,6 +37,17 @@ let
       (if chromeCfg.googleChrome.enable then "google-chrome" else "chromium")
     else
       "firefox";
+
+  launcherCmd =
+    if config.myFeatures.platforms.addons.noctalia-v5.enable then
+      [
+        "noctalia"
+        "msg"
+        "panel-toggle"
+        "launcher"
+      ]
+    else
+      [ "fuzzel" ];
 in
 {
   options.myFeatures.platforms.styling.niriKeybinds.enable =
@@ -38,74 +59,13 @@ in
         # --- Apps & System ---
         "Mod+Q".spawn = [ "ghostty" ];
         "Mod+Shift+Q".spawn = [ defaultBrowserCmd ];
-        "Mod+D".spawn =
-          if config.myFeatures.platforms.addons.noctalia-v5.enable then
-            [
-              "noctalia"
-              "msg"
-              "panel-toggle"
-              "launcher"
-            ]
-          else if config.myFeatures.platforms.addons.noctalia-shell.enable then
-            [
-              "noctalia-shell"
-              "ipc"
-              "call"
-              "launcher"
-              "toggle"
-            ]
-          else
-            [ "fuzzel" ];
-        "Mod+Space".spawn =
-          if config.myFeatures.platforms.addons.noctalia-v5.enable then
-            [
-              "noctalia"
-              "msg"
-              "panel-toggle"
-              "launcher"
-            ]
-          else if config.myFeatures.platforms.addons.noctalia-shell.enable then
-            [
-              "noctalia-shell"
-              "ipc"
-              "call"
-              "launcher"
-              "toggle"
-            ]
-          else
-            [ "fuzzel" ];
+        "Mod+D".spawn = launcherCmd;
+        "Mod+Space".spawn = launcherCmd;
         "Mod+O".toggle-overview = { };
         "Mod+C".close-window = { };
         "Mod+Shift+E".quit = { };
         "Mod+Super+L".spawn = [ "niri-lock" ];
         "Super+Alt+L".spawn = [ "niri-lock" ];
-      }
-      // lib.optionalAttrs config.myFeatures.platforms.addons.noctalia-shell.enable {
-        "Mod+S".spawn = [
-          "noctalia-shell"
-          "--toggle-dashboard"
-        ];
-        "Mod+Y".spawn = [
-          "noctalia-shell"
-          "ipc"
-          "call"
-          "launcher"
-          "clipboard"
-        ];
-        "Mod+N".spawn = [
-          "noctalia-shell"
-          "ipc"
-          "call"
-          "notifications"
-          "toggle"
-        ];
-        "Mod+Escape".spawn = [
-          "noctalia-shell"
-          "ipc"
-          "call"
-          "session"
-          "toggle"
-        ];
       }
       // lib.optionalAttrs config.myFeatures.platforms.addons.noctalia-v5.enable {
         "Mod+S".spawn = [

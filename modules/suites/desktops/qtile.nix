@@ -1,3 +1,7 @@
+# modules/suites/desktops/qtile.nix
+#
+# Desktop suite enabling Qtile alongside Nautilus, Yazi, GNOME Software,
+# PipeWire audio, and XDG portals.
 {
   config,
   lib,

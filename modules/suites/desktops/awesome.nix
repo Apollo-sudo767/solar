@@ -1,3 +1,7 @@
+# modules/suites/desktops/awesome.nix
+#
+# Desktop suite enabling AwesomeWM alongside Nautilus, Yazi, GNOME Software,
+# and PipeWire audio.
 {
   config,
   lib,

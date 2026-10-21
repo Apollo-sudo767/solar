@@ -1,3 +1,6 @@
+# modules/platforms/desktops/dwm.nix
+#
+# Configures the Suckless DWM X11 tiling window manager and companion utilities on NixOS.
 {
   config,
   lib,

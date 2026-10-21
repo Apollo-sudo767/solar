@@ -1,14 +1,18 @@
+# modules/programs/utilities/bitwarden.nix
+# ============================================================================
+# Bitwarden Password Manager (Desktop & CLI)
+# ============================================================================
+# Installs the Bitwarden desktop client across platforms and adds the `bw` CLI
+# client plus `~/.config/Bitwarden` state preservation on Linux.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 
 let
-  inherit isDarwin;
   cfg = config.myFeatures.programs.utilities.bitwarden;
 in
 {
@@ -23,12 +27,9 @@ in
         environment.systemPackages = [ pkgs.bitwarden-desktop ];
       }
 
-      # 2. Linux-only (CLI Client & Secret handling)
+      # 2. Linux-only (CLI Client & Ephemeral Root Preservation)
       (lib.optionalAttrs (!isDarwin) {
         environment.systemPackages = [ pkgs.bitwarden-cli ];
-        home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
-          # Home manager settings for bitwarden if any
-        });
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable

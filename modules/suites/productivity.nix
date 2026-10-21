@@ -1,3 +1,13 @@
+# modules/suites/productivity.nix
+# ============================================================================
+# Productivity & Academic Office Suite
+# ============================================================================
+# Composite suite offering two profiles:
+# - `full` (default): Enables the `ap-office` academic writing stack (Joplin,
+#   Zotero, Pandoc, Typst, and LanguageTool).
+# - `lightweight`: Enables standalone GTK office tools (AbiWord, Gnumeric,
+#   PDFArranger, Evince).
+# Also enables CUPS printing by default (`printing.enable = true`).
 {
   config,
   lib,
@@ -17,14 +27,14 @@ in
         "lightweight"
       ];
       default = "full";
-      description = "Productivity suite profile: 'full' for AP-Office (heavy document suite) or 'lightweight' for modular tools.";
+      description = "Productivity suite profile: 'full' for AP-Office (academic writing & publishing suite) or 'lightweight' for modular GTK tools.";
     };
 
     apOffice = {
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Enable complete AP-Office suite (LibreOffice, OnlyOffice, Zotero, Typst, Joplin, etc.) when mode is 'full'.";
+        description = "Enable complete AP-Office academic suite (Joplin, Zotero, Pandoc, Typst, LanguageTool) when mode is 'full'.";
       };
     };
 

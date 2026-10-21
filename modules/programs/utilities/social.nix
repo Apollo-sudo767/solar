@@ -1,3 +1,7 @@
+# modules/programs/utilities/social.nix
+#
+# Meta-module for social communication and music clients (Vesktop, Element
+# Matrix, Spotify TUI/GUI, and WebCord).
 {
   config,
   lib,

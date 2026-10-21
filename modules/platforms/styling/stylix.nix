@@ -1,19 +1,31 @@
+# modules/platforms/styling/stylix.nix
+# ============================================================================
+# Stylix System-Wide Theming Framework
+# ============================================================================
+# Integrates Stylix across NixOS, nix-darwin, and Home Manager. Provides
+# unified Base16 color palettes, wallpapers, fonts (JetBrainsMono Nerd Font +
+# DejaVu Sans), cursor themes (Bibata-Modern-Ice), and per-application target
+# toggles.
 {
   config,
   lib,
   pkgs,
   inputs,
   isDarwin,
-  isTotal,
   isStable ? false,
   ...
 }:
 
 let
-  inherit isDarwin;
   cfg = config.myFeatures.platforms.styling.stylix;
   stylixInput = if isStable then inputs.stylix-stable else inputs.stylix-unstable;
   nixosConfig = config;
+  spicetifyTargetEnabled =
+    (
+      (nixosConfig.myFeatures.programs.utilities.spotify.enable or false)
+      || (nixosConfig.myFeatures.programs.utilities.spotify.gui.enable or false)
+    )
+    && (nixosConfig.myFeatures.programs.utilities.spicetify.enable or false);
 in
 {
   imports = [
@@ -43,9 +55,7 @@ in
   };
 
   config = lib.mkMerge [
-    # Ensure Stylix Home Manager module is always available if home-manager is used
-    # We only import it manually if Stylix is NOT enabled, because Stylix's NixOS/Darwin
-    # module will automatically import it if it IS enabled.
+    # Propagate Stylix target toggles into Home Manager
     {
       home-manager.sharedModules = [
         (lib.mkIf cfg.enable (
@@ -55,11 +65,10 @@ in
             stylix.targets = {
               helix.enable = nixosConfig.myFeatures.programs.terminal.helix.enable or false;
               ghostty.enable = nixosConfig.myFeatures.programs.terminal.ghostty.enable or false;
-              spicetify.enable = nixosConfig.myFeatures.programs.utilities.spotify.enable or false;
+              spicetify.enable = spicetifyTargetEnabled;
             }
             // lib.optionalAttrs (!isStable) {
               noctalia.enable = nixosConfig.myFeatures.platforms.addons.noctalia-v5.enable or false;
-              noctalia-shell.enable = nixosConfig.myFeatures.platforms.addons.noctalia-shell.enable or false;
             };
           }
           // lib.optionalAttrs (!isStable) {
@@ -106,7 +115,7 @@ in
       };
     })
 
-    # Target Handling
+    # Linux NixOS-level Target Handling
     (
       if isDarwin then
         { }
@@ -115,7 +124,7 @@ in
           stylix.targets = {
             gnome.enable = config.myFeatures.platforms.desktops.gnome.enable or false;
             plymouth.enable = config.myFeatures.core.boot.boot.enable or false;
-            spicetify.enable = config.myFeatures.programs.utilities.spicetify.enable or false;
+            spicetify.enable = spicetifyTargetEnabled;
             kmscon.enable = false;
             limine.enable = false;
           };

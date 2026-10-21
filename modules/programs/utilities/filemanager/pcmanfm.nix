@@ -1,3 +1,7 @@
+# modules/programs/utilities/filemanager/pcmanfm.nix
+#
+# Configures PCManFM lightweight GTK file manager, default directory MIME
+# associations, and state preservation on NixOS.
 {
   config,
   lib,

@@ -1,20 +1,37 @@
-# flake.nix
-# Solar - Fully Automated Dendritic Flake
+# ============================================================================
+# Solar — Fully Automated Dendritic NixOS & nix-darwin Meta-Distribution
+# ============================================================================
+#
+# Architecture Overview:
+# Solar uses the "Dendritic" pattern combined with `flake-parts`:
+# 1. `parts/` contains modular Flake outputs (host discovery, devShells,
+#    treefmt code formatting, and pre-commit hooks).
+# 2. `modules/default.nix` recursively scans `modules/` and automatically
+#    imports every `.nix` feature module—no manual import lists required.
+# 3. `modules/hosts/default.nix` discovers every directory under `modules/hosts/`
+#    and builds either a NixOS (`nixosSystem`) or macOS (`darwinSystem`)
+#    configuration based on the host's `meta.system` attribute.
 #
 # Antigravity Rule: All code changes made by Antigravity MUST be created on a feature
 # branch and submitted as a GitHub Pull Request (PR) for review. Direct pushes to main are prohibited.
 {
   description = "Fully Automated Dendritic Flake";
 
+  # ==========================================================================
+  # 1. FLAKE INPUTS (External Dependencies & Channels)
+  # ==========================================================================
   inputs = {
-    # Core nixpkgs channels
+    # Core Nixpkgs channels:
+    # Individual hosts choose between unstable (rolling) and stable (release)
+    # via `meta.stable = true/false;` in their `modules/hosts/<name>/default.nix`.
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    # Flake Parts
+    # Flake Parts: Modularizes flake outputs into `parts/*.nix`
     flake-parts.url = "github:hercules-ci/flake-parts";
 
-    # Home Manager
+    # Home Manager: Manages user dotfiles and user-level packages inline
+    # within system configurations (matched to the host's nixpkgs channel).
     home-manager-unstable = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -24,13 +41,13 @@
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
-    # Darwin
+    # nix-darwin: Declarative macOS system management (used when `meta.system` ends in `-darwin`)
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Stylix
+    # Stylix: Automated system-wide base16 color schemes, fonts, and wallpapers
     stylix-unstable = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -40,7 +57,13 @@
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
-    # Secrets Management
+    # Secrets Management:
+    # - `agenix` decrypts secrets at boot using the host's SSH Ed25519 key.
+    # - `agenix-rekey` allows encrypting secrets once with a hardware master key
+    #   (YubiKey / Secure Enclave) and automatically rekeying them for each target host.
+    # - `solar-secrets` holds the private master-encrypted `.age` files and host pubkeys.
+    #   Forkers without access to `solar-secrets` can set `meta.useSolarSecrets = false;`
+    #   in their host configuration to build completely standalone systems.
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -49,13 +72,15 @@
       url = "github:oddlama/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-
     solar-secrets = {
       url = "git+https://github.com/Apollo-sudo767/solar-secrets.git";
       flake = false;
     };
 
-    # Disko & Preservation
+    # Declarative Disk Partitioning & Ephemeral Root State Preservation:
+    # - `disko` formats drives (GPT, ESP, LUKS2, Btrfs subvolumes, ZFS pools).
+    # - `preservation` bind-mounts essential state from `/persist` when running
+    #   with an ephemeral tmpfs root (`usePersistence = true`).
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -64,25 +89,23 @@
       url = "github:WilliButz/preservation";
     };
 
-    # Zen Browser
+    # Desktop & Application Flakes
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Spicetify
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Nix Minecraft
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Bedrock On Linux (Minecraft Bedrock for Windows)
+    # Bedrock On Linux (Minecraft Bedrock for Windows via Proton/GDK)
     bedrock-on-linux = {
       url = "github:Wyze3306/BedrockOnLinux";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -97,24 +120,19 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Noctalia
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
+    # Noctalia v5 Wayland Desktop Shell (Quickshell-based bar, launcher, notifications, lockscreen)
     noctalia-v5 = {
       url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Iron Bar
+    # Ironbar Wayland Status Bar
     ironbar = {
       url = "github:JakeStanger/ironbar";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Formatting & Linting
+    # Code Formatting & Git Pre-Commit Hooks
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -124,13 +142,16 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Joplin Server Flake
+    # Self-hosted Joplin Server Flake
     joplin-server = {
       url = "github:Apollo-sudo767/joplin-server";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
+  # ==========================================================================
+  # 2. FLAKE OUTPUTS (Evaluated via Flake Parts)
+  # ==========================================================================
   outputs =
     inputs@{
       self,
@@ -141,12 +162,15 @@
     flake-parts.lib.mkFlake { inherit inputs; } (
       { ... }:
       {
+        # Import `./parts` (which auto-discovers all files in `parts/`) and
+        # the canonical `agenix-rekey` flake module so `perSystem.agenix-rekey`
+        # is available across all supported architectures.
         imports = [
           ./parts
           inputs.agenix-rekey.flakeModule
         ];
 
-        # Add MacBook (Darwin) support alongside Linux
+        # Supported build & target architectures across Linux and macOS (Apple Silicon / Intel)
         systems = [
           "x86_64-linux"
           "aarch64-linux"
@@ -162,17 +186,18 @@
             ...
           }:
           {
+            # Configure agenix-rekey to scan our discovered hosts when rekeying secrets.
+            # We only include darwinConfigurations when running on macOS to avoid
+            # Secure Enclave / platform identity mismatches on Linux.
             agenix-rekey = {
-              # Tells agenix-rekey which nodes to scan for secrets
-              # We only include the relevant host types based on current platform
-              # to avoid identity mismatches with master keys.
               nixosConfigurations = self.nixosConfigurations or { };
               darwinConfigurations =
                 if lib.hasSuffix "-darwin" system then (self.darwinConfigurations or { }) else { };
             };
 
-            # Define apps for convenience
+            # Helper CLI apps runnable via `nix run .#<app>`
             apps = {
+              # Secret management helpers (`s-gen`, `s-rekey`, `s-edit`, `s-sync` shell aliases wrap these)
               agenix-rekey-generate = {
                 type = "app";
                 program = lib.getExe self.agenix-rekey.${system}.generate;
@@ -189,6 +214,9 @@
                 type = "app";
                 program = lib.getExe self.agenix-rekey.${system}.update-masterkeys;
               };
+
+              # Unified system rebuild command (`nix run .#rebuild`):
+              # Automatically dispatches to `darwin-rebuild` on macOS or `nh os switch` on NixOS.
               rebuild = {
                 type = "app";
                 program = lib.getExe (
@@ -201,53 +229,67 @@
                   ''
                 );
               };
+
+              # Host scaffolding generator (`nix run .#bootstrap-host <hostname>`):
+              # Creates a ready-to-build host directory under `modules/hosts/<hostname>/`
+              # following the `{ meta = ...; module = ...; }` schema expected by `modules/hosts/default.nix`.
               bootstrap-host = {
                 type = "app";
                 program = lib.getExe (
                   pkgs.writeShellScriptBin "bootstrap-host" ''
-                                        set -euo pipefail
-                                        HOST="''${1:-}"
-                                        if [ -z "$HOST" ]; then
-                                          echo "Usage: nix run .#bootstrap-host <hostname>"
-                                          exit 1
-                                        fi
-                                        HOST_DIR="modules/hosts/$HOST"
-                                        if [ -d "$HOST_DIR" ]; then
-                                          echo "Host '$HOST' already exists in $HOST_DIR."
-                                        else
-                                          mkdir -p "$HOST_DIR"
-                                          cat <<EOF > "$HOST_DIR/default.nix"
-                    { config, lib, pkgs, ... }:
-
+                    set -euo pipefail
+                    HOST="''${1:-}"
+                    if [ -z "$HOST" ]; then
+                      echo "Usage: nix run .#bootstrap-host <hostname>"
+                      exit 1
+                    fi
+                    HOST_DIR="modules/hosts/$HOST"
+                    if [ -d "$HOST_DIR" ]; then
+                      echo "Host '$HOST' already exists in $HOST_DIR."
+                    else
+                      mkdir -p "$HOST_DIR"
+                      cat <<'EOF' > "$HOST_DIR/default.nix"
                     {
                       meta = {
                         system = "x86_64-linux";
                         stable = false;
+                        useSolarSecrets = false;
                       };
 
-                      module = {
-                        imports = [ ./hardware-configuration.nix ];
+                      module =
+                        { config, lib, pkgs, ... }:
+                        {
+                          imports = [ ./hardware-configuration.nix ];
 
-                        myFeatures = {
-                          core = {
-                            system.core-branch.enable = true;
-                            system.users.mainUser = "apollo";
+                          system.stateVersion = "26.11";
+
+                          myFeatures = {
+                            core = {
+                              system = {
+                                core-branch.enable = true;
+                                users.usernames = [ "apollo" ];
+                              };
+                              boot.enable = true;
+                            };
                           };
                         };
-                      };
                     }
                     EOF
-                                          touch "$HOST_DIR/hardware-configuration.nix"
-                                          echo "Created $HOST_DIR template."
-                                        fi
+                      cat <<'EOF' > "$HOST_DIR/hardware-configuration.nix"
+                    # Placeholder hardware-configuration.nix — replace with output of `nixos-generate-config`
+                    _: { }
+                    EOF
+                      echo "Created $HOST_DIR template."
+                    fi
                   ''
                 );
               };
             };
 
+            # Provide a default `pkgs` instance for `perSystem` modules (devShells, treefmt, etc.)
             _module.args.pkgs = import nixpkgs-unstable {
               inherit system;
-              config.allowUnfree = true; # Required for things like sops or discord
+              config.allowUnfree = true;
             };
           };
       }

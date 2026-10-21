@@ -1,3 +1,7 @@
+# modules/suites/desktops/mate.nix
+#
+# Desktop suite enabling the MATE desktop environment alongside Nautilus,
+# Yazi, GNOME Software, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

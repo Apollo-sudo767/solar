@@ -1,9 +1,14 @@
+# modules/programs/office/languagetool.nix
+# ============================================================================
+# LanguageTool Desktop Proofreading & Style Linter
+# ============================================================================
+# Installs the standalone LanguageTool grammar/style checker and preserves user
+# dictionary/configuration files under `~/.config/LanguageTool` on Linux.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 
@@ -13,11 +18,6 @@ in
 {
   options.myFeatures.programs.office.languagetool = {
     enable = lib.mkEnableOption "LanguageTool Desktop proofreading & style linter application";
-    apiUrl = lib.mkOption {
-      type = lib.types.str;
-      default = "http://localhost:8010";
-      description = "Self-hosted LanguageTool API backend URL for local text analysis & linting.";
-    };
   };
 
   config = lib.mkIf cfg.enable {

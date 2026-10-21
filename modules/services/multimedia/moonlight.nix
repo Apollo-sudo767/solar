@@ -1,9 +1,15 @@
+# modules/services/multimedia/moonlight.nix
+# ============================================================================
+# Moonlight Game Streaming Client
+# ============================================================================
+# Installs the Moonlight Qt low-latency game streaming client and enables
+# Avahi mDNS discovery on Linux so local Sunshine hosts are discovered
+# automatically on the LAN.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 
@@ -20,18 +26,6 @@ in
       { environment.systemPackages = [ pkgs.moonlight-qt ]; }
 
       (lib.optionalAttrs (!isDarwin) {
-        networking.firewall = {
-          allowedUDPPorts = [
-            1900
-            5353
-          ];
-          allowedTCPPorts = [
-            47984
-            47989
-            48010
-          ];
-        };
-
         services.avahi = {
           enable = true;
           nssmdns4 = true;

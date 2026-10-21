@@ -1,7 +1,9 @@
+# modules/platforms/desktops/lxqt.nix
+#
+# Configures the LXQt lightweight Qt desktop environment and state preservation on NixOS.
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 

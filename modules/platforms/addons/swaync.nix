@@ -1,3 +1,6 @@
+# modules/platforms/addons/swaync.nix
+#
+# Configures the Sway Notification Center (`swaync`) daemon via Home Manager.
 {
   config,
   lib,

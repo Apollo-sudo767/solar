@@ -1,3 +1,7 @@
+# modules/programs/utilities/logseq.nix
+#
+# Configures the Logseq knowledge base client and vault state preservation
+# across Linux and macOS (`isTotal`).
 {
   config,
   lib,

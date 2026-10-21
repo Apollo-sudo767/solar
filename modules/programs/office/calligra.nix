@@ -1,3 +1,11 @@
+# modules/programs/office/calligra.nix
+# ============================================================================
+# KDE Calligra Office & Graphic Suite
+# ============================================================================
+# Installs the KDE Calligra office suite (Words, Sheets, Stage, Karbon),
+# optional Calligra Plan project manager (`components.plan`), and optional
+# Krita digital painting studio (`enableKrita`), wiring OpenDocument MIME
+# associations per enabled component.
 {
   config,
   lib,
@@ -54,6 +62,7 @@ in
       [
         kdePackages.calligra
       ]
+      ++ lib.optional cfg.components.plan pkgs.kdePackages.calligraplan
       ++ lib.optional cfg.enableKrita pkgs.krita;
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
@@ -68,6 +77,12 @@ in
           ];
           "application/vnd.oasis.opendocument.presentation" = lib.mkIf cfg.components.stage [
             "org.kde.calligrastage.desktop"
+          ];
+          "application/vnd.oasis.opendocument.graphics" = lib.mkIf cfg.components.karbon [
+            "org.kde.karbon.desktop"
+          ];
+          "application/x-vnd.kde.plan" = lib.mkIf cfg.components.plan [
+            "org.kde.calligraplan.desktop"
           ];
         };
       };

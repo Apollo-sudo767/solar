@@ -1,3 +1,6 @@
+# modules/programs/media/vlc.nix
+#
+# Installs VLC media player and preserves user configuration on Linux.
 {
   config,
   lib,

@@ -1,3 +1,7 @@
+# modules/programs/utilities/filemanager/nautilus.nix
+#
+# Configures GNOME Nautilus file manager, File Roller archive manager,
+# default directory MIME associations, and state preservation on NixOS.
 {
   config,
   lib,

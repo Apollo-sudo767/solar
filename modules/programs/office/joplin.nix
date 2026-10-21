@@ -1,9 +1,12 @@
+# modules/programs/office/joplin.nix
+#
+# Configures Joplin Desktop and CLI note-taking clients along with curated
+# academic plugins (Jopdoc, BibTeX, Outline, Rich Markdown) across Linux and macOS.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 

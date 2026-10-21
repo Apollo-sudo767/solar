@@ -1,7 +1,14 @@
+# modules/darwin/suites/workstation.nix
+# ============================================================================
+# macOS (`nix-darwin`) Workstation Suite (`phobos`)
+# ============================================================================
+# Bundles macOS system defaults (`darwin.system.core`), declarative Homebrew
+# casks (`darwin.system.homebrew`), Zsh + Starship shell, developer CLI tools
+# (`helix`, `fastfetch`, `antigravity`, `direnv`), Commander One file manager,
+# and AP-Office for Apple Silicon / Intel Mac hosts.
 {
   config,
   lib,
-  isDarwin,
   ...
 }:
 
@@ -65,7 +72,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable && isDarwin) {
+  config = lib.mkIf cfg.enable {
     myFeatures = {
       core.shell = {
         cli.enable = lib.mkDefault true;

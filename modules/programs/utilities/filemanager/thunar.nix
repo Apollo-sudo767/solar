@@ -1,3 +1,7 @@
+# modules/programs/utilities/filemanager/thunar.nix
+#
+# Configures XFCE Thunar file manager, tumbler thumbnailer, archive/volman
+# plugins, default directory MIME associations, and state preservation on NixOS.
 {
   config,
   lib,

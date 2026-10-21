@@ -1,8 +1,10 @@
+# modules/programs/office/typst.nix
+#
+# Installs the Typst typesetting engine and PDF compiler across Linux and macOS (`isTotal`).
 {
   config,
   lib,
   pkgs,
-  isDarwin,
   isTotal ? true,
   ...
 }:

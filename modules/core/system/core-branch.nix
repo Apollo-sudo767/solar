@@ -1,3 +1,12 @@
+# modules/core/system/core-branch.nix
+# ============================================================================
+# Core System Foundation (`core-branch`)
+# ============================================================================
+# Acts as the primary baseline switch for every Solar host. Enabling
+# `myFeatures.core.system.core-branch.enable = true;` automatically turns on
+# essential system defaults (Nix store settings, Cachix binary caches, fonts,
+# timezone/locale, OpenSSH, user accounts, bootloader, and Disko on Linux)
+# using `lib.mkDefault` so any host can override individual pieces.
 {
   lib,
   config,
@@ -15,7 +24,7 @@ in
     usePersistence = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Enable Wipe-on-Boot Preservation for this host.";
+      description = "Enable Wipe-on-Boot Preservation (ephemeral tmpfs `/` with persistent `/persist`) for this host.";
     };
     virtualization = {
       docker = lib.mkEnableOption "Docker Engine";
@@ -23,9 +32,9 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf (cfg.enable && isTotal) (
     lib.mkMerge [
-      # Universal Core Features (Loaded on both Mac and Linux)
+      # 1. Universal Core Features (Evaluated on both macOS and Linux)
       {
         myFeatures.core = {
           nix.nix-settings.enable = lib.mkDefault true;
@@ -39,15 +48,16 @@ in
         };
       }
 
-      # Linux-Only Core Features (Completely erased from macOS view)
+      # 2. Linux-Only Core Features (Completely omitted on macOS)
       (lib.optionalAttrs (!isDarwin) {
-        myFeatures.core.boot.enable = lib.mkDefault true;
-        myFeatures.core.system.virtualization.docker = lib.mkIf cfg.virtualization.docker (
-          lib.mkDefault true
-        );
-        myFeatures.core.system.virtualization.libvirt = lib.mkIf cfg.virtualization.libvirt (
-          lib.mkDefault true
-        );
+        myFeatures.core = {
+          boot.enable = lib.mkDefault true;
+          system.virtualization = {
+            enable = lib.mkIf (cfg.virtualization.docker || cfg.virtualization.libvirt) (lib.mkDefault true);
+            docker = lib.mkIf cfg.virtualization.docker (lib.mkDefault true);
+            libvirt = lib.mkIf cfg.virtualization.libvirt (lib.mkDefault true);
+          };
+        };
       })
     ]
   );

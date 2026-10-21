@@ -1,3 +1,6 @@
+# modules/platforms/addons/swaybg.nix
+#
+# Configures a `swaybg` user systemd service to display the Stylix wallpaper.
 {
   config,
   lib,

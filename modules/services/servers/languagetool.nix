@@ -1,9 +1,13 @@
+# modules/services/servers/languagetool.nix
+# ============================================================================
+# LanguageTool Self-Hosted Proofreading API Server
+# ============================================================================
+# Runs a local/self-hosted LanguageTool HTTP API server on Linux and opens its
+# configured TCP port in the firewall.
 {
   config,
   lib,
-  pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 
@@ -18,11 +22,6 @@ in
       default = 8010;
       description = "Listening port for LanguageTool HTTP API server.";
     };
-    baseUrl = lib.mkOption {
-      type = lib.types.str;
-      default = "https://languagetool.apollan.cc";
-      description = "Public base URL of self-hosted LanguageTool server.";
-    };
     allowOrigin = lib.mkOption {
       type = lib.types.str;
       default = "*";
@@ -34,8 +33,7 @@ in
     lib.optionalAttrs (!isDarwin) {
       services.languagetool = {
         enable = true;
-        inherit (cfg) port;
-        inherit (cfg) allowOrigin;
+        inherit (cfg) port allowOrigin;
         public = true;
       };
 

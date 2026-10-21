@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/swaylock.nix
+#
+# Applies Stylix wallpaper and Base16 colors to `swaylock` via Home Manager.
 {
   config,
   lib,

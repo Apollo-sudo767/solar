@@ -1,8 +1,11 @@
+# modules/services/networking/tailscale.nix
+#
+# Configures the Tailscale mesh VPN service across Linux and macOS, including
+# routing features and `/var/lib/tailscale` state preservation on NixOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

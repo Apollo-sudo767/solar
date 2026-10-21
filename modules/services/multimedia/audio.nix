@@ -1,14 +1,16 @@
+# modules/services/multimedia/audio.nix
+#
+# Configures PipeWire audio server, RTKit, ALSA/Pulse/JACK compatibility,
+# state preservation on Linux, and CLI audio utilities across Linux and macOS.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 
 let
-  inherit isDarwin;
   cfg = config.myFeatures.services.multimedia.audio;
 in
 {

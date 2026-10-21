@@ -1,3 +1,6 @@
+# modules/platforms/addons/displayManager/tuigreet.nix
+#
+# Configures `greetd` + `tuigreet` terminal greeter when selected via `displayManager.manager`.
 {
   config,
   lib,

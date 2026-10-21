@@ -1,3 +1,7 @@
+# modules/suites/desktops/bspwm.nix
+#
+# Desktop suite enabling Bspwm alongside Nautilus, Yazi, GNOME Software,
+# and PipeWire audio.
 {
   config,
   lib,

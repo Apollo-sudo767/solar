@@ -1,3 +1,10 @@
+# modules/platforms/desktops/cosmic.nix
+# ============================================================================
+# System76 COSMIC Epoch Wayland Desktop Environment
+# ============================================================================
+# Enables the COSMIC desktop session and preserves user COSMIC configuration
+# across reboots. Login greeter selection (`cosmic-greeter` vs `regreet`/etc.)
+# is managed via `myFeatures.platforms.addons.displayManager.manager`.
 {
   config,
   lib,
@@ -13,7 +20,6 @@ in
 
   config = lib.mkIf cfg.enable {
     services.desktopManager.cosmic.enable = true;
-    services.displayManager.cosmic-greeter.enable = true;
 
     preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
       lib.mkIf config.myFeatures.core.system.preservation.enable

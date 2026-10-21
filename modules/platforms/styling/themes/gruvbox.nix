@@ -1,3 +1,7 @@
+# modules/platforms/styling/themes/gruvbox.nix
+#
+# Defines the Gruvbox Base16 color scheme and default wallpaper for Stylix
+# across Linux and macOS (`isTotal`).
 {
   config,
   lib,

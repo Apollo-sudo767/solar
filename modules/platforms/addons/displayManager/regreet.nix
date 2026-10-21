@@ -1,3 +1,7 @@
+# modules/platforms/addons/displayManager/regreet.nix
+#
+# Configures `greetd` + `regreet` running on Sway with multi-GPU DRM discovery,
+# Niri monitor output synchronization, and Stylix GTK4 CSS theming on NixOS.
 {
   config,
   options,

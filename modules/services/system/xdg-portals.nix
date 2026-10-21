@@ -1,3 +1,7 @@
+# modules/services/system/xdg-portals.nix
+#
+# Configures XDG desktop portals (`gtk`, `gnome`, `kde`, `cosmic`) and
+# XDG autostart on NixOS.
 {
   config,
   lib,

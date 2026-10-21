@@ -1,3 +1,7 @@
+# modules/suites/creator.nix
+#
+# Suite module bundling content creation and media production tools (Kdenlive,
+# DaVinci Resolve, OBS Studio, VLC, MPV/imv, and ani-cli).
 {
   config,
   lib,

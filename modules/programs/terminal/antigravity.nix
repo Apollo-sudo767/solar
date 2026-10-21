@@ -1,3 +1,7 @@
+# modules/programs/terminal/antigravity.nix
+#
+# Installs the Antigravity CLI agent (`antigravity-cli`), sets the `float`
+# shell alias, and preserves agent state across Linux and macOS (`isTotal`).
 {
   config,
   lib,

@@ -1,3 +1,7 @@
+# modules/suites/server.nix
+#
+# Suite module for headless NixOS servers, enabling hardened OpenSSH,
+# Tailscale, automated garbage collection, Lix, Udisks2, and `nh`.
 {
   config,
   lib,

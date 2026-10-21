@@ -1,9 +1,11 @@
+# modules/services/servers/zotero.nix
+#
+# Configures a self-hosted WebDAV server and Nginx reverse proxy for Zotero
+# attachment synchronization on NixOS.
 {
   config,
   lib,
-  pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 

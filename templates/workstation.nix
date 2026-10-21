@@ -1,8 +1,17 @@
 # templates/workstation.nix
-# Template for creating a new functional workflow suite under modules/suites/
-# Adheres strictly to "The Suite Law":
-# Suites bundle functional workflows with lib.mkDefault. Styling, themes, and display managers
-# are strictly declared per host leaf and NEVER leaked into suites.
+# ============================================================================
+# Functional Workflow Suite Template (`modules/suites/<name>.nix`)
+# ============================================================================
+# Suites group related leaf features (`modules/programs/*`, `modules/services/*`)
+# into high-level toggles (like `workstation`, `gaming`, `laptop`, `server`).
+#
+# Architectural Rules ("The Suite Law"):
+# 1. Always use `lib.mkDefault true` when enabling leaf features inside a suite
+#    so individual hosts can easily override or disable specific tools.
+# 2. Expose granular sub-options (defaulting to `true`) so hosts can opt out of
+#    entire categories or individual programs cleanly.
+# 3. NEVER put themes (`stylix`, `flavors`, `themes`) or display managers inside
+#    a functional workflow suite—visual identity is strictly chosen per host leaf.
 {
   config,
   lib,

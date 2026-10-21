@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/ironbar.nix
+#
+# Generates a Stylix-themed CSS stylesheet for the Ironbar status bar.
 {
   config,
   lib,

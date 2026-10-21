@@ -1,3 +1,9 @@
+# modules/platforms/styling/flavors/space.nix
+# ============================================================================
+# Space Desktop Flavor
+# ============================================================================
+# Combines the Space (Ayu Dark-inspired) Stylix color scheme with Niri and
+# default keybindings.
 {
   config,
   lib,
@@ -18,31 +24,9 @@ in
       styling.themes.space.enable = true;
 
       # 2. Compositor / Window Manager Styling
-      desktops.niri = {
-        enable = lib.mkDefault true;
-        settings = {
-          layout = {
-            default-column-width = lib.mkDefault { proportion = 0.5; };
-            background-color = "transparent";
-            gaps = 8;
-            focus-ring.off = { };
-            border = {
-              width = 2;
-              active-color = if config.stylix.enable then "#${config.lib.stylix.colors.base0D}" else "#59c2ff";
-              inactive-color = if config.stylix.enable then "#${config.lib.stylix.colors.base02}" else "#1e2430";
-            };
-          };
-          _children = [
-            {
-              window-rule._children = [
-                { geometry-corner-radius = 10.0; }
-                { clip-to-geometry = true; }
-              ];
-            }
-          ];
-        };
-      };
-
+      # Base layout, borders, and rounded corners are handled by `niri/layout.nix`
+      # and `stylix-bridge/niri.nix`.
+      desktops.niri.enable = lib.mkDefault true;
       styling.niriKeybinds.enable = lib.mkDefault true;
     };
   };

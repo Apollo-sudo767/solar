@@ -1,3 +1,11 @@
+# modules/core/security/ssh.nix
+# ============================================================================
+# OpenSSH Daemon, Client Agent & Host Key Persistence
+# ============================================================================
+# Enables OpenSSH across Linux and macOS, pre-populates GitHub's Ed25519 host
+# key, preserves `SSH_AUTH_SOCK` across `sudo` invocations on Linux, disables
+# the conflicting GNOME `gcr-ssh-agent` so hardware keys work reliably, and
+# persists `/etc/ssh` host keys across reboots on ephemeral-root systems.
 {
   config,
   lib,
@@ -14,12 +22,11 @@ in
     enable = lib.mkEnableOption "SSH Service";
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf (cfg.enable && isTotal) (
     lib.mkMerge [
-      # 1. Common configuration for both Mac and Linux
+      # 1. Cross-Platform SSH Configuration (macOS & Linux)
       {
         services.openssh.enable = true;
-        # Disable conflicting GCR agent to ensure OpenSSH agent works for hardware keys
 
         programs.ssh.extraConfig = ''
           AddKeysToAgent yes
@@ -29,16 +36,15 @@ in
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
       }
 
-      # 2. Sudo SSH agent socket preservation (Linux-only)
+      # 2. Linux-Only OpenSSH Daemon, Sudo Socket Forwarding & Key Persistence
       (lib.optionalAttrs (!isDarwin) {
+        # Preserve SSH agent socket when elevating privileges with `sudo`
         security.sudo.extraConfig = ''
           Defaults env_keep += "SSH_AUTH_SOCK"
         '';
-      })
 
-      # 3. Linux-only configuration (Shielded from the Mac Evaluator)
-      (lib.optionalAttrs (!isDarwin) {
         programs.ssh.startAgent = true;
+
         services.openssh = {
           hostKeys = [
             {
@@ -51,11 +57,12 @@ in
             }
           ];
           settings = {
-            PermitRootLogin = "prohibit-password";
-            PasswordAuthentication = true;
+            PermitRootLogin = lib.mkDefault "prohibit-password";
+            PasswordAuthentication = lib.mkDefault true;
           };
         };
-        # Disable conflicting GCR agent to ensure OpenSSH agent works for hardware keys
+
+        # Disable conflicting GCR agent so the standard OpenSSH agent handles hardware keys
         services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =

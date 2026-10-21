@@ -1,3 +1,7 @@
+# modules/programs/utilities/filemanager/nemo.nix
+#
+# Configures Cinnamon Nemo file manager with extensions, default directory
+# MIME associations, and state preservation on NixOS.
 {
   config,
   lib,

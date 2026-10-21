@@ -1,3 +1,13 @@
+# modules/core/boot/boot.nix
+# ============================================================================
+# Common Linux Kernel, Initrd & Boot Optimization Module
+# ============================================================================
+# Configures the Linux kernel variant (`default`, `latest`, `zen`, `xanmod`),
+# systemd-based zstd-compressed initrd with TPM2 support, BBR TCP congestion
+# control, Plymouth splash screen, journald size caps, and redistributable
+# Linux hardware firmware.
+# (Note: Automatic weekly garbage collection to keep `/boot` clean is configured
+# canonically in `modules/core/nix/nix-settings.nix`.)
 {
   config,
   lib,
@@ -19,7 +29,7 @@ in
         "systemd"
       ];
       default = "limine";
-      description = "The bootloader to use.";
+      description = "The UEFI bootloader to use.";
     };
     secureBoot = {
       enable = lib.mkEnableOption "Native Bootloader Secure Boot";
@@ -32,7 +42,7 @@ in
         "xanmod"
       ];
       default = "default";
-      description = "The kernel package to use.";
+      description = "The Linux kernel package variant to use.";
     };
     resolution = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
@@ -54,7 +64,7 @@ in
   };
 
   config = lib.mkIf (cfg.enable && cfg.boot.enable) {
-    # Kernel Selection
+    # 1. Kernel Variant Selection
     boot.kernelPackages =
       if cfg.kernel == "latest" then
         pkgs.linuxPackages_latest
@@ -76,16 +86,14 @@ in
       else
         "bzImage";
 
-    # Enable UEFI support
+    # 2. UEFI & Bootloader Defaults
     boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
-
-    # Bootloader timeout optimization
     boot.loader.timeout = lib.mkDefault cfg.timeout;
 
-    # Fast boot optimizations
+    # 3. Fast Boot & Journald Cap Optimizations
     systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
-    # Prevent journal log bloat from slowing down systemd-tmpfiles-setup.service
+    # Cap systemd-journald disk usage to prevent slow boot-time tmpfiles scans
     services.journald =
       if (options.services.journald ? settings) then
         {
@@ -102,10 +110,8 @@ in
           '';
         };
 
-    # The native "Nix-Way" to pass compression properties to the initrd builder engine
+    # 4. Early RAM Disk (Initrd) & TPM2 Configuration
     boot.initrd.compressor = "zstd";
-
-    # Strip out non-essential module footprints from the early RAM disk phase
     boot.initrd.availableKernelModules = [
       "nvme"
       "xhci_pci"
@@ -114,10 +120,10 @@ in
       "usb_storage"
       "sd_mod"
     ];
-
     boot.initrd.systemd.enable = true;
     boot.initrd.systemd.tpm2.enable = true;
 
+    # 5. Quiet Boot & Network Stack Tuning (TCP BBR + fq qdisc)
     boot.kernelParams = [
       "quiet"
       "loglevel=3"
@@ -132,16 +138,9 @@ in
 
     boot.plymouth.enable = lib.mkDefault cfg.plymouth.enable;
 
+    # 6. Redistributable Hardware Firmware
     hardware.enableAllFirmware = lib.mkDefault false;
     hardware.enableRedistributableFirmware = true;
     hardware.firmware = [ pkgs.linux-firmware ];
-
-    # Clean alternative to generationLimit: Prevent profile bloating inside /boot
-    # by automatically sweeping up older generations on a predictable schedule.
-    nix.gc = {
-      automatic = lib.mkDefault true;
-      dates = lib.mkDefault "weekly";
-      options = lib.mkDefault "--delete-older-than 7d";
-    };
   };
 }

@@ -1,30 +1,22 @@
-{
-  config,
-  lib,
-  modulesPath,
-  ...
-}:
+# modules/hosts/sol/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Sol (Central ZFS NAS & Storage Server)
+# ==============================================================================
+# Extends `../shared/hardware.nix` with SATA AHCI, SAS/SATA HBA (`mpt3sas`),
+# and Intel/Realtek NIC initrd drivers.
+# ==============================================================================
+
+_:
 
 {
   imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
     ../shared/hardware.nix
   ];
 
   boot.initrd.availableKernelModules = [
-    "xhci_pci"
     "ahci"
-    "nvme"
-    "usb_storage"
-    "sd_mod"
     "e1000e"
     "r8169"
     "mpt3sas" # SAS/SATA HBA controller support
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

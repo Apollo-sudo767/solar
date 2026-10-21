@@ -1,3 +1,12 @@
+# modules/hosts/installer/default.nix
+# ==============================================================================
+# Host Configuration — Solar Live Graphical & Console Installer ISO
+# ==============================================================================
+# Builds a bootable UEFI/USB ISO image (`nix build .#iso`) bundling XFCE (safe
+# mode default), KDE Plasma 6, GNOME, and text-mode specialisations alongside
+# the interactive `solar-install` TUI/CLI installer and offline flake snapshot.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";
@@ -74,8 +83,6 @@
         boot.boot.enable = false;
         security.agenix.enable = false;
       };
-
-      networking.hostName = "installer";
 
       # Networking via NetworkManager (disable conflicting wireless wpa_supplicant)
       networking.networkmanager.enable = true;

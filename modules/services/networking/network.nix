@@ -1,8 +1,15 @@
+# modules/services/networking/network.nix
+# ============================================================================
+# Core Networking & NetworkManager Suite
+# ============================================================================
+# Configures NetworkManager on Linux with Cloudflare (1.0.0.1) and Quad9
+# (9.9.9.9) DNS resolvers, IPv4-first gai.conf precedence (preventing Steam CDN
+# stalls), and ephemeral-root state preservation for NetworkManager,
+# wpa_supplicant, and iwd.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

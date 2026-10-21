@@ -1,3 +1,10 @@
+# modules/platforms/desktops/labwc.nix
+# ============================================================================
+# Labwc Stacking Wayland Compositor
+# ============================================================================
+# Configures Labwc (an Openbox-inspired wlroots stacking compositor) with
+# Waybar, Fuzzel, `xdg-desktop-portal-wlr`, default XML keybindings, and
+# `~/.config/labwc` preservation.
 {
   config,
   lib,
@@ -7,7 +14,6 @@
 
 let
   cfg = config.myFeatures.platforms.desktops.labwc;
-  stylixEnabled = config.myFeatures.platforms.styling.stylix.enable or false;
 in
 {
   options.myFeatures.platforms.desktops.labwc = {

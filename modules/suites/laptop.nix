@@ -1,3 +1,10 @@
+# modules/suites/laptop.nix
+# ============================================================================
+# Laptop Hardware & Mobility Suite
+# ============================================================================
+# Bundles battery charge thresholds (`tpacpi-bat`), CPU governor scaling
+# (`auto-cpufreq`), Bluetooth, Wi-Fi, multi-touch trackpad gestures, and
+# automatic idle screen locking for portable machines (`mercury`, `europa`).
 {
   config,
   lib,
@@ -15,7 +22,7 @@ in
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Enable battery charge thresholds and TLP power profile optimizations.";
+        description = "Enable ThinkPad battery charge thresholds (`tpacpi-bat`) and `auto-cpufreq` power management.";
       };
     };
 

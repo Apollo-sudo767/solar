@@ -1,3 +1,11 @@
+# modules/hosts/io/default.nix
+# ==============================================================================
+# Host Configuration — Io (Intel Desktop Workstation)
+# ==============================================================================
+# System76 COSMIC Epoch desktop workstation with Disko storage, cosmic-greeter,
+# and Space Stylix theme.
+# ==============================================================================
+
 {
   meta = {
     system = "x86_64-linux";

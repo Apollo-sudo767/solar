@@ -1,9 +1,12 @@
+# modules/services/multimedia/sunshine.nix
+#
+# Configures the Sunshine GameStream host service, firewall rules, uinput
+# permissions, and Avahi discovery across Linux and macOS.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal,
   ...
 }:
 

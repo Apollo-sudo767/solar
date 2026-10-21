@@ -1,3 +1,7 @@
+# modules/platforms/desktops/gnome.nix
+#
+# Configures the GNOME desktop environment, package exclusions, and dconf/keyring
+# state preservation on NixOS.
 {
   config,
   lib,

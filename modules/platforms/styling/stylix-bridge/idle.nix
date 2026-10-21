@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/idle.nix
+#
+# Applies Stylix wallpaper and Base16 colors to the `swayidle` lock command.
 {
   config,
   lib,

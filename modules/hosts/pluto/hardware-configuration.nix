@@ -1,3 +1,11 @@
+# modules/hosts/pluto/hardware-configuration.nix
+# ==============================================================================
+# Hardware Configuration — Pluto (Beelink EQR5, AMD Ryzen 7 5825U)
+# ==============================================================================
+# Declares AMD virtualization (`kvm-amd`), microcode updates, and initrd PCIe/
+# SATA/NVMe/Realtek NIC modules. Storage layout is managed by Disko.
+# ==============================================================================
+
 {
   config,
   lib,
@@ -8,7 +16,6 @@
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    ../shared/hardware.nix
   ];
 
   boot.initrd.availableKernelModules = [

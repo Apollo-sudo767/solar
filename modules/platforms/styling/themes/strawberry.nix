@@ -1,3 +1,7 @@
+# modules/platforms/styling/themes/strawberry.nix
+#
+# Defines the light-polarity Strawberry Base16 color scheme and default
+# wallpaper for Stylix across Linux and macOS (`isTotal`).
 {
   config,
   lib,

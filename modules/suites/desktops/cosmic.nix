@@ -1,3 +1,10 @@
+# modules/suites/desktops/cosmic.nix
+# ============================================================================
+# COSMIC Desktop Suite
+# ============================================================================
+# Composite desktop suite for System76's COSMIC desktop environment. Enables
+# the COSMIC compositor/session, defaults the display manager to
+# `cosmic-greeter`, and enables PipeWire audio and CUPS printing.
 {
   config,
   lib,
@@ -30,7 +37,10 @@ in
 
   config = lib.mkIf cfg.enable {
     myFeatures = {
-      platforms.desktops.cosmic.enable = true;
+      platforms = {
+        desktops.cosmic.enable = true;
+        addons.displayManager.manager = lib.mkDefault "cosmic-greeter";
+      };
 
       services = {
         multimedia.audio.enable = lib.mkIf cfg.audio.enable (lib.mkDefault true);

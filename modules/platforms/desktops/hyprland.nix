@@ -1,3 +1,7 @@
+# modules/platforms/desktops/hyprland.nix
+#
+# Configures the Hyprland Wayland compositor, declarative monitor layouts,
+# Stylix border theming, keybindings, XDG portals, and state preservation on NixOS.
 {
   config,
   lib,

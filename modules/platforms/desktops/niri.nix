@@ -1,3 +1,13 @@
+# modules/platforms/desktops/niri.nix
+# ============================================================================
+# Niri Scrollable-Tiling Wayland Compositor
+# ============================================================================
+# Core module for the Niri window manager. Provides:
+# - Recursive KDL settings schema (`myFeatures.platforms.desktops.niri.settings`)
+# - Configurable modifier key (`modKey`: "super" or "left-alt", wired in `niri/input.nix`)
+# - Startup session activation and Noctalia v5 spawning
+# - Unified `niri-lock` / `lock-screen` helper scripts
+# - Impermanence state preservation for Niri and Mesa shader caches
 {
   config,
   lib,
@@ -47,7 +57,6 @@ in
     };
   };
 
-  # Shield everything
   config = lib.mkIf cfg.enable {
     programs.niri = {
       enable = true;
@@ -68,9 +77,6 @@ in
           ];
         }
       ]
-      ++ (lib.optionals config.myFeatures.platforms.addons.noctalia-shell.enable [
-        { spawn-at-startup._args = [ "noctalia-shell" ]; }
-      ])
       ++ (lib.optionals config.myFeatures.platforms.addons.noctalia-v5.enable [
         { spawn-at-startup._args = [ "noctalia" ]; }
       ]);
@@ -81,10 +87,6 @@ in
         niri-lock = pkgs.writeShellScriptBin "niri-lock" ''
           if ${pkgs.procps}/bin/pgrep -x "noctalia" >/dev/null 2>&1 && ${pkgs.which}/bin/which noctalia >/dev/null 2>&1; then
             noctalia msg session lock && exit 0
-          fi
-
-          if ${pkgs.procps}/bin/pgrep -x "noctalia-shell" >/dev/null 2>&1 && ${pkgs.which}/bin/which noctalia-shell >/dev/null 2>&1; then
-            noctalia-shell ipc call lockScreen lock && exit 0
           fi
 
           if ${pkgs.which}/bin/which swaylock >/dev/null 2>&1; then
@@ -113,20 +115,14 @@ in
         wl-clipboard
         libnotify
       ]
-      ++
-        lib.optionals
-          (
-            !config.myFeatures.platforms.addons.noctalia-shell.enable
-            && !config.myFeatures.platforms.addons.noctalia-v5.enable
-          )
-          [
-            fuzzel
-            mako
-            swaynotificationcenter
-            swaybg
-            swayidle
-            swaylock
-          ];
+      ++ lib.optionals (!config.myFeatures.platforms.addons.noctalia-v5.enable) [
+        fuzzel
+        mako
+        swaynotificationcenter
+        swaybg
+        swayidle
+        swaylock
+      ];
 
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       wayland.windowManager.niri = {

@@ -1,3 +1,6 @@
+# modules/programs/media/ani-cli.nix
+#
+# Installs the `ani-cli` terminal anime streaming client and preserves watch history.
 {
   config,
   lib,

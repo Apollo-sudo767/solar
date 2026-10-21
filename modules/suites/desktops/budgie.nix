@@ -1,3 +1,7 @@
+# modules/suites/desktops/budgie.nix
+#
+# Desktop suite enabling the Budgie desktop environment alongside Nautilus,
+# Yazi, GNOME Software, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

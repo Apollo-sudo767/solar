@@ -1,8 +1,11 @@
+# modules/services/networking/cloudflare.nix
+#
+# Configures the `cloudflared` tunnel daemon and ingress routing on NixOS
+# while keeping options cross-platform safe on macOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

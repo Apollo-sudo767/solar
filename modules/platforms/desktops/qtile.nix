@@ -1,3 +1,7 @@
+# modules/platforms/desktops/qtile.nix
+#
+# Configures the Qtile tiling window manager (Wayland or X11 backend),
+# declarative `config.py`, and state preservation on NixOS.
 {
   config,
   lib,

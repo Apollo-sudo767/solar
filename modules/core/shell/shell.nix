@@ -1,8 +1,19 @@
+# modules/core/shell/shell.nix
+# ============================================================================
+# Interactive Zsh & Starship Prompt Configuration
+# ============================================================================
+# Configures Zsh as the interactive user shell across NixOS and macOS:
+# - Enables `cli.nix` by default so `eza`, `fzf`, and `helix` are always present.
+# - Sets `NH_FLAKE` to the user's Solar checkout (`~/src/solar`) so `nh` commands
+#   work from any working directory.
+# - Configures the Starship prompt with a clean minimal format (`$directory$git_branch$character`)
+#   and Gruvbox fallback colors (overridden automatically when Stylix is enabled).
+# - Defines system-wide rebuild/cleanup aliases (`nrs`, `nrb`, `drs`, `nc`, etc.)
+#   and user-level Zsh completion, syntax highlighting, history, and git/eza aliases.
 {
   config,
   lib,
   pkgs,
-  inputs ? null,
   isTotal,
   ...
 }:
@@ -13,16 +24,14 @@ in
 {
   options.myFeatures.core.shell.shell.enable = lib.mkEnableOption "Apollo's Zsh & Starship Setup";
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isTotal) {
+    # Ensure core CLI utilities (`eza`, `fzf`, `helix`, etc.) are available
+    myFeatures.core.shell.cli.enable = lib.mkDefault true;
+
     environment.enableAllTerminfo = true;
-
-    environment.systemPackages = [
-      pkgs.eza
-      pkgs.fzf
-    ];
-
     programs.zsh.enable = true;
 
+    # Point `nh` to the local Solar flake repository automatically
     environment.variables = {
       NH_FLAKE =
         if pkgs.stdenv.hostPlatform.isDarwin then
@@ -31,6 +40,7 @@ in
           "/home/${config.myFeatures.core.system.users.mainUser}/src/solar";
     };
 
+    # System-wide Nix & `nh` helper aliases (automatically inherited by all shells)
     environment.shellAliases = {
       nrs = "nh os switch --no-nom";
       nrb = "nh os boot --no-nom";
@@ -42,6 +52,7 @@ in
       nco = "nh clean all --keep 5 --keep-since 7d --optimise";
     };
 
+    # Per-user Starship prompt & interactive Zsh configuration via Home Manager
     home-manager.users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
       programs.starship = {
         enable = true;
@@ -51,27 +62,22 @@ in
           add_newline = false;
           format = "$directory$git_branch$character";
 
-          # Clean Gruvbox Directory
           directory = {
             style = lib.mkDefault "bold fg:214"; # Gruvbox Orange
             truncation_length = 3;
             fish_style_pwd_dir_length = 1;
           };
 
-          # Git Branch with the icon you were using
           git_branch = {
             symbol = " ";
             style = lib.mkDefault "bold fg:142"; # Gruvbox Green
           };
 
-          # Character symbols (➜)
           character = {
             success_symbol = lib.mkDefault "[➜](bold fg:108)"; # Gruvbox Aqua
             error_symbol = lib.mkDefault "[➜](bold fg:167)"; # Gruvbox Red
           };
 
-          # Fixed Palette (Underscores only, no hyphens)
-          # palette = lib.mkDefault "gruvbox_dark"; # Stylix will handle this
           palettes.gruvbox_dark = {
             black = "#282828";
             bright_black = "#928374";
@@ -108,33 +114,22 @@ in
           share = true;
         };
 
+        # User-level productivity aliases (system rebuild aliases come from `environment.shellAliases`)
         shellAliases = {
-          # The Seeding Command: RAM-only, vanishes on reboot
-          seed = "export BW_SESSION=$(bw unlock --raw) && mkdir -p /run/user/$(id -u)/sops && bw get item 'Solar Age Master' | jq -r '.notes' > /run/user/$(id -u)/sops/keys.txt && chmod 600 /run/user/$(id -u)/sops/keys.txt";
-          unseed = "rm -f /run/user/$(id -u)/sops/keys.txt && echo 'Solar Master Key purged from RAM.'";
           ls = "eza --icons --ignore-glob='LICENSE*|README*|flake.lock|.git'";
           ll = "ls -l";
           la = "eza -a";
-          # Use nh with clean output
-          nrs = "nh os switch --no-nom";
-          nrb = "nh os boot --no-nom";
-          drs = "nh darwin switch --no-nom";
-          nfu = "nix flake update";
-          nfc = "nix flake check";
-          nc = "nh clean all --keep 5 --keep-since 7d";
-          ncl = "nh clean all --keep 5 --keep-since 7d";
-          nco = "nh clean all --keep 5 --keep-since 7d --optimise";
           gs = "git status";
           ga = "git add";
           gc = "git commit";
-          v = "hx"; # Short for Helix
+          v = "hx"; # Helix modal editor
           ff = "fastfetch --config examples/24.jsonc";
         };
 
         initContent = ''
-          # General Shell Prefs
+          # General Shell Preferences
           export EDITOR=hx
-          export DIRENV_LOG_FORMAT="" # Quiet direnv chatter
+          export DIRENV_LOG_FORMAT="" # Quiet direnv log output
         '';
       };
     });

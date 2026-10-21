@@ -1,3 +1,6 @@
+# modules/programs/media/davinci.nix
+#
+# Installs DaVinci Resolve non-linear video editor and preserves user project data.
 {
   config,
   lib,

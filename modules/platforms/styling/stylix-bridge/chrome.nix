@@ -1,3 +1,6 @@
+# modules/platforms/styling/stylix-bridge/chrome.nix
+#
+# Bridges Stylix Chromium theming when Chrome/Chromium is enabled.
 {
   config,
   lib,

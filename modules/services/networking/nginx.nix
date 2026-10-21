@@ -1,8 +1,11 @@
+# modules/services/networking/nginx.nix
+#
+# Configures Nginx reverse proxy, ACME DNS-01 certificates via Cloudflare,
+# and HTTP/HTTPS firewall rules on NixOS.
 {
   config,
   lib,
   isDarwin,
-  isTotal,
   ...
 }:
 

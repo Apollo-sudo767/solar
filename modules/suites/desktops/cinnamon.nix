@@ -1,3 +1,7 @@
+# modules/suites/desktops/cinnamon.nix
+#
+# Desktop suite enabling the Cinnamon desktop environment alongside Nemo,
+# Yazi, GNOME Software, PipeWire audio, and CUPS printing.
 {
   config,
   lib,

@@ -1,39 +1,34 @@
+# modules/services/networking/surfshark.nix
+# ============================================================================
+# Surfshark VPN Client
+# ============================================================================
+# Cross-platform Surfshark VPN client:
+# - On Linux: Installed declaratively via nix-flatpak (`com.surfshark.Surfshark`)
+#   with a `surfshark` CLI wrapper. Flatpak `.var` state is preserved globally
+#   by `modules/services/system/flatpak.nix`, while `~/.config/Surfshark` is
+#   preserved here.
+# - On macOS: Installed via Homebrew Cask.
 {
   config,
   lib,
   pkgs,
   isDarwin,
-  isTotal ? true,
   ...
 }:
 
 let
   cfg = config.myFeatures.services.networking.surfshark;
-  progCfg = config.myFeatures.programs.utilities.surfshark;
-  flatpakCfg = config.myFeatures.services.system.flatpak.surfshark;
-
-  enabled = cfg.enable || (progCfg.enable or false) || (flatpakCfg.enable or false);
 in
 {
-  options = {
-    myFeatures.services.networking.surfshark = {
-      enable = lib.mkEnableOption "Surfshark VPN client (via Flatpak on Linux, Homebrew Cask on macOS)";
-    };
-
-    # Backwards compatibility and convenience aliases
-    myFeatures.programs.utilities.surfshark = {
-      enable = lib.mkEnableOption "Surfshark VPN (alias for services.networking.surfshark)";
-    };
-    myFeatures.services.system.flatpak.surfshark = {
-      enable = lib.mkEnableOption "Surfshark VPN via Flatpak (alias for services.networking.surfshark)";
-    };
+  options.myFeatures.services.networking.surfshark = {
+    enable = lib.mkEnableOption "Surfshark VPN client (via Flatpak on Linux, Homebrew Cask on macOS)";
   };
 
-  config = lib.mkIf enabled (
+  config = lib.mkIf cfg.enable (
     lib.mkMerge [
       # 1. Linux configuration (Flatpak declarative installation via nix-flatpak)
       (lib.optionalAttrs (!isDarwin) {
-        # Ensure Flatpak support is enabled
+        # Ensure Flatpak support is enabled (which also preserves ~/.var)
         myFeatures.services.system.flatpak.enable = lib.mkDefault true;
 
         # Declarative package installation via nix-flatpak
@@ -48,13 +43,12 @@ in
           '')
         ];
 
-        # Preservation of Surfshark configuration and credentials on ephemeral root
+        # Preservation of native Surfshark configuration on ephemeral root
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable
             {
               users = lib.genAttrs config.myFeatures.core.system.users.usernames (_name: {
                 directories = [
-                  ".var/app/com.surfshark.Surfshark"
                   ".config/Surfshark"
                 ];
               });

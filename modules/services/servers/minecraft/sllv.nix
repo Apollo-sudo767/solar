@@ -1,10 +1,13 @@
+# modules/services/servers/minecraft/sllv.nix
+#
+# Configures the SLLV MCA (Fabric 1.21.1) Minecraft server with declarative
+# Modrinth mod fetching and automated BorgBackup snapshots on NixOS.
 {
   config,
   lib,
   pkgs,
   inputs,
   isDarwin,
-  isTotal,
   ...
 }:
 

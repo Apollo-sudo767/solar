@@ -393,7 +393,7 @@ sudo sbctl enroll-keys --microsoft
 
 ### Step 4: Sign Bootloaders and Kernels
 
-Sign both the primary Limine EFI binary, the universal UEFI fallback binary (`/boot/EFI/BOOT/BOOTX64.EFI`), and the active kernel:
+Sign both the primary Limine EFI binary and the universal UEFI fallback binary (`/boot/EFI/BOOT/BOOTX64.EFI`):
 
 ```bash
 # 1. Mirror and sign Limine bootloaders
@@ -403,12 +403,12 @@ sudo cp -u /boot/efi/limine/BOOTX64.EFI /boot/EFI/BOOT/BOOTX64.EFI
 sudo sbctl sign -s /boot/efi/limine/BOOTX64.EFI
 sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
 
-# 2. Sign all installed kernels
-sudo sh -c 'sbctl sign -s /boot/limine/kernels/*bzImage*'
-
-# 3. Verify all signatures are valid (all green checkmarks)
+# 2. Verify bootloader signatures
 sudo sbctl verify
 ```
+
+> [!NOTE]
+> Do NOT sign the Linux kernel files (`*bzImage*`) with `sbctl`. Limine validates kernels natively via cryptographic BLAKE2B hashes enrolled in `limine.conf`. Modifying the kernel binary with an Authenticode signature causes a BLAKE2B hash mismatch panic on boot.
 
 ### Step 5: Enable Automated Secure Boot Signing in Host Config
 

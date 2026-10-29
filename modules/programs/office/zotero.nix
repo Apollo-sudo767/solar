@@ -15,13 +15,7 @@
 let
   cfg = config.myFeatures.programs.office.zotero;
 
-  # Upstream nixpkgs-unstable's zotero currently fails to build due to an incompatible
-  # regex in its build script against firefox-esr-153. Fall back to nixpkgs-stable's pre-built binary.
-  zotero =
-    if (!isStable && inputs ? nixpkgs-stable) then
-      (inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zotero or pkgs.zotero)
-    else
-      pkgs.zotero;
+  inherit (pkgs) zotero;
 
   # Derive Better BibTeX plugin (.xpi) for Zotero citekey generation & auto-export
   betterBibtexXpi = pkgs.fetchurl {
@@ -58,6 +52,10 @@ in
     lib.mkMerge [
       (lib.optionalAttrs (!isDarwin) {
         environment.systemPackages = lib.optional cfg.gui zotero;
+
+        # Zotero 10 on Linux depends on firefox-esr-140-bin-unwrapped, which reached EOL
+        # on 2026-10-13. Permit it while Zotero GUI is enabled so evaluation succeeds.
+        nixpkgs.config.permittedInsecurePackages = lib.optional cfg.gui "firefox-esr-140-bin-unwrapped-140.17.0esr";
 
         preservation.preserveAt."${config.myFeatures.core.system.preservation.persistentPath}" =
           lib.mkIf config.myFeatures.core.system.preservation.enable

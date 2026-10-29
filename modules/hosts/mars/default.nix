@@ -162,7 +162,10 @@
             nightly.enable = true;
             extensions.enable = true;
           };
-          utilities.spotify.tui.enable = true;
+          utilities.spotify = {
+            enable = true;
+            tui.enable = true;
+          };
         };
       };
     };
